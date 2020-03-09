@@ -1,0 +1,252 @@
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * Removes the "#" from a color.
+ *
+ * @param string $color The color
+ * @return string The color without #
+ */
+/**
+ * Calculates the URL to the svg under the SVG API.
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int [$version] the version of the file
+ * @param bool [$core] search icon in core
+ * @return string The URL to the svg.
+ */
+/**
+ * SVG COLOR API
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int $version the version of the file
+ * @param bool [$core] search icon in core
+ *
+ * @returns A background image with the url to the set to the requested icon.
+ */
+/**
+ * Create black and white icons
+ * This will add a default black version of and an additional white version when .icon-white is applied
+ */
+/**
+ * Privacy App
+ *
+ * @author Georg Ehrke
+ * @copyright 2019 Georg Ehrke <oc.list@georgehrke.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU AFFERO GENERAL PUBLIC LICENSE for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-control {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-control-000);
+}
+/* line 86, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-control-white, .icon-control.icon-white {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-control-fff);
+}
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-freedom {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-freedom-000);
+}
+/* line 86, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-freedom-white, .icon-freedom.icon-white {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-freedom-fff);
+}
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-knowledge {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-knowledge-000);
+}
+/* line 86, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.icon-knowledge-white, .icon-knowledge.icon-white {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-privacy-knowledge-fff);
+}
+/* line 25, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights {
+  padding: 15px 0;
+}
+@media screen and (min-width: 600px) {
+  .user-data-manifesto-rights {
+    display: flex;
+  }
+}
+/* line 32, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights div {
+  padding: 0 10px;
+}
+/* line 35, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights div div.icon {
+  background-size: 32px;
+  min-width: 32px;
+  min-height: 32px;
+}
+/* line 41, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights div h5 {
+  text-align: center;
+}
+/* line 45, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights div h5:first-of-type {
+  margin-top: 10px;
+}
+/* line 49, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.user-data-manifesto-rights div p {
+  margin-top: 10px;
+}
+/* line 55, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+/* line 56, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.section h4:not(:first-of-type) {
+  margin-top: 20px;
+}
+/* line 61, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+/* line 63, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access span.icon.icon-rename, .where-is-my-data span.icon.icon-rename {
+  display: inline-block;
+  opacity: 0.5;
+}
+/* line 67, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access span.icon.icon-rename:hover, .where-is-my-data span.icon.icon-rename:hover {
+  opacity: 0.8;
+}
+/* line 73, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data {
+  max-width: 500px;
+}
+/* line 76, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data > span.icon.icon-loading {
+  display: block;
+  height: 320px;
+  width: 500px;
+}
+/* line 82, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data > svg > path, .where-is-my-data > svg > g {
+  fill: #ddd;
+  stroke: #f4f4f4;
+}
+/* line 90, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data > div.multiselect-container {
+  position: relative;
+}
+/* line 93, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data > div.multiselect-container > div.multiselect {
+  width: 100%;
+}
+/* line 97, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.where-is-my-data > div.multiselect-container > span.icon.icon-loading {
+  display: inline-block;
+  position: absolute;
+  top: 9px;
+  left: calc(50% - 23px);
+}
+/* line 106, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+/* line 111, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access div.avatardiv, .who-has-access .action-item.addAdditionalAdmin, .who-has-access form.addAdditionalAdminFormContainer {
+  margin: 10px;
+}
+/* line 117, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access div.admin-avatar-container {
+  position: relative;
+}
+/* line 120, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access div.admin-avatar-container > .action-item {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+/* line 127, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access .action-item.addAdditionalAdmin {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 64px !important;
+  background-color: var(--color-background-dark);
+}
+/* line 134, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access form.addAdditionalAdminFormContainer {
+  margin-top: 20px;
+  position: relative;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+}
+/* line 142, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access span.icon.icon-loading {
+  display: block;
+  height: 32px;
+  width: 32px;
+  margin: 26px;
+}
+/* line 148, /home/nmaireamiot/workspaces/recia/nextcloud/apps/privacy/css/privacy.scss */
+.who-has-access span.icon.icon-loading.hidden {
+  display: none;
+}

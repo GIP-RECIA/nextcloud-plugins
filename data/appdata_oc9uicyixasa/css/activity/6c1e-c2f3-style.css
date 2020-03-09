@@ -1,0 +1,332 @@
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * Removes the "#" from a color.
+ *
+ * @param string $color The color
+ * @return string The color without #
+ */
+/**
+ * Calculates the URL to the svg under the SVG API.
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int [$version] the version of the file
+ * @param bool [$core] search icon in core
+ * @return string The URL to the svg.
+ */
+/**
+ * SVG COLOR API
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int $version the version of the file
+ * @param bool [$core] search icon in core
+ *
+ * @returns A background image with the url to the set to the requested icon.
+ */
+/**
+ * Create black and white icons
+ * This will add a default black version of and an additional white version when .icon-white is applied
+ */
+/* line 1, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#container h2 {
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+/* line 6, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activitysubject {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 85%;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  text-overflow: ellipsis;
+}
+/* line 14, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activitymessage {
+  margin-left: 25px;
+  color: var(--color-text-maxcontrast);
+  text-overflow: ellipsis;
+}
+/* line 19, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-previews {
+  margin-left: 24px;
+}
+/* line 23, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#no_more_activities {
+  position: relative;
+  top: 50px;
+  width: 100%;
+  text-align: center;
+  padding: 50px 0;
+  z-index: 100;
+  margin: 40px auto;
+  bottom: 20px;
+  color: var(--color-text-maxcontrast);
+}
+/* line 36, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#loading_activities {
+  height: 50px;
+  margin: 0 auto;
+  padding: 20px;
+}
+/* line 42, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#container {
+  margin-bottom: 20px;
+  clear: both;
+  border-radius: 5px;
+}
+/* line 48, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-section .group {
+  clear: both;
+  padding-bottom: 10px;
+}
+/* line 53, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box {
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+}
+/* line 58, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .header {
+  height: 32px;
+  margin-bottom: 10px;
+}
+/* line 63, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .messagecontainer {
+  width: 100%;
+  display: block;
+  margin-bottom: 20px;
+}
+/* line 69, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .preview {
+  width: 50px;
+  height: 50px;
+  margin-right: 12px;
+}
+/* line 75, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .preview-dir-icon, .activity.box .preview-mimetype-icon {
+  width: 50px;
+  height: 50px;
+}
+/* line 81, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .user {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  float: left;
+  display: inline-block;
+  width: 180px;
+  font-weight: bold;
+}
+/* line 91, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .activitytime {
+  float: right;
+  color: var(--color-text-maxcontrast);
+  font-size: 0.8em;
+  padding: 20px;
+  margin: -20px;
+}
+/* line 99, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .appname {
+  float: right;
+  color: #333;
+  font-size: 0.8em;
+}
+/* line 105, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .grouped {
+  list-style: none;
+}
+/* line 109, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity.box .grouped .more {
+  cursor: default;
+  color: var(--color-text-maxcontrast);
+}
+/* Navigation icons */
+/* line 118, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#app-navigation img {
+  margin-bottom: -3px;
+  margin-right: 6px;
+  width: 16px;
+}
+/* line 123, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#app-navigation li span.no-icon {
+  padding-left: 25px;
+}
+/* Style for in event parameters */
+/* line 128, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-section a.filename, .activity-section a.email, .activity-section strong {
+  font-weight: bold;
+}
+/* line 134, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-section a:focus, .activity-previews a:hover, .activity-previews a:focus {
+  opacity: 0.5;
+}
+/* line 140, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-section a:hover {
+  opacity: 0.7;
+}
+/* line 144, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activitysubject strong.systemtag {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background-color: var(--color-background-darker);
+  font-weight: normal;
+}
+/* line 152, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activitysubject span.icon-home {
+  display: inline-block;
+  margin-bottom: -2px;
+}
+/* line 157, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-section .avatar {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 5px 2px 3px;
+}
+/* line 163, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activityTabView .activity.box {
+  position: relative;
+}
+/* line 166, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activityTabView .activity-icon {
+  position: absolute;
+  margin-top: 3px;
+}
+/* line 170, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activityTabView .activitysubject {
+  width: 90%;
+  margin-left: 24px;
+  display: block;
+  min-height: 28px;
+}
+/* line 176, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activityTabView .box .activitytime {
+  padding: 0;
+  margin: -15px 0 0;
+}
+/* line 181, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.icon-activity {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-activity-activity-dark-000);
+}
+/* colored icons, in addition to core ones */
+/* line 185, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-icon {
+  min-width: 16px;
+  min-height: 16px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+  background-size: contain;
+  opacity: 0.5;
+}
+/* line 194, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activity-icon img {
+  max-width: 16px;
+  max-height: 16px;
+}
+/* line 199, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#rssurl > input.feed-link {
+  width: 80%;
+}
+/* line 203, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+#rssurl .icon-clippy {
+  background-size: 16px 16px;
+  display: inline-block;
+  position: relative;
+  top: 3px;
+  margin-left: 5px;
+}
+/* line 211, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.activitymessage .avatar-name-wrapper, .activitysubject .avatar-name-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+/* line 217, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph {
+  margin: 10px;
+  max-width: 700px;
+  height: 125px;
+  position: relative;
+  border: 1px solid var(--color-border-dark);
+  padding-right: 15px;
+}
+/* line 226, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph-name {
+  font-size: 15px;
+  padding-left: 5px;
+  font-weight: bold;
+  margin: 10px 5px 5px 5px;
+}
+/* line 233, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph-description {
+  padding-left: 10px;
+}
+/* line 237, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph-thumb {
+  width: 160px;
+  height: 119px;
+  margin: 3px 15px 5px 3px;
+  position: absolute;
+  background: var(--color-border) center no-repeat;
+  background-size: 220px;
+}
+/* line 246, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph-with-thumb {
+  margin-left: 175px;
+}
+/* line 250, /home/nmaireamiot/workspaces/recia/nextcloud/apps/activity/css/style.scss */
+.opengraph-website {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--color-text-maxcontrast);
+}

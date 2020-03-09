@@ -1,0 +1,1751 @@
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * Removes the "#" from a color.
+ *
+ * @param string $color The color
+ * @return string The color without #
+ */
+/**
+ * Calculates the URL to the svg under the SVG API.
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int [$version] the version of the file
+ * @param bool [$core] search icon in core
+ * @return string The URL to the svg.
+ */
+/**
+ * SVG COLOR API
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int $version the version of the file
+ * @param bool [$core] search icon in core
+ *
+ * @returns A background image with the url to the set to the requested icon.
+ */
+/**
+ * Create black and white icons
+ * This will add a default black version of and an additional white version when .icon-white is applied
+ */
+/**
+ * Copyright (c) 2011, Jan-Christoph Borchardt, http://jancborchardt.net
+ * @copyright Copyright (c) 2019, Fabian Dreßler <nudelsalat@clouz.de>
+ *
+ * This file is licensed under the Affero General Public License version 3 or later.
+ * See the COPYING-README file.
+ */
+/* SETTINGS */
+/* line 10, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#files-setting-showhidden {
+  padding-bottom: 8px;
+}
+/* FILE MENU */
+/* line 15, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions {
+  padding: 5px;
+  height: 100%;
+  display: inline-block;
+  float: left;
+}
+/* line 21, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions input, .actions button, .actions .button {
+  margin: 0;
+  float: left;
+}
+/* line 22, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions .button a {
+  color: #555;
+}
+/* line 23, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions .button a:hover, .actions .button a:focus, .actions .button a:active {
+  color: #333;
+}
+/* line 29, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions.creatable {
+  position: relative;
+  display: flex;
+  flex: 1 1;
+}
+/* line 33, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions.creatable .button:not(:last-child) {
+  margin-right: 3px;
+}
+/* line 38, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.actions.hidden {
+  display: none;
+}
+/* line 42, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#trash {
+  margin-right: 8px;
+  float: right;
+  z-index: 1010;
+  padding: 10px;
+  font-weight: normal;
+}
+/* line 50, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.newFileMenu .error, .newFileMenu .error + .icon-confirm, #fileList .error {
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+/* FILE TABLE */
+/* line 58, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable {
+  position: relative;
+  width: 100%;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+/* line 65, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#emptycontent:not(.hidden) ~ #filestable {
+  display: none;
+}
+/* line 69, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable thead {
+  position: -webkit-sticky;
+  position: sticky;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 50px;
+  z-index: 60;
+  display: block;
+  background-color: var(--color-main-background-translucent);
+}
+/* line 82, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.hidden {
+  display: none;
+}
+/* fit app list view heights */
+/* line 87, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.app-files #app-content > .viewcontainer {
+  min-height: 0%;
+  width: 100%;
+}
+/* line 92, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.app-files #app-content {
+  transition: background-color 0.3s ease;
+  width: calc(100% - 300px);
+}
+/* line 99, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.file-drag, .file-drag #filestable tbody tr, .file-drag #filestable tbody tr:hover {
+  transition: background-color 0.3s ease !important;
+  background-color: #b3e6ff !important;
+}
+/* line 104, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.app-files #app-content.dir-drop {
+  background-color: var(--color-main-background) !important;
+}
+/* line 108, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.file-drag #filestable tbody tr, .file-drag #filestable tbody tr:hover {
+  background-color: transparent !important;
+}
+/* line 112, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.app-files #app-content.dir-drop #filestable tbody tr.dropping-to-dir {
+  background-color: #b3e6ff !important;
+}
+/* icons for sidebar */
+/* line 117, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-files {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-folder-000);
+}
+/* line 120, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-recent {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-recent-000);
+}
+/* line 123, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-favorites {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-star-dark-000);
+}
+/* line 126, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-sharingin, .nav-icon-sharingout, .nav-icon-pendingshares, .nav-icon-shareoverview {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-share-000);
+}
+/* line 132, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-sharinglinks {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-public-000);
+}
+/* line 135, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-extstoragemounts {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-external-000);
+}
+/* line 138, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-trashbin {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-delete-000);
+}
+/* line 141, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-trashbin-starred {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-delete-f00);
+}
+/* line 144, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-deletedshares {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-files-unshare-000);
+}
+/* line 147, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.nav-icon-favorites-starred {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-star-dark-fc0);
+}
+/* line 151, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-navigation .nav-files a.nav-icon-files {
+  width: auto;
+}
+/* button needs overrides due to navigation styles */
+/* line 155, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-navigation .nav-files a.new {
+  width: 40px;
+  height: 32px;
+  padding: 0 10px;
+  margin: 0;
+  cursor: pointer;
+}
+/* line 163, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-navigation .nav-files a.new.hidden {
+  display: none;
+}
+/* line 167, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-navigation .nav-files a.new.disabled {
+  opacity: 0.3;
+}
+/* line 171, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable tbody tr {
+  transition: background-color 0.3s ease;
+  height: 51px;
+}
+/* line 175, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable tbody tr:hover, #filestable tbody tr:focus, #filestable tbody .name:focus, #filestable tbody tr:active, #filestable tbody tr.highlighted, #filestable tbody tr.highlighted .name:focus, #filestable tbody tr.selected, #filestable tbody tr.searchresult, #filestable tbody tr:hover .filename form, table tr.mouseOver td {
+  transition: background-color 0.3s ease;
+  background-color: var(--color-background-dark);
+}
+/* line 188, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+tbody a {
+  color: var(--color-main-text);
+}
+/* line 190, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+span.conflict-path, span.extension, span.uploading, td.date {
+  color: var(--color-text-maxcontrast);
+}
+/* line 193, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+span.conflict-path, span.extension {
+  -webkit-transition: opacity 300ms;
+  -moz-transition: opacity 300ms;
+  -o-transition: opacity 300ms;
+  transition: opacity 300ms;
+  vertical-align: top;
+}
+/* line 200, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+tr:hover span.conflict-path, tr:focus span.conflict-path, tr:hover span.extension, tr:focus span.extension {
+  opacity: 1;
+  color: var(--color-text-maxcontrast);
+}
+/* line 208, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th, table th a {
+  color: var(--color-text-maxcontrast);
+}
+/* line 211, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.multiselect th a {
+  color: var(--color-main-text);
+}
+/* line 214, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th .columntitle {
+  display: block;
+  padding: 15px;
+  height: 50px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  vertical-align: middle;
+}
+/* line 222, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.multiselect th .columntitle {
+  display: inline-block;
+}
+/* line 225, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th .columntitle.name {
+  padding-left: 0;
+  margin-left: 50px;
+}
+/* line 230, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th .sort-indicator {
+  width: 10px;
+  height: 8px;
+  margin-left: 5px;
+  display: inline-block;
+  vertical-align: text-bottom;
+  opacity: 0.3;
+}
+/* line 238, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.sort-indicator.hidden, .multiselect .sort-indicator, table.multiselect th:hover .sort-indicator.hidden, table.multiselect th:focus .sort-indicator.hidden {
+  visibility: hidden;
+}
+/* line 244, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.multiselect .sort, .multiselect .sort span {
+  cursor: default;
+}
+/* line 247, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th:hover .sort-indicator.hidden, table th:focus .sort-indicator.hidden {
+  visibility: visible;
+}
+/* line 252, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th, table td {
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-weight: normal;
+}
+/* line 258, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td {
+  padding: 0 15px;
+  font-style: normal;
+  background-position: 8px center;
+  background-repeat: no-repeat;
+}
+/* line 264, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th#headerName {
+  position: relative;
+  width: 9999px;
+  /* not really sure why this works better than 100% … table styling */
+  padding: 0;
+}
+/* line 270, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#headerName-container {
+  position: relative;
+  height: 50px;
+}
+/* line 275, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th#headerSize, table td.filesize {
+  text-align: right;
+}
+/* line 278, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table th#headerDate, table td.date, table th.column-last, table td.column-last {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+  /* this can not be just width, both need to be set … table styling */
+  min-width: 130px;
+  max-width: 130px;
+}
+/* line 288, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-content-files thead {
+  top: 94px;
+}
+/* line 292, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.multiselect thead th {
+  background-color: var(--color-main-background-translucent);
+  font-weight: bold;
+}
+/* line 297, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#app-content.with-app-sidebar table.multiselect thead {
+  margin-right: 27%;
+}
+/* line 301, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.multiselect #headerName {
+  position: relative;
+  width: 9999px;
+  /* when we use 100%, the styling breaks on mobile … table styling */
+}
+/* line 305, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.multiselect #modified {
+  display: none;
+}
+/* line 309, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.selection, table th.selection, table td.fileaction {
+  width: 32px;
+  text-align: center;
+}
+/* line 315, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename a.name {
+  display: flex;
+  position: relative;
+  -moz-box-sizing: border-box;
+  /* Firefox needs to explicitly have this default set … */
+  box-sizing: border-box;
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
+}
+/* line 324, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .thumbnail-wrapper {
+  /* we need this to make sure flex is working inside a table cell */
+  width: 0;
+  min-width: 50px;
+  max-width: 50px;
+  height: 50px;
+}
+/* line 331, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 332, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .thumbnail-wrapper.icon-loading-small:after {
+  z-index: 10;
+}
+/* line 335, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .thumbnail-wrapper.icon-loading-small .thumbnail {
+  opacity: 0.2;
+}
+/* line 339, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .thumbnail {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: 32px;
+  margin-left: 9px;
+  margin-top: 9px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  position: absolute;
+  z-index: 4;
+}
+/* line 353, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table tr[data-has-preview='true'] .thumbnail {
+  border: 1px solid var(--color-border);
+}
+/* line 357, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename input.filename {
+  width: 70%;
+  margin-left: 48px;
+  cursor: text;
+}
+/* line 362, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename form {
+  margin-top: -40px;
+  position: relative;
+  top: -6px;
+}
+/* line 368, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename a, table td.login, table td.logout, table td.download, table td.upload, table td.create, table td.delete {
+  padding: 3px 8px 8px 3px;
+}
+/* line 369, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .nametext, .modified, .column-last > span:first-child {
+  float: left;
+  padding: 15px 0;
+}
+/* line 371, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.modified, .column-last > span:first-child {
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 110px;
+}
+/* TODO fix usability bug (accidental file/folder selection) */
+/* line 379, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 380, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename {
+  max-width: 0;
+}
+/* line 382, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .nametext {
+  width: 0;
+  flex-grow: 1;
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 100%;
+  z-index: 10;
+  padding-right: 20px;
+}
+/* line 396, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table .uploadtext {
+  position: absolute;
+  left: 55px;
+}
+/* line 402, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.hide-hidden-files #filestable #fileList tr.hidden-file, .hide-hidden-files #filestable #fileList tr.hidden-file.dragging {
+  display: none;
+}
+/* line 407, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr.animate-opacity {
+  -webkit-transition: opacity 250ms;
+  -moz-transition: opacity 250ms;
+  -o-transition: opacity 250ms;
+  transition: opacity 250ms;
+}
+/* line 413, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr.dragging {
+  opacity: 0.2;
+}
+/* line 417, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .nametext .innernametext {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;
+}
+/* for smaller resolutions - see mobile.css */
+/* line 426, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.filename .uploadtext {
+  font-weight: normal;
+  margin-left: 55px;
+  margin-top: 5px;
+  height: 20px;
+  padding: 10px 0;
+  font-size: 11px;
+  opacity: 0.5;
+}
+/* line 436, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table td.selection {
+  padding: 0;
+}
+/* File checkboxes */
+/* line 441, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.selection > .selectCheckBox + label:before {
+  opacity: 0.3;
+  margin-right: 0;
+}
+/* Show checkbox with full opacity when hovering, checked, or selected */
+/* line 447, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr:hover td.selection > .selectCheckBox + label:before, #fileList tr:focus td.selection > .selectCheckBox + label:before, #fileList tr td.selection > .selectCheckBox:checked + label:before, #fileList tr.selected td.selection > .selectCheckBox + label:before {
+  opacity: 1;
+}
+/* Show checkbox with half opacity when selecting range */
+/* line 455, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr.halfselected td.selection > .selectCheckBox + label:before {
+  opacity: 0.5;
+}
+/* Use label to have bigger clickable size for checkbox */
+/* line 460, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.selection > .selectCheckBox + label, .select-all + label {
+  padding: 16px;
+}
+/* line 465, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.filename {
+  position: relative;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  -webkit-transition: background-image 500ms;
+  -moz-transition: background-image 500ms;
+  -o-transition: background-image 500ms;
+  transition: background-image 500ms;
+}
+/* line 473, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.filename a.name label {
+  position: absolute;
+  width: 80%;
+  height: 50px;
+}
+/* line 479, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.filename .favorite {
+  display: inline-block;
+  float: left;
+}
+/* line 483, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr td.filename .favorite-mark {
+  position: absolute;
+  display: block;
+  top: -6px;
+  right: -6px;
+  line-height: 100%;
+  text-align: center;
+}
+/* line 492, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#uploadsize-message, #delete-confirm {
+  display: none;
+}
+/* File actions */
+/* line 495, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.fileactions {
+  z-index: 50;
+}
+/* line 499, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.busy .fileactions, .busy .action {
+  visibility: hidden;
+}
+/* fix position of bubble pointer for Files app */
+/* line 504, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.bubble, #app-navigation .app-navigation-entry-menu {
+  border-top-right-radius: 3px;
+  min-width: 100px;
+}
+/* force show the loading icon, not only on hover */
+/* line 511, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .icon-loading-small {
+  opacity: 1 !important;
+  display: inline !important;
+}
+/* line 516, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .action.action-share-notification span, #fileList a.name {
+  cursor: default !important;
+}
+/* line 520, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+a.action > img {
+  height: 16px;
+  width: 16px;
+  vertical-align: text-bottom;
+}
+/* Actions for selected files */
+/* line 527, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 532, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions.hidden {
+  display: none;
+}
+/* line 535, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions a {
+  display: inline;
+  line-height: 50px;
+  padding: 16px 5px;
+}
+/* line 541, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions a.hidden {
+  display: none;
+}
+/* line 544, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions a img {
+  position: relative;
+  vertical-align: text-bottom;
+  margin-bottom: -1px;
+}
+/* line 550, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.selectedActions .actions-selected .icon-more {
+  margin-top: -3px;
+}
+/* line 554, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 555, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action {
+  display: inline;
+  padding: 17px 8px;
+  line-height: 50px;
+  opacity: 0.3;
+}
+/* line 560, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.action-share {
+  padding: 17px 14px;
+}
+/* line 562, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.action-share.permanent:not(.shared-style) .icon-shared + span {
+  /* hide text of the share action */
+  /* .hidden-visually for accessbility */
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+/* line 572, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.action-share .avatar {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 577, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.action-menu {
+  padding-top: 17px;
+  padding-bottom: 17px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
+/* line 583, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 584, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.no-permission:hover, #fileList td a a.action.no-permission:focus {
+  opacity: 0.3;
+}
+/* line 588, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 589, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.disabled:hover, #fileList td a a.action.disabled:focus, #fileList td a a.action.disabled img {
+  opacity: 0.3;
+}
+/* line 593, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.disabled.action-download {
+  opacity: 0.7;
+}
+/* line 595, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action.disabled.action-download:hover, #fileList td a a.action.disabled.action-download:focus {
+  opacity: 0.7;
+}
+/* line 600, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a a.action:hover, #fileList td a a.action:focus {
+  opacity: 0.7;
+}
+/* line 604, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList td a .fileActionsMenu a.action, #fileList td a a.action.action-share.shared-style {
+  opacity: 0.7;
+}
+/* line 610, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .action.action-share.permanent.shared-style span:not(.icon) {
+  display: inline-block;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+/* line 619, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .remoteAddress .userDomain {
+  margin-left: 0 !important;
+}
+/* line 623, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .favorite-mark.permanent {
+  opacity: 1;
+}
+/* line 627, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList .fileActionsMenu a.action:hover, #fileList .fileActionsMenu a.action:focus, #fileList a.action.action-share.shared-style:hover, #fileList a.action.action-share.shared-style:focus {
+  /* show share action of shared items darker to distinguish from non-shared */
+  opacity: 1;
+}
+/* line 635, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr a.action.disabled {
+  background: none;
+}
+/* line 639, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#selectedActionsList a.download.disabled, #fileList tr a.action.action-download.disabled {
+  color: #000;
+}
+/* line 644, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#fileList tr:hover a.action.disabled:hover * {
+  cursor: default;
+}
+/* line 648, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.summary {
+  opacity: 0.3;
+  /* add whitespace to bottom of files list to correctly show dropdowns */
+  height: 250px;
+}
+/* line 653, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filesummary {
+  width: 100%;
+}
+/* Less whitespace needed on link share page
+ * as there is a footer and action menus have fewer entries.
+ */
+/* line 659, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public .summary {
+  height: 180px;
+}
+/* line 662, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.summary:hover, .summary:focus, .summary, table tr.summary td {
+  background-color: transparent;
+}
+/* line 668, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.summary td {
+  border-bottom: none;
+  vertical-align: top;
+  padding-top: 20px;
+}
+/* line 673, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.summary .info {
+  margin-left: 2px;
+}
+/* line 676, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.hiddeninfo {
+  white-space: pre-line;
+}
+/* line 680, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.dragshadow {
+  width: auto;
+  z-index: 2000;
+}
+/* line 684, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.dragshadow td.filename {
+  padding-left: 60px;
+  padding-right: 16px;
+  height: 36px;
+  /* Override "max-width: 0" to prevent file name and size from overlapping */
+  max-width: unset;
+}
+/* line 692, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+table.dragshadow td.size {
+  padding-right: 8px;
+}
+/* line 695, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.mask {
+  z-index: 50;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-main-background);
+  background-repeat: no-repeat no-repeat;
+  background-position: 50%;
+  opacity: 0.7;
+  transition: opacity 100ms;
+  -moz-transition: opacity 100ms;
+  -o-transition: opacity 100ms;
+  -ms-transition: opacity 100ms;
+  -webkit-transition: opacity 100ms;
+}
+/* line 712, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.mask.transparent {
+  opacity: 0;
+}
+/* line 716, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.newFileMenu {
+  font-weight: 300;
+  top: 100%;
+  margin-top: 4px;
+  min-width: 100px;
+  margin-left: 22px;
+  /* Align left edge below center of + button … */
+  transform: translateX(-50%);
+  /* … then center it below button */
+  z-index: 1001;
+  /* Center triangle */
+}
+/* line 726, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.newFileMenu::after {
+  left: calc(50% - 8px) !important;
+}
+/* line 731, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filename .action .icon, #filestable .selectedActions a .icon, #filestable .filename .favorite-mark .icon, #controls .actions .button .icon {
+  display: inline-block;
+  vertical-align: middle;
+  background-size: 16px 16px;
+}
+/* line 740, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 743, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filename .favorite-mark .icon-star {
+  background-image: none;
+}
+/* line 746, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filename .favorite-mark .icon-starred {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-star-dark-fc0);
+}
+/* line 751, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filename .action .icon.hidden, #filestable .selectedActions a .icon.hidden, #controls .actions .button .icon.hidden {
+  display: none;
+}
+/* line 757, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable .filename .action .icon.loading, #filestable .selectedActions a .icon.loading, #controls .actions .button .icon.loading {
+  width: 15px;
+  height: 15px;
+}
+/* line 764, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.app-files .actions .button.new {
+  position: relative;
+}
+/* line 768, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.breadcrumb .canDrop > a, #filestable tbody tr.canDrop {
+  background-color: rgba(0, 130, 201, 0.3);
+}
+/* line 772, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.dropzone-background {
+  background-color: rgba(0, 130, 201, 0.3);
+}
+/* line 774, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.dropzone-background :hover {
+  box-shadow: none !important;
+}
+/* line 779, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+.notCreatable {
+  padding-left: 12px;
+  padding-top: 12px;
+  color: var(--color-text-lighter);
+}
+/* line 785, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quota {
+  margin: 0 !important;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  z-index: 1;
+}
+/* line 792, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quota > a[href='#'] {
+  box-shadow: none !important;
+}
+/* line 795, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quota > a[href='#'], #quota > a[href='#'] * {
+  cursor: default !important;
+}
+/* line 800, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quota .quota-container {
+  height: 5px;
+  border-radius: var(--border-radius);
+}
+/* line 804, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quota .quota-container div {
+  height: 100%;
+  background-color: var(--color-primary);
+}
+/* line 811, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#quotatext {
+  padding: 0;
+  height: 30px;
+  line-height: 30px;
+}
+/* GRID */
+/* line 818, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) {
+  /* HEADER and MULTISELECT */
+  /* MAIN FILE LIST */
+  /* Center align the footer file number & size summary */
+}
+/* line 823, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 824, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) thead tr {
+  display: block;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-main-background-translucent);
+}
+/* line 828, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) thead tr th {
+  width: auto;
+  border: none;
+}
+/* line 836, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 160px);
+  justify-content: space-around;
+  row-gap: 15px;
+  margin: 15px 0;
+}
+/* line 844, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody tr:not(.hidden) {
+  display: block;
+  position: relative;
+  height: 190px;
+  border-radius: var(--border-radius);
+}
+/* line 850, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody tr:not(.hidden):hover, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):focus, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):active, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).selected, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).searchresult, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden) .name:focus, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).highlighted {
+  background-color: transparent;
+}
+/* line 857, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody tr:not(.hidden):hover .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):focus .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):active .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).selected .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).searchresult .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden) .name:focus .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).highlighted .thumbnail-wrapper, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):hover .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):focus .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):active .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).selected .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).searchresult .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden) .name:focus .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).highlighted .nametext, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):hover .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):focus .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden):active .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).selected .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).searchresult .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden) .name:focus .fileactions, #filestable.view-grid:not(.hidden) tbody tr:not(.hidden).highlighted .fileactions {
+  transition: background-color 0.3s ease;
+  background-color: var(--color-background-dark);
+}
+/* line 866, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td {
+  display: inline;
+  border-bottom: none;
+  /* No space for filesize and date in grid view */
+  /* Position actions menu below file */
+}
+/* line 870, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 871, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .thumbnail-wrapper {
+  min-width: 0;
+  max-width: none;
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  padding: 14px;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+/* line 882, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .thumbnail-wrapper .thumbnail {
+  width: calc(100% - 2 * 14px);
+  height: calc(100% - 2 * 14px);
+  background-size: contain;
+  margin: 0;
+  border-radius: var(--border-radius);
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Position favorite star related to checkbox to left and 3-dot menu below
+   * Position is inherited from the selection while in grid view
+   */
+}
+/* line 894, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .thumbnail-wrapper .thumbnail .favorite-mark {
+  padding: 14px;
+  left: auto;
+  top: -22px;
+  right: -22px;
+}
+/* line 903, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name {
+  height: 100%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer !important;
+}
+/* line 916, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .nametext {
+  display: flex;
+  height: 44px;
+  margin-top: 146px;
+  text-align: center;
+  line-height: 44px;
+  padding: 0;
+  /* No space for extension in grid view */
+}
+/* line 924, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .nametext .innernametext {
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* line 931, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .nametext:before {
+  content: '';
+  flex: 1;
+  min-width: 14px;
+}
+/* line 936, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .nametext:after {
+  content: '';
+  flex: 1;
+  min-width: 44px;
+}
+/* line 943, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .nametext .extension {
+  display: none;
+}
+/* line 948, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .fileactions {
+  height: initial;
+  margin-top: 146px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 0;
+}
+/* line 956, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .fileactions .action {
+  padding: 14px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* line 965, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .name .fileactions .action:not(.action-menu) {
+  display: none;
+}
+/* line 972, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+/* line 974, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .fileActionsMenu .action-share-container.hidden {
+  display: block !important;
+}
+/* line 977, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .fileActionsMenu .action-share-container.hidden .action-share img {
+  padding: 6px;
+  border-radius: 50%;
+}
+/* line 983, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .fileActionsMenu .action-restore-container.hidden {
+  display: block !important;
+}
+/* line 987, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename .fileActionsMenu .action-comment-container.hidden {
+  display: block !important;
+}
+/* line 992, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename form {
+  padding: 3px 14px;
+  border-radius: var(--border-radius);
+}
+/* line 996, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filename form input.filename {
+  width: 100%;
+  margin-left: 0;
+}
+/* line 1004, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.filesize, #filestable.view-grid:not(.hidden) tbody td.date {
+  display: none;
+}
+/* line 1009, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.selection, #filestable.view-grid:not(.hidden) tbody td.filename .favorite-mark {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  display: flex;
+  width: 44px;
+  height: 44px;
+  z-index: 10;
+  background: transparent;
+}
+/* line 1020, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.selection label, #filestable.view-grid:not(.hidden) tbody td.filename .favorite-mark label {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  padding: 14px;
+}
+/* line 1025, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td.selection label::before, #filestable.view-grid:not(.hidden) tbody td.filename .favorite-mark label::before {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+}
+/* line 1034, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td .popovermenu {
+  left: 0;
+  width: 150px;
+  margin: 0 5px;
+  /* Ellipsize long entries, normally menu width is adjusted but for grid we use fixed width. */
+}
+/* line 1040, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tbody td .popovermenu .menuitem span:not(.icon) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* line 1048, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tr.hidden-file td.filename .name .nametext .extension {
+  display: block;
+}
+/* line 1053, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tfoot {
+  display: grid;
+}
+/* line 1056, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tfoot .summary:not(.hidden) {
+  display: inline-block;
+  margin: 0 auto;
+}
+/* line 1060, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tfoot .summary:not(.hidden) td {
+  padding-top: 50px;
+}
+/* line 1063, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tfoot .summary:not(.hidden) td:first-child, #filestable.view-grid:not(.hidden) tfoot .summary:not(.hidden) td.date {
+  display: none;
+}
+/* line 1068, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#filestable.view-grid:not(.hidden) tfoot .summary:not(.hidden) td .info {
+  margin-left: 0;
+}
+/* Grid view toggle */
+/* line 1077, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#view-toggle {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 22px;
+  opacity: 0.5;
+  position: fixed;
+  right: 0;
+  z-index: 100;
+}
+/* line 1087, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#view-toggle:hover, #view-toggle:focus, #showgridview:focus + #view-toggle {
+  opacity: 1;
+}
+/**
+ * Make sure the hidden input is always
+ * on the visible scrolled area of the
+ * page to avoid scrolling to top when focusing
+ */
+/* line 1099, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#showgridview {
+  position: fixed;
+  top: 0;
+}
+/* Adjustments for link share page */
+/* line 1105, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public {
+  /* More space for filename since there is no share icon */
+  /* Right-align view toggle on link share page */
+}
+/* line 1106, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public #filestable.view-grid:not(.hidden) tbody td {
+  /* Position actions menu correctly below 3-dot-menu */
+}
+/* line 1108, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public #filestable.view-grid:not(.hidden) tbody td.filename .name .nametext .innernametext {
+  max-width: 124px;
+}
+/* line 1113, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public #filestable.view-grid:not(.hidden) tbody td .popovermenu {
+  left: -80px;
+}
+/* line 1119, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#body-public #view-toggle {
+  position: absolute;
+  right: 0;
+}
+/* Hide legacy Gallery toggle */
+/* line 1126, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/files.scss */
+#gallery-button {
+  display: none;
+}
+/* line 1, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#upload {
+  box-sizing: border-box;
+  height: 36px;
+  width: 39px;
+  padding: 0 !important;
+  /* override default control bar button padding */
+  margin-left: 3px;
+  overflow: hidden;
+  vertical-align: top;
+  position: relative;
+  z-index: -20;
+}
+/* line 12, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#upload .icon-upload {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 44px;
+  width: 44px;
+  margin: -5px -3px;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.65;
+}
+/* line 23, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.file_upload_target {
+  display: none;
+}
+/* line 24, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.file_upload_form {
+  display: inline;
+  float: left;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  overflow: visible;
+}
+/* line 26, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogresswrapper, #uploadprogresswrapper * {
+  box-sizing: border-box;
+}
+/* line 30, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogresswrapper {
+  display: inline-block;
+  vertical-align: top;
+  height: 36px;
+  margin-left: 3px;
+}
+/* line 36, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogresswrapper > input[type='button'] {
+  height: 36px;
+  margin-left: 3px;
+}
+/* line 40, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar {
+  border-color: var(--color-border-dark);
+  border-radius: 18px 0 0 18px;
+  border-right: 0;
+  position: relative;
+  float: left;
+  width: 200px;
+  height: 36px;
+  display: inline-block;
+  text-align: center;
+}
+/* line 51, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .ui-progressbar-value {
+  margin: 0;
+}
+/* line 55, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .ui-progressbar-value.ui-widget-header.ui-corner-left {
+  height: calc(100% + 2px);
+  top: -1px;
+  left: -1px;
+  position: absolute;
+  overflow: hidden;
+  background-color: var(--color-primary);
+}
+/* line 63, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .label {
+  top: 8px;
+  opacity: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: normal;
+}
+/* line 70, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .label.inner {
+  color: var(--color-primary-text);
+  position: absolute;
+  display: block;
+  width: 200px;
+}
+/* line 76, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .label.outer {
+  position: relative;
+  color: var(--color-main-text);
+}
+/* line 80, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .desktop {
+  display: block;
+}
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar .mobile {
+  display: none;
+}
+/* line 87, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+#uploadprogressbar + .stop {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+/* line 92, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 30px;
+}
+/* line 102, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflict .filename, .oc-dialog .fileexists .conflict .mtime, .oc-dialog .fileexists .conflict .size {
+  -webkit-touch-callout: initial;
+  -webkit-user-select: initial;
+  -khtml-user-select: initial;
+  -moz-user-select: initial;
+  -ms-user-select: initial;
+  user-select: initial;
+}
+/* line 112, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflict .message {
+  color: #e9322d;
+}
+/* line 115, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists table {
+  width: 100%;
+}
+/* line 118, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists th {
+  padding-left: 0;
+  padding-right: 0;
+}
+/* line 122, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists th input[type='checkbox'] {
+  margin-right: 3px;
+}
+/* line 125, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists th:first-child {
+  width: 225px;
+}
+/* line 128, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists th label {
+  font-weight: normal;
+  color: black;
+}
+/* line 132, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists th .count {
+  margin-left: 3px;
+}
+/* line 135, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflicts .template {
+  display: none;
+}
+/* line 138, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflict {
+  width: 100%;
+  height: 85px;
+}
+/* line 142, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflict .filename {
+  color: #777;
+  word-break: break-all;
+  clear: left;
+}
+/* line 147, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .icon {
+  width: 64px;
+  height: 64px;
+  margin: 0px 5px 5px 5px;
+  background-repeat: no-repeat;
+  background-size: 64px 64px;
+  float: left;
+}
+/* line 156, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .original, .oc-dialog .fileexists .replacement {
+  float: left;
+  width: 225px;
+}
+/* line 161, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflicts {
+  overflow-y: auto;
+  max-height: 225px;
+}
+/* line 165, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists .conflict input[type='checkbox'] {
+  float: left;
+}
+/* line 168, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists #allfileslabel {
+  float: right;
+}
+/* line 171, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists #allfiles {
+  vertical-align: bottom;
+  position: relative;
+  top: -3px;
+}
+/* line 176, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .fileexists #allfiles + span {
+  vertical-align: bottom;
+}
+/* line 180, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .oc-dialog-buttonrow {
+  width: 100%;
+  text-align: right;
+}
+/* line 184, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.oc-dialog .oc-dialog-buttonrow .cancel {
+  float: left;
+}
+/* line 189, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+.highlightUploaded {
+  -webkit-animation: highlightAnimation 2s 1;
+  -moz-animation: highlightAnimation 2s 1;
+  -o-animation: highlightAnimation 2s 1;
+  animation: highlightAnimation 2s 1;
+}
+@-webkit-keyframes highlightAnimation {
+  /* line 197, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  0% {
+    background-color: rgba(255, 255, 140, 1);
+  }
+  /* line 198, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+@-moz-keyframes highlightAnimation {
+  /* line 201, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  0% {
+    background-color: rgba(255, 255, 140, 1);
+  }
+  /* line 202, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+@-o-keyframes highlightAnimation {
+  /* line 205, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  0% {
+    background-color: rgba(255, 255, 140, 1);
+  }
+  /* line 206, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+@keyframes highlightAnimation {
+  /* line 209, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  0% {
+    background-color: rgba(255, 255, 140, 1);
+  }
+  /* line 210, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/upload.scss */
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+/* 938 = table min-width(688) + app-navigation width: 250\
+ $breakpoint-mobile +1 = size where app-navigation is hidden +1
+ 688 = table min-width */
+@media only screen and (max-width: 988px) and (min-width: 1025px), only screen and (max-width: 688px) {
+  /* remove padding to let border bottom fill the whole width*/
+  /* remove shift for multiselect bar to account for missing navigation */
+  /* hide text of the share action on mobile */
+  /* .hidden-visually for accessbility */
+  /* proper notification area for multi line messages */
+  /* shorten elements for mobile */
+  /* hide desktop-only parts */
+  /* ensure that it is visible over #app-content */
+  /* line 7, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  .app-files #app-content.dir-drop {
+    background-color: rgba(255, 255, 255, 1) !important;
+  }
+  /* line 11, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #body-user #filestable {
+    min-width: 250px;
+    display: initial;
+  }
+  /* line 16, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table th#headerSize, table td.filesize, table th#headerDate, table td.date {
+    display: none;
+  }
+  /* line 24, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table td {
+    padding: 0;
+  }
+  /* line 29, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table.multiselect thead {
+    padding-left: 0;
+  }
+  /* line 33, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #fileList a.action.action-menu img {
+    padding-left: 0;
+  }
+  /* line 37, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #fileList .fileActionsMenu {
+    margin-right: 6px;
+  }
+  /* line 42, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #fileList a.action-share span:not(.icon):not(.avatar) {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  /* line 53, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #notification-container {
+    display: flex;
+  }
+  /* line 58, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #uploadprogressbar, #uploadprogressbar .label.inner {
+    width: 50px;
+  }
+  /* line 62, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #uploadprogressbar .desktop {
+    display: none !important;
+  }
+  /* line 65, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  #uploadprogressbar .mobile {
+    display: block !important;
+  }
+  /* line 70, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table.dragshadow {
+    z-index: 1000;
+  }
+}
+@media only screen and (max-width: 480px) {
+  /* Only show icons */
+  /* Increase touch area for the icons */
+  /* Remove the margin to reduce the overlap between the name and the icons */
+  /* line 77, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table th .selectedActions {
+    float: right;
+  }
+  /* line 80, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table th .selectedActions > a span:not(.icon) {
+    display: none;
+  }
+  /* line 85, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table th .selectedActions a {
+    padding: 17px 14px;
+  }
+  /* line 90, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/mobile.scss */
+  table.multiselect th .columntitle.name {
+    margin-left: 0;
+  }
+}
+/* line 1, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .detailFileInfoContainer {
+  min-height: 50px;
+  padding: 15px;
+}
+/* line 6, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .detailFileInfoContainer > div {
+  clear: both;
+}
+/* line 11, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .mainFileInfoView .icon {
+  display: inline-block;
+  background-size: 16px 16px;
+}
+/* line 16, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .mainFileInfoView .permalink {
+  padding: 6px 10px;
+  vertical-align: top;
+  opacity: 0.6;
+}
+/* line 21, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .mainFileInfoView .permalink:hover, #app-sidebar .mainFileInfoView .permalink:focus {
+  opacity: 1;
+}
+/* line 26, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .mainFileInfoView .permalink-field > input {
+  clear: both;
+  width: 90%;
+}
+/* line 31, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .thumbnailContainer.large {
+  margin-left: -15px;
+  margin-right: -35px;
+  /* 15 + 20 for the close button */
+  margin-top: -15px;
+}
+/* line 37, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .thumbnailContainer.large.portrait {
+  margin: 0;
+  /* if we don't fit the image anyway we give it back the margin */
+}
+/* line 41, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .large .thumbnail {
+  width: 100%;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  float: none;
+  margin: 0;
+  height: auto;
+}
+/* line 52, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .large .thumbnail .stretcher {
+  content: '';
+  display: block;
+  padding-bottom: 56.25%;
+  /* sets height of .thumbnail to 9/16 of the width */
+}
+/* line 58, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .large.portrait .thumbnail {
+  background-position: 50% top;
+}
+/* line 62, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .large.portrait .thumbnail {
+  background-size: contain;
+}
+/* line 66, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .large.text {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-top: 14px;
+  font-size: 80%;
+  margin-left: 0;
+}
+/* line 74, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .thumbnail {
+  width: 100%;
+  min-height: 75px;
+  display: inline-block;
+  float: left;
+  margin-right: 10px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+/* line 84, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+/* line 90, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .fileName {
+  font-size: 16px;
+  padding-top: 13px;
+  padding-bottom: 3px;
+}
+/* line 96, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .fileName h3 {
+  width: calc(100% - 42px);
+  /* 36px is the with of the copy link icon, but this breaks so we add some more to be sure */
+  display: inline-block;
+  padding: 5px 0;
+  margin: -5px 0;
+}
+/* line 103, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .file-details {
+  color: var(--color-text-maxcontrast);
+}
+/* line 107, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .action-favorite {
+  vertical-align: sub;
+  padding: 10px;
+  margin: -10px;
+}
+/* line 113, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .action-favorite > span {
+  opacity: 0.7 !important;
+}
+/* line 117, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .detailList {
+  float: left;
+}
+/* line 121, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/detailsView.scss */
+#app-sidebar .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0.5;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+}
+/**
+ * @copyright Copyright (c) 2018, Arthur Schiwon <blizzz@arthur-schiwon.de>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ */
+/* line 8, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/../../../core/css/whatsnew.scss */
+.whatsNewPopover {
+  bottom: 35px !important;
+  left: 15px !important;
+  width: 270px;
+  z-index: 700;
+}
+/* line 15, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/../../../core/css/whatsnew.scss */
+.whatsNewPopover p {
+  width: auto !important;
+}
+/* line 19, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/../../../core/css/whatsnew.scss */
+.whatsNewPopover .caption {
+  font-weight: bold;
+  cursor: auto !important;
+}
+/* line 24, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/../../../core/css/whatsnew.scss */
+.whatsNewPopover .icon-close {
+  position: absolute;
+  right: 0;
+}
+/* line 29, /home/nmaireamiot/workspaces/recia/nextcloud/apps/files/css/../../../core/css/whatsnew.scss */
+.whatsNewPopover::after {
+  content: none;
+}

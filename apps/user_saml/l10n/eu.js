@@ -1,0 +1,26 @@
+OC.L10N.register(
+    "user_saml",
+    {
+    "Saved" : "Gordeta",
+    "Provider" : "Hornitzailea",
+    "Provider " : "Hornitzailea",
+    "Email address" : "Posta helbidea",
+    "Encrypted" : "Zifratua",
+    "Entity" : "Entitatea",
+    "Kerberos" : "Kerberos",
+    "Unspecified" : "Zehaztu gabea",
+    "SSO & SAML authentication" : "SSO eta SAML autentifikazioa",
+    "Open documentation" : "Ireki dokumentazioa",
+    "Global settings" : "Ezarpen orokorrak",
+    "Remove identity provider" : "Kendu identitate hornitzailea",
+    "Add identity provider" : "Gehitu identitate hornitzailea",
+    "General" : "Orokorra",
+    "Security settings" : "Segurtasun ezarpenak",
+    "Show security settings…" : "Erakutsi segurtasun ezarpenak",
+    "Download metadata XML" : "Deskargatu metadatuen XMLa",
+    "Reset settings" : "Leheneratu ezarpenak",
+    "Metadata invalid" : "Baliogabeko metadatuak",
+    "Metadata valid" : "Baliozko metadatuak",
+    "Error" : "Errorea"
+},
+"nplurals=2; plural=(n != 1);");

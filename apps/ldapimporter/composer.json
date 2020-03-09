@@ -1,0 +1,15 @@
+{
+    "name": "Ldap Importer",
+    "description": "LDAP importer",
+    "type": "project",
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "Noé Maire-Amiot"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}

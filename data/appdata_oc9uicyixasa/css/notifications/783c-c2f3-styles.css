@@ -1,0 +1,260 @@
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * @copyright Copyright (c) 2018, John Molakvoæ (skjnldsv@protonmail.com)
+ *
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/**
+ * Removes the "#" from a color.
+ *
+ * @param string $color The color
+ * @return string The color without #
+ */
+/**
+ * Calculates the URL to the svg under the SVG API.
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int [$version] the version of the file
+ * @param bool [$core] search icon in core
+ * @return string The URL to the svg.
+ */
+/**
+ * SVG COLOR API
+ *
+ * @param string $icon the icon filename
+ * @param string $dir the icon folder within /core/img if $core or app name
+ * @param string $color the desired color in hexadecimal
+ * @param int $version the version of the file
+ * @param bool [$core] search icon in core
+ *
+ * @returns A background image with the url to the set to the requested icon.
+ */
+/**
+ * Create black and white icons
+ * This will add a default black version of and an additional white version when .icon-white is applied
+ */
+/* line 1, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notifications-button {
+  position: relative;
+  float: right;
+  width: 16px;
+  height: 16px;
+  display: block;
+  border-radius: 50%;
+  text-align: center;
+  padding: 10px;
+  opacity: 0.6;
+}
+/* line 12, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notifications-button:hover, .notifications-button:focus {
+  opacity: 1 !important;
+}
+/* line 17, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notifications-button.hasNotifications {
+  opacity: 1 !important;
+}
+/* line 20, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notifications-button.hasNotifications:hover, .notifications-button.hasNotifications:focus {
+  opacity: 0.6 !important;
+}
+/* line 26, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notifications-button, .notifications-button img {
+  cursor: pointer;
+}
+/* line 32, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container {
+  display: none;
+  right: 13px;
+  width: 350px;
+  max-width: 90%;
+  /* Menu arrow */
+}
+/* line 38, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container .notification-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+/* line 43, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container .emptycontent {
+  padding: 50px 0;
+  margin: 0;
+}
+/* line 83, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.notification-container .emptycontent .icon-notifications-dark {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-notifications-notifications-dark-000);
+}
+/* line 86, /home/nmaireamiot/workspaces/recia/nextcloud/core/css/functions.scss */
+.notification-container .emptycontent .icon-notifications-dark-white, .notification-container .emptycontent .icon-notifications-dark.icon-white {
+  /* $dir is the app name, so we add this to the icon var to avoid conflicts between apps */
+  
+  background-image: var(--icon-notifications-notifications-dark-fff);
+}
+/* line 50, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container .dismiss-all {
+  display: flex;
+  justify-content: center;
+  color: var(--color-text-maxcontrast);
+  border-top: 1px solid var(--color-border);
+  padding: 10px;
+}
+/* line 57, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container .dismiss-all:hover, .notification-container .dismiss-all .icon-close {
+  opacity: 1;
+  cursor: pointer;
+}
+/* line 63, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container .dismiss-all .icon-close {
+  opacity: 0.5;
+  margin-right: 5px;
+}
+/* line 70, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification-container:after {
+  right: 101px;
+}
+/* line 76, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification {
+  padding-bottom: 12px;
+  max-height: 500px;
+}
+/* line 80, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+/* line 84, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-heading {
+  display: flex;
+}
+/* line 87, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-heading .notification-time {
+  color: var(--color-text-maxcontrast);
+  margin: 13px 0 13px auto;
+}
+/* line 92, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-heading .notification-delete {
+  display: flex;
+  color: var(--color-text-maxcontrast);
+  padding: 14px;
+}
+/* line 97, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-heading .notification-delete:hover, .notification .notification-heading .notification-delete .icon-close {
+  opacity: 1;
+  cursor: pointer;
+}
+/* line 103, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-heading .notification-delete .icon-close {
+  opacity: 0.5;
+}
+/* line 110, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-subject, .notification .notification-message, .notification .notification-full-message, .notification .notification-actions {
+  margin: 0 12px 12px;
+}
+/* line 117, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-subject {
+  display: flex;
+  align-items: center;
+}
+/* line 121, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-subject > .image {
+  align-self: flex-start;
+}
+/* line 125, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-subject > span.text, .notification .notification-subject > a > span.text {
+  padding-left: 10px;
+  line-break: anywhere;
+}
+/* line 132, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-message, .notification .notification-full-message {
+  line-height: 20px;
+  padding-left: 42px;
+  color: var(--color-text-maxcontrast);
+}
+/* line 138, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-message > .collapsed, .notification .notification-full-message > .collapsed {
+  overflow: hidden;
+  max-height: 70px;
+}
+/* line 143, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-message > .notification-overflow, .notification .notification-full-message > .notification-overflow {
+  box-shadow: 0 0 20px 20px var(--color-main-background);
+  position: relative;
+}
+/* line 149, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification img.notification-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+/* line 155, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-message img, .notification .notification-full-message img, .notification .notification-subject img:not(.notification-icon) {
+  max-width: 32px;
+  max-height: 32px;
+  margin: 0 5px 5px 0;
+}
+/* line 163, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification strong {
+  font-weight: bold;
+  opacity: 1;
+}
+/* line 168, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .avatar-name-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+/* line 172, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .avatar-name-wrapper .avatar {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 5px 3px;
+}
+/* line 179, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-actions {
+  overflow: hidden;
+}
+/* line 182, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-actions .action-button.primary {
+  color: var(--color-primary-text);
+}
+/* line 186, /home/nmaireamiot/workspaces/recia/nextcloud/apps/notifications/css/styles.scss */
+.notification .notification-actions:first-child {
+  margin-left: auto;
+}
