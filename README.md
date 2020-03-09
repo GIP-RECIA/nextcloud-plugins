@@ -1,8 +1,8 @@
 # recia-nextcloud
 
-##Installation
+## Installation
 
-###Installation de LAMP
+### Installation de LAMP
 
 Nextcloud fonctionne avec MariaDB/Mysql, Apache, et PHP. Vous devez donc installer ces programmes sur votre système.
 
