@@ -1,0 +1,314 @@
+# Copyright (C) 2017 Felix Rupp
+# This file is distributed under the same license as the ldapimporter package.
+# Felix Rupp <kontakt@felixrupp.com>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: ownCloud Core 8.0.0\n"
+"Report-Msgid-Bugs-To: translations@owncloud.org\n"
+"POT-Creation-Date: 2017-07-24 12:40+0000\n"
+"PO-Revision-Date: 2017-07-24 14:57+0200\n"
+"Last-Translator: Felix Rupp <kontakt@felixrupp.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+#: templates/admin.php:7
+msgid "CAS Authentication backend"
+msgstr "Authentification CAS"
+
+#: templates/admin.php:11
+msgid "CAS Server"
+msgstr "Serveur CAS"
+
+#: templates/admin.php:12
+msgid "Basic"
+msgstr "Basic"
+
+#: templates/admin.php:13
+msgid "Mapping"
+msgstr "Mapping"
+
+#: templates/admin.php:14
+msgid "phpCAS Library"
+msgstr "Librairie phpCAS"
+
+#: templates/admin.php:18
+msgid "CAS Server Version"
+msgstr "Version du serveur CAS"
+
+#: templates/admin.php:26
+msgid "CAS Server Hostname"
+msgstr "Nom d’hôte du serveur CAS"
+
+#: templates/admin.php:31
+msgid "CAS Server Port"
+msgstr "Port du serveur CAS"
+
+#: templates/admin.php:36
+msgid "CAS Server Path"
+msgstr "Chemin du serveur CAS"
+
+#: templates/admin.php:41
+msgid "Service URL"
+msgstr "URL du service"
+
+#: templates/admin.php:47
+msgid "Certification file path (.crt)."
+msgstr "Chemin du fichier de certification (.crt)."
+
+#: templates/admin.php:47
+msgid "Leave empty if you don’t want to validate your CAS server instance"
+msgstr "Laissez vide si vous ne voulez pas valider votre instance de serveur CAS"
+
+#: templates/admin.php:52
+msgid "Use CAS proxy initialization"
+msgstr "Utiliser l'initialisation du proxy CAS"
+
+#: templates/admin.php:54
+msgid "Force user login using CAS?"
+msgstr "Forcer la connexion de l'utilisateur en utilisant CAS?"
+
+#: templates/admin.php:58
+msgid "Don’t use force login on these client-IPs"
+msgstr "N'utilisez pas la connexion forcée sur ces adresses IP client"
+
+#: templates/admin.php:58
+msgid "Comma separated list of client IP addresses (or address ranges), which won’t be forced to login if \"Force user login\" is enabled (e.g. 192.168.1.1-254,192.168.2.5)"
+msgstr "Liste des adresses IP (ou plages d'adresses) séparées par des virgules, qui ne sera pas obligée de se connecter si \"Forcer la connexion utilisateur\" est activé (par exemple 192.168.1.1-254, 192.168.2.5)"
+
+#: templates/admin.php:60
+msgid "Disable CAS logout (do only OwnCloud logout)"
+msgstr "Désactiver la déconnexion CAS (déconnexion d'Owncloud uniquement)"
+
+#: templates/admin.php63
+msgid "Logout Servers"
+msgstr "Serveurs de déconnexion"
+
+#: templates/admin.php63
+msgid "Comma separated list of servers which can send logout requests (leave empty if you do not want to restrict logout to defined servers)"
+msgstr "Liste des serveurs séparés par des virgules pouvant envoyer des demandes de déconnexion (laissez vide si vous ne souhaitez pas limiter la déconnexion aux serveurs définis)"
+
+#: templates/admin.php:65
+msgid "Autocreate user after first CAS login?"
+msgstr "Créer l'utilisateur automatiquement après la connexion CAS?"
+
+#: templates/admin.php:70
+msgid "Link CAS authentication with LDAP users and groups backend"
+msgstr ""
+"Lier l'authentification CAS avec les utilisateurs et groupe de "
+"l'authentification LDAP?"
+
+#: templates/admin.php:75
+msgid "Update user data after each CAS login?"
+msgstr "Mettre à jour les données utilisateurs après la connexion?"
+
+#: templates/admin.php:78
+msgid "Locked Groups"
+msgstr "Groupes protégés"
+
+#: templates/admin.php:78
+msgid ""
+"Groups that will not be unlinked from the user when sync the CAS server and "
+"the owncloud"
+msgstr ""
+"Groupes de l'utilisateur qui seront pas supprimés lors de la synchronisation "
+"entre le serveur CAS et Owncloud"
+
+#: templates/admin.php:81
+msgid "Multivalued field, use comma to separate values"
+msgstr "Champ multivalué, utilisez des virgules pour séparer les valeurs"
+
+#: templates/admin.php:83
+msgid "Default Group"
+msgstr "Groupe par défaut"
+
+#: templates/admin.php:83
+msgid ""
+"Default group when autocreating users and no group data was found for the "
+"user"
+msgstr ""
+"Groupe par défaut lors de la création automatique des utilisateurs quand "
+"aucun groupe n'est trouvé pour l'utilisateur"
+
+#: templates/admin.php:84
+msgid "Authorized CAS Groups"
+msgstr "Groupes autorisés CAS"
+
+#: templates/admin.php:85
+msgid "Users in the following groups will be able to log into ownCloud, users not in one of the groups will be logged out immediately"
+msgstr "Les utilisateurs des groupes suivants pourront se connecter à ownCloud, les utilisateurs ne faisant pas partie d'un groupe seront déconnectés immédiatement"
+
+#: templates/admin.php:85
+msgid "Group Quotas"
+msgstr "Quotas de groupe"
+
+#: templates/admin.php:85
+msgid "Use ECAS Attribute Parser?"
+msgstr "Utiliser ECAS Attribute Parser?"
+
+#: templates/admin.php:85
+msgid "Request full user details?"
+msgstr "Demander des informations complètes sur l'utilisateur?"
+
+#: templates/admin.php:86
+msgid "ECAS Strength"
+msgstr "ECAS Strength"
+
+#: templates/admin.php:86
+msgid "Not set"
+msgstr "Pas encore défini"
+
+#: templates/admin.php:86
+msgid "ECAS AssuranceLevel"
+msgstr "ECAS AssuranceLevel"
+
+#: templates/admin.php:87
+msgid "Query ECAS groups"
+msgstr "ECAS groupes de requêtes"
+
+#: templates/admin.php:87
+msgid "Note down all groups which you want to receive from your ECAS instance, * returns all groups"
+msgstr "Notez tous les groupes que vous souhaitez recevoir de votre instance ECAS, * renvoie tous les groupes"
+
+#: templates/admin.php:87
+msgid "Don’t use Multi-Factor-Authentication on these client-IPs"
+msgstr "N'utilisez pas l'authentification multi-facteurs sur ces IP client"
+
+#: templates/admin.php:87
+msgid "Comma separated list of client IP addresses (or address ranges), which won’t be forced to use Multi-Factor-Authentication if \"ECAS AssuranceLevel\" is at least MEDIUM (e.g. 192.168.1.1-254,192.168.2.5)"
+msgstr "Liste d'adresses IP client (ou plages d'adresses), séparées par des virgules, qui ne seront pas obligées d'utiliser l'authentification à plusieurs facteurs si \"ECAS AssuranceLevel\" est au moins de MEDIUM (par exemple 192.168.1.1-254, 192.168.2.5)"
+
+#: templates/admin.php:89
+msgid "Email"
+msgstr "Email"
+
+#: templates/admin.php:94
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#: templates/admin.php:99
+msgid "Groups"
+msgstr "Groupes"
+
+#: templates/admin.php:107
+msgid "Overwrite phpCAS path (CAS.php file)"
+msgstr "Chemin PHP CAS (fichier CAS.php)"
+
+#: templates/admin.php:107
+msgid ""
+"Optional: Overwrite phpCAS path (CAS.php file) if you want to use your own "
+"version. Leave blank to use the shipped version."
+msgstr ""
+"Optionnel: Chemin PHP CAS (fichier CAS.php). Laissez vide pour utiliser la "
+"version expédiée."
+
+#: templates/admin.php:112
+msgid "PHP CAS debug file"
+msgstr "Chemin du fichier de debug de PHP CAS"
+
+#: templates/admin.php:118
+msgid "Save"
+msgstr "Enregistrer"
+
+#: lib/Controller/SettingsImporterController.php:140
+msgid "Your CAS settings have been updated."
+msgstr "Vos paramètres CAS ont été mis à jour."
+
+#: lib/Controller/SettingsImporterController.php:146
+msgid "Your CAS settings could not be updated. Please try again."
+msgstr "Vos paramètres CAS n'ont pas pu être mis à jour. Veuillez réessayer."
+
+#: templates/cas-error.php:24
+msgid "403"
+msgstr ""
+
+#: templates/cas-error.php:24
+msgid "500"
+msgstr ""
+
+#: templates/cas-error.php:24
+msgid "Forbidden. You do not have access to this application. Please refer to your administrator if something feels wrong to you."
+msgstr "Interdit. Vous n'avez pas accès à cette application. Veuillez vous adresser à votre administrateur si quelque chose vous semble incorrect."
+
+#: templates/cas-error.php:24
+msgid "You do not have access to the JRCbox application. Please contact the JRCbox administrator if something feels wrong to you."
+msgstr "Vous n'avez pas accès à cette application JRCbox. Veuillez vous adresser à votre administrateur JRCbox si quelque chose vous semble incorrect."
+
+#: templates/cas-error.php:24
+msgid "Internal Server Error. The server encountered an error. Please try again."
+msgstr "Erreur Interne du Serveur. Le serveur a rencontré une erreur. Veuillez réessayer."
+
+#: templates/cas-error.php:28
+msgid "Go back to the login page"
+msgstr "Retourner à la page d'accueil"
+
+
+# Import CLI
+msgid "Import CLI"
+msgstr "Import CLI"
+
+
+msgid "ActiveDirectory (LDAP)"
+msgstr "ActiveDirectory (LDAP)"
+
+msgid "LDAP Host"
+msgstr "Hôte LDAP"
+
+msgid "LDAP User and Domain"
+msgstr "Utilisateur et domaine LDAP"
+
+msgid "LDAP User Password"
+msgstr "Mot de passe utilisateur LDAP"
+
+msgid "LDAP Base DN"
+msgstr "LDAP Base DN"
+
+msgid "LDAP Sync Filter"
+msgstr "Filtre de synchronisation LDAP"
+
+msgid "LDAP Sync Pagesize (1–1500)"
+msgstr "LDAP Sync Pagesize (1–1500)"
+
+
+msgid "CLI Attribute Mapping"
+msgstr "Mappage d'attributs CLI"
+
+msgid "UID/Username"
+msgstr "UID/Nom d'utilisateur"
+
+msgid "Group Name Field"
+msgstr "Nom du groupe"
+
+msgid "Group Pedagogic"
+msgstr "Nom des groupes pédagogique séparés par des virgules"
+
+msgid "Group Name Filter"
+msgstr "Filtre de nom de groupe"
+
+msgid "Attention: You must use PHP (PCRE) Regex syntax for the filter."
+msgstr "Attention: Vous devez utiliser la syntaxe PHP (PCRE) Regex pour le filtre."
+
+msgid "Group Name Replace Umlauts"
+msgstr "Nom du groupe - Remplacer les trémas"
+
+msgid "Enable"
+msgstr "Activer"
+
+msgid "Calculate Enable Attribute Bitwise AND with"
+msgstr "Calculer Activer Attribut Bitwise AND avec"
+
+msgid "Merge Accounts"
+msgstr "Fusionner des comptes"
+
+msgid "Prefer Enabled over Disabled Accounts on Merge"
+msgstr "Préférer activé sur les comptes désactivés lors de la fusion"
+
+msgid "Merge Two Active Accounts by"
+msgstr "Fusionner deux comptes actifs par"
+
+msgid "Merge Two Active Accounts by: Filterstring"
+msgstr "Fusionner deux comptes actifs par: Filtres"

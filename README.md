@@ -1,33 +1,16 @@
-# recia-nextcloud
+# LDAP Importer
 
-## Installation
+Plugin pour nextcloud LDAP Importer 
 
-### Installation de LAMP
+Tester sous nextcloud version 18
+Tester avec le plugin "CAS Authentication backend" version : 1.8.1
 
-Nextcloud fonctionne avec MariaDB/Mysql, Apache, et PHP. Vous devez donc installer ces programmes sur votre système.
+A placer dans le dossier apps/ de nextcloud
 
-Tout d’abord, mettez à jour votre système:
+## Utilisation
 
-```
-apt-get update -y && apt-get upgrade -y
-```
-
-Puis, procédez à l’installation de d’Apache, de PHP et autres programmes requis pour l’installation de Nextcloud.
+La commande pour importer les utilisateurs du LDAP à la BDD  :
 
 ```
-apt-get install apache2 libapache2-mod-php7.0 -y
-apt-get install php7.0-gd php7.0-json php7.0-mysql php7.0-curl php7.0-mbstring -y
-apt-get install php7.0-intl php7.0-mcrypt php-imagick php7.0-xml php7.0-zip zip -y
+sudo -u www-data php occ ldap:import-users-ad
 ```
-
-Enfin, il faut créer la BDD MySQL/MariaDB pour nextcloud.
-
-### Installation de Nextcloud
-
-Cloner le projet dans ```/var/www/html/``` (ou faites un lien symbolique)
-
-Modifier le propriétaire de dossier:
-```
-chown -R www-data:www-data /var/www/html/recia-nextcloud
-```
-
