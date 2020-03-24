@@ -85,7 +85,7 @@ class NextBackend extends Database implements UserInterface, IUserBackend, IChec
     public function getBackendName()
     {
 
-        return "CAS";
+        return "LDAPIMPORTER";
     }
 
 

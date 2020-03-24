@@ -7,7 +7,7 @@
     <description><![CDATA[Synchronize users and group from ldap to nextcloud databases]]></description>
     <version>0.0.1</version>
     <licence>agpl</licence>
-    <author mail="nmaireamiot@steamulo.com" >Noé Maire-Amiot</author>
+    <author>RECIA</author>
     <namespace>LdapImporter</namespace>
     <category>integration</category>
     <bugs>http://localhost.com</bugs>

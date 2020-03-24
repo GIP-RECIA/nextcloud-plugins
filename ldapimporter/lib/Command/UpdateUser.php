@@ -9,6 +9,7 @@ use OCA\LdapImporter\Service\UserService;
 use OCA\LdapImporter\User\Backend;
 use OCA\LdapImporter\User\NextBackend;
 use OCA\LdapImporter\User\UserCasBackendInterface;
+use OCP\IDBConnection;
 use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;
@@ -73,11 +74,15 @@ class UpdateUser extends Command
      */
     protected $backend;
 
+    /**
+     * @var IDBConnection
+     */
+    private $db;
 
     /**
-     *
+     * @param IDBConnection $db
      */
-    public function __construct()
+    public function __construct(IDBConnection $db)
     {
         parent::__construct();
 
@@ -88,6 +93,8 @@ class UpdateUser extends Command
         $userSession = \OC::$server->getUserSession();
         $logger = \OC::$server->getLogger();
         $urlGenerator = \OC::$server->getURLGenerator();
+        $this->db = $db;
+
 
         $loggingService = new LoggingService('ldapimporter', $config, $logger);
         $this->appService = new AppService('ldapimporter', $config, $loggingService, $userManager, $userSession, $urlGenerator);
@@ -181,7 +188,14 @@ class UpdateUser extends Command
                 'c',
                 InputOption::VALUE_OPTIONAL,
                 'Convert the backend to CAS'
-            );
+            )
+            ->addOption(
+                'uai-courant',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Set user uai-courant'
+            )
+        ;
     }
 
 
@@ -193,7 +207,6 @@ class UpdateUser extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $uid = $input->getArgument('uid');
         if (!$this->userManager->userExists($uid)) {
             $output->writeln('<error>The user "' . $uid . '" does not exist.</error>');
@@ -288,6 +301,16 @@ class UpdateUser extends Command
             $output->writeln('Enabled set to "' . $enabledString . '"');
         }
 
+        # Set uai_courant
+        $uaiCourant = $input->getOption('uai-courant');
+
+        if (!is_null($uaiCourant) && strlen($uaiCourant) > 0) {
+
+            $sql = "UPDATE `*PREFIX*users` SET uai_courant = '" . $uaiCourant . "' WHERE uid = '" . $uid . "';";
+            $this->db->executeQuery($sql);
+            $output->writeln('uai_courant set to "' . $uaiCourant . '"');
+        }
+
         # Convert backend
         $convertBackend = $input->getOption('convert-backend');
 
@@ -296,7 +319,7 @@ class UpdateUser extends Command
             # Set Backend
             if ($this->appService->isNotNextcloud()) {
 
-                $query = \OC_DB::prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
+                $query = \OC_DB::prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`uid` = LOWER(?)');
                 $result = $query->execute([get_class($this->backend), $uid]);
 
                 $output->writeln('New user added to CAS backend.');

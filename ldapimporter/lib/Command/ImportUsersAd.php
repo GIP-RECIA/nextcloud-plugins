@@ -7,6 +7,7 @@ use OC\User\Manager;
 use OCA\LdapImporter\Service\Import\AdImporter;
 use OCA\LdapImporter\Service\Import\ImporterInterface;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -36,16 +37,23 @@ class ImportUsersAd extends Command
      */
     private $config;
 
+    /**
+     * @var IDBConnection
+     */
+    private $db;
 
     /**
      * ImportUsersAd constructor.
+     * @param IDBConnection $db
      */
-    public function __construct()
+    public function __construct(IDBConnection $db)
     {
         parent::__construct();
 
         $this->userManager = \OC::$server->getUserManager();
         $this->config = \OC::$server->getConfig();
+        $this->db = $db;
+
     }
 
     /**
@@ -94,7 +102,7 @@ class ImportUsersAd extends Command
                 /**
                  * @var ImporterInterface $importer
                  */
-                $importer = new AdImporter($this->config);
+                $importer = new AdImporter($this->config, $this->db);
                 $output->writeln('Construct done');
 
                 $importer->init($logger);
@@ -130,8 +138,8 @@ class ImportUsersAd extends Command
                     $logger->info("Delta updates: Existing users will be updated.");
                 }
 
-                $createCommand = $this->getApplication()->find('cas:create-user');
-                $updateCommand = $this->getApplication()->find('cas:update-user');
+                $createCommand = $this->getApplication()->find('ldap:create-user');
+                $updateCommand = $this->getApplication()->find('ldap:update-user');
 
                 foreach ($allUsers as $user) {
 
@@ -142,7 +150,8 @@ class ImportUsersAd extends Command
                         '--email' => $user["email"],
                         '--quota' => $user["quota"],
                         '--enabled' => $user["enable"],
-                        '--group' => $user["groups"]
+                        '--group' => $user["groups"],
+                        '--uai-courant' => $user["uai_courant"]
                     ];
 
                     # Create user if he does not exist
@@ -154,7 +163,7 @@ class ImportUsersAd extends Command
                     } # Update user if he already exists and delta update is true
                     else if ($this->userManager->userExists($user["uid"]) && $deltaUpdate) {
 
-                        $arguments['command'] = 'cas:update-user';
+                        $arguments['command'] = 'ldap:update-user';
 
                         if ($convertBackend) {
 

@@ -6,6 +6,7 @@ namespace OCA\LdapImporter\Service\Import;
 use OCA\LdapImporter\Service\Merge\AdUserMerger;
 use OCA\LdapImporter\Service\Merge\MergerInterface;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
 
@@ -46,15 +47,22 @@ class AdImporter implements ImporterInterface
      */
     private $appName = 'ldapimporter';
 
+    /**
+     * @var IDBConnection $db
+     */
+    private $db;
+
 
     /**
      * AdImporter constructor.
      * @param IConfig $config
+     * @param IDBConnection $db
      */
-    public function __construct(IConfig $config)
+    public function __construct(IConfig $config, IDBConnection $db)
     {
 
         $this->config = $config;
+        $this->db = $db;
     }
 
 
@@ -103,7 +111,6 @@ class AdImporter implements ImporterInterface
             $displayNameAttribute2 = $displayNameAttributes[1];
         }
 
-
         $emailAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_email');
         $groupsAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups');
         $groupsNamingAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups_naming');
@@ -118,7 +125,9 @@ class AdImporter implements ImporterInterface
         $andEnableAttributeBitwise = $this->config->getAppValue($this->appName, 'cas_import_map_enabled_and_bitwise');
 
         $keep = [$uidAttribute, $displayNameAttribute1, $displayNameAttribute2, $emailAttribute, $groupsAttribute, $quotaAttribute, $enableAttribute, $dnAttribute];
+
         //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupe
+        $keep[] = 'ESCOUAICourant';
         if (sizeof($arrayGroupsAttrPedagogic) > 0) {
             foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
                 if (array_key_exists("field", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["field"]) > 0 &&
@@ -129,6 +138,25 @@ class AdImporter implements ImporterInterface
             }
         }
 
+        if (!$this->db->tableExists("asso_etablissements")) {
+            $sql =
+                'CREATE TABLE `*PREFIX*asso_etablissements`' .
+                '(' .
+                'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
+                'name VARCHAR(255),' .
+                'uai VARCHAR(255),' .
+                'user_group VARCHAR(255)' .
+                ')';
+            $this->db->executeQuery($sql);
+        }
+        $sql = 'ALTER TABLE *PREFIX*users ADD uai_courant VARCHAR(255);';
+
+        try {
+            $this->db->executeQuery($sql);
+        }
+        catch (\Throwable $t) {
+            $this->logger->info('Column uai_courant already exist');
+        }
 
         $pageSize = $this->config->getAppValue($this->appName, 'cas_import_ad_sync_pagesize');
 
@@ -227,10 +255,20 @@ class AdImporter implements ImporterInterface
                                         $sprintfArray[] = $groupNameArray[$match[1]];
                                     }
                                     $groupName = sprintf($newName, ...$sprintfArray);
+                                    preg_match_all('/[0-9]{7}[a-zA-Z]{1}/m', $groupCn, $uai, PREG_SET_ORDER, 0);
+                                    if (sizeof($uai) > 0 and sizeof($uai[0]) > 0) {
+                                        $etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uai[0][0] . ')');
+                                        $this->addEtablissement($uai[0][0], $groupName, $etablissement['entstructurenomcourant'][0]);
+                                        $this->addEtablissement($uai[0][0], $employeeID, $etablissement['entstructurenomcourant'][0]);
+                                    }
+                                }
+                                else {
+                                    $this->logger->warning("Groupes fonctionels : la regex " . $groupFilter . " ne match pas avec le groupe " . $resultGroupsAttribute);
                                 }
                             }
 
                             if (strlen($groupName) > 0) {
+                                $this->logger->info("Groupes fonctionels : Ajout du groupe : " . $groupName);
                                 $groupsArray[] = $groupName;
                             }
                         }
@@ -277,14 +315,26 @@ class AdImporter implements ImporterInterface
                                             if (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
                                                 $sprintfArray[] = $groupAttr[strtolower($match[1])][0];
                                                 $groupName = sprintf($pedagogicNaming, ...$sprintfArray);
+                                                if (array_key_exists('entstructureuai', $groupAttr) and $groupAttr['entstructureuai']['count'] > 0) {
+                                                    $this->addEtablissement($groupAttr['entstructureuai'][0], $groupName, $groupAttr['entstructurenomcourant'][0]);
+                                                    $this->addEtablissement($groupAttr['entstructureuai'][0], $employeeID, $groupAttr['entstructurenomcourant'][0]);
+                                                }
+
+                                            }
+                                            else {
+                                                $this->logger->warning("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
                                             }
                                         }
                                     }
 
                                     if ($groupName && strlen($groupName) > 0) {
+                                        $this->logger->info("Groupes pédagogique : Ajout du groupe : " . $groupName);
                                         $groupsArray[] = $groupName;
                                     }
                                 }
+                            }
+                            else {
+                                $this->logger->warning("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
                             }
                         }
                     }
@@ -292,8 +342,13 @@ class AdImporter implements ImporterInterface
 
                 # Fill the users array only if we have an employeeId and addUser is true
                 if (isset($employeeID) && $addUser) {
+                    $this->logger->info("Groupes pédagogique : Ajout de l'utilisateur avec id  : " . $employeeID);
 
-                    $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
+                    $uaiCourant = '';
+                    if (array_key_exists('escouaicourant', $m) && $m['escouaicourant']['count'] > 0) {
+                        $uaiCourant = $m['escouaicourant'][0];
+                    }
+                    $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
             }
         }
@@ -302,6 +357,35 @@ class AdImporter implements ImporterInterface
 
         return $users;
     }
+
+    /**
+     * Ajout d'un établissement si il n'existe pas dans la bdd
+     *
+     * @param $uai
+     * @param $groupUserId
+     */
+    protected function addEtablissement($uai, $groupUserId, $name)
+    {
+        $qb = $this->db->getQueryBuilder();
+        $qb->select('*')
+            ->from('asso_etablissements')
+            ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)))
+            ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)))
+        ;
+        $result = $qb->execute();
+        $assoEtablissement = $result->fetchAll();
+        if (sizeof($assoEtablissement) === 0) {
+            $insertAsso = $this->db->getQueryBuilder();
+            $insertAsso->insert('asso_etablissements')
+                ->values([
+                    'uai' => $insertAsso->createNamedParameter($uai),
+                    'user_group' => $insertAsso->createNamedParameter($groupUserId),
+                    'name' => $insertAsso->createNamedParameter($name),
+                ]);
+            $insertAsso->execute();
+        }
+    }
+
 
 
     /**
@@ -369,12 +453,13 @@ class AdImporter implements ImporterInterface
         else return array();
     }
 
-        /**
+    /**
      * @param string $groupCn
+     * @param string $filter
      * @param bool $keep
      * @return array Attribute list
      */
-    protected function getLdapPedagogicGroup($groupCn, $keep = false)
+    protected function getLdapPedagogicGroup($groupCn, $filter = 'objectClass=*',$keep = false)
     {
         if (!isset($this->ldapConnection)) die('Error, no LDAP connection established');
         if (empty($groupCn)) die('Error, no LDAP user specified');
@@ -383,7 +468,7 @@ class AdImporter implements ImporterInterface
         ldap_control_paged_result($this->ldapConnection, 1);
 
         // Query user attributes
-        $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, 'objectClass=*', $keep) : ldap_search($this->ldapConnection, $groupCn, 'objectClass=*'));
+        $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, $filter, $keep) : ldap_search($this->ldapConnection, $groupCn, $filter));
         if (ldap_error($this->ldapConnection) == "No such object") {
             return [];
         }

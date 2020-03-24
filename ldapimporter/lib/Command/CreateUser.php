@@ -172,7 +172,14 @@ class CreateUser extends Command
                 'e',
                 InputOption::VALUE_OPTIONAL,
                 'Set user enabled'
-            );
+            )
+            ->addOption(
+                'uai-courant',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Set user uai-courant'
+            )
+        ;
     }
 
 
@@ -277,6 +284,15 @@ class CreateUser extends Command
 
             $enabledString = ($user->isEnabled()) ? 'enabled' : 'not enabled';
             $output->writeln('Enabled set to "' . $enabledString . '"');
+        }
+
+        # Set uai_courant
+        $uaiCourant = $input->getOption('uai-courant');
+
+        if (!is_null($uaiCourant) && strlen($uaiCourant) > 0) {
+            $sql = "UPDATE `*PREFIX*users` SET uai_courant = '" . $uaiCourant . "' WHERE uid = '" . $uid . "';";
+            $this->db->executeQuery($sql);
+            $output->writeln('uai_courant set to "' . $uaiCourant . '"');
         }
 
         # Set Backend
