@@ -154,13 +154,6 @@ style('ldapimporter', 'settings');
         <!-- Recia groups Settings -->
         <fieldset id="casSettings-8">
             <h3>Groupe fonctionnel</h3>
-            <p>Informations sur la syntaxe de nommage : Le champs de nommage utilise la syntaxe des littéraux de gabarits ${maVariable} </p>
-            <p>Exemple : </p>
-            <div style="margin-left: 20px;">
-                <p>Pour un utilisateur donné on a l'attribut 'isMemberOf' qui est lié aux groupe fonctionnel 'esco:Etablissements:DE L IROISE_0290009C:TERMINALE GENERALE et TECHNO YC BT:Eleves_TS1', le groupe va être séparer par le caractère ':'</p>
-                <p>On accedera à chaque élément en suivant son ordre, avec ${0}, ${1}, ... dans cet exemple ${0} = esco, ${1} = Etablissements, ${2} = DE L IROISE_0290009C, ${3} = TERMINALE GENERALE et TECHNO YC BT et ${4} = Eleves_TS1</p>
-                <p>Pour finir si dans le champ 'Nommage' on a '${2}.${4}' alors le résultat sera : 'DE L IROISE_0290009C.Eleves_TS1'</p>
-            </div>
             <br>
             <div style="display: flex;">
                 <p>
@@ -171,50 +164,65 @@ style('ldapimporter', 'settings');
                             name="cas_import_map_groups"
                             value="<?php p($_['cas_import_map_groups']); ?>" placeholder="Nom de l\'attribut LDAP des utilisteurs"/>
                 </p>
-                <p>
-                    <label for="cas_import_map_groups_naming"><?php p($l->t('Nommage')); ?></label>
+                <div>
+                    <label for="cas_import_regex_name_uai"><?php p($l->t('Regex de nommage d\'établissement et du UAI')); ?></label>
+                    <p style="color: gray">Le premier groupe de la regex sera le nom de l'etablissement et le deuxième groupe l'UAI</p>
                     <input
-                            style="width: 65%"
-                            id="cas_import_map_groups_naming"
-                            name="cas_import_map_groups_naming"
-                            value="<?php p($_['cas_import_map_groups_naming']); ?>" placeholder="Nommage"/>
-                </p>
+                        style="width: 100%"
+                        id="cas_import_regex_name_uai"
+                        name="cas_import_regex_name_uai"
+                        value="<?php p($_['cas_import_regex_name_uai']); ?>" placeholder="Regex de nommage d'établissement et du UAI"/>
+                </div>
             </div>
             <br>
             <div>
-                <p style="display: none;"><label for="cas_import_map_groups_filter"><?php p($l->t('Regex de filtre')); ?></label>
-                    <input
-                            id="cas_import_map_groups_filter"
-                            name="cas_import_map_groups_filter"
-                            value="<?php p($_['cas_import_map_groups_filter']); ?>"
-                            data-value="<?php p($_['cas_import_map_groups_filter']); ?>"/>
-                </p>
-                <div style="display: flex;flex-direction: column;">
-                    <label><?php p($l->t('Regex de filtre')); ?></label>
-                    <input
-                            id="cas_import_map_groups_filter_first"
-                            class="cas_import_map_groups_filter"
-                            value=""
-                            placeholder="Regex de filtre"/>
-                    <button id="addFilterGroup" type="button" style="width: 34px;">+</button>
+                <div>
+                    <p style="display: none;"><label for="cas_import_map_groups_fonctionel"><?php p($l->t('Regex de filtre')); ?></label>
+                        <input
+                                id="cas_import_map_groups_fonctionel"
+                                name="cas_import_map_groups_fonctionel"
+                                value="<?php p($_['cas_import_map_groups_fonctionel']); ?>"
+                                data-value="<?php p($_['cas_import_map_groups_fonctionel']); ?>"/>
+                    </p>
                 </div>
+                <div style="display: flex">
+                    <p>
+                        <label><?php p($l->t('Regex de filtre')); ?></label>
+                        <input
+                                style="width: 90%"
+                                id="cas_import_map_groups_filter_first"
+                                class="cas_import_map_groups_filter"
+                                value=""
+                                placeholder="Regex de filtre"/>
+                    </p>
+                    <p>
+                        <label><?php p($l->t('Nommage')); ?></label>
+                        <input
+                                style="width: 90%"
+                                id="cas_import_map_groups_naming_first"
+                                class="cas_import_map_groups_naming"
+                                value="" placeholder="Nommage"/>
+                    </p>
+                    <p>
+                        <label><?php p($l->t('Quota (en GB')); ?></label>
+                        <input
+                            style="width: 90%"
+                            id="cas_import_map_groups_quota_first"
+                            class="cas_import_map_groups_quota"
+                            value="" placeholder="Quota"/>
+                    </p>
+                </div>
+                <button id="addFilterGroup" type="button" style="width: 34px;">+</button>
             </div>
-
             <br>
             <h3>Groupe pédagogiques</h3>
             <p>Informations sur la syntaxe de nommage : Le champs de nommage utilise la syntaxe des littéraux de gabarits ${maVariable} </p>
-            <p>Exemple : </p>
-            <div style="margin-left: 20px;">
-                <p>Pour un utilisateur donné on a l'attribut 'ENTAuxEnsGroupesMatieres' qui est lié au groupe pédagogique 'ENTStructureSIREN=00000000000001,ou=structures,dc=esco-centre,dc=fr$1DNLMAGR1$060F00', On va chercher dans le LDAP le CN 'cn=ENTStructureSIREN=00000000000001,ou=structures,dc=esco-centre,dc=fr' pour récupérer tous les attributs (ici 2 attributs nous intéressent : 'ENTStructureUAI' et 'ENTStructureNomCourant')</p>
-                <p>Pour récupérer les attributs en fin de groupe (après le '$') du groupe 'ENTStructureSIREN=00000000000001,ou=structures,dc=esco-centre,dc=fr$1DNLMAGR1$060F00', dans cet exemple '1DNLMAGR1' '060F00', on accedera avec ${0}, ${1}, ... dans cet exemple ${0} = 1DNLMAGR1 et ${1} = 060F00 </p>
-                <p>Pour finir si dans le champ 'Nommage' on a '${ENTStructureNomCourant}_${ENTStructureUAI}.Profs_${0}' alors le résultat sera : 'NomDeLaStructure_0370038R.Profs_1DNLMAGR1'</p>
-            </div>
             <br>
             <div>
                 <div>
                     <p style="display: none;"><label for="cas_import_map_groups_pedagogic"><?php p($l->t('Groupes pédagogique')); ?></label>
                         <input
-                                style="width: 65%"
+                                style="width: 90%"
                                 id="cas_import_map_groups_pedagogic"
                                 name="cas_import_map_groups_pedagogic"
                                 value="<?php p($_['cas_import_map_groups_pedagogic']); ?>"
@@ -222,25 +230,25 @@ style('ldapimporter', 'settings');
                     </p>
                 </div>
                 <div style="display: flex;">
-                    <p><label><?php p($l->t('Nom de l\'attribut LDAP des utilisteurs')); ?></label>
+                    <p style="width: 25%"><label><?php p($l->t('Nom de l\'attribut LDAP des utilisteurs')); ?></label>
                         <input
-                                style="width: 65%"
+                                style="width: 90%"
                                 id="cas_import_map_groups_pedagogic_first"
                                 class="cas_import_map_groups_pedagogic"
                                 value=""
                                 placeholder="Nom de l\'attribut LDAP des utilisteurs"/>
                     </p>
-                    <p><label><?php p($l->t('Regex de filtre')); ?></label>
+                    <p style="width: 50%"><label><?php p($l->t('Regex de filtre')); ?></label>
                         <input
-                                style="width: 65%"
+                                style="width: 90%"
                                 id="cas_import_map_groups_pedagogic_filter_first"
                                 class="cas_import_map_groups_pedagogic_filter"
                                 value=""
                                 placeholder="Regex de filtre"/>
                     </p>
-                    <p><label><?php p($l->t('Nommage')); ?></label>
+                    <p style="width: 25%"><label><?php p($l->t('Nommage')); ?></label>
                         <input
-                                style="width: 65%"
+                                style="width: 90%"
                                 id="cas_import_map_groups_pedagogic_naming_first"
                                 class="cas_import_map_groups_pedagogic_naming"
                                 value=""

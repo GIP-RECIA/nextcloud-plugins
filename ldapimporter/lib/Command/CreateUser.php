@@ -286,15 +286,6 @@ class CreateUser extends Command
             $output->writeln('Enabled set to "' . $enabledString . '"');
         }
 
-        # Set uai_courant
-        $uaiCourant = $input->getOption('uai-courant');
-
-        if (!is_null($uaiCourant) && strlen($uaiCourant) > 0) {
-            $sql = "UPDATE `*PREFIX*users` SET uai_courant = '" . $uaiCourant . "' WHERE uid = '" . $uid . "';";
-            $this->db->executeQuery($sql);
-            $output->writeln('uai_courant set to "' . $uaiCourant . '"');
-        }
-
         # Set Backend
         if ($this->appService->isNotNextcloud()) {
 

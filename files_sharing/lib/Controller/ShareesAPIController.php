@@ -454,18 +454,12 @@ class ShareesAPIController extends OCSController {
      */
     private function filterSchoolUsersGroups(bool $lookupSchool, $result)
     {
+        $currentUai = $this->getCurrentSchool();
         if ($lookupSchool !== true) {
-            $query = $this->db->getQueryBuilder();
-            $query->select('uai_courant')
-                ->from('users')
-                ->where($query->expr()->eq('uid', $query->createNamedParameter($this->userId)));
-
-            $user = $query->execute()->fetch();
-            if (array_key_exists("uai_courant", $user) && !is_null($user["uai_courant"])) {
-                $currentUai = $user["uai_courant"];
+            if (!is_null($currentUai)) {
                 $query = $this->db->getQueryBuilder();
                 $query->select('user_group')
-                    ->from('asso_etablissements')
+                    ->from('asso_uai_user_group')
                     ->where($query->expr()->eq('uai', $query->createNamedParameter(
                         $currentUai
                     )));
@@ -481,8 +475,8 @@ class ShareesAPIController extends OCSController {
         } else {
             $qb = $this->db->getQueryBuilder();
             $qb->select('uai')
-                ->from('asso_etablissements')
-                ->where($qb->expr()->eq('user_group', $qb->createNamedParameter("F1700ivq"/*$this->userId*/)));
+                ->from('asso_uai_user_group')
+                ->where($qb->expr()->eq('user_group', $qb->createNamedParameter($this->userId)));
             $userEtablissements = $qb->execute()->fetchAll();
             $userUai = array_unique(array_map(function ($asso) {
                 return $asso['uai'];
@@ -491,7 +485,7 @@ class ShareesAPIController extends OCSController {
 
             $query = $this->db->getQueryBuilder();
             $query->select('user_group')
-                ->from('asso_etablissements')
+                ->from('asso_uai_user_group')
                 ->where($query->expr()->in('uai', $query->createNamedParameter(
                     $userUai,
                     Connection::PARAM_STR_ARRAY
@@ -501,12 +495,77 @@ class ShareesAPIController extends OCSController {
             }, $query->execute()->fetchAll());
 
         }
-        $result["groups"] = array_filter($result["groups"], function ($group) use ($searchedUserGroup) {
-            return in_array($group['value']['shareWith'], $searchedUserGroup);
-        });
-        $result["users"] = array_filter($result["users"], function ($group) use ($searchedUserGroup) {
-            return in_array($group['value']['shareWith'], $searchedUserGroup);
-        });
+
+        $groups = [];
+
+        foreach ($result["groups"] as $groupFor) {
+            if (in_array($groupFor['value']['shareWith'], $searchedUserGroup)) {
+                $groups[] = $groupFor;
+            }
+        }
+        $result["groups"] = $groups;
+
+
+        $users = [];
+
+        foreach ($result["users"] as $userFor) {
+            if (in_array($userFor['value']['shareWith'], $searchedUserGroup)) {
+                $users[] = $userFor;
+            }
+        }
+        $result["users"] = $users;
         return $result;
+    }
+
+
+    private function getCurrentSchool() {
+        try {
+            $currentSchool = null;
+
+            $host = $this->config->getAppValue('ldapimporter', 'cas_import_ad_host');
+
+            $ldapConnection = ldap_connect($this->config->getAppValue('ldapimporter', 'cas_import_ad_protocol') . $host . ":" . $this->config->getAppValue('ldapimporter', 'cas_import_ad_port')) or die("Could not connect to " . $host);
+
+            ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);
+            ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 10);
+
+            if ($ldapConnection) {
+                $ldapIsBound = ldap_bind($ldapConnection, $this->config->getAppValue('ldapimporter', 'cas_import_ad_user'), $this->config->getAppValue('ldapimporter', 'cas_import_ad_password'));
+                if (!$ldapIsBound) {
+                    throw new \Exception("LDAP bind failed. Error: " . ldap_error($this->ldapConnection));
+                }
+
+                // Disable pagination setting, not needed for individual attribute queries
+                ldap_control_paged_result($ldapConnection, 1);
+
+                // Query user attributes
+                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOUAICourant"]);
+                if (ldap_error($ldapConnection) == "No such object") {
+                    return [];
+                }
+                elseif (ldap_error($ldapConnection) != "Success") {
+                    throw new \Exception('Error searching LDAP: ' . ldap_error($ldapConnection));
+                }
+
+                $attributes = ldap_get_entries($ldapConnection, $results);
+
+                // Return attributes list
+                if (isset($attributes[0]) && array_key_exists('escouaicourant', $attributes[0]) && isset($attributes[0]['escouaicourant'][0])) {
+                    $currentSchool = $attributes[0]['escouaicourant'][0];
+                }
+                else {
+                    $currentSchool = null;
+                }
+            }
+
+        } catch (\Throwable $t) {
+            $currentSchool = null;
+        }
+        if(isset($ldapConnection)) {
+            ldap_close($ldapConnection);
+        }
+        return $currentSchool;
+
     }
 }

@@ -82,6 +82,7 @@ $(document).ready(function () {
     });
 
     const importMapGroupsPedagogic = $('#cas_import_map_groups_pedagogic').val();
+    console.log(JSON.parse(importMapGroupsPedagogic.replace(/&quot;/g,'"')))
     if (importMapGroupsPedagogic.length > 0) {
         Object.entries(JSON.parse(importMapGroupsPedagogic.replace(/&quot;/g,'"'))).forEach(function([key, pedagogicGroup], i) {
             if (i === 0) {
@@ -94,23 +95,23 @@ $(document).ready(function () {
                 const filter = pedagogicGroup.filter ? pedagogicGroup.filter : '';
                 const naming = pedagogicGroup.naming ? pedagogicGroup.naming : '';
                 $('#addPedagogicGroup').before("<div style=\"display: flex;\">" +
-                    "<p><label>Nom de l'attribut LDAP</label>" +
+                    "<p style=\"width: 25%\"><label>Nom de l'attribut LDAP</label>" +
                         "<input " +
-                                " style=\"width: 65%\"" +
+                                " style=\"width: 90%\"" +
                                 " class=\"cas_import_map_groups_pedagogic\"" +
                                 " value='" + field + "'" +
                                 " placeholder=\"Nom de l'attribut LDAP\"/>" +
                     " </p>" +
-                    "<p><label>Regex de filtre</label>" +
+                    "<p style=\"width: 50%\"><label>Regex de filtre</label>" +
                         "<input " +
-                                " style=\"width: 65%\"" +
+                                " style=\"width: 90%\"" +
                                 " class=\"cas_import_map_groups_pedagogic_filter\"" +
                                 " value='" + filter + "'" +
                                 " placeholder=\"Regex de filtre\"/>" +
                     " </p>" +
-                    "<p><label>Nommage</label>" +
+                    "<p style=\"width: 25%\"><label>Nommage</label>" +
                         "<input " +
-                                " style=\"width: 65%\"" +
+                                " style=\"width: 90%\"" +
                                 " class=\"cas_import_map_groups_pedagogic_naming\"" +
                                 " value='" + naming + "'" +
                                 " placeholder=\"Nommage\"/>" +
@@ -120,46 +121,66 @@ $(document).ready(function () {
         });
     }
 
-    const importMapFilterGroups = $('#cas_import_map_groups_filter').val();
-    console.log(importMapFilterGroups)
+    const importMapFilterGroups = $('#cas_import_map_groups_fonctionel').val();
     if (importMapFilterGroups.length > 0) {
-        JSON.parse(importMapFilterGroups.replace(/&quot;/g,'"')).forEach(function (groupFilter, i) {
+            Object.entries(JSON.parse(importMapFilterGroups.replace(/&quot;/g,'"'))).forEach(function ([key, fonctionnelGroup], i) {
+                console.log(fonctionnelGroup)
             if (i === 0) {
-                $('#cas_import_map_groups_filter_first').val(groupFilter);
+                $('#cas_import_map_groups_filter_first').val(fonctionnelGroup.filter);
+                $('#cas_import_map_groups_naming_first').val(fonctionnelGroup.naming)
+                $('#cas_import_map_groups_quota_first').val(fonctionnelGroup.quota)
             }
             else {
-                $('#addFilterGroup').before("<div" +
-                    " <p>" +
+                const filter = fonctionnelGroup.filter ? fonctionnelGroup.filter : '';
+                const naming = fonctionnelGroup.naming ? fonctionnelGroup.naming : '';
+                const quota = fonctionnelGroup.quota ? fonctionnelGroup.quota : '';
+                $('#addFilterGroup').before("<div style=\"display: flex;\">" +
+                    "<p><label>Regex de filtre</label>" +
                     "<input " +
-                    "value='" + groupFilter + "'" +
+                    " style=\"width: 90%\"" +
                     " class=\"cas_import_map_groups_filter\"" +
+                    " value='" + filter + "'" +
                     " placeholder=\"Regex de filtre\"/>" +
+                    " </p>" +
+                    "<p><label>Nommage</label>" +
+                    "<input " +
+                    " style=\"width: 90%\"" +
+                    " class=\"cas_import_map_groups_naming\"" +
+                    " value='" + naming + "'" +
+                    " placeholder=\"Nommage\"/>" +
+                    " </p>" +
+                    "<p><label>Quota (en GB)</label>" +
+                    "<input " +
+                    " style=\"width: 90%\"" +
+                    " class=\"cas_import_map_groups_quota\"" +
+                    " value='" + quota + "'" +
+                    " placeholder=\"Quota\"/>" +
                     " </p>" +
                     "</div>");
             }
 
-        })
+        });
     }
 
 
     $('#addPedagogicGroup').on('click', function() {
 
         $('#addPedagogicGroup').before("<div style=\"display: flex;\">" +
-            "<p><label>Nom de l'attribut LDAP</label>" +
+            "<p style=\"width: 25%\"><label>Nom de l'attribut LDAP</label>" +
                 "<input " +
-                        " style=\"width: 65%\"" +
+                        " style=\"width: 90%\"" +
                         " class=\"cas_import_map_groups_pedagogic\"" +
                         " placeholder=\"Nom de l'attribut LDAP\"/>" +
             " </p>" +
-            "<p><label>Regex de filtre</label>" +
+            "<p style=\"width: 50%\"><label>Regex de filtre</label>" +
                 "<input " +
-                        " style=\"width: 65%\"" +
+                        " style=\"width: 90%\"" +
                         " class=\"cas_import_map_groups_pedagogic_filter\"" +
                         " placeholder=\"Regex de filtre\"/>" +
             " </p>" +
-            "<p><label>Nommage</label>" +
+            "<p style=\"width: 25%\"><label>Nommage</label>" +
             "<input " +
-                    " style=\"width: 65%\"" +
+                    " style=\"width: 90%\"" +
                     " class=\"cas_import_map_groups_pedagogic_naming\"" +
                     " placeholder=\"Nommage\"/>" +
         " </p>" +
@@ -196,24 +217,61 @@ $(document).ready(function () {
             }
         })
 
-        let filterGroups = [];
+        let filterGroups = {};
         $('.cas_import_map_groups_filter').each(function(i) {
             const value = $(this).val();
             if (value.length > 0) {
-                filterGroups.push(value)
+                filterGroups[i] = {
+                    ...filterGroups[i],
+                    'filter': value
+                }
             }
-        });
-        $('#cas_import_map_groups_filter').val(JSON.stringify(filterGroups));
+        })
+        $('.cas_import_map_groups_naming').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                filterGroups[i] = {
+                    ...filterGroups[i],
+                    'naming': value
+                }
+            }
+        })
+        $('.cas_import_map_groups_quota').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                filterGroups[i] = {
+                    ...filterGroups[i],
+                    'quota': value
+                }
+            }
+        })
+
+
+        $('#cas_import_map_groups_fonctionel').val(JSON.stringify(filterGroups));
         $('#cas_import_map_groups_pedagogic').val(JSON.stringify(pegadogicGroups));
     });
 
     $('#addFilterGroup').on('click', function() {
-        $('#addFilterGroup').before("<div" +
-            " <p>" +
-                "<input " +
-                " class=\"cas_import_map_groups_filter\"" +
-                " placeholder=\"Regex de filtre\"/>" +
-                " </p>" +
+
+        $('#addFilterGroup').before("<div style=\"display: flex;\">" +
+            "<p><label>Regex de filtre</label>" +
+            "<input " +
+            " style=\"width: 90%\"" +
+            " class=\"cas_import_map_groups_filter\"" +
+            " placeholder=\"Regex de filtre\"/>" +
+            " </p>" +
+            "<p><label>Nommage</label>" +
+            "<input " +
+            " style=\"width: 90%\"" +
+            " class=\"cas_import_map_groups_naming\"" +
+            " placeholder=\"Nommage\"/>" +
+            " </p>" +
+            "<p><label>Quota (en GB)</label>" +
+            "<input " +
+            " style=\"width: 90%\"" +
+            " class=\"cas_import_map_groups_quota\"" +
+            " placeholder=\"Quota\"/>" +
+            " </p>" +
             "</div>");
     });
 });
