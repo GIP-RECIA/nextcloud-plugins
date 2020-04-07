@@ -114,8 +114,8 @@ class AdImporter implements ImporterInterface
         $emailAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_email');
         $groupsAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups');
         $regexNameUai = $this->config->getAppValue($this->appName, 'cas_import_regex_name_uai');
-        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
-        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');
+        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
+        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');
 
         $groupsFilterAttribute = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_fonctionel'), true);
         $arrayGroupsAttrPedagogic = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_pedagogic'), true);
@@ -338,7 +338,10 @@ class AdImporter implements ImporterInterface
                                             $sprintfArray[] = $groupPedagogicMatches[$match[1]][0];
                                         }
                                         else {
-                                            if (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
+                                            if (strtolower($match[1]) === 'nometablissement') {
+                                                $sprintfArray[] = $this->getEstablishmentNameFromUAI($groupAttr['entstructureuai'][0]);
+                                            }
+                                            elseif (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
                                                 $sprintfArray[] = $groupAttr[strtolower($match[1])][0];
                                             }
                                             else {
@@ -377,6 +380,30 @@ class AdImporter implements ImporterInterface
         $this->logger->info("Users have been retrieved.");
 
         return $users;
+    }
+
+    /**
+     * Ajout d'un établissement et d'une asso uai -> user/groups si il n'existe pas dans la bdd
+     *
+     * @param $uai
+     * @return mixed|null
+     */
+    protected function getEstablishmentNameFromUAI($uai)
+    {
+        if (!is_null($uai)) {
+            $qbEtablissement = $this->db->getQueryBuilder();
+            $qbEtablissement->select('name')
+                ->from('etablissements')
+                ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
+            ;
+            $result = $qbEtablissement->execute();
+            $etablissement = $result->fetchAll();
+
+            if (sizeof($etablissement) !== 0) {
+                return $etablissement[0]['name'];
+            }
+        }
+        return null;
     }
 
     /**

@@ -237,7 +237,7 @@ style('ldapimporter', 'settings');
             </div>
             <br>
             <h3>Groupe pédagogiques</h3>
-            <p>Informations sur la syntaxe de nommage : Le champs de nommage utilise la syntaxe des littéraux de gabarits ${maVariable} </p>
+            <p>Informations sur la syntaxe de nommage : Le champs de nommage utilise la syntaxe des littéraux de gabarits ${maVariable}, de plus vous pouvez utiliser la variable ${nomEtablissement} pour insérer le nom de l'établissement dans le nommage</p>
             <br>
             <div>
                 <div>
