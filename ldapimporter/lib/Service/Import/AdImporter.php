@@ -114,6 +114,9 @@ class AdImporter implements ImporterInterface
         $emailAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_email');
         $groupsAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups');
         $regexNameUai = $this->config->getAppValue($this->appName, 'cas_import_regex_name_uai');
+        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
+        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');
+
         $groupsFilterAttribute = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_fonctionel'), true);
         $arrayGroupsAttrPedagogic = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_pedagogic'), true);
         $quotaAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_quota');
@@ -247,9 +250,18 @@ class AdImporter implements ImporterInterface
 
                             $groupName = '';
 
+                            preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+
+                            if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
+                                //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
+                                $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], null, $uaiNameMatches[0][intval($regexNameGroup)]);
+                                $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], null, $uaiNameMatches[0][intval($regexNameGroup)]);
+                            }
+
+
                             foreach ($groupsFilterAttribute as $groupFilter) {
                                 if (array_key_exists('filter', $groupFilter) && array_key_exists('naming', $groupFilter)) {
-                                    if (preg_match_all("/" . $groupFilter['filter'] . "/mi", $resultGroupsAttribute, $groupFilterMatches)) {
+                                    if (preg_match_all("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
                                         if (!isset($quota) || intval($quota) < intval($groupFilter['filter'])) {
                                             $quota = $groupFilter['filter'];
                                         }
@@ -263,13 +275,12 @@ class AdImporter implements ImporterInterface
                                             $sprintfArray[] = $groupFilterMatches[$match[1]][0];
                                         }
                                         $groupName = sprintf($newName, ...$sprintfArray);
-
-                                        preg_match_all('/' . $regexNameUai . '/mi', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+                                        preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
 
                                         if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
                                             //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
-                                            $this->addEtablissementAsso($uaiNameMatches[0][2], $groupName, $uaiNameMatches[0][1]);
-                                            $this->addEtablissementAsso($uaiNameMatches[0][2], $employeeID, $uaiNameMatches[0][1]);
+                                            $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], $groupName, $uaiNameMatches[0][intval($regexNameGroup)]);
+                                            $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], $employeeID, $uaiNameMatches[0][intval($regexNameGroup)]);
                                         }
                                         break;
                                     }
@@ -300,7 +311,7 @@ class AdImporter implements ImporterInterface
                             $pedagogicFilter = $groupsAttrPedagogic["filter"];
                             $pedagogicNaming = $groupsAttrPedagogic["naming"];
 
-                            if (preg_match_all("/" . $pedagogicFilter . "/mi", $attrPedagogicStr, $groupPedagogicMatches)) {
+                            if (preg_match_all("/" . $pedagogicFilter . "/si", $attrPedagogicStr, $groupPedagogicMatches)) {
                                 # Check if user has MAP_GROUPS attribute
                                 if (isset($attrPedagogicStr) && strpos($attrPedagogicStr, "$")) {
                                     $addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
@@ -396,22 +407,23 @@ class AdImporter implements ImporterInterface
             }
         }
 
-        $qb = $this->db->getQueryBuilder();
-        $qb->select('*')
-            ->from('asso_uai_user_group')
-            ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)))
-            ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)))
-        ;
-        $result = $qb->execute();
-        $assoOaiUserGroup = $result->fetchAll();
-        if (sizeof($assoOaiUserGroup) === 0) {
-            $insertAsso = $this->db->getQueryBuilder();
-            $insertAsso->insert('asso_uai_user_group')
-                ->values([
-                    'uai' => $insertAsso->createNamedParameter($uai),
-                    'user_group' => $insertAsso->createNamedParameter($groupUserId),
-                ]);
-            $insertAsso->execute();
+        if (!is_null($groupUserId)) {
+            $qb = $this->db->getQueryBuilder();
+            $qb->select('*')
+                ->from('asso_uai_user_group')
+                ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)))
+                ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)));
+            $result = $qb->execute();
+            $assoOaiUserGroup = $result->fetchAll();
+            if (sizeof($assoOaiUserGroup) === 0) {
+                $insertAsso = $this->db->getQueryBuilder();
+                $insertAsso->insert('asso_uai_user_group')
+                    ->values([
+                        'uai' => $insertAsso->createNamedParameter($uai),
+                        'user_group' => $insertAsso->createNamedParameter($groupUserId),
+                    ]);
+                $insertAsso->execute();
+            }
         }
     }
 

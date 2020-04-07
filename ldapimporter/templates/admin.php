@@ -164,14 +164,35 @@ style('ldapimporter', 'settings');
                             name="cas_import_map_groups"
                             value="<?php p($_['cas_import_map_groups']); ?>" placeholder="Nom de l\'attribut LDAP des utilisteurs"/>
                 </p>
-                <div>
-                    <label for="cas_import_regex_name_uai"><?php p($l->t('Regex de nommage d\'établissement et du UAI')); ?></label>
-                    <p style="color: gray">Le premier groupe de la regex sera le nom de l'etablissement et le deuxième groupe l'UAI</p>
+            </div>
+            <br>
+            <div style="display: flex;justify-content: space-between">
+                <div style="width: 40%">
+                    <label style="width: 100%" for="cas_import_regex_name_uai"><?php p($l->t('Regex de nommage d\'établissement et du UAI')); ?></label>
+                    <p style="color: gray">Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre</p>
                     <input
-                        style="width: 100%"
-                        id="cas_import_regex_name_uai"
-                        name="cas_import_regex_name_uai"
-                        value="<?php p($_['cas_import_regex_name_uai']); ?>" placeholder="Regex de nommage d'établissement et du UAI"/>
+                            style="width: 100%"
+                            id="cas_import_regex_name_uai"
+                            name="cas_import_regex_name_uai"
+                            value="<?php p($_['cas_import_regex_name_uai']); ?>" placeholder="Regex de nommage d'établissement et du UAI"/>
+                </div>
+                <div style="width: 25%">
+                    <label style="width: 100%" for="cas_import_regex_name_group"><?php p($l->t('Numéro du groupement dans la regex correspondant au nom de l\'établissement')); ?></label>
+                    <p style="color: gray"></p>
+                    <input
+                            style="width: 100%"
+                            id="cas_import_regex_name_group"
+                            name="cas_import_regex_name_group"
+                            value="<?php p($_['cas_import_regex_name_group']); ?>" placeholder="Numéro du groupement dans la regex correspondant au nom de l'établissement"/>
+                </div>
+                <div style="width: 25%">
+                    <label style="width: 100%" for="cas_import_regex_uai_group"><?php p($l->t('Numéro du groupement dans la regex correspondant à l\'UAI de l\'établissement')); ?></label>
+                    <p style="color: gray"></p>
+                    <input
+                            style="width: 100%"
+                            id="cas_import_regex_uai_group"
+                            name="cas_import_regex_uai_group"
+                            value="<?php p($_['cas_import_regex_uai_group']); ?>" placeholder="Numéro du groupement dans la regex correspondant à l'UAI de l'établissement"/>
                 </div>
             </div>
             <br>
