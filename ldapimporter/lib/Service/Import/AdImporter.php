@@ -119,6 +119,8 @@ class AdImporter implements ImporterInterface
 
         $groupsFilterAttribute = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_fonctionel'), true);
         $arrayGroupsAttrPedagogic = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_pedagogic'), true);
+        $arrayRegexNameUai = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_regex_name_uai'), true);
+
         $quotaAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_quota');
         $enableAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_enabled');
         $dnAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_dn');
@@ -250,39 +252,47 @@ class AdImporter implements ImporterInterface
 
                             $groupName = '';
 
-                            preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
+                                preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
 
-                            if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
-                                //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
-                                $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], null, $uaiNameMatches[0][intval($regexNameGroup)]);
-                                $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], null, $uaiNameMatches[0][intval($regexNameGroup)]);
+                                if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
+                                    $indexRegexUaiGroup = is_null($regexUaiGroup) ? null : intval($regexUaiGroup);
+                                    $indexRegexNameGroup = is_null($regexNameGroup) ? null : intval($regexNameGroup);
+                                    //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
+                                    $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], null, $uaiNameMatches[0][$indexRegexNameGroup]);
+                                    $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], null, $uaiNameMatches[0][$indexRegexNameGroup]);
+                                }
                             }
 
 
                             foreach ($groupsFilterAttribute as $groupFilter) {
-                                if (array_key_exists('filter', $groupFilter) && array_key_exists('naming', $groupFilter)) {
+                                if (array_key_exists('filter', $groupFilter)) {
                                     if (preg_match_all("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
                                         if (!isset($quota) || intval($quota) < intval($groupFilter['filter'])) {
                                             $quota = $groupFilter['filter'];
                                         }
-                                        $newName = $groupFilter['naming'];
-                                        $regexGabarits = '/\$\{(.*?)\}/i';
+                                        if (array_key_exists('naming', $groupFilter)) {
+                                            $newName = $groupFilter['naming'];
+                                            $regexGabarits = '/\$\{(.*?)\}/i';
 
-                                        preg_match_all($regexGabarits, $newName, $matches, PREG_SET_ORDER, 0);
-                                        $sprintfArray = [];
-                                        foreach ($matches as $match) {
-                                            $newName = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $newName, 1);
-                                            $sprintfArray[] = $groupFilterMatches[$match[1]][0];
-                                        }
-                                        $groupName = sprintf($newName, ...$sprintfArray);
-                                        preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+                                            preg_match_all($regexGabarits, $newName, $matches, PREG_SET_ORDER, 0);
+                                            $sprintfArray = [];
+                                            foreach ($matches as $match) {
+                                                $newName = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $newName, 1);
+                                                $sprintfArray[] = $groupFilterMatches[$match[1]][0];
+                                            }
+                                            $groupName = sprintf($newName, ...$sprintfArray);
+                                            preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
 
-                                        if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
-                                            //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
-                                            $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], $groupName, $uaiNameMatches[0][intval($regexNameGroup)]);
-                                            $this->addEtablissementAsso($uaiNameMatches[0][intval($regexUaiGroup)], $employeeID, $uaiNameMatches[0][intval($regexNameGroup)]);
+                                            if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
+                                                $indexRegexUaiGroup = is_null($regexUaiGroup) ? null : intval($regexUaiGroup);
+                                                $indexRegexNameGroup = is_null($regexNameGroup) ? null : intval($regexNameGroup);
+                                                //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
+                                                $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], $groupName, $uaiNameMatches[0][$indexRegexNameGroup]);
+                                                $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], $employeeID, $uaiNameMatches[0][$indexRegexNameGroup]);
+                                            }
+                                            break;
                                         }
-                                        break;
                                     }
                                     else {
                                         $this->logger->warning("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);

@@ -81,8 +81,9 @@ $(document).ready(function () {
         $("#cas_import_ad_sync_pagesize").val($(this).val());
     });
 
+
+
     const importMapGroupsPedagogic = $('#cas_import_map_groups_pedagogic').val();
-    console.log(JSON.parse(importMapGroupsPedagogic.replace(/&quot;/g,'"')))
     if (importMapGroupsPedagogic.length > 0) {
         Object.entries(JSON.parse(importMapGroupsPedagogic.replace(/&quot;/g,'"'))).forEach(function([key, pedagogicGroup], i) {
             if (i === 0) {
@@ -124,7 +125,6 @@ $(document).ready(function () {
     const importMapFilterGroups = $('#cas_import_map_groups_fonctionel').val();
     if (importMapFilterGroups.length > 0) {
             Object.entries(JSON.parse(importMapFilterGroups.replace(/&quot;/g,'"'))).forEach(function ([key, fonctionnelGroup], i) {
-                console.log(fonctionnelGroup)
             if (i === 0) {
                 $('#cas_import_map_groups_filter_first').val(fonctionnelGroup.filter);
                 $('#cas_import_map_groups_naming_first').val(fonctionnelGroup.naming)
@@ -162,6 +162,48 @@ $(document).ready(function () {
         });
     }
 
+    const importNameUaiGroups = $('#cas_import_map_regex_name_uai').val();
+    if (importNameUaiGroups.length > 0) {
+        Object.entries(JSON.parse(importNameUaiGroups.replace(/&quot;/g,'"'))).forEach(function ([key, group], i) {
+            if (i === 0) {
+                $('#cas_import_regex_name_uai_first').val(group.nameUai);
+                $('#cas_import_regex_name_group_first').val(group.nameGroup)
+                $('#cas_import_regex_uai_group_first').val(group.uaiGroup)
+            }
+            else {
+                const nameUai = group.nameUai ? group.nameUai : '';
+                const nameGroup = group.nameGroup ? group.nameGroup : '';
+                const uaiGroup = group.uaiGroup ? group.uaiGroup : '';
+                $('#addNameUaiGroup').before("<div style=\"display: flex;justify-content: space-between\">\n" +
+                    "                    <div style=\"width: 40%\">\n" +
+                    "                        <label style=\"width: 100%\" for=\"cas_import_regex_name_uai\">Regex de nommage d'établissement et du UAI</label>\n" +
+                    "                        <p style=\"color: gray\">Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre</p>\n" +
+                    "                        <input\n" +
+                    "                                style=\"width: 100%\"\n" +
+                    "                                class=\"cas_import_regex_name_uai\"\n" +
+                    "                                value=\"" + nameUai + "\" placeholder=\"Regex de nommage d'établissement et du UAI\"/>\n" +
+                    "                    </div>\n" +
+                    "                    <div style=\"width: 25%\">\n" +
+                    "                        <label style=\"width: 100%\" for=\"cas_import_regex_name_group\">Numéro du groupement dans la regex correspondant au nom de l'établissement</label>\n" +
+                    "                        <p style=\"color: gray\"></p>\n" +
+                    "                        <input\n" +
+                    "                                style=\"width: 100%\"\n" +
+                    "                                class=\"cas_import_regex_name_group\"\n" +
+                    "                                value=\"" + nameGroup + "\" placeholder=\"Numéro du groupement dans la regex correspondant au nom de l'établissement\"/>\n" +
+                    "                    </div>\n" +
+                    "                    <div style=\"width: 25%\">\n" +
+                    "                        <label style=\"width: 100%\" for=\"cas_import_regex_uai_group\">Numéro du groupement dans la regex correspondant à l'UAI de l'établissement</label>\n" +
+                    "                        <p style=\"color: gray\"></p>\n" +
+                    "                        <input\n" +
+                    "                                style=\"width: 100%\"\n" +
+                    "                                class=\"cas_import_regex_uai_group\"\n" +
+                    "                                value=\"" + uaiGroup + "\" placeholder=\"Numéro du groupement dans la regex correspondant à l'UAI de l'établissement\"/>\n" +
+                    "                    </div>\n" +
+                    "                </div>");
+            }
+
+        });
+    }
 
     $('#addPedagogicGroup').on('click', function() {
 
@@ -187,6 +229,30 @@ $(document).ready(function () {
 
         "</div>");
     });
+
+    $('#addNameUaiGroup').on('click', function() {
+
+        $('#addNameUaiGroup').before("<div style=\"display: flex;justify-content: space-between\">" +
+            "                    <div style=\"width: 40%\">" +
+            "                        <label style=\"width: 100%\" for=\"cas_import_regex_name_uai\">Regex de nommage d'établissement et du UAI</label>" +
+            "                        <p style=\"color: gray\">Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre</p>" +
+            "                        <input style=\"width: 100%\" class=\"cas_import_regex_name_uai\" placeholder=\"Regex de nommage d'établissement et du UAI\"/>" +
+            "                    </div>" +
+            "                    <div style=\"width: 25%\">\n" +
+            "                        <label style=\"width: 100%\" for=\"cas_import_regex_name_group\">Numéro du groupement dans la regex correspondant au nom de l'établissement</label>\n" +
+            "                        <p style=\"color: gray\"></p>" +
+            "                        <input style=\"width: 100%\" class=\"cas_import_regex_name_group\"" +
+            "                               placeholder=\"Numéro du groupement dans la regex correspondant au nom de l'établissement\"/>" +
+            "                    </div>" +
+            "                    <div style=\"width: 25%\">" +
+            "                        <label style=\"width: 100%\" for=\"cas_import_regex_uai_group\">Numéro du groupement dans la regex correspondant à l'UAI de l'établissement</label>\n" +
+            "                        <p style=\"color: gray\"></p>" +
+            "                        <input style=\"width: 100%\" class=\"cas_import_regex_uai_group\" placeholder=\"Numéro du groupement dans la regex correspondant à l'UAI de l'établissement\"/>" +
+            "                    </div>" +
+            "                </div>");
+    });
+
+
     $('#importSettingsSubmit').on('mouseover', function() {
         let pegadogicGroups = {};
         $('.cas_import_map_groups_pedagogic').each(function(i) {
@@ -247,8 +313,40 @@ $(document).ready(function () {
         })
 
 
+        let nameUaiGroup = {};
+        $('.cas_import_regex_name_uai').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                nameUaiGroup[i] = {
+                    ...nameUaiGroup[i],
+                    'nameUai': value
+                }
+            }
+        })
+        $('.cas_import_regex_name_group').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                nameUaiGroup[i] = {
+                    ...nameUaiGroup[i],
+                    'nameGroup': value
+                }
+            }
+        })
+        $('.cas_import_regex_uai_group').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                nameUaiGroup[i] = {
+                    ...nameUaiGroup[i],
+                    'uaiGroup': value
+                }
+            }
+        })
+
+
         $('#cas_import_map_groups_fonctionel').val(JSON.stringify(filterGroups));
         $('#cas_import_map_groups_pedagogic').val(JSON.stringify(pegadogicGroups));
+        $('#cas_import_map_regex_name_uai').val(JSON.stringify(nameUaiGroup));
+
     });
 
     $('#addFilterGroup').on('click', function() {
