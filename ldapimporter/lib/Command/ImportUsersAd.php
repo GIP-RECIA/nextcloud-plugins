@@ -74,8 +74,14 @@ class ImportUsersAd extends Command
                 'convert-backend',
                 'c',
                 InputOption::VALUE_OPTIONAL,
-                'Convert the backend to CAS (on update only)'
-            );
+                'Convert the backend to CAS (on update only)')
+            ->addOption(
+                'ldap-filter',
+                'lf',
+                InputOption::VALUE_OPTIONAL,
+                'filter ldap search'
+            )
+        ;
     }
 
     /**
@@ -102,7 +108,7 @@ class ImportUsersAd extends Command
                 /**
                  * @var ImporterInterface $importer
                  */
-                $importer = new AdImporter($this->config, $this->db);
+                $importer = new AdImporter($this->config, $this->db, $input->getOption('ldap-filter'));
                 $output->writeln('Construct done');
 
                 $importer->init($logger);

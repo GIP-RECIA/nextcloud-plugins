@@ -52,17 +52,22 @@ class AdImporter implements ImporterInterface
      */
     private $db;
 
+    /**
+     * @var $ldapFilterter
+     */
+    private $ldapFilter;
 
     /**
      * AdImporter constructor.
      * @param IConfig $config
      * @param IDBConnection $db
+     * @param $ldapFilter
      */
-    public function __construct(IConfig $config, IDBConnection $db)
+    public function __construct(IConfig $config, IDBConnection $db, $ldapFilter)
     {
-
         $this->config = $config;
         $this->db = $db;
+        $this->ldapFilter = $ldapFilter;
     }
 
 
@@ -114,8 +119,8 @@ class AdImporter implements ImporterInterface
         $emailAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_email');
         $groupsAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups');
         $regexNameUai = $this->config->getAppValue($this->appName, 'cas_import_regex_name_uai');
-        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
-        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');
+/*        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
+        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');*/
 
         $groupsFilterAttribute = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_fonctionel'), true);
         $arrayGroupsAttrPedagogic = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_pedagogic'), true);
@@ -252,15 +257,21 @@ class AdImporter implements ImporterInterface
 
                             $groupName = '';
 
-                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
-                                preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+                            $uaiEtablissement = null;
+                            $nameEtablissement = null;
 
-                                if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
-                                    $indexRegexUaiGroup = is_null($regexUaiGroup) ? null : intval($regexUaiGroup);
-                                    $indexRegexNameGroup = is_null($regexNameGroup) ? null : intval($regexNameGroup);
-                                    //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
-                                    $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], null, $uaiNameMatches[0][$indexRegexNameGroup]);
-                                    $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], null, $uaiNameMatches[0][$indexRegexNameGroup]);
+                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
+                                if (array_key_exists("nameUai", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameUai"])) {
+                                    preg_match_all('/' . $regexNameUaiGroup["nameUai"] . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+
+                                    if (sizeof($uaiNameMatches) > 0 && sizeof($uaiNameMatches[0]) >= 3) {
+                                        $indexRegexUaiGroup = array_key_exists("uaiGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["uaiGroup"]) ? intval($regexNameUaiGroup["uaiGroup"]) : null;
+                                        $indexRegexNameGroup = array_key_exists("nameGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameGroup"]) ? intval($regexNameUaiGroup["nameGroup"]) : null;
+                                        $uaiEtablissement = is_null($indexRegexUaiGroup)  ? null : $uaiNameMatches[0][$indexRegexUaiGroup];
+                                        $nameEtablissement = is_null($indexRegexNameGroup) ? null : $uaiNameMatches[0][$indexRegexNameGroup];
+                                        $this->addEtablissement($uaiEtablissement, $nameEtablissement);
+                                        break;
+                                    }
                                 }
                             }
 
@@ -272,6 +283,7 @@ class AdImporter implements ImporterInterface
                                             $quota = $groupFilter['filter'];
                                         }
                                         if (array_key_exists('naming', $groupFilter)) {
+
                                             $newName = $groupFilter['naming'];
                                             $regexGabarits = '/\$\{(.*?)\}/i';
 
@@ -282,20 +294,15 @@ class AdImporter implements ImporterInterface
                                                 $sprintfArray[] = $groupFilterMatches[$match[1]][0];
                                             }
                                             $groupName = sprintf($newName, ...$sprintfArray);
-                                            preg_match_all('/' . $regexNameUai . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
-
-                                            if (sizeof($uaiNameMatches) > 0 and sizeof($uaiNameMatches[0]) >= 3) {
-                                                $indexRegexUaiGroup = is_null($regexUaiGroup) ? null : intval($regexUaiGroup);
-                                                $indexRegexNameGroup = is_null($regexNameGroup) ? null : intval($regexNameGroup);
-                                                //$etablissement = $this->getLdapPedagogicGroup('ou=structures,dc=esco-centre,dc=fr', '(entstructureuai=' . $uaiNameMatches[0][0] . ')');
-                                                $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], $groupName, $uaiNameMatches[0][$indexRegexNameGroup]);
-                                                $this->addEtablissementAsso($uaiNameMatches[0][$indexRegexUaiGroup], $employeeID, $uaiNameMatches[0][$indexRegexNameGroup]);
+                                            if (!is_null($uaiEtablissement)) {
+                                                $this->addEtablissementAsso($uaiEtablissement, $groupName);
+                                                $this->addEtablissementAsso($uaiEtablissement, $employeeID);
                                             }
                                             break;
                                         }
                                     }
                                     else {
-                                        $this->logger->warning("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
+                                        $this->logger->debug("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
                                     }
                                 }
                             }
@@ -332,7 +339,7 @@ class AdImporter implements ImporterInterface
                                     # Retrieve the MAP_GROUPS_FIELD attribute of the group
                                     $groupAttr = $this->getLdapPedagogicGroup($groupCn);
                                     $groupName = '';
-                                    if (array_key_exists('entstructureuai', $groupAttr) and $groupAttr['entstructureuai']['count'] > 0) {
+                                    if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
                                         $this->addEtablissementAsso($groupAttr['entstructureuai'][0], $groupName);
                                         $this->addEtablissementAsso($groupAttr['entstructureuai'][0], $employeeID);
                                     }
@@ -355,7 +362,7 @@ class AdImporter implements ImporterInterface
                                                 $sprintfArray[] = $groupAttr[strtolower($match[1])][0];
                                             }
                                             else {
-                                                $this->logger->warning("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
+                                                $this->logger->debug("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
                                             }
                                         }
                                     }
@@ -368,7 +375,7 @@ class AdImporter implements ImporterInterface
                                 }
                             }
                             else {
-                                $this->logger->warning("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
+                                $this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
                             }
                         }
                     }
@@ -416,35 +423,63 @@ class AdImporter implements ImporterInterface
         return null;
     }
 
+
+    /**
+     * Ajout d'un établissement si il n'existe pas dans la bdd
+     *
+     * @param $uai
+     * @param $name
+     */
+    protected function addEtablissement($uai, $name)
+    {
+        if (!is_null($name)) {
+            if (is_null($uai)) {
+                $qbEtablissementName = $this->db->getQueryBuilder();
+                $qbEtablissementName->select('*')
+                    ->from('etablissements')
+                    ->where($qbEtablissementName->expr()->eq('name', $qbEtablissementName->createNamedParameter($name)));
+                $result = $qbEtablissementName->execute();
+                $etablissement = $result->fetchAll();
+
+                if (sizeof($etablissement) === 0) {
+                    $insertEtablissementName = $this->db->getQueryBuilder();
+                    $insertEtablissementName->insert('etablissements')
+                        ->values([
+                            'name' => $insertEtablissementName->createNamedParameter($name),
+                        ]);
+                    $insertEtablissementName->execute();
+                }
+            } else {
+                $qbEtablissement = $this->db->getQueryBuilder();
+                $qbEtablissement->select('*')
+                    ->from('etablissements')
+                    ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)));
+                $result = $qbEtablissement->execute();
+                $etablissement = $result->fetchAll();
+
+                if (sizeof($etablissement) === 0) {
+                    $insertEtablissement = $this->db->getQueryBuilder();
+                    $insertEtablissement->insert('etablissements')
+                        ->values([
+                            'uai' => $insertEtablissement->createNamedParameter($uai),
+                            'name' => $insertEtablissement->createNamedParameter($name),
+                        ]);
+                    $insertEtablissement->execute();
+                }
+            }
+        }
+    }
+
+
     /**
      * Ajout d'un établissement et d'une asso uai -> user/groups si il n'existe pas dans la bdd
      *
      * @param $uai
      * @param $groupUserId
      */
-    protected function addEtablissementAsso($uai, $groupUserId, $name = null)
+    protected function addEtablissementAsso($uai, $groupUserId)
     {
-        if (!is_null($name)) {
-            $qbEtablissement = $this->db->getQueryBuilder();
-            $qbEtablissement->select('*')
-                ->from('etablissements')
-                ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
-            ;
-            $result = $qbEtablissement->execute();
-            $etablissement = $result->fetchAll();
-
-            if (sizeof($etablissement) === 0) {
-                $insertEtablissement = $this->db->getQueryBuilder();
-                $insertEtablissement->insert('etablissements')
-                    ->values([
-                        'uai' => $insertEtablissement->createNamedParameter($uai),
-                        'name' => $insertEtablissement->createNamedParameter($name),
-                    ]);
-                $insertEtablissement->execute();
-            }
-        }
-
-        if (!is_null($groupUserId)) {
+        if (!is_null($groupUserId) && !empty($groupUserId) && !is_null($uai)) {
             $qb = $this->db->getQueryBuilder();
             $qb->select('*')
                 ->from('asso_uai_user_group')
@@ -477,6 +512,9 @@ class AdImporter implements ImporterInterface
      */
     protected function getLdapList($object_dn, $filter, $keepAtributes, $pageSize)
     {
+        if (!is_null($this->ldapFilter)) {
+            $filter = $this->ldapFilter;
+        }
 
         $cookie = '';
         $members = [];
