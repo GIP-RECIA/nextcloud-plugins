@@ -129,11 +129,13 @@ $(document).ready(function () {
                 $('#cas_import_map_groups_filter_first').val(fonctionnelGroup.filter);
                 $('#cas_import_map_groups_naming_first').val(fonctionnelGroup.naming)
                 $('#cas_import_map_groups_quota_first').val(fonctionnelGroup.quota)
+                $('#cas_import_map_groups_uai_number_first').val(fonctionnelGroup.uaiNumber)
             }
             else {
                 const filter = fonctionnelGroup.filter ? fonctionnelGroup.filter : '';
                 const naming = fonctionnelGroup.naming ? fonctionnelGroup.naming : '';
                 const quota = fonctionnelGroup.quota ? fonctionnelGroup.quota : '';
+                const uaiNumber = fonctionnelGroup.uaiNumber ? fonctionnelGroup.uaiNumber : '';
                 $('#addFilterGroup').before("<div style=\"display: flex;\">" +
                     "<p><label>Regex de filtre</label>" +
                     "<input " +
@@ -148,6 +150,13 @@ $(document).ready(function () {
                     " class=\"cas_import_map_groups_naming\"" +
                     " value='" + naming + "'" +
                     " placeholder=\"Nommage\"/>" +
+                    " </p>" +
+                    "<p><label>Numéro du groupement de la regex pour l'UAI ou le nom</label>" +
+                    "<input " +
+                    " style=\"width: 90%\"" +
+                    " class=\"cas_import_map_groups_uai_number\"" +
+                    " value='" + uaiNumber + "'" +
+                    " placeholder=\"Numéro du groupement de la regex pour l'UAI ou le nom\"/>" +
                     " </p>" +
                     "<p><label>Quota (en GB)</label>" +
                     "<input " +
@@ -311,6 +320,15 @@ $(document).ready(function () {
                 }
             }
         })
+        $('.cas_import_map_groups_uai_number').each(function(i) {
+            const value = $(this).val();
+            if (value.length > 0) {
+                filterGroups[i] = {
+                    ...filterGroups[i],
+                    'uaiNumber': value
+                }
+            }
+        })
 
 
         let nameUaiGroup = {};
@@ -363,6 +381,12 @@ $(document).ready(function () {
             " style=\"width: 90%\"" +
             " class=\"cas_import_map_groups_naming\"" +
             " placeholder=\"Nommage\"/>" +
+            " </p>" +
+            "<p><label>Numéro du groupement de la regex pour l'UAI ou le nom</label>" +
+            "<input " +
+            " style=\"width: 90%\"" +
+            " class=\"cas_import_map_groups_uai_number\"" +
+            " placeholder=\"Numéro du groupement de la regex pour l'UAI ou le nom\"/>" +
             " </p>" +
             "<p><label>Quota (en GB)</label>" +
             "<input " +

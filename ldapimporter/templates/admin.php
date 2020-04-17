@@ -237,6 +237,14 @@ style('ldapimporter', 'settings');
                                 value="" placeholder="Nommage"/>
                     </p>
                     <p>
+                        <label><?php p($l->t('Numéro du groupement de la regex pour l\'UAI ou le nom')); ?></label>
+                        <input
+                                style="width: 90%"
+                                id="cas_import_map_groups_uai_number_first"
+                                class="cas_import_map_groups_uai_number"
+                                value="" placeholder="Numéro du groupement de la regex pour l'UAI ou le nom"/>
+                    </p>
+                    <p>
                         <label><?php p($l->t('Quota (en GB')); ?></label>
                         <input
                             style="width: 90%"

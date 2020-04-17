@@ -454,18 +454,33 @@ class ShareesAPIController extends OCSController {
      */
     private function filterSchoolUsersGroups(bool $lookupSchool, $result)
     {
-        $currentUai = $this->getCurrentSchool();
+        $currentSiren = $this->getCurrentSirenSchool();
         if ($lookupSchool !== true) {
-            if (!is_null($currentUai)) {
+            if (!is_null($currentSiren)) {
                 $query = $this->db->getQueryBuilder();
-                $query->select('user_group')
-                    ->from('asso_uai_user_group')
-                    ->where($query->expr()->eq('uai', $query->createNamedParameter(
-                        $currentUai
+                $query->select('id')
+                    ->from('etablissements')
+                    ->where($query->expr()->eq('siren', $query->createNamedParameter(
+                        $currentSiren
                     )));
-                $searchedUserGroup = array_map(function ($userGroup) {
-                    return $userGroup['user_group'];
-                }, $query->execute()->fetchAll());
+
+                $etablissements = $query->execute()->fetchAll();
+                if (count($etablissements) > 0) {
+                    $query = $this->db->getQueryBuilder();
+                    $query->select('user_group')
+                        ->from('asso_uai_user_group')
+                        ->where($query->expr()->eq('id_etablissement', $query->createNamedParameter(
+                            $etablissements[0]['id']
+                        )));
+                    $searchedUserGroup = array_map(function ($userGroup) {
+                        return $userGroup['user_group'];
+                    }, $query->execute()->fetchAll());
+                } else {
+                    $searchedUserGroup = [
+                        "groups" => [],
+                        "users" => []
+                    ];
+                }
             } else {
                 $searchedUserGroup = [
                     "groups" => [],
@@ -474,20 +489,20 @@ class ShareesAPIController extends OCSController {
             }
         } else {
             $qb = $this->db->getQueryBuilder();
-            $qb->select('uai')
+            $qb->select('id_etablissement')
                 ->from('asso_uai_user_group')
                 ->where($qb->expr()->eq('user_group', $qb->createNamedParameter($this->userId)));
             $userEtablissements = $qb->execute()->fetchAll();
-            $userUai = array_unique(array_map(function ($asso) {
-                return $asso['uai'];
+            $userIdEtablissement = array_unique(array_map(function ($asso) {
+                return $asso['id_etablissement'];
             }, $userEtablissements));
 
 
             $query = $this->db->getQueryBuilder();
             $query->select('user_group')
                 ->from('asso_uai_user_group')
-                ->where($query->expr()->in('uai', $query->createNamedParameter(
-                    $userUai,
+                ->where($query->expr()->in('id_etablissement', $query->createNamedParameter(
+                    $userIdEtablissement,
                     Connection::PARAM_STR_ARRAY
                 )));
             $searchedUserGroup = array_map(function ($userGroup) {
@@ -518,7 +533,7 @@ class ShareesAPIController extends OCSController {
     }
 
 
-    private function getCurrentSchool() {
+    private function getCurrentSirenSchool() {
         try {
             $currentSchool = null;
 
@@ -540,7 +555,7 @@ class ShareesAPIController extends OCSController {
                 ldap_control_paged_result($ldapConnection, 1);
 
                 // Query user attributes
-                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOUAICourant"]);
+                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
                 if (ldap_error($ldapConnection) == "No such object") {
                     return [];
                 }
@@ -551,8 +566,8 @@ class ShareesAPIController extends OCSController {
                 $attributes = ldap_get_entries($ldapConnection, $results);
 
                 // Return attributes list
-                if (isset($attributes[0]) && array_key_exists('escouaicourant', $attributes[0]) && isset($attributes[0]['escouaicourant'][0])) {
-                    $currentSchool = $attributes[0]['escouaicourant'][0];
+                if (isset($attributes[0]) && array_key_exists('escosirencourant', $attributes[0]) && isset($attributes[0]['escosirencourant'][0])) {
+                    $currentSchool = $attributes[0]['escosirencourant'][0];
                 }
                 else {
                     $currentSchool = null;

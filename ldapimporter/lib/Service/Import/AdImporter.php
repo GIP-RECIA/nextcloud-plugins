@@ -118,9 +118,6 @@ class AdImporter implements ImporterInterface
 
         $emailAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_email');
         $groupsAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_groups');
-        $regexNameUai = $this->config->getAppValue($this->appName, 'cas_import_regex_name_uai');
-/*        $regexUaiGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_uai_group');
-        $regexNameGroup = $this->config->getAppValue($this->appName, 'cas_import_regex_name_group');*/
 
         $groupsFilterAttribute = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_fonctionel'), true);
         $arrayGroupsAttrPedagogic = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_groups_pedagogic'), true);
@@ -154,7 +151,8 @@ class AdImporter implements ImporterInterface
                 '(' .
                 'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
                 'name VARCHAR(255),' .
-                'uai VARCHAR(255)' .
+                'uai VARCHAR(255),' .
+                'siren VARCHAR(255)' .
                 ')';
             $this->db->executeQuery($sql);
         }
@@ -163,18 +161,10 @@ class AdImporter implements ImporterInterface
                 'CREATE TABLE `*PREFIX*asso_uai_user_group`' .
                 '(' .
                 'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
-                'uai VARCHAR(255),' .
+                'id_etablissement VARCHAR(255),' .
                 'user_group VARCHAR(255)' .
                 ')';
             $this->db->executeQuery($sql);
-        }
-        $sql = 'ALTER TABLE *PREFIX*users ADD uai_courant VARCHAR(255);';
-
-        try {
-            $this->db->executeQuery($sql);
-        }
-        catch (\Throwable $t) {
-            $this->logger->info('Column uai_courant already exist');
         }
 
         $pageSize = $this->config->getAppValue($this->appName, 'cas_import_ad_sync_pagesize');
@@ -246,6 +236,55 @@ class AdImporter implements ImporterInterface
                 if (isset($m[strtolower($groupsAttribute)][0])) {
 
                     # Cycle all groups of the user
+                    $assoEtablissementUaiOrNameAndId = [];
+
+                    for ($j = 0; $j < $m[strtolower($groupsAttribute)]["count"]; $j++) {
+                        $resultGroupsAttribute = $m[strtolower($groupsAttribute)][$j];
+
+                        # Check if user has MAP_GROUPS attribute
+                        if (isset($m[strtolower(($groupsAttribute))][$j])) {
+                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
+                                if (array_key_exists("nameUai", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameUai"])) {
+                                    preg_match_all('/' . $regexNameUaiGroup["nameUai"] . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
+
+                                    if (sizeof($uaiNameMatches) > 0 && sizeof($uaiNameMatches[0]) >= 3) {
+                                        $indexRegexUaiGroup = array_key_exists("uaiGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["uaiGroup"]) ? intval($regexNameUaiGroup["uaiGroup"]) : null;
+                                        $indexRegexNameGroup = array_key_exists("nameGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameGroup"]) ? intval($regexNameUaiGroup["nameGroup"]) : null;
+                                        $uaiEtablissement = is_null($indexRegexUaiGroup)  ? null : $uaiNameMatches[0][$indexRegexUaiGroup];
+                                        $nameEtablissement = is_null($indexRegexNameGroup) ? null : $uaiNameMatches[0][$indexRegexNameGroup];
+
+
+                                        $groupCnEtablissement = str_replace("people", "structures", $this->config->getAppValue($this->appName, 'cas_import_ad_base_dn'));
+                                        if (is_null($uaiEtablissement)) {
+                                            $filter = "ENTStructureNomCourant=" . str_replace("'", "\\27", str_replace(" ", "\\20", $nameEtablissement));
+                                            $groupAttr = $this->getLdapSearch($groupCnEtablissement, $filter);
+                                            $assoEtab = $nameEtablissement;
+                                        }
+                                        else {
+                                            $filter = "ENTStructureUAI=" . $uaiEtablissement;
+                                            $groupAttr = $this->getLdapSearch($groupCnEtablissement, $filter);
+                                            $assoEtab = $uaiEtablissement;
+                                        }
+                                        $sirenEtab = null;
+                                        $uaiEtab = null;
+                                        if (array_key_exists('entstructuresiren', $groupAttr) && $groupAttr['entstructuresiren']['count'] > 0) {
+                                            $sirenEtab = $groupAttr['entstructuresiren'][0];
+                                        }
+
+                                        if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
+                                            $uaiEtab = $groupAttr['entstructureuai'][0];
+                                        }
+
+                                        $idEtab = $this->addEtablissement($uaiEtab, $nameEtablissement, $sirenEtab);
+                                        $assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+
                     for ($j = 0; $j < $m[strtolower($groupsAttribute)]["count"]; $j++) {
 
                         # Check if user has MAP_GROUPS attribute
@@ -256,24 +295,6 @@ class AdImporter implements ImporterInterface
                             $resultGroupsAttribute = $m[strtolower($groupsAttribute)][$j];
 
                             $groupName = '';
-
-                            $uaiEtablissement = null;
-                            $nameEtablissement = null;
-
-                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
-                                if (array_key_exists("nameUai", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameUai"])) {
-                                    preg_match_all('/' . $regexNameUaiGroup["nameUai"] . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
-
-                                    if (sizeof($uaiNameMatches) > 0 && sizeof($uaiNameMatches[0]) >= 3) {
-                                        $indexRegexUaiGroup = array_key_exists("uaiGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["uaiGroup"]) ? intval($regexNameUaiGroup["uaiGroup"]) : null;
-                                        $indexRegexNameGroup = array_key_exists("nameGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameGroup"]) ? intval($regexNameUaiGroup["nameGroup"]) : null;
-                                        $uaiEtablissement = is_null($indexRegexUaiGroup)  ? null : $uaiNameMatches[0][$indexRegexUaiGroup];
-                                        $nameEtablissement = is_null($indexRegexNameGroup) ? null : $uaiNameMatches[0][$indexRegexNameGroup];
-                                        $this->addEtablissement($uaiEtablissement, $nameEtablissement);
-                                        break;
-                                    }
-                                }
-                            }
 
 
                             foreach ($groupsFilterAttribute as $groupFilter) {
@@ -294,9 +315,14 @@ class AdImporter implements ImporterInterface
                                                 $sprintfArray[] = $groupFilterMatches[$match[1]][0];
                                             }
                                             $groupName = sprintf($newName, ...$sprintfArray);
-                                            if (!is_null($uaiEtablissement)) {
-                                                $this->addEtablissementAsso($uaiEtablissement, $groupName);
-                                                $this->addEtablissementAsso($uaiEtablissement, $employeeID);
+                                            if (!is_null($groupFilterMatches) && !is_null($groupFilter["uaiNumber"]) && count($assoEtablissementUaiOrNameAndId) > 0) {
+                                                $nameOrUaiFromUaiNumber = $groupFilterMatches[intval($groupFilter["uaiNumber"])];
+                                                $idEtablissement = $assoEtablissementUaiOrNameAndId[$nameOrUaiFromUaiNumber[0]];
+                                                $this->addEtablissementAsso($idEtablissement, $groupName);
+                                                $this->addEtablissementAsso($idEtablissement, $employeeID);
+                                            }
+                                            elseif (!is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
+                                                $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
                                             }
                                             break;
                                         }
@@ -337,7 +363,7 @@ class AdImporter implements ImporterInterface
                                     $groupCn = array_shift($arrayGroupNamePedagogic);
 
                                     # Retrieve the MAP_GROUPS_FIELD attribute of the group
-                                    $groupAttr = $this->getLdapPedagogicGroup($groupCn);
+                                    $groupAttr = $this->getLdapSearch($groupCn);
                                     $groupName = '';
                                     if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
                                         $this->addEtablissementAsso($groupAttr['entstructureuai'][0], $groupName);
@@ -400,7 +426,6 @@ class AdImporter implements ImporterInterface
     }
 
     /**
-     * Ajout d'un établissement et d'une asso uai -> user/groups si il n'existe pas dans la bdd
      *
      * @param $uai
      * @return mixed|null
@@ -429,61 +454,57 @@ class AdImporter implements ImporterInterface
      *
      * @param $uai
      * @param $name
+     * @param $siren
+     * @return mixed|null
      */
-    protected function addEtablissement($uai, $name)
+    protected function addEtablissement($uai, $name, $siren)
     {
         if (!is_null($name)) {
-            if (is_null($uai)) {
-                $qbEtablissementName = $this->db->getQueryBuilder();
-                $qbEtablissementName->select('*')
-                    ->from('etablissements')
-                    ->where($qbEtablissementName->expr()->eq('name', $qbEtablissementName->createNamedParameter($name)));
-                $result = $qbEtablissementName->execute();
-                $etablissement = $result->fetchAll();
+            $qbEtablissement = $this->db->getQueryBuilder();
+            $qbEtablissement->select('*')
+                ->from('etablissements')
+                ->where($qbEtablissement->expr()->eq('siren', $qbEtablissement->createNamedParameter($siren)))
+                ->orWhere($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
+            ->orWhere($qbEtablissement->expr()->eq('name', $qbEtablissement->createNamedParameter($name)));
+            $result = $qbEtablissement->execute();
+            $etablissement = $result->fetchAll();
 
-                if (sizeof($etablissement) === 0) {
-                    $insertEtablissementName = $this->db->getQueryBuilder();
-                    $insertEtablissementName->insert('etablissements')
-                        ->values([
-                            'name' => $insertEtablissementName->createNamedParameter($name),
-                        ]);
-                    $insertEtablissementName->execute();
-                }
-            } else {
-                $qbEtablissement = $this->db->getQueryBuilder();
-                $qbEtablissement->select('*')
-                    ->from('etablissements')
-                    ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)));
-                $result = $qbEtablissement->execute();
-                $etablissement = $result->fetchAll();
-
-                if (sizeof($etablissement) === 0) {
-                    $insertEtablissement = $this->db->getQueryBuilder();
-                    $insertEtablissement->insert('etablissements')
-                        ->values([
-                            'uai' => $insertEtablissement->createNamedParameter($uai),
-                            'name' => $insertEtablissement->createNamedParameter($name),
-                        ]);
-                    $insertEtablissement->execute();
-                }
+            if (sizeof($etablissement) === 0) {
+                $insertEtablissement = $this->db->getQueryBuilder();
+                $insertEtablissement->insert('etablissements')
+                    ->values([
+                        'uai' => $insertEtablissement->createNamedParameter($uai),
+                        'name' => $insertEtablissement->createNamedParameter($name),
+                        'siren' => $insertEtablissement->createNamedParameter($siren),
+                    ]);
+                $insertEtablissement->execute();
             }
+            $newEtablissement = $this->db->getQueryBuilder();
+            $newEtablissement->select('id')
+                ->from('etablissements')
+                ->where($newEtablissement->expr()->eq('siren', $newEtablissement->createNamedParameter($siren)))
+                ->orWhere($newEtablissement->expr()->eq('uai', $newEtablissement->createNamedParameter($uai)));
+            $result = $newEtablissement->execute();
+            $newEtab = $result->fetchAll()[0];
+            return $newEtab["id"];
         }
+        return null;
     }
 
 
     /**
-     * Ajout d'un établissement et d'une asso uai -> user/groups si il n'existe pas dans la bdd
+     * Ajout d'un établissement et d'une asso id_etablissement -> user/groups si il n'existe pas dans la bdd
      *
-     * @param $uai
+     * @param $idEtablissement
      * @param $groupUserId
      */
-    protected function addEtablissementAsso($uai, $groupUserId)
+    protected function addEtablissementAsso($idEtablissement, $groupUserId)
     {
-        if (!is_null($groupUserId) && !empty($groupUserId) && !is_null($uai)) {
+        if (!is_null($groupUserId) && !empty($groupUserId) && !is_null($idEtablissement)) {
             $qb = $this->db->getQueryBuilder();
             $qb->select('*')
                 ->from('asso_uai_user_group')
-                ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)))
+                ->where($qb->expr()->eq('id_etablissement', $qb->createNamedParameter($idEtablissement)))
                 ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)));
             $result = $qb->execute();
             $assoOaiUserGroup = $result->fetchAll();
@@ -491,7 +512,7 @@ class AdImporter implements ImporterInterface
                 $insertAsso = $this->db->getQueryBuilder();
                 $insertAsso->insert('asso_uai_user_group')
                     ->values([
-                        'uai' => $insertAsso->createNamedParameter($uai),
+                        'id_etablissement' => $insertAsso->createNamedParameter($idEtablissement),
                         'user_group' => $insertAsso->createNamedParameter($groupUserId),
                     ]);
                 $insertAsso->execute();
@@ -575,7 +596,7 @@ class AdImporter implements ImporterInterface
      * @param bool $keep
      * @return array Attribute list
      */
-    protected function getLdapPedagogicGroup($groupCn, $filter = 'objectClass=*',$keep = false)
+    protected function getLdapSearch($groupCn, $filter = 'objectClass=*',$keep = false)
     {
         if (!isset($this->ldapConnection)) die('Error, no LDAP connection established');
         if (empty($groupCn)) die('Error, no LDAP user specified');
