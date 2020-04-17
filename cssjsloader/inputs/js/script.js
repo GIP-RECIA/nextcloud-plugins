@@ -1,4 +1,10 @@
 
+var body = document.getElementsByTagName("body")[0];
+if (body.id == 'body-login') {
+	window.location.href="apps/user_cas/login";
+	window.location.reload();
+} else {
+
 if (typeof EscoNextAddon == 'undefined' ) {
     EscoNextAddon = new Object();
 
@@ -105,11 +111,13 @@ if (typeof EscoNextAddon == 'undefined' ) {
 
     }
 
-    EscoNextAddon.setClassBody = function(){
+    EscoNextAddon.setClassBody = function(embedded){
         if (EscoNextAddon.classToAdd) {
             var cl = window.document.body.classList;
             cl.add(EscoNextAddon.classToAdd);
-            cl.add("embedded");
+            if (embedded) {
+				cl.add( embedded);
+			}
         }
     }
 
@@ -134,12 +142,14 @@ if (typeof EscoNextAddon == 'undefined' ) {
                 for (cpt = 0; cpt < allIfr.length; cpt++ ) {
                     EscoNextAddon.resizeIfr(allIfr[cpt]);
 				}
+				var height = body.offsetHeight + 0;
                 if (ifr) {
-					
-                    var height = body.offsetHeight + 0;
              //       console.log(height);
                     ifr.setAttribute("height", height);
-                  
+				} else {
+						if (typeof EscoNextAddon.target == "undefined" ) {
+							EscoNextAddon.target.postMessage("iframeHeight " + height, "*");
+						}
 				}
                 return true;
 			}
@@ -158,23 +168,47 @@ if (typeof EscoNextAddon == 'undefined' ) {
     EscoNextAddon.resizeIfrTimer = resizeIfrTimer;
 */
 
+	EscoNextAddon.initPostMessage = function  {
+		EscoNextAddon.target = parent.postMessage ? parent : (parent.document.postMessage ? parent.document : undefined);
+		if (typeof target == "undefined") return true;
+		return false;
+	}
+	
+	function postMessageResize(height){
+		EscoNextAddon.target.postMessage("iframeHeight " + height, "*");
+	}
+	
 } else {
     EscoNextAddon.mylog('rechargement EscoNextAddon');
 }
 
+	
 $(function(){
-EscoNextAddon.initParent();
 
-EscoNextAddon.setClassBody();
-
-    var ifr;
+	if (EscoNextAddon.initPostMessage()) {
+		alert('post message init');
+		EscoNextAddon.resizeIfr();
+			setInterval(function(){ EscoNextAddon.resizeIfr()} , 500);
+	} else {
+    
     if (EscoNextAddon.initParent()) {
+		EscoNextAddon.setClassBody('embedded');
+
         EscoNextAddon.mylog("EscoNextAddon.initParent = true");
-        ifr = EscoNextAddon.iframe;
-    }
-    if (ifr) {
-	  EscoNextAddon.resizeIfr(ifr);
-	setInterval(function(){ EscoNextAddon.resizeIfr(ifr)} , 500);
+        var ifr = EscoNextAddon.iframe;
+        if (ifr) {
+			EscoNextAddon.resizeIfr(ifr);
+			setInterval(function(){ EscoNextAddon.resizeIfr(ifr)} , 500);
+			$('[target="_blank"]').attr("target", '');
+		}
+    } else {
+		var host = window.location.hostname;
+		var dom = new Object();
+		dom['test-clg37.giprecia.net']='clg37';
+		dom['test-lycee.giprecia.net']='esco';
+		EscoNextAddon.classToAdd = dom[host];
+		EscoNextAddon.setClassBody();
 	}
-    $('[target="_blank"]').attr("target", '');
+}
 });
+}
