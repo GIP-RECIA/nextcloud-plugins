@@ -1,10 +1,14 @@
 body#body-user #header, body#body-settings #header, body#body-public #header {
   background-image: none;
-  background-color: #F3F3F3;
+  background-color: #888888;
   /*		margin-bottom: 2px;*/ }
   body#body-user #header a#nextcloud, body#body-user #header ul#appmenu, body#body-user #header div.header-right, body#body-settings #header a#nextcloud, body#body-settings #header ul#appmenu, body#body-settings #header div.header-right, body#body-public #header a#nextcloud, body#body-public #header ul#appmenu, body#body-public #header div.header-right {
     color: black;
     /*			height: 50px; */ }
+body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown {
+  display: none; }
+  body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown + div#expandDisplayName {
+    display: block; }
 
 /*
 @media only screen and (min-width: 1025px) {
@@ -25,17 +29,11 @@ body {
 body.embedded li[data-id="logout"] {
   display: none; }
 
-body.clg37#body-user #header, body.clg37#body-settings #header, body.clg37#body-public #header {
-  background-image: linear-gradient(30deg, #c60440 0%, #f3F3F3 40%, #F3F3F3 59%, #c60440 100%); }
-  body.clg37#body-user #header a#nextcloud, body.clg37#body-user #header ul#appmenu, body.clg37#body-user #header div.header-right, body.clg37#body-settings #header a#nextcloud, body.clg37#body-settings #header ul#appmenu, body.clg37#body-settings #header div.header-right, body.clg37#body-public #header a#nextcloud, body.clg37#body-public #header ul#appmenu, body.clg37#body-public #header div.header-right {
-    background-color: transparent; }
-body.agri#body-user #header, body.agri#body-settings #header, body.agri#body-public #header {
-  background-image: linear-gradient(30deg, #2d8c17 0%, #f3F3F3 40%, #F3F3F3 59%, #2d8c17 100%); }
-  body.agri#body-user #header a#nextcloud, body.agri#body-user #header ul#appmenu, body.agri#body-user #header div.header-right, body.agri#body-settings #header a#nextcloud, body.agri#body-settings #header ul#appmenu, body.agri#body-settings #header div.header-right, body.agri#body-public #header a#nextcloud, body.agri#body-public #header ul#appmenu, body.agri#body-public #header div.header-right {
-    background-color: transparent; }
-body.esco#body-user #header, body.esco#body-settings #header, body.esco#body-public #header {
-  background-image: linear-gradient(30deg, #25b2f3 0%, #f3F3F3 40%, #F3F3F3 59%, #25b2f3 100%); }
-  body.esco#body-user #header a#nextcloud, body.esco#body-user #header ul#appmenu, body.esco#body-user #header div.header-right, body.esco#body-settings #header a#nextcloud, body.esco#body-settings #header ul#appmenu, body.esco#body-settings #header div.header-right, body.esco#body-public #header a#nextcloud, body.esco#body-public #header ul#appmenu, body.esco#body-public #header div.header-right {
-    background-color: transparent; }
+body.clg37#body-user #header a#nextcloud, body.clg37#body-user #header ul#appmenu, body.clg37#body-user #header div.header-right, body.clg37#body-settings #header a#nextcloud, body.clg37#body-settings #header ul#appmenu, body.clg37#body-settings #header div.header-right, body.clg37#body-public #header a#nextcloud, body.clg37#body-public #header ul#appmenu, body.clg37#body-public #header div.header-right {
+  background-color: #888888; }
+body.agri#body-user #header a#nextcloud, body.agri#body-user #header ul#appmenu, body.agri#body-user #header div.header-right, body.agri#body-settings #header a#nextcloud, body.agri#body-settings #header ul#appmenu, body.agri#body-settings #header div.header-right, body.agri#body-public #header a#nextcloud, body.agri#body-public #header ul#appmenu, body.agri#body-public #header div.header-right {
+  background-color: #888888; }
+body.esco#body-user #header a#nextcloud, body.esco#body-user #header ul#appmenu, body.esco#body-user #header div.header-right, body.esco#body-settings #header a#nextcloud, body.esco#body-settings #header ul#appmenu, body.esco#body-settings #header div.header-right, body.esco#body-public #header a#nextcloud, body.esco#body-public #header ul#appmenu, body.esco#body-public #header div.header-right {
+  background-color: #888888; }
 
 /*# sourceMappingURL=reciaStyle.css.map */
