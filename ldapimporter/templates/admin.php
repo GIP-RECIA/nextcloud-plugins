@@ -39,16 +39,11 @@ style('ldapimporter', 'settings');
                         name="cas_import_ad_port"
                         value="<?php p($_['cas_import_ad_port']); ?>" placeholder="636"/>
             </p>
-            <p><label for="cas_import_ad_user"><?php p($l->t('LDAP User and Domain')); ?></label>
+            <p><label for="cas_import_ad_user"><?php p($l->t('LDAP User')); ?></label>
                 <input
                         id="cas_import_ad_user"
                         name="cas_import_ad_user"
                         value="<?php p($_['cas_import_ad_user']); ?>" placeholder="admin"/>
-                @
-                <input
-                        id="cas_import_ad_domain"
-                        name="cas_import_ad_domain"
-                        value="<?php p($_['cas_import_ad_domain']); ?>" placeholder="ldap.mydomain.com"/>
             </p>
             <p><label for="cas_import_ad_password"><?php p($l->t('LDAP User Password')); ?></label>
                 <input
