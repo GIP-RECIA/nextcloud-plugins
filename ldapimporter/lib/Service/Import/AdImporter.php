@@ -366,8 +366,9 @@ class AdImporter implements ImporterInterface
                                     $groupAttr = $this->getLdapSearch($groupCn);
                                     $groupName = '';
                                     if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
-                                        $this->addEtablissementAsso($groupAttr['entstructureuai'][0], $groupName);
-                                        $this->addEtablissementAsso($groupAttr['entstructureuai'][0], $employeeID);
+                                        $idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
+                                        $this->addEtablissementAsso($idEtablishement, $groupName);
+                                        $this->addEtablissementAsso($idEtablishement, $employeeID);
                                     }
 
                                     $regexGabarits = '/\$\{(.*?)\}/i';
@@ -491,6 +492,24 @@ class AdImporter implements ImporterInterface
         return null;
     }
 
+    /**
+     * Récupération de l'id d'un etablissement depuis son uai
+     *
+     * @param $uai
+     * @return mixed
+     */
+    protected function getIdEtablissementFromUai($uai)
+    {
+        if (!is_null($uai)) {
+            $qb = $this->db->getQueryBuilder();
+            $qb->select('id')
+                ->from('etablissements')
+                ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)));
+            $result = $qb->execute();
+            $idEtabs = $result->fetchAll()[0];
+            return $idEtabs["id"];
+        }
+    }
 
     /**
      * Ajout d'un établissement et d'une asso id_etablissement -> user/groups si il n'existe pas dans la bdd
