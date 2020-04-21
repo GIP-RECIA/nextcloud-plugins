@@ -51,7 +51,9 @@ class Mapper {
 	 */
 	public function getBucket($numBuckets = 64) {
 		$hash = md5($this->user->getUID());
+		if ($nulBuckets == 0 ) return base_convert($hash, 16, 36);
 		$num = hexdec(substr($hash, 0, 4));
 		return (string)($num % $numBuckets);
 	}
+
 }
