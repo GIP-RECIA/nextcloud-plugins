@@ -22,7 +22,7 @@ if (body.id == 'body-login') {
 		
 	$(function(){
 		var host = window.location.hostname;
-		alert(host);
+
 		var dom = new Object();
 		dom['test-clg37.giprecia.net']='clg37';
 		dom['test-lycee.giprecia.net']='esco';
