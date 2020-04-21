@@ -26,6 +26,8 @@ if (body.id == 'body-login') {
 		var dom = new Object();
 		dom['test-clg37.giprecia.net']='clg37';
 		dom['test-lycee.giprecia.net']='esco';
+		dom['nc-lycees.netocentre.fr']='esco';
+		dom['nc-agri.netocentre.fr']= 'agri';
 		
 		EscoNextAddon.classToAdd = dom[host];
 		EscoNextAddon.setClassBody('embedded');
