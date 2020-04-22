@@ -85,7 +85,13 @@ $(document).ready(function () {
 
     const importMapGroupsPedagogic = $('#cas_import_map_groups_pedagogic').val();
     if (importMapGroupsPedagogic.length > 0) {
-        Object.entries(JSON.parse(importMapGroupsPedagogic.replace(/&quot;/g,'"'))).forEach(function([key, pedagogicGroup], i) {
+        let parsedPedagogicGroups = null;
+        try {
+            parsedPedagogicGroups = JSON.parse(decodeHTMLEntities(importMapGroupsPedagogic))
+        } catch(e) {
+            parsedPedagogicGroups = []
+        }
+        Object.entries(parsedPedagogicGroups).forEach(function([key, pedagogicGroup], i) {
             if (i === 0) {
                 $('#cas_import_map_groups_pedagogic_first').val(pedagogicGroup.field)
                 $('#cas_import_map_groups_pedagogic_filter_first').val(pedagogicGroup.filter)
@@ -124,7 +130,13 @@ $(document).ready(function () {
 
     const importMapFilterGroups = $('#cas_import_map_groups_fonctionel').val();
     if (importMapFilterGroups.length > 0) {
-            Object.entries(JSON.parse(importMapFilterGroups.replace(/&quot;/g,'"'))).forEach(function ([key, fonctionnelGroup], i) {
+        let parsedFilterGroups = null;
+        try {
+            parsedFilterGroups = JSON.parse(decodeHTMLEntities(importMapFilterGroups))
+        } catch(e) {
+            parsedFilterGroups = []
+        }
+        Object.entries(parsedFilterGroups).forEach(function ([key, fonctionnelGroup], i) {
             if (i === 0) {
                 $('#cas_import_map_groups_filter_first').val(fonctionnelGroup.filter);
                 $('#cas_import_map_groups_naming_first').val(fonctionnelGroup.naming)
@@ -173,7 +185,13 @@ $(document).ready(function () {
 
     const importNameUaiGroups = $('#cas_import_map_regex_name_uai').val();
     if (importNameUaiGroups.length > 0) {
-        Object.entries(JSON.parse(importNameUaiGroups.replace(/&quot;/g,'"'))).forEach(function ([key, group], i) {
+        let parsedNameUaiGroups = null;
+        try {
+            parsedNameUaiGroups = JSON.parse(decodeHTMLEntities(importNameUaiGroups))
+        } catch(e) {
+            parsedNameUaiGroups = []
+        }
+        Object.entries(parsedNameUaiGroups).forEach(function ([key, group], i) {
             if (i === 0) {
                 $('#cas_import_regex_name_uai_first').val(group.nameUai);
                 $('#cas_import_regex_name_group_first').val(group.nameGroup)
@@ -397,3 +415,9 @@ $(document).ready(function () {
             "</div>");
     });
 });
+
+function decodeHTMLEntities(text) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+}
