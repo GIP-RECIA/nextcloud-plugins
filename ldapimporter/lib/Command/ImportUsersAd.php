@@ -156,8 +156,7 @@ class ImportUsersAd extends Command
                         '--email' => $user["email"],
                         '--quota' => $user["quota"],
                         '--enabled' => $user["enable"],
-                        '--group' => $user["groups"],
-                        '--uai-courant' => $user["uai_courant"]
+                        '--group' => $user["groups"]
                     ];
 
                     # Create user if he does not exist
