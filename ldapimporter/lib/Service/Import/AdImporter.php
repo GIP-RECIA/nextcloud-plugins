@@ -300,8 +300,8 @@ class AdImporter implements ImporterInterface
                             foreach ($groupsFilterAttribute as $groupFilter) {
                                 if (array_key_exists('filter', $groupFilter)) {
                                     if (preg_match_all("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
-                                        if (!isset($quota) || intval($quota) < intval($groupFilter['filter'])) {
-                                            $quota = $groupFilter['filter'];
+                                        if (!isset($quota) || intval($quota) < intval($groupFilter['quota'])) {
+                                            $quota = $groupFilter['quota'];
                                         }
                                         if (array_key_exists('naming', $groupFilter)) {
 
@@ -334,7 +334,7 @@ class AdImporter implements ImporterInterface
                             }
 
                             if (strlen($groupName) > 0) {
-                                $this->logger->info("Groupes fonctionels : Ajout du groupe : " . $groupName);
+                                $this->logger->debug("Groupes fonctionels :" . $groupName);
                                 $groupsArray[] = $groupName;
                             }
                         }
@@ -396,7 +396,7 @@ class AdImporter implements ImporterInterface
                                     $groupName = sprintf($pedagogicNaming, ...$sprintfArray);
 
                                     if ($groupName && strlen($groupName) > 0) {
-                                        $this->logger->info("Groupes pédagogique : Ajout du groupe : " . $groupName);
+                                        $this->logger->debug("Groupes pédagogique : " . $groupName);
                                         $groupsArray[] = $groupName;
                                     }
                                 }
@@ -421,7 +421,7 @@ class AdImporter implements ImporterInterface
             }
         }
 
-        $this->logger->info("Users have been retrieved.");
+        $this->logger->info("Users have been retrieved : " . count($users));
 
         return $users;
     }
@@ -553,9 +553,9 @@ class AdImporter implements ImporterInterface
     protected function getLdapList($object_dn, $filter, $keepAtributes, $pageSize)
     {
         if (!is_null($this->ldapFilter)) {
-            $filter = $this->ldapFilter;
+			  $filter = "(&" . $this->ldapFilter . $filter . ")";
         }
-
+		$this->logger->info('ldap filter = ' . $filter);
         $cookie = '';
         $members = [];
 

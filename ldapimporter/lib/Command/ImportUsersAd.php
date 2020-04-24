@@ -150,7 +150,7 @@ class ImportUsersAd extends Command
                 foreach ($allUsers as $user) {
 
                     $arguments = [
-                        'command' => 'cas:create-user',
+                        'command' => 'ldap:create-user',
                         'uid' => $user["uid"],
                         '--display-name' => $user["displayName"],
                         '--email' => $user["email"],
@@ -161,6 +161,7 @@ class ImportUsersAd extends Command
 
                     # Create user if he does not exist
                     if (!$this->userManager->userExists($user["uid"])) {
+$logger->info(" " . implode(',' , array_slice($arguments, 0,  6)). "[" . implode(', ' , $user["groups"]) . ']');
 
                         $input = new ArrayInput($arguments);
 
@@ -169,6 +170,7 @@ class ImportUsersAd extends Command
                     else if ($this->userManager->userExists($user["uid"]) && $deltaUpdate) {
 
                         $arguments['command'] = 'ldap:update-user';
+$logger->info(" " . implode(',' , array_slice($arguments, 0, 6)). "[" . implode(', ' , $user["groups"]) . ']');
 
                         if ($convertBackend) {
 

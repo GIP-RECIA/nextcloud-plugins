@@ -427,10 +427,9 @@ class UserService
             if (!$this->groupManager->isInGroup($uid, $group)) {
 
                 if (!$this->groupManager->groupExists($group)) {
-
+					$this->loggingService->write(LoggingService::DEBUG, 'New group to created: ' . $group);
                     $groupObject = $this->groupManager->createGroup($group);
-
-                    $this->loggingService->write(LoggingService::DEBUG, 'New group created: ' . $group);
+ 
                     #\OCP\Util::writeLog('cas', 'New group created: ' . $group, \OCA\LdapImporter\Service\LoggingService::DEBUG);
                 } else {
 
