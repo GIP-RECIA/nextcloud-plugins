@@ -290,16 +290,17 @@ class AdImporter implements ImporterInterface
                         # Check if user has MAP_GROUPS attribute
                         if (isset($m[strtolower(($groupsAttribute))][$j])) {
 
-                            $addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
+                        //    $addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
 
                             $resultGroupsAttribute = $m[strtolower($groupsAttribute)][$j];
 
                             $groupName = '';
 
-
                             foreach ($groupsFilterAttribute as $groupFilter) {
                                 if (array_key_exists('filter', $groupFilter)) {
                                     if (preg_match_all("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
+                                        $addUser = TRUE; # Only add user if the group has a MAP_GROUPS  attribute matching
+
                                         if (!isset($quota) || intval($quota) < intval($groupFilter['quota'])) {
                                             $quota = $groupFilter['quota'];
                                         }
@@ -340,74 +341,75 @@ class AdImporter implements ImporterInterface
                         }
                     }
                 }
+                
+				if ($addUser) {
+					foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
+						if (array_key_exists("field", $groupsAttrPedagogic) && isset($m[strtolower($groupsAttrPedagogic["field"])][0]) && strlen($groupsAttrPedagogic["field"]) > 0 &&
+							array_key_exists("filter", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["filter"]) > 0 &&
+							array_key_exists("naming", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["naming"]) > 0
+						) {
+							$pedagogicField = $groupsAttrPedagogic["field"];
 
-                foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
-                    if (array_key_exists("field", $groupsAttrPedagogic) && isset($m[strtolower($groupsAttrPedagogic["field"])][0]) && strlen($groupsAttrPedagogic["field"]) > 0 &&
-                        array_key_exists("filter", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["filter"]) > 0 &&
-                        array_key_exists("naming", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["naming"]) > 0
-                    ) {
-                        $pedagogicField = $groupsAttrPedagogic["field"];
+							# Cycle all groups of the user
+							for ($j = 0; $j < $m[strtolower($pedagogicField)]["count"]; $j++) {
+								$attrPedagogicStr = $m[strtolower($pedagogicField)][$j];
+								$pedagogicFilter = $groupsAttrPedagogic["filter"];
+								$pedagogicNaming = $groupsAttrPedagogic["naming"];
 
-                        # Cycle all groups of the user
-                        for ($j = 0; $j < $m[strtolower($pedagogicField)]["count"]; $j++) {
-                            $attrPedagogicStr = $m[strtolower($pedagogicField)][$j];
-                            $pedagogicFilter = $groupsAttrPedagogic["filter"];
-                            $pedagogicNaming = $groupsAttrPedagogic["naming"];
+								if (preg_match_all("/" . $pedagogicFilter . "/si", $attrPedagogicStr, $groupPedagogicMatches)) {
+									# Check if user has MAP_GROUPS attribute
+									if (isset($attrPedagogicStr) && strpos($attrPedagogicStr, "$")) {
+										$addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
+										$arrayGroupNamePedagogic = explode('$', $attrPedagogicStr);
 
-                            if (preg_match_all("/" . $pedagogicFilter . "/si", $attrPedagogicStr, $groupPedagogicMatches)) {
-                                # Check if user has MAP_GROUPS attribute
-                                if (isset($attrPedagogicStr) && strpos($attrPedagogicStr, "$")) {
-                                    $addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
-                                    $arrayGroupNamePedagogic = explode('$', $attrPedagogicStr);
+										$groupCn = array_shift($arrayGroupNamePedagogic);
 
-                                    $groupCn = array_shift($arrayGroupNamePedagogic);
+										# Retrieve the MAP_GROUPS_FIELD attribute of the group
+										$groupAttr = $this->getLdapSearch($groupCn);
+										$groupName = '';
+										if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
+											$idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
+											$this->addEtablissementAsso($idEtablishement, $groupName);
+											$this->addEtablissementAsso($idEtablishement, $employeeID);
+										}
 
-                                    # Retrieve the MAP_GROUPS_FIELD attribute of the group
-                                    $groupAttr = $this->getLdapSearch($groupCn);
-                                    $groupName = '';
-                                    if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
-                                        $idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
-                                        $this->addEtablissementAsso($idEtablishement, $groupName);
-                                        $this->addEtablissementAsso($idEtablishement, $employeeID);
-                                    }
+										$regexGabarits = '/\$\{(.*?)\}/i';
 
-                                    $regexGabarits = '/\$\{(.*?)\}/i';
+										preg_match_all($regexGabarits, $pedagogicNaming, $matches, PREG_SET_ORDER, 0);
+										$sprintfArray = [];
+										foreach ($matches as $match) {
 
-                                    preg_match_all($regexGabarits, $pedagogicNaming, $matches, PREG_SET_ORDER, 0);
-                                    $sprintfArray = [];
-                                    foreach ($matches as $match) {
+											$pedagogicNaming = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $pedagogicNaming, 1);
+											if (is_numeric($match[1])) {
+												$sprintfArray[] = $groupPedagogicMatches[$match[1]][0];
+											}
+											else {
+												if (strtolower($match[1]) === 'nometablissement') {
+													$sprintfArray[] = $this->getEstablishmentNameFromUAI($groupAttr['entstructureuai'][0]);
+												}
+												elseif (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
+													$sprintfArray[] = $groupAttr[strtolower($match[1])][0];
+												}
+												else {
+													$this->logger->debug("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
+												}
+											}
+										}
+										$groupName = sprintf($pedagogicNaming, ...$sprintfArray);
 
-                                        $pedagogicNaming = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $pedagogicNaming, 1);
-                                        if (is_numeric($match[1])) {
-                                            $sprintfArray[] = $groupPedagogicMatches[$match[1]][0];
-                                        }
-                                        else {
-                                            if (strtolower($match[1]) === 'nometablissement') {
-                                                $sprintfArray[] = $this->getEstablishmentNameFromUAI($groupAttr['entstructureuai'][0]);
-                                            }
-                                            elseif (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
-                                                $sprintfArray[] = $groupAttr[strtolower($match[1])][0];
-                                            }
-                                            else {
-                                                $this->logger->debug("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
-                                            }
-                                        }
-                                    }
-                                    $groupName = sprintf($pedagogicNaming, ...$sprintfArray);
-
-                                    if ($groupName && strlen($groupName) > 0) {
-                                        $this->logger->debug("Groupes pédagogique : " . $groupName);
-                                        $groupsArray[] = $groupName;
-                                    }
-                                }
-                            }
-                            else {
-                                $this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
-                            }
-                        }
-                    }
-                }
-
+										if ($groupName && strlen($groupName) > 0) {
+											$this->logger->debug("Groupes pédagogique : " . $groupName);
+											$groupsArray[] = $groupName;
+										}
+									}
+								}
+								else {
+									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
+								}
+							}
+						}
+					}
+				}
                 # Fill the users array only if we have an employeeId and addUser is true
                 if (isset($employeeID) && $addUser) {
                     $this->logger->info("Groupes pédagogique : Ajout de l'utilisateur avec id  : " . $employeeID);
