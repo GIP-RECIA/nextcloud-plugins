@@ -367,11 +367,6 @@ class AdImporter implements ImporterInterface
 										# Retrieve the MAP_GROUPS_FIELD attribute of the group
 										$groupAttr = $this->getLdapSearch($groupCn);
 										$groupName = '';
-										if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
-											$idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
-											$this->addEtablissementAsso($idEtablishement, $groupName);
-											$this->addEtablissementAsso($idEtablishement, $employeeID);
-										}
 
 										$regexGabarits = '/\$\{(.*?)\}/i';
 
@@ -396,6 +391,13 @@ class AdImporter implements ImporterInterface
 											}
 										}
 										$groupName = sprintf($pedagogicNaming, ...$sprintfArray);
+                                        if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
+                                            $idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
+                                            if ($groupName && strlen($groupName) > 0) {
+                                                $this->addEtablissementAsso($idEtablishement, $groupName);
+                                            }
+                                            $this->addEtablissementAsso($idEtablishement, $employeeID);
+                                        }
 
 										if ($groupName && strlen($groupName) > 0) {
 											$this->logger->debug("Groupes pédagogique : " . $groupName);
@@ -467,8 +469,7 @@ class AdImporter implements ImporterInterface
             $qbEtablissement->select('*')
                 ->from('etablissements')
                 ->where($qbEtablissement->expr()->eq('siren', $qbEtablissement->createNamedParameter($siren)))
-                ->orWhere($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
-            ->orWhere($qbEtablissement->expr()->eq('name', $qbEtablissement->createNamedParameter($name)));
+                ->orWhere($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)));
             $result = $qbEtablissement->execute();
             $etablissement = $result->fetchAll();
 
