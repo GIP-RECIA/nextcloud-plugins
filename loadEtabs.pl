@@ -88,6 +88,23 @@ sub oneThread(){
 	}
 }
 
+my $noThread = 1;
+foreach my $etab (@allEtab) {
+	
+	unless (fork ) {
+		&traitementEtab($etab);
+		last;
+	} 
+	
+	if ( $noThread >= $nbThread) {
+		wait;
+	} else {
+		$noThread++;
+		sleep $delai;
+	}
+}
+
+__END__
 my $nbEtab = @allEtab;
 
 my $nbEtabRestant = $nbEtab % $nbThread;
