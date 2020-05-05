@@ -3,10 +3,14 @@ use strict;
 my $logRep = $ENV{'HOME'} . '/logs/nextcloud';
 
 my $nbThread = 3;
-my $delai = 60; // delai entre 2 thread en seconde
+my $delai = 1; # delai entre 2 threads en secondes
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 1 " ;
-$commande = "echo " .  $commande;
+#$commande = "echo " . $commande; # pour la dev
+
+my $filterUai = "(ESCOUAI=%s)";
+my $filterSiren = "(ESCOSIREN=%s)";
+my $filterGroup = "(IsMemberOf=%s)";
 
 my @allEtab;
 
@@ -18,6 +22,8 @@ unless (@ARGV) {
 if ($ARGV[0] eq 'all' ) {
 	print "chargement de tous les établissements\n";
 	@allEtab = qw(0371418R 0410899E 0180010N 0280925D 0451067R 0370051E 0370769K 0371159J 0450782F)
+} else {
+	@allEtab = @ARGV;
 }
 
 
@@ -43,9 +49,18 @@ sub traitementEtab() {
 	my $update = 0;
 	my $debut = time;
 	
-	
+	my $filtre;
 	print $LOG &heure($debut), $etab , "\n" || die "$!";
-	open  $COM , "$commande --ldap-filter='(ESCOUAI=$etab)' |" ;
+	if ($etab =~ /^\d{7}\w$/) {
+			$filtre = $filterUai;
+	} elsif ($etab =~ /^\d{14,15}$/) {
+			$filtre = $filterSiren;
+	} else {
+		$filtre = $filterGroup;
+	}
+	$filtre = sprintf($filtre, $etab);
+	
+	open  $COM , "$commande --ldap-filter='$filtre' |" ;
 	while (<$COM>) {
 		if (/ldap:create-user/) {
 				$create++;
@@ -78,7 +93,6 @@ my $nbEtab = @allEtab;
 my $nbEtabRestant = $nbEtab % $nbThread;
 my $nbEtabByThread = ($nbEtab - $nbEtabRestant) / $nbThread;
 
-print $nbEtabByThread, " ", $nbEtabRestant, "\n";
 
 my $firstEtab = 0;
 
@@ -88,7 +102,6 @@ for (my $noThread = 0 ; $noThread < $nbThread; $noThread++) {
 	if ($noThread < $nbEtabRestant) {
 		$lastEtab++;
 	}
-	print $firstEtab, " ", $lastEtab,  "\n";
 	
 	unless (fork ) {
 		&oneThread(@allEtab[$firstEtab .. $lastEtab]);
@@ -96,6 +109,6 @@ for (my $noThread = 0 ; $noThread < $nbThread; $noThread++) {
 	} 
 	
 	$firstEtab = $lastEtab+1;
-	sleep $delai; ls
+	sleep $delai;
 }
 
