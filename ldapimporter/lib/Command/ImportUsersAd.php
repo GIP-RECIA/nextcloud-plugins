@@ -154,7 +154,7 @@ class ImportUsersAd extends Command
                         'uid' => $user["uid"],
                         '--display-name' => $user["displayName"],
                         '--email' => $user["email"],
-                        '--quota' => $user["quota"],
+                        '--quota' => $user["quota"]."GB",
                         '--enabled' => $user["enable"],
                         '--group' => $user["groups"]
                     ];
