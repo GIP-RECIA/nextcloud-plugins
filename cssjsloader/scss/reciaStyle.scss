@@ -29,6 +29,16 @@ body {
 	
 	}
 	
+	div#accessibility > p {
+		display : none;
+	}
+	
+	div#fileSharingSettings.section {
+		display : none;
+	}
+	div#clientsbox + div.section {
+		display :none;
+	}
 
 /* les couleurs */
 
