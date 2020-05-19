@@ -1,14 +1,21 @@
-body#body-user #header, body#body-settings #header, body#body-public #header {
-  background-image: none;
-  background-color: #888888;
-  /*		margin-bottom: 2px;*/ }
-  body#body-user #header a#nextcloud, body#body-user #header ul#appmenu, body#body-user #header div.header-right, body#body-settings #header a#nextcloud, body#body-settings #header ul#appmenu, body#body-settings #header div.header-right, body#body-public #header a#nextcloud, body#body-public #header ul#appmenu, body#body-public #header div.header-right {
-    color: black;
-    /*			height: 50px; */ }
-body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown {
-  display: none; }
-  body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown + div#expandDisplayName {
-    display: block; }
+body {
+  /* les suppresions d'affichage */
+  /* les couleurs */ }
+  body div#contactsmenu {
+    display: none; }
+  body li[data-id="firstrunwizard-about"], body li[data-id="help"] {
+    display: none; }
+  body#body-user #header, body#body-settings #header, body#body-public #header {
+    background-image: none;
+    background-color: #888888;
+    /*		margin-bottom: 2px;*/ }
+    body#body-user #header a#nextcloud, body#body-user #header ul#appmenu, body#body-user #header div.header-right, body#body-settings #header a#nextcloud, body#body-settings #header ul#appmenu, body#body-settings #header div.header-right, body#body-public #header a#nextcloud, body#body-public #header ul#appmenu, body#body-public #header div.header-right {
+      color: black;
+      /*			height: 50px; */ }
+  body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown {
+    display: none; }
+    body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown + div#expandDisplayName {
+      display: block; }
 
 /*
 @media only screen and (min-width: 1025px) {
