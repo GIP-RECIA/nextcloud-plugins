@@ -9,6 +9,12 @@ body {
     display: none; }
   body div#security-password, body div#two-factor-auth {
     display: none; }
+  body div.personal-settings-setting-box form#displaynameform div.federation-menu, body div.personal-settings-setting-box form#emailform div.federation-menu {
+    display: none; }
+  body div.personal-settings-setting-box form#phoneform, body div.personal-settings-setting-box form#addressform, body div.personal-settings-setting-box form#websiteform, body div.personal-settings-setting-box form#twitterform {
+    display: none; }
+  body div.personal-settings-setting-box form#emailform > em {
+    display: none; }
   body#body-user #header, body#body-settings #header, body#body-public #header {
     background-image: none;
     background-color: #888888;
