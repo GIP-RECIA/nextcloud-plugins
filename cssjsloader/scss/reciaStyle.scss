@@ -1,6 +1,17 @@
 
 body {
-	
+
+/* les suppresions d'affichage */
+	div#contactsmenu {
+		display: none;
+	}
+	li[data-id="firstrunwizard-about"],  li[data-id="help"],{
+	display: none;
+	}
+
+
+/* les couleurs */
+
 	&#body-user #header, &#body-settings #header, &#body-public #header {
 //		background-image: linear-gradient(40deg, #4c4ac9 0%, #99d5e0 100%);
 		background-image: none;
