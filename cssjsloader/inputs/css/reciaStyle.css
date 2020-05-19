@@ -15,6 +15,12 @@ body {
     display: none; }
   body div.personal-settings-setting-box form#emailform > em {
     display: none; }
+  body div#accessibility > p {
+    display: none; }
+  body div#fileSharingSettings.section {
+    display: none; }
+  body div#clientsbox + div.section {
+    display: none; }
   body#body-user #header, body#body-settings #header, body#body-public #header {
     background-image: none;
     background-color: #888888;
