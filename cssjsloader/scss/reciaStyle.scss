@@ -14,6 +14,21 @@ body {
 	div#security-password ,div#two-factor-auth {
 		display:none;
 	}
+	div.personal-settings-setting-box form {
+		&#displaynameform , &#emailform {
+			div.federation-menu {
+				display :none;
+			}
+		}
+		&#phoneform, &#addressform, &#websiteform, &#twitterform {
+			display :none;
+		}
+		&#emailform > em {
+			display : none;
+		}
+	
+	}
+	
 
 /* les couleurs */
 
