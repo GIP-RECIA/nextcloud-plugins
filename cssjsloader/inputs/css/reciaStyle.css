@@ -7,6 +7,8 @@ body {
     display: none; }
   body p.social-button {
     display: none; }
+  body div#security-password, body div#two-factor-auth {
+    display: none; }
   body#body-user #header, body#body-settings #header, body#body-public #header {
     background-image: none;
     background-color: #888888;
