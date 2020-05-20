@@ -43,7 +43,7 @@ sub traitementEtab() {
 	my $LOG;
 	my $COM;
 	
-	print $etab , "\n";
+	print "\n" , $etab;
 	open $LOG , "> $logRep/$etab.log" || die $!;
 	my $create = 0;
 	my $update = 0;
@@ -74,11 +74,14 @@ sub traitementEtab() {
 	my $fin = time;
 	my $nbuser = $create + $update; 
 	my $duree = $fin - $debut;
-	print $LOG &heure($fin), " durée=", &temps($duree ), "\n";
+	print $LOG &heure($fin), "\n durée=", &temps($duree );
 	if ($nbuser) {
-		print $LOG " create-user=$create ", " update-user=$update ", " time by users=" , $duree / $nbuser, "\n";
+		print $LOG ", create-user=$create ", " update-user=$update ", " time by users=" , $duree / $nbuser, "\n";
+	} else {
+		print $LOG ", nb-user = 0 \n";
 	}
 	close $LOG;
+	print "\n$etab $nbuser\n";
 }
 
 sub oneThread(){
