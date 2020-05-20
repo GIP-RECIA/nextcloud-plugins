@@ -1,8 +1,8 @@
 #! /usr/bin/perl
 use strict;
-my $logRep = $ENV{'HOME'} . '/logs/nextcloud';
+my $logRep = $ENV{'HOME'} . '/logs-esco/Loader';
 
-my $nbThread = 3;
+my $nbThread = 4;
 my $delai = 1; # delai entre 2 threads en secondes
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 1 " ;
