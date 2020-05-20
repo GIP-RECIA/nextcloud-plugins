@@ -20,8 +20,8 @@ unless (@ARGV) {
 }
 
 if ($ARGV[0] eq 'all' ) {
-	print "chargement de tous les établissements\n";
-	@allEtab = qw(0371418R 0410899E 0180010N 0280925D 0451067R 0370051E 0370769K 0371159J 0450782F)
+	print "chargement de tous les établissements\n"; #0450822X lycee fictif; 0377777U college fictif
+	@allEtab = qw(0450782F 0371418R  0410899E 0371159J 0451067R 0180010N 0370769K 0280925D 0370051E 0450822X 0377777U)
 } else {
 	@allEtab = @ARGV;
 }
