@@ -35,5 +35,6 @@ if (body.id == 'body-login') {
 		EscoNextAddon.classToAdd = dom[host];
 		EscoNextAddon.setClassBody(embedded);
 
+		$('div#personal-settings form input').attr('readonly', true)
 	});
 }
