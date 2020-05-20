@@ -21,7 +21,7 @@ if (body.id == 'body-login') {
 
 		
 	$(function(){
-		var embedded = parent == window ? '' : 'embedded';
+		var embedded = parent == window ? 'not_embedded' : 'embedded';
 		var host = window.location.hostname;
 
 		var dom = new Object();
