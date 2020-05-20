@@ -6,6 +6,7 @@ if (!postMessage_resize_iframe_in_parent) {
   (function () {
     var resizedByUs = false;
     var previousHeight;
+    var initialHeight;
 
     var mylog = function() {};
     //if (window['console'] !== undefined) { mylog = function(s) { console.log(s); }; } 
@@ -175,10 +176,14 @@ if (!postMessage_resize_iframe_in_parent) {
 
     var load = function(e) {
         //mylog("load");
+        initialHeight = document.body.offsetHeight;
         postMessageIframeHeight("load");
 	mayRegisterCheckResize();
     };
 
+	var unload = function(e) {
+			target.postMessage("iframeHeight " + initialHeight, "*");
+	}
     var windowResize = function(e) {
         mylog("windowResize (resizedByUs:" + resizedByUs + ")");
 	postMessageIframeHeight("windowResize");
@@ -194,6 +199,7 @@ if (!postMessage_resize_iframe_in_parent) {
 	    window.addEventListener("load", load, false);
 	    window.addEventListener("resize", windowResize, false);
 	    document.addEventListener("click", click, false);
+	    window.addEventListener('unload', unload, false);
 	}
 	else
 	    mylog("postMessage-resize-iframe-in-parent: no DOCTYPE, aborting");
