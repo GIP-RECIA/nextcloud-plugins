@@ -43,16 +43,8 @@ body {
 /* les couleurs */
 
 	&#body-user #header, &#body-settings #header, &#body-public #header {
-//		background-image: linear-gradient(40deg, #4c4ac9 0%, #99d5e0 100%);
 		background-image: none;
-//		background-color: #F3F3F3;
-		background-color: #888888; // #d0d0d0; // la couleur du bandeau
-//		border: 2px solid #F3F3F3;
-/*		margin-bottom: 2px;*/
-		a#nextcloud , ul#appmenu, div.header-right {
-			color: black;
-/*			height: 50px; */
-		}
+		background-color: transparent; //#888888; // #d0d0d0; // la couleur du bandeau
 	}
 	
 	
@@ -92,24 +84,26 @@ body.embedded {
 
 // les couleurs spécifiques:
 @mixin colorTheme($couleur) {
-	&#body-user #header, &#body-settings #header, &#body-public #header {
-	//	background-image: linear-gradient(30deg, $couleur 0%, #f3F3F3 40% , #F3F3F3 59% ,$couleur 100%);
-	
+	&#body-user #header, &#body-settings #header, &#body-public #header {	
 			a#nextcloud , ul#appmenu, div.header-right {
-			background-color: #888888; //$couleur;
-		//	background-color: transparent;
+			background-color: $couleur;
 		}
-		}
+		background-color: $couleur;
+	}
 }
 
 body {
-    &.clg37{
+    &.clg37.not_embedded {
         @include colorTheme(#c60440);
     }
-    &.agri{
+    &.agri.not_embedded {
         @include colorTheme(#2d8c17);
     }
-    &.esco {
+    &.esco.not_embedded  {
         @include colorTheme(#25b2f3);
     }
+    &.embedded {
+		@include colorTheme(#888888);
+	}
+    
 }
