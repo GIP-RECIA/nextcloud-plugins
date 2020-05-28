@@ -6,7 +6,7 @@ if (!postMessage_resize_iframe_in_parent) {
   (function () {
     var resizedByUs = false;
     var previousHeight;
-    var initialHeight;
+    var initialHeight = 0;
 
     var mylog = function() {};
     //if (window['console'] !== undefined) { mylog = function(s) { console.log(s); }; } 
@@ -127,7 +127,7 @@ if (!postMessage_resize_iframe_in_parent) {
 
 
     var postMessageIframeHeight = function(kind) {
-
+	if (initialHeight == 0 ) return ; 
 	var height = getDimen(true);
 	var changed = height !== previousHeight;
 	if (changed) 
@@ -157,6 +157,7 @@ if (!postMessage_resize_iframe_in_parent) {
 
     var checkResize = function() {
         mylog("checkResize");
+        console.log("checkResize");
         intervalCount--;
         if (intervalCount == 0) {
            intervalId = clearInterval(intervalId);
@@ -168,21 +169,26 @@ if (!postMessage_resize_iframe_in_parent) {
     var mayRegisterCheckResize = function() {
 	mylog("mayRegisterCheckResize " + intervalId);
         if (!intervalId) {
-           intervalId = setInterval(checkResize, 500);
+           intervalId = setInterval(checkResize, 250);
         }
-        intervalCount = Math.round((window.mayRegisterCheckResizeTime || 2) * 1000 / 500);
+        intervalCount = 10 ;//Math.round((window.mayRegisterCheckResizeTime || 2) * 1000 / 500);
     }
 
 
     var load = function(e) {
         //mylog("load");
         initialHeight = document.body.offsetHeight;
+       // console.log("get " + initialHeight);
         postMessageIframeHeight("load");
-	mayRegisterCheckResize();
+		mayRegisterCheckResize();
+		
     };
 
 	var unload = function(e) {
+			initialHeight += 6;
+		//	console.log("post " + initialHeight);
 			target.postMessage("iframeHeight " + initialHeight, "*");
+			initialHeight = 0;
 	}
     var windowResize = function(e) {
         mylog("windowResize (resizedByUs:" + resizedByUs + ")");
