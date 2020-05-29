@@ -22,6 +22,8 @@ body {
     display: none; }
   body div#clientsbox + div.section {
     display: none; }
+  body.embedded .viewcontainer div#rich-workspace #editor {
+    max-height: 15em; }
   body#body-user #header, body#body-settings #header, body#body-public #header {
     background-image: none;
     background-color: transparent; }
