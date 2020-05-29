@@ -40,13 +40,10 @@ body {
 		display :none;
 	}
 /* le dimentionnement */
-	.viewcontainer div#rich-workspace:not(.focus) {
-	//	height : 20em;
+	
+	&.embedded .viewcontainer div#rich-workspace #editor {
+		max-height : 15em;
 	}
-	.viewcontainer div#rich-workspace.focus {
-	//	height : 20em;
-	}
-	.viewcontainer div#rich-workspace
 /* les couleurs */
 
 	&#body-user #header, &#body-settings #header, &#body-public #header {
