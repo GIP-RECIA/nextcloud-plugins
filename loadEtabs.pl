@@ -3,7 +3,7 @@ use strict;
 my $logRep = $ENV{'HOME'} . '/logs-esco/Loader';
 
 my $nbThread = 4;
-my $delai = 1; # delai entre 2 threads en secondes
+my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 1 " ;
 #$commande = "echo " . $commande; # pour la dev
@@ -99,7 +99,7 @@ foreach my $etab (@allEtab) {
 	
 	unless (fork ) {
 		&traitementEtab($etab);
-		last;
+		exit;
 	} 
 	
 	if ( $noThread >= $nbThread) {
@@ -109,29 +109,9 @@ foreach my $etab (@allEtab) {
 		sleep $delai;
 	}
 }
+while (--$noThread) {
+	wait;	
+}
 
 __END__
-my $nbEtab = @allEtab;
-
-my $nbEtabRestant = $nbEtab % $nbThread;
-my $nbEtabByThread = ($nbEtab - $nbEtabRestant) / $nbThread;
-
-
-my $firstEtab = 0;
-
-for (my $noThread = 0 ; $noThread < $nbThread; $noThread++) {
-	my $lastEtab = $firstEtab + $nbEtabByThread-1;
-	
-	if ($noThread < $nbEtabRestant) {
-		$lastEtab++;
-	}
-	
-	unless (fork ) {
-		&oneThread(@allEtab[$firstEtab .. $lastEtab]);
-		last;
-	} 
-	
-	$firstEtab = $lastEtab+1;
-	sleep $delai;
-}
 
