@@ -43,3 +43,9 @@ A placer dans le dossier apps/ de nextcloud
 
 - Placer les ficher js dans le dossier `apps/cssjsloader/inputs/js`
 - Placer les ficher css dans le dossier `apps/cssjsloader/inputs/css`
+
+
+# Skeleton
+
+Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
+À recopie dans core/skeleton

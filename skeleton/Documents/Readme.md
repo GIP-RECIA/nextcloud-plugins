@@ -1,0 +1,1 @@
+Nextcloud fonctionne bien avec tous les formats de documents courants. Vous pouvez même collaborer avec d’autres sur des fichier ODT et Markdown !
