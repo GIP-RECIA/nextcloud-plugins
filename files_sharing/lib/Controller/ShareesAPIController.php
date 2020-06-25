@@ -228,28 +228,26 @@ class ShareesAPIController extends OCSController {
 			$this->result['lookupEnabled'] = $this->config->getAppValue('files_sharing', 'lookupServerEnabled', 'yes') === 'yes';
 		}
 
-		list($result, $hasMoreResults) = $this->collaboratorSearch->search($search, $shareTypes, $lookup, $this->limit, $this->offset);
-
+		// Ancienne recherche
+        //list($result, $hasMoreResults) = $this->collaboratorSearch->search($search, $shareTypes, $lookup, $this->limit, $this->offset);
+		$result = $this->searchResults($search, $lookup, $lookupSchool);
 		// extra treatment for 'exact' subarray, with a single merge expected keys might be lost
 		if(isset($result['exact'])) {
 			$result['exact'] = array_merge($this->result['exact'], $result['exact']);
 		}
 
-		if ($lookup !== true) {
-            $result = $this->filterSchoolUsersGroups($lookupSchool, $result);
-        }
-
 		$this->result = array_merge($this->result, $result);
 		$response = new DataResponse($this->result);
 
-		if ($hasMoreResults) {
-			$response->addHeader('Link', $this->getPaginationLink($page, [
-				'search' => $search,
-				'itemType' => $itemType,
-				'shareType' => $shareTypes,
-				'perPage' => $perPage,
-			]));
-		}
+		// Ancienne pagination
+//		if ($hasMoreResults) {
+//			$response->addHeader('Link', $this->getPaginationLink($page, [
+//				'search' => $search,
+//				'itemType' => $itemType,
+//				'shareType' => $shareTypes,
+//				'perPage' => $perPage,
+//			]));
+//		}
 
 		return $response;
 	}
@@ -446,6 +444,212 @@ class ShareesAPIController extends OCSController {
 	protected function isV2(): bool {
 		return $this->request->getScriptName() === '/ocs/v2.php';
 	}
+
+    /**
+     * @param $searchTerm
+     * @param $lookup
+     * @param $lookupSchool
+     * @return mixed
+     */
+    private function searchResults($searchTerm, $lookup, $lookupSchool) {
+        try {
+            $result = [
+                "exact" => [
+                    "users" => [],
+                    "groups" => [],
+                    "emails" => [],
+                    "remotes" => [],
+                ],
+                "users" => [],
+                "groups" => [],
+                "emails" => [],
+                "remotes" => []
+            ];
+            $users = [];
+            $groups = [];
+
+            if ($lookup === true) {
+                $usersQuery = $this->db->getQueryBuilder();
+                $usersQuery->select(['uid', 'displayName'])
+                    ->from('users')
+                    ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')');
+
+                $usersFetched = $usersQuery->execute()->fetchAll();
+                $groupsQuery = $this->db->getQueryBuilder();
+                $groupsQuery->select(['gid', 'displayName'])
+                    ->from('groups')
+                    ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')');
+
+                $groupsFetched = $groupsQuery->execute()->fetchAll();
+                $users = array_map(function ($user) {
+                    return [
+                        "label" => $user["displayName"],
+                        "value" => [
+                            "shareType" => 0,
+                            "shareWith" => $user["uid"],
+                        ]
+                    ];
+                }, $usersFetched);
+                $groups = array_map(function ($user) {
+                    return [
+                        "label" => $user["displayName"],
+                        "value" => [
+                            "shareType" => 0,
+                            "shareWith" => $user["gid"],
+                        ]
+                    ];
+                }, $groupsFetched);
+            }
+            else {
+                if ($lookupSchool === true) {
+                    $qb = $this->db->getQueryBuilder();
+                    $qb->select('id_etablissement')
+                        ->from('asso_uai_user_group')
+                        ->where($qb->expr()->eq('user_group', $qb->createNamedParameter($this->userId)));
+                    $userEtablissements = $qb->execute()->fetchAll();
+                    $userIdEtablissement = array_unique(array_map(function ($asso) {
+                        return $asso['id_etablissement'];
+                    }, $userEtablissements));
+
+                    $query = $this->db->getQueryBuilder();
+                    $query->select('user_group')
+                        ->from('asso_uai_user_group')
+                        ->where($query->expr()->in('id_etablissement', $query->createNamedParameter(
+                            $userIdEtablissement,
+                            Connection::PARAM_STR_ARRAY
+                        )));
+                    $searchedUserGroup = array_map(function ($userGroup) {
+                        return $userGroup['user_group'];
+                    }, $query->execute()->fetchAll());
+                    list($users, $groups) = $this->getUsersAndGroupsFromIdsListAndSearchTerm($searchedUserGroup, $searchTerm);
+                }
+                else {
+                    $currentSiren = $this->getCurrentSirenSchool();
+                    if (!is_null($currentSiren)) {
+                        $query = $this->db->getQueryBuilder();
+                        $query->select('id')
+                            ->from('etablissements')
+                            ->where($query->expr()->eq('siren', $query->createNamedParameter(
+                                $currentSiren
+                            )));
+
+                        $etablissements = $query->execute()->fetchAll();
+                        if (count($etablissements) > 0) {
+                            $query = $this->db->getQueryBuilder();
+                            $query->select('user_group')
+                                ->from('asso_uai_user_group')
+                                ->where($query->expr()->eq('id_etablissement', $query->createNamedParameter(
+                                    $etablissements[0]['id']
+                                )));
+                            $searchedUserGroup = array_map(function ($userGroup) {
+                                return $userGroup['user_group'];
+                            }, $query->execute()->fetchAll());
+                            list($users, $groups) = $this->getUsersAndGroupsFromIdsListAndSearchTerm($searchedUserGroup, $searchTerm);
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $t) {
+            $users = [];
+            $groups = [];
+        }
+        $result["users"] = $users;
+        $result["groups"] = $groups;
+        return $result;
+    }
+
+    /**
+     * @param $searchedUserGroup
+     * @param $searchTerm
+     * @return mixed
+     */
+    private function getUsersAndGroupsFromIdsListAndSearchTerm($searchedUserGroup, $searchTerm) {
+        $usersQuery = $this->db->getQueryBuilder();
+        $usersQuery->select(['uid', 'displayName'])
+            ->from('users')
+            ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
+            ->andWhere($usersQuery->expr()->in('uid', $usersQuery->createNamedParameter(
+                $searchedUserGroup,
+                Connection::PARAM_STR_ARRAY
+            )));
+
+        $usersFetched = $usersQuery->execute()->fetchAll();
+        $groupsQuery = $this->db->getQueryBuilder();
+        $groupsQuery->select(['gid', 'displayName'])
+            ->from('groups')
+            ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
+            ->andWhere($groupsQuery->expr()->in('gid', $groupsQuery->createNamedParameter(
+                $searchedUserGroup,
+                Connection::PARAM_STR_ARRAY
+            )));
+
+        $groupsFetched = $groupsQuery->execute()->fetchAll();
+        $users = array_map(function ($user) {
+            return [
+                "label" => $user["displayName"],
+                "value" => [
+                    "shareType" => 0,
+                    "shareWith" => $user["uid"],
+                ]
+            ];
+        }, $usersFetched);
+        $groups = array_map(function ($user) {
+            return [
+                "label" => $user["displayName"],
+                "value" => [
+                    "shareType" => 0,
+                    "shareWith" => $user["gid"],
+                ]
+            ];
+        }, $groupsFetched);
+        return [$users, $groups];
+    }
+
+    /**
+     * @param $baseDn
+     * @param $filter
+     * @param $attributes
+     * @return mixed
+     */
+    private function searchLdap($baseDn, $filter, $attributes) {
+        try {
+            $host = $this->config->getAppValue('ldapimporter', 'cas_import_ad_host');
+
+            $ldapConnection = ldap_connect($this->config->getAppValue('ldapimporter', 'cas_import_ad_protocol') . $host . ":" . $this->config->getAppValue('ldapimporter', 'cas_import_ad_port')) or die("Could not connect to " . $host);
+
+            ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);
+            ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 10);
+
+            if ($ldapConnection) {
+                $ldapIsBound = ldap_bind($ldapConnection, $this->config->getAppValue('ldapimporter', 'cas_import_ad_user'), $this->config->getAppValue('ldapimporter', 'cas_import_ad_password'));
+                if (!$ldapIsBound) {
+                    throw new \Exception("LDAP bind failed. Error: " . ldap_error($this->ldapConnection));
+                }
+
+
+                // Query user attributes
+                //$results = ldap_search($ldapConnection, 'dc=esco-centre,dc=fr', sprintf('(|(displayName=*%s*)(cn=*%s*))', $searchTerm, $searchTerm), ["uid"]);
+                $results = ldap_search($ldapConnection, $baseDn, $filter, $attributes);
+                if (ldap_error($ldapConnection) == "No such object") {
+                    return [];
+                }
+                elseif (ldap_error($ldapConnection) != "Success") {
+                    throw new \Exception('Error searching LDAP: ' . ldap_error($ldapConnection));
+                }
+
+                $attributes = ldap_get_entries($ldapConnection, $results);
+
+            }
+
+        } catch (\Throwable $t) {
+            $attributes = [];
+        }
+        if(isset($ldapConnection)) {
+            ldap_close($ldapConnection);
+        }
+        return $attributes;
+    }
 
     /**
      * @param bool $lookupSchool
