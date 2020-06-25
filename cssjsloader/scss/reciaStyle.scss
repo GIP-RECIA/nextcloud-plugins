@@ -45,12 +45,6 @@ body {
 		max-height : 15em;
 	}
 /* les couleurs */
-
-	&#body-user #header, &#body-settings #header, &#body-public #header {
-		background-image: none;
-		background-color: transparent; //#888888; // #d0d0d0; // la couleur du bandeau
-	}
-	
 	
 	
 	div#settings div#expand.menutoggle  { 
@@ -93,10 +87,17 @@ body.embedded {
 			background-color: $couleur;
 		}
 		background-color: $couleur;
+		background-image: none;
 	}
 }
 
 body {
+	&.clg18.not_embedded {
+        @include colorTheme(#004899);
+    }
+	&.clg41.not_embedded {
+        @include colorTheme(#009FE3);
+    }
     &.clg37.not_embedded {
         @include colorTheme(#c60440);
     }

@@ -9,12 +9,12 @@ if (body.id == 'body-login') {
 		EscoNextAddon = new Object();
 
 		EscoNextAddon.setClassBody = function(embedded){
+			var cl = window.document.body.classList;
 			if (EscoNextAddon.classToAdd) {
-				var cl = window.document.body.classList;
 				cl.add(EscoNextAddon.classToAdd);
-				if (embedded) {
-					cl.add( embedded);
-				}
+			}
+			if (embedded) {
+				cl.add( embedded);
 			}
 		}
 	}
@@ -31,6 +31,8 @@ if (body.id == 'body-login') {
 		dom['nc-lycees.netocentre.fr']='esco';
 		dom['nc-agri.netocentre.fr']= 'agri';
 		dom['nc.touraine-eschool.fr'] = 'clg37';
+		dom['nc.chercan.fr'] = 'clg18';
+		dom['nc.colleges41.fr'] = 'clg41';
 		
 		EscoNextAddon.classToAdd = dom[host];
 		EscoNextAddon.setClassBody(embedded);
