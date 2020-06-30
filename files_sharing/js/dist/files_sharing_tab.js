@@ -7425,6 +7425,10 @@
                             type: String,
                             default: void 0
                         },
+                        email: {
+                            type: String,
+                            default: void 0
+                        },
                         size: {
                             type: Number,
                             default: 32
@@ -30089,6 +30093,10 @@
                             type: String,
                             default: void 0
                         },
+                        email: {
+                            type: String,
+                            default: void 0
+                        },
                         size: {
                             type: Number,
                             default: 32
@@ -36126,6 +36134,10 @@
                             type: String,
                             default: void 0
                         },
+                        email: {
+                            type: String,
+                            default: void 0
+                        },
                         size: {
                             type: Number,
                             default: 32
@@ -36480,6 +36492,10 @@
                             default: ""
                         },
                         displayName: {
+                            type: String,
+                            required: !0
+                        },
+                        email: {
                             type: String,
                             required: !0
                         },
@@ -44028,7 +44044,9 @@
                 A = {
                     methods: {
                         highlightText: function(t, e) {
-                            return e.length ? t.replace(new RegExp(e, "gi"), "<strong>".concat(e, "</strong>")) : t
+                            //console.info("highlight : ", t, e)
+                            return e.length ? t.replace(" - ", "</br>") : t
+                            //return e.length ? t.replace(new RegExp(e, "gi"), "<strong>".concat(e, "</strong>")).replace(" - ", "</br>") : t
                         }
                     }
                 },
@@ -51781,6 +51799,7 @@
                 createShare: (F = Y(regeneratorRuntime.mark((function e(n) {
                     var r, o, i, a, s, A, u, l, f, d;
                     return regeneratorRuntime.wrap((function(e) {
+                        console.log(e)
                         for (;;) switch (e.prev = e.next) {
                             case 0:
                                 return r = n.path, o = n.permissions, i = n.shareType, a = n.shareWith, s = n.publicUpload, A = n.password, u = n.sendPasswordByTalk, l = n.expireDate, f = n.label, e.prev = 1, e.next = 4, c.a.post(z, {
@@ -52139,6 +52158,7 @@
                         user: e.uuid || e.value.shareWith,
                         isNoUser: !e.uuid,
                         displayName: e.name || e.label,
+                        email: e.email,
                         desc: n,
                         icon: this.shareTypeToIcon(e.value.shareType)
                     }

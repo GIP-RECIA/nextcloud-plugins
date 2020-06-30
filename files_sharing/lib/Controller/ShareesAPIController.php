@@ -470,11 +470,14 @@ class ShareesAPIController extends OCSController {
 
             if ($lookup === true) {
                 $usersQuery = $this->db->getQueryBuilder();
-                $usersQuery->select(['uid', 'displayName'])
-                    ->from('users')
-                    ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')');
-
+                $usersQuery->select(['u.uid', 'u.displayName', 'a.data'])
+                    ->from('users', 'u')
+                    ->join('u', 'accounts', 'a', 'u.uid = a.uid')
+                    ->where('LOWER(u.displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
+                    ->where('LOWER(JSON_VALUE(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
+                    ->orderBy('u.displayName');
                 $usersFetched = $usersQuery->execute()->fetchAll();
+
                 $groupsQuery = $this->db->getQueryBuilder();
                 $groupsQuery->select(['gid', 'displayName'])
                     ->from('groups')
@@ -482,8 +485,17 @@ class ShareesAPIController extends OCSController {
 
                 $groupsFetched = $groupsQuery->execute()->fetchAll();
                 $users = array_map(function ($user) {
+                    $userEmail = "";
+                    if (!is_null($user["data"])) {
+                        $accountData = json_decode($user["data"], true);
+                        if (array_key_exists("email", $accountData) && array_key_exists("value", $accountData["email"])) {
+                            $userEmail =  $accountData["email"]["value"];
+                        }
+
+                    }
                     return [
-                        "label" => $user["displayName"],
+                        "label" => $user["displayName"] . " - " . $userEmail,
+                        "email" => $userEmail,
                         "value" => [
                             "shareType" => 0,
                             "shareWith" => $user["uid"],
@@ -565,13 +577,15 @@ class ShareesAPIController extends OCSController {
      */
     private function getUsersAndGroupsFromIdsListAndSearchTerm($searchedUserGroup, $searchTerm) {
         $usersQuery = $this->db->getQueryBuilder();
-        $usersQuery->select(['uid', 'displayName'])
-            ->from('users')
-            ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
-            ->andWhere($usersQuery->expr()->in('uid', $usersQuery->createNamedParameter(
+        $usersQuery->select(['u.uid', 'u.displayName', 'a.data'])
+            ->from('users', 'u')
+            ->where('LOWER(JSON_VALUE(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
+            ->where('LOWER(u.displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
+            ->andWhere($usersQuery->expr()->in('u.uid', $usersQuery->createNamedParameter(
                 $searchedUserGroup,
                 Connection::PARAM_STR_ARRAY
-            )));
+            )))
+            ->orderBy('u.displayName');
 
         $usersFetched = $usersQuery->execute()->fetchAll();
         $groupsQuery = $this->db->getQueryBuilder();
@@ -585,8 +599,17 @@ class ShareesAPIController extends OCSController {
 
         $groupsFetched = $groupsQuery->execute()->fetchAll();
         $users = array_map(function ($user) {
+            $userEmail = "";
+            if (!is_null($user["data"])) {
+                $accountData = json_decode($user["data"], true);
+                if (array_key_exists("email", $accountData) && array_key_exists("value", $accountData["email"])) {
+                    $userEmail =  $accountData["email"]["value"];
+                }
+
+            }
             return [
-                "label" => $user["displayName"],
+                "label" => $user["displayName"] . " - " . $userEmail,
+                "email" => $userEmail,
                 "value" => [
                     "shareType" => 0,
                     "shareWith" => $user["uid"],
