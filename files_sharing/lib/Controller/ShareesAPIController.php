@@ -474,7 +474,7 @@ class ShareesAPIController extends OCSController {
                     ->from('users', 'u')
                     ->join('u', 'accounts', 'a', 'u.uid = a.uid')
                     ->where('LOWER(u.displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
-                    ->where('LOWER(JSON_VALUE(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
+                    ->where('LOWER(JSON_EXTRACT(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
                     ->orderBy('u.displayName');
                 $usersFetched = $usersQuery->execute()->fetchAll();
 
