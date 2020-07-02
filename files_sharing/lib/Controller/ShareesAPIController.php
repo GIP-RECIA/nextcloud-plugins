@@ -579,7 +579,8 @@ class ShareesAPIController extends OCSController {
         $usersQuery = $this->db->getQueryBuilder();
         $usersQuery->select(['u.uid', 'u.displayName', 'a.data'])
             ->from('users', 'u')
-            ->where('LOWER(JSON_VALUE(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
+            ->join('u', 'accounts', 'a', 'u.uid = a.uid')
+            ->where('LOWER(JSON_EXTRACT(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
             ->where('LOWER(u.displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
             ->andWhere($usersQuery->expr()->in('u.uid', $usersQuery->createNamedParameter(
                 $searchedUserGroup,
