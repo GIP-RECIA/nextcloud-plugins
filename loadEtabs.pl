@@ -1,6 +1,17 @@
 #! /usr/bin/perl
 use strict;
-my $logRep = $ENV{'HOME'} . '/logs-esco/Loader';
+my $logRep = $ENV{'NC_LOG'};
+my  $dataRep = $ENV{'NC_DATA'};
+
+if ($logRep) {
+	$logRep .= '/Loader';
+} else {
+	$logRep = $ENV{'HOME'} . '/logs-esco/Loader'
+}
+
+$dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
+
+my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
 my $nbThread = 4;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
@@ -13,7 +24,22 @@ my $filterSiren = "(ESCOSIREN=%s)";
 my $filterGroup = "(IsMemberOf=%s)";
 
 my @allEtab;
+my %etabTimestamp;
+my $saveTimestamp = 0;
 
+my %pid2etab;
+
+my $noThread = 1;
+
+my $modifytimestamp = &timestampLdap(time);
+
+
+unless (-d $logRep) {
+	die "erreur sur le repertoire des logs : $logRep\n";
+}
+unless (-d $dataRep) {
+	die "erreur sur le repertoire des data :  $dataRep\n";
+}
 unless (@ARGV) {
 	print STDERR "manque d'argument\n" ;
 	exit 1;
@@ -21,14 +47,45 @@ unless (@ARGV) {
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
         #0180006J 0281047L 0371418R 0371418R 0410017W 0360019A 0451483T 0450064A 0450786K 0370769K 0371159J 0370024A  
 
-if ($ARGV[0] eq 'all' ) {
-	print "chargement de tous les établissements\n"; #0450822X lycee fictif; 0377777U college fictif
-	@allEtab = qw(0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A 
-				0450782F 0371418R  0410899E 0371159J 0451067R 0180010N 0370769K 0280925D 0370051E 0450822X 0377777U)
+	# lecture du fichier contenant les timestamps;
+if (-r $allEtabFile) {
+		open ETAB, $allEtabFile or die "$!" ;
+		while (<ETAB>) {
+			s/\#.*$//; 				# suppression des commentaires
+			next if (/^\s*$/); 		# suivant si ligne vide
+									# la ligne est du type
+									# etab [; num] 
+									# etab peut etre un uai, siren un nom de groupe; num est un timestamp
+			if (/^\s*([^;,#]+)(([;,]\s*)(\d{0,14}))?/) {
+				my $etab = $1;
+				my $ts = $4;
+				$etab =~ s/\s+$//; 	#suppression de \s en fin d'etab
+				if ($etab) {
+					push @allEtab ,$etab;
+					if ($ts) { 		# si on a un timestamp il est normalisé à 14 chifres
+						my $size = 10 ** (14 - length($ts));
+						$ts = $ts * $size; 	# on complete avec des 0
+						$etabTimestamp{$etab} = $ts;
+					}
+				}
+			}
+		} 
+		close ETAB or die $!;
+		$saveTimestamp = 1;
 } else {
-	@allEtab = @ARGV;
+	$saveTimestamp = 0;
 }
 
+if ($ARGV[0] eq 'all' ) {
+	print "chargement de tous les établissements\n"; #0450822X lycee fictif; 0377777U college fictif
+	unless ($saveTimestamp) {
+		# si on traite tous les etab alors que l'on  pas trouvé le fichier en donnant la liste
+		die "fichier non lisible $allEtabFile\n";
+	}
+} else {
+		# traitement que d'un etab ou un groupe si on a pas son timestamp on traite entierement
+	@allEtab = @ARGV;
+}
 
 
 sub heure(){
@@ -41,12 +98,20 @@ sub temps() {
 	return sprintf "%02d:%02d:%02d " , $local[2], $local[1], $local[0];
 }	
 
+sub timestampLdap() {
+	my @local = gmtime (shift);
+	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
+}	
+
 sub traitementEtab() {
 	my $etab = shift;
+	my $timeStamp = shift;
 	my $LOG;
 	my $COM;
 	
+	
 	print "\n" , $etab;
+	
 	open $LOG , "> $logRep/$etab.log" || die $!;
 	my $create = 0;
 	my $update = 0;
@@ -62,6 +127,11 @@ sub traitementEtab() {
 		$filtre = $filterGroup;
 	}
 	$filtre = sprintf($filtre, $etab);
+	if ($timeStamp) {
+		$filtre = sprintf( "(&%s(modifytimestamp>=%s))", $filtre, $timeStamp);
+	}
+	
+	print $LOG "$commande --ldap-filter='$filtre' \n"; 
 	
 	open  $COM , "$commande --ldap-filter='$filtre' |" ;
 	while (<$COM>) {
@@ -85,6 +155,7 @@ sub traitementEtab() {
 	}
 	close $LOG;
 	print "\n$etab $nbuser\n";
+	return 0;
 }
 
 sub oneThread(){
@@ -94,24 +165,67 @@ sub oneThread(){
 	}
 }
 
-my $noThread = 1;
+sub updateTimeStamp() {
+	my $pid= shift;
+	my $resultOk = shift;
+	if ($pid > 0) {
+		#print "\ndebug $pid \t";
+		unless ($resultOk) {
+			#print  " ok \n";
+			my $etab = $pid2etab{$pid} ;
+			$etabTimestamp{$etab} = $modifytimestamp;
+		} 
+	}
+	return $pid;
+}
+
+#my %etab2pid;
+
+
 foreach my $etab (@allEtab) {
-	
-	unless (fork ) {
-		&traitementEtab($etab);
-		exit;
+	my $pid;
+	my $etabTS = $etabTimestamp{$etab};
+	if ( $pid = fork ) { 
+		$pid2etab{$pid} = $etab;
+	} else {
+		exit &traitementEtab($etab, $etabTS);
 	} 
 	
 	if ( $noThread >= $nbThread) {
-		wait;
+		$pid = wait;
+		
+		&updateTimeStamp($pid, $? );
 	} else {
 		$noThread++;
 		sleep $delai;
 	}
 }
-while (--$noThread) {
-	wait;	
+
+while () {
+	my $pid = wait;
+	last unless &updateTimeStamp($pid, $?) > 0;
 }
 
+if ($saveTimestamp) {
+	my $oldFile = $allEtabFile . ".old";
+	rename $allEtabFile, $oldFile or die "$!";
+	open OLD , $oldFile or die "$!" ;
+	open NEW , "> $allEtabFile" or die "$!";
+	while (<OLD>) {
+		chop;
+		if (/^\s*([^;,#]+)([;,]\s*\d*)?(\s*(#.*)?)$/) {
+			my $etab = $1;
+			my $comment = $4;
+			$etab =~ s/(\s+)$//; # suppression des blancs finaux 
+			if ($etab) {
+				print NEW $etab . " ; " . $etabTimestamp{$etab} . " $comment\n";
+				next;
+			} 
+		} 
+		print NEW $_."\n";
+	}
+}
 __END__
+attribut ldap de detection des changement modifytimestamp>=20080601070000
+
 
