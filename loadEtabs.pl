@@ -134,7 +134,7 @@ sub traitementEtab() {
 	
 	print $LOG "$commande --ldap-filter='$filtre' \n"; 
 
-	open  $COM , "$commande --ldap-filter='$filtre' |" ;
+	open  $COM , "$commande --ldap-filter='$filtre' |"  or die $!;
 	while (<$COM>) {
 		if (/ldap:create-user/) {
 				$create++;
@@ -156,7 +156,7 @@ sub traitementEtab() {
 	}
 	close $LOG;
 	print "\n$etab $nbuser\n";
-	return 0;
+	return $nbuser ? 0 : 1;
 }
 
 sub oneThread(){
