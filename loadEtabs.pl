@@ -99,6 +99,7 @@ sub temps() {
 }	
 
 sub timestampLdap() {
+		# calcul du timestamp courant donné a la minute
 	my @local = gmtime (shift);
 	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
 }	
@@ -132,7 +133,7 @@ sub traitementEtab() {
 	}
 	
 	print $LOG "$commande --ldap-filter='$filtre' \n"; 
-	
+
 	open  $COM , "$commande --ldap-filter='$filtre' |" ;
 	while (<$COM>) {
 		if (/ldap:create-user/) {
