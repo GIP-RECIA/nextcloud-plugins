@@ -113,13 +113,13 @@ sub traitementEtab() {
 	
 	print "\n" , $etab;
 	
-	open $LOG , "> $logRep/$etab.log" || die $!;
+	open $LOG , "> $logRep/$etab.log" or die $!;
 	my $create = 0;
 	my $update = 0;
 	my $debut = time;
 	
 	my $filtre;
-	print $LOG &heure($debut), $etab , "\n" || die "$!";
+	print $LOG &heure($debut), $etab , "\n" or die "$!";
 	if ($etab =~ /^\d{7}\w$/) {
 			$filtre = $filterUai;
 	} elsif ($etab =~ /^\d{14,15}$/) {
