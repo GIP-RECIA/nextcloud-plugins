@@ -129,7 +129,7 @@ sub traitementEtab() {
 	}
 	$filtre = sprintf($filtre, $etab);
 	if ($timeStamp) {
-		$filtre = sprintf( "(&%s(modifytimestamp>=%s))", $filtre, $timeStamp);
+		$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
 	}
 	
 	print $LOG "$commande --ldap-filter='$filtre' \n"; 
