@@ -49,3 +49,8 @@ A placer dans le dossier apps/ de nextcloud
 
 Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
 À recopie dans core/skeleton
+
+
+# s3 gestion des buckets:
+remplacer  ./lib/private/Files/objectStore/mapper.php
+par notre version
