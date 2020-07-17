@@ -135,6 +135,7 @@ class AdImporter implements ImporterInterface
 
         //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupe
         $keep[] = 'ESCOUAICourant';
+        $keep[] = 'ESCOSIREN';
         if (sizeof($arrayGroupsAttrPedagogic) > 0) {
             foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
                 if (array_key_exists("field", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["field"]) > 0 &&
@@ -420,6 +421,10 @@ class AdImporter implements ImporterInterface
                     if (array_key_exists('escouaicourant', $m) && $m['escouaicourant']['count'] > 0) {
                         $uaiCourant = $m['escouaicourant'][0];
                     }
+                    if (array_key_exists('escosiren', $m) && $m['escosiren']['count'] > 0) {
+                        $idEtablishement = $this->getIdEtablissementFromSiren($m['escosiren'][0]);
+                        $this->addEtablissementAsso($idEtablishement, $employeeID);
+                    }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
             }
@@ -512,6 +517,26 @@ class AdImporter implements ImporterInterface
             $idEtabs = $result->fetchAll()[0];
             return $idEtabs["id"];
         }
+    }
+
+    /**
+     * Récupération de l'id d'un etablissement depuis son siren
+     *
+     * @param $uai
+     * @return mixed
+     */
+    protected function getIdEtablissementFromSiren($siren)
+    {
+        if (!is_null($siren)) {
+            $qb = $this->db->getQueryBuilder();
+            $qb->select('id')
+                ->from('etablissements')
+                ->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
+            $result = $qb->execute();
+            $idEtabs = $result->fetchAll()[0];
+            return $idEtabs["id"];
+        }
+        return null;
     }
 
     /**
