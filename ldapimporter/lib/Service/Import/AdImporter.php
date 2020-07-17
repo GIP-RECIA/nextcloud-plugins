@@ -422,8 +422,7 @@ class AdImporter implements ImporterInterface
                         $uaiCourant = $m['escouaicourant'][0];
                     }
                     if (array_key_exists('escosiren', $m) && $m['escosiren']['count'] > 0) {
-                        $idEtablishement = $this->getIdEtablissementFromSiren($m['escosiren'][0]);
-                        $this->addEtablissementAsso($idEtablishement, $employeeID);
+                        $this->addEtablissementAssoForAllEscosiren($m['escosiren'], $employeeID);
                     }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
@@ -433,6 +432,23 @@ class AdImporter implements ImporterInterface
         $this->logger->info("Users have been retrieved : " . count($users));
 
         return $users;
+    }
+
+    /**
+     *
+     * @param $escosirenArray
+     * @param $employeeID
+     */
+    protected function addEtablissementAssoForAllEscosiren($escosirenArray, $employeeID)
+    {
+        foreach ($escosirenArray as $key => $escosiren) {
+            if ($key !== "count") {
+                $idEtablishement = $this->getIdEtablissementFromSiren($escosiren);
+                if (!is_null($idEtablishement)) {
+                    $this->addEtablissementAsso($idEtablishement, $employeeID);
+                }
+            }
+        }
     }
 
     /**
@@ -584,6 +600,7 @@ class AdImporter implements ImporterInterface
 			  $filter = "(&" . $this->ldapFilter . $filter . ")";
         }
 		$this->logger->info('ldap filter = ' . $filter);
+
         $cookie = '';
         $members = [];
 
