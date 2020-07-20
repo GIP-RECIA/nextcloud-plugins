@@ -38,34 +38,62 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 	 * @param array $params
 	 */
 	public function __construct($params) {
-		error_log("new ReciaObjectStore \n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 		parent::__construct($params);
-		$defautObjectStore = $this->objectStore;
-		$avatarObjectStore = clone $defautObjectStore;
-		$defautBucket = $defautObjectStore->getBucket();
-		$defautId = $defautObjectStore->getStorageId();
+/*		foreach ($params as $k => $v) {
+			error_log("\t $k => $v \n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');	
+		}
+ */   		
+//	$this->defautObjectStore = $this->objectStore ; //$params['objectstore'];
+		$this->defautObjectStore = $params['objectstore'];
+//	$this->defautObjectStore = $this.getObjectStore();
+		$this->avatarObjectStore = new  S3Recia($params);
+		$this->defautBucket = $this->defautObjectStore->getBucket();
+		$this->defautId = $this->defautObjectStore->getStorageId();
+		error_log("new ReciaObjectStore 2 ". $this->defautId . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+  
  	}
 
 
 	public function stat($path) {
+	try {
 		$stat = parent::stat($path);
-		error_log("new ok ". $this->objectStore->getBucket() . " " . $this->objectStore->getStorageId() ."\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+//		$testO = ($this->objectStore === $this->defautObjectStore) ? 'true' : 'false';
+//		 error_log("new ok $testO : " . is_null($this->objectStore) . " : " . is_null($this->defautObjectStore)  ."\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+		if (!(is_null($this->objectStore) or is_null($this->defautObjectStore) )) {
+			error_log("new ok $testO 1\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+		//	error_log(" objectStore " . isset($this->objectStore) . " \n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+		//	error_log(" defautObjectStore " . isset($this->defautObjectStore) . "\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 
-		if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
-			$uid = $matches[1];
-			error_log("match $uid\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
-		} else {
+			$this->objectStore = $this->defautObjectStore ;		
+		 
+ 	 		if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
+				$uid = $matches[1];
+				if ($uid == 'F1000ugr' and ! is_null($this.avatarObjectStore)) {
+					error_log("match $uid\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+					$this->objectStore = $this->avatarObjectStore;
+					$mes = "no object" ;
+					$this->objectStore->setBucket($this->defautBucket . strtolower($uid));
+					$mes = $this->objectStore->getStorageId();
+					error_log("     match ok " . $mes . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+
+				}
+			}
+		} /*else {
 			error_log("ne match pas\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 			$this->objectSore = $defautObjectStore;
 
-		}
+			}*/
  
 	/*	if (is_array($stat)) {
 			foreach ($stat as $k => $v) {
 				error_log ("$k => $v \n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 			}
 		}		
-	 */	return $stat;
+	 */
+	} catch (Exception $e) {
+		error_log(" Execption $e->gerMessage() \n " , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+	}
+		return $stat;
 	}
 
 }
