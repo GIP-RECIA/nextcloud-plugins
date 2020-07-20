@@ -41,4 +41,8 @@ class S3Recia implements IObjectStore {
 	public function getStorageId() {
 		return $this->id;
 	}
+	public function setBucket($bucket) {
+		$this->id = 'amazon::' . $bucket;
+		$this->bucket = $bucket;
+}
 }
