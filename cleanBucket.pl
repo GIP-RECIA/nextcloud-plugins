@@ -3,33 +3,22 @@
 use strict;
 use utf8;
 use DBI();
+# les 2 use suivant permette de trouver les libraries installées
+#  dans le meme path que l'executable
+use FindBin; 			# ou est mon executable
+use lib $FindBin::Bin; 	# chercher les lib au meme endroit
+use ncUtil;
 
 my $s3lsFormat = "/usr/bin/s3cmd ls %s";
 my $s3rmFormat = "/usr/bin/s3cmd del %s/urn:oid:%s"; 
 
-my $configFile = "web/config/config.php";
-
-chdir;
 
 
 
 
-my %PARAM;
-# lecture des paramatres de conf
 
-open CONFIG, "$configFile" or die $!;
 
-while (<CONFIG>)  {
-		if (/'(\w+)'\s*=>\s*'([^']+)'/) {
-				$PARAM{$1} = $2;
-		}
-}
-my $sqlHost = $PARAM{'dbhost'};
-my $sqlDatabase = $PARAM{'dbname'};
-my $sqlUsr=$PARAM{'dbuser'};
-my $sqlPass=$PARAM{'dbpassword'};
-my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
-my $SQL_CONNEXION;
+
 
 my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
@@ -53,18 +42,7 @@ sub date(){
 	my @local = localtime(shift);
 	return sprintf "%d-%02d-%02d" , $local[5] + 1900,  $local[4]+1, $local[3];
 }
-sub connectSql {
-	if ($SQL_CONNEXION) {
-		return $SQL_CONNEXION;
-	}
-	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
-	$SQL_CONNEXION = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
-	print " OK \n";
-	$SQL_CONNEXION->{'mysql_auto_reconnect'} = 1;
-	$SQL_CONNEXION->{'mysql_enable_utf8'} = 1;
-	$SQL_CONNEXION->do('SET NAMES utf8');
-	return $SQL_CONNEXION ;
-}
+
 
 sub fileIdInbase() {
 	my $fileId = shift;
