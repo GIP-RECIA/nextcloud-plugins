@@ -14,11 +14,17 @@ unless (@ARGV) {
 	exit 1;
 }
 
-while (my ($k, $v) = each %PARAM) {
-	
-	print "$k => $v \n";
-}
+my $job = @ARGV[0];
 
+
+#while (my ($k, $v) = each %PARAM) {	
+#	print "$k => $v \n";
+#}
+##################
+#
+# Debut des traitements
+#
+##################
 my $sql = connectSql();
 
 my $prefixPath = 'appdata_'. $PARAM{'instanceid'} . '/avatar/';
@@ -28,29 +34,63 @@ print "$sqlQuery\n";
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 
 $sqlStatement->execute() or die $sqlStatement->errstr;
+
 		
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $path = $tuple->{'path'};
+	my $fileId = $tuple->{'fileId'};
+	
 	if ($path =~ /$prefixPath(F\w{7})\//) {
 		
 		my $newBucket=lc("0$1");
 		
-		my $fileId = $tuple->{'fileId'};
 		
-		my ($oldPath, $bucketKo) =  &existS3File($fileId);
-		if ($bucketKo) {
-			die "Bucket 0 does not exists\n";
-		}
-		if ($oldPath) {
-			my ($newPath, $bucketKo) =  &existS3File($fileId, $newBucket);
-			unless ($newPath) {
-				$newPath = &s3path($newBucket);
-				if (!$bucketKo || &createBucket($newPath)) {
-					&copyFile($oldPath, $newPath);
-				}
-			}
+		if ($job eq 'copy') {			
+			
+			&oneCopy($newBucket, $fileId);
+			
+		} elsif ($job eq 'delete') {
+			&oneDelete($newBucket, $fileId);
+		} else {
+			die "parametre inconu ! \n";
 		}
 		print "\n";
+	}
+}
+################
+#
+# Fin des traitements
+#
+################
+sub oneCopy(){
+	my $newBucket = shift;
+	my $fileId = shift;
+	
+	my ($oldPath, $bucketKo) =  &existS3File($fileId);
+	if ($bucketKo) {
+		die "Bucket 0 does not exists\n";
+	}
+	if ($oldPath) {
+		my ($newPath, $bucketKo) =  &existS3File($fileId, $newBucket);
+		unless ($newPath) {
+			$newPath = &s3path($newBucket);
+			if (!$bucketKo || &createBucket($newPath)) {
+				&copyFile($oldPath, $newPath);
+			}
+		}
+	}
+}
+sub oneDelete() {
+	my $newBucket = shift;
+	my $fileId = shift;
+		# on verifie que le fichier existe dans le new bucket
+	my ($newPath, $bucketKo) =  &existS3File($fileId, $newBucket);
+	if ($newPath) {
+		# on verifie qu'il existe dans le bucket 0
+		my ($oldPath, $bucketKo) =  &existS3File($fileId);
+		if ($oldPath) {
+			&deleteFile($oldPath);
+		}
 	}
 }
 
@@ -80,6 +120,18 @@ sub copyFile(){
 	return 0;
 }
 
+my $choixDelete;
+
+sub deleteFile(){
+	my $oldPath = shift;
+	my $commande = getS3command() . " del " . $oldPath;
+	if (&promptCommande($commande, \$choixDelete)) {
+		system $commande and die "$!\n";
+		return 1;
+	}
+	return 0;
+}
+	
 sub existS3File() {
 		my $fileId = shift;
 		my $s3path = &s3path(shift , $fileId );
