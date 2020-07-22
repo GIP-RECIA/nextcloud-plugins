@@ -13,13 +13,6 @@ my $s3lsFormat = "/usr/bin/s3cmd ls %s";
 my $s3rmFormat = "/usr/bin/s3cmd del %s/urn:oid:%s"; 
 
 
-
-
-
-
-
-
-
 my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
 
