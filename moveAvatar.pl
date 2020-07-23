@@ -54,7 +54,6 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 		} else {
 			die "parametre inconu ! \n";
 		}
-		print "\n";
 	}
 }
 ################
@@ -77,6 +76,7 @@ sub oneCopy(){
 			if (!$bucketKo || &createBucket($newPath)) {
 				&copyFile($oldPath, $newPath);
 			}
+			print "\n";
 		}
 	}
 }
@@ -90,6 +90,7 @@ sub oneDelete() {
 		my ($oldPath, $bucketKo) =  &existS3File($fileId);
 		if ($oldPath) {
 			&deleteFile($oldPath);
+			print "\n";
 		}
 	}
 }
