@@ -29,7 +29,7 @@ my $sql = connectSql();
 
 my $prefixPath = 'appdata_'. $PARAM{'instanceid'} . '/avatar/';
 
-my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}F1000ug%' ";
+my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}%' ";
 print "$sqlQuery\n";
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 
