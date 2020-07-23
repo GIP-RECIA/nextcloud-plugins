@@ -1,0 +1,26 @@
+
+# les etablissements (uai ou siren) doivent etre separes du timestamps par un ; 
+# le timestamp n'est pas obligatoire il doit faire au max 14 chiffres
+# represente la date de derniere modif .
+
+0450782F ;
+0410017W ;
+0451483T ;
+0371418R ;
+0180006J ;
+0281047L ;
+0377777U ;
+0450064A ;
+0450822X ;
+0450786K ;
+0410899E ;
+0371159J ;
+0370769K ;
+0451067R ;
+0360019A ;
+0180010N ;
+0280925D ;
+0370051E ;
+0370024A ;
+18450311800020 ;
+
