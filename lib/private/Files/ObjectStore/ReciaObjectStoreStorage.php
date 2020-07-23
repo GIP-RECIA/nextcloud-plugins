@@ -49,7 +49,7 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 		$this->avatarObjectStore = new  S3Recia($params);
 		$this->defautBucket = $this->defautObjectStore->getBucket();
 		$this->defautId = $this->defautObjectStore->getStorageId();
-		error_log("new ReciaObjectStore 2 ". $this->defautId . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+		error_log("new ReciaObjectStore 3 ". $this->defautId . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
   
  	}
 
@@ -64,19 +64,21 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 		//	error_log(" objectStore " . isset($this->objectStore) . " \n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 		//	error_log(" defautObjectStore " . isset($this->defautObjectStore) . "\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 
-			$this->objectStore = $this->defautObjectStore ;		
-		 
- 	 		if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
-				$uid = $matches[1];
-				if ($uid == 'F1000ugr' and ! is_null($this.avatarObjectStore)) {
-					error_log("match $uid\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
-					$this->objectStore = $this->avatarObjectStore;
-					$mes = "no object" ;
-					$this->objectStore->setBucket($this->defautBucket . strtolower($uid));
-					$mes = $this->objectStore->getStorageId();
-					error_log("     match ok " . $mes . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+			if  (preg_match("/^[^\/]+\/avatar/",$path,  $matches)) {
+				if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
+					$uid = $matches[1];
+					if (! is_null($this.avatarObjectStore)) {
+						error_log("match $uid\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
+						$this->objectStore = $this->avatarObjectStore;
+						$mes = "no object" ;
+						$this->objectStore->setBucket($this->defautBucket . strtolower($uid));
+						$mes = $this->objectStore->getStorageId();
+						error_log("     match ok " . $mes . "\n", 3, '/var/www/ncrecette.recia/logs-esco/object.log');
 
+					}
 				}
+			} else {
+				$this->objectStore = $this->defautObjectStore ;
 			}
 		} /*else {
 			error_log("ne match pas\n" , 3, '/var/www/ncrecette.recia/logs-esco/object.log');
