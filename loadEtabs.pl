@@ -2,7 +2,7 @@
 use strict;
 my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
-my $wwwRep = $ENV{'NC_WWWW'};
+my $wwwRep = $ENV{'NC_WWW'};
 
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 chdir $wwwRep;

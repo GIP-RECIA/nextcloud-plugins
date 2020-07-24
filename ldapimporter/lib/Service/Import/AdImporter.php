@@ -246,11 +246,11 @@ class AdImporter implements ImporterInterface
 
                         # Check if user has MAP_GROUPS attribute
                         if (isset($m[strtolower(($groupsAttribute))][$j])) {
-                            foreach($arrayRegexNameUai as $regexNameUaiGroup) {
+                            foreach($arrayRegexNameUai as $regexNameUaiGroup) { # les regex associant le nom et  l'uai des etabs
                                 if (array_key_exists("nameUai", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameUai"])) {
                                     preg_match_all('/' . $regexNameUaiGroup["nameUai"] . '/si', $resultGroupsAttribute, $uaiNameMatches, PREG_SET_ORDER, 0);
 
-                                    if (sizeof($uaiNameMatches) > 0 && sizeof($uaiNameMatches[0]) >= 3) {
+                                    if (sizeof($uaiNameMatches) > 0 && sizeof($uaiNameMatches[0]) >= 2) {
                                         $indexRegexUaiGroup = array_key_exists("uaiGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["uaiGroup"]) ? intval($regexNameUaiGroup["uaiGroup"]) : null;
                                         $indexRegexNameGroup = array_key_exists("nameGroup", $regexNameUaiGroup) && !is_null($regexNameUaiGroup["nameGroup"]) ? intval($regexNameUaiGroup["nameGroup"]) : null;
                                         $uaiEtablissement = is_null($indexRegexUaiGroup)  ? null : $uaiNameMatches[0][$indexRegexUaiGroup];
