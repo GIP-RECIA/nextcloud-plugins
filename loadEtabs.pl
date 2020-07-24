@@ -2,6 +2,10 @@
 use strict;
 my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
+my $wwwRep = $ENV{'NC_WWWW'};
+
+$wwwRep = $ENV{'HOME'}.'/web';
+chdir $wwwRep;
 
 if ($logRep) {
 	$logRep .= '/Loader';
