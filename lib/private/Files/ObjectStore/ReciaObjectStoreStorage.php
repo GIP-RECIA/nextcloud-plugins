@@ -56,7 +56,7 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 			if  (preg_match("/^[^\/]+\/avatar/",$path,  $matches)) {
 				if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
 					$uid = $matches[1];
-					if (! is_null($this.avatarObjectStore)) {
+					if (! is_null($this->avatarObjectStore)) {
 						$this->objectStore = $this->avatarObjectStore;
 						$this->objectStore->setBucket($this->defautBucket . strtolower($uid));
 
