@@ -4,7 +4,7 @@ my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
 my $wwwRep = $ENV{'NC_WWWW'};
 
-$wwwRep = $ENV{'HOME'}.'/web';
+$wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 chdir $wwwRep;
 
 if ($logRep) {
