@@ -17,7 +17,7 @@ $dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
 
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
-my $nbThread = 4;
+my $nbThread = 5;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 1 " ;
