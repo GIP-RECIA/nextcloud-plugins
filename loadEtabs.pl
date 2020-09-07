@@ -20,7 +20,7 @@ my 	$allEtabFile = $dataRep . '/allEtab.txt';
 my $nbThread = 5;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
-my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 1 " ;
+my $commande = "/usr/bin/php occ ldap:import-users-ad -v -d 3 " ;
 #$commande = "echo " . $commande; # pour la dev
 
 my $filterUai = "(ESCOUAI=%s)";
@@ -117,7 +117,8 @@ sub traitementEtab() {
 	
 	print "\n" , $etab;
 	
-	open $LOG , "> $logRep/$etab.log" or die $!;
+	my $logFileName = "$logRep/$etab.log";
+	open $LOG , "> $logFileName" or die $!;
 	my $create = 0;
 	my $update = 0;
 	my $debut = time;
@@ -159,6 +160,7 @@ sub traitementEtab() {
 		print $LOG ", nb-user = 0 \n";
 	}
 	close $LOG;
+#	system "/bin/gzip -f $logFileName";
 	print "\n$etab $nbuser\n";
 	return $nbuser ? 0 : 1;
 }
