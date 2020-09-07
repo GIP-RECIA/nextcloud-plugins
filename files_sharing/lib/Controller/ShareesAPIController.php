@@ -621,7 +621,7 @@ class ShareesAPIController extends OCSController {
             return [
                 "label" => $user["displayName"],
                 "value" => [
-                    "shareType" => 0,
+                    "shareType" => Share::SHARE_TYPE_GROUP, /* #*/
                     "shareWith" => $user["gid"],
                 ]
             ];
