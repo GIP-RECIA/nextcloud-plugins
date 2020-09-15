@@ -20,7 +20,7 @@ my 	$allEtabFile = $dataRep . '/allEtab.txt';
 my $nbThread = 5;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
-my $commande = "/usr/bin/php occ ldap:import-users-ad -v -d 3 " ;
+my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
 #$commande = "echo " . $commande; # pour la dev
 
 my $filterUai = "(ESCOUAI=%s)";
