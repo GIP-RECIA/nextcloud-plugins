@@ -40,7 +40,7 @@ while (<ETAB>) {
 	}
 } 
 close ETAB or die $!;
-print "$cpt etab en prod \n";
+print "$cpt etabs en prod \n";
 
 print "lecture  $allEtabVide \n";
 open ETAB , "$allEtabVide"  or die "$allEtabFile $!" ;
@@ -73,7 +73,7 @@ while (<ETAB>) {
 	} 
 	close ETAB or die $!;
 
-print "Lignes supplémentaire en prod : \n";
+print "Lignes supplémentaires en prod : \n";
 foreach my $line (values %etabEnProd) {
 	print $line;
 }
