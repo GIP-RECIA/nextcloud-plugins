@@ -1,6 +1,6 @@
 # fait la lecture de parametre depuis config.php
 # donne une connection a la base
-# place l'execution de le HOME de l'utilisateur
+# place l'execution dans le HOME de l'utilisateur
 
 BEGIN {
         use Exporter   ();
