@@ -19,7 +19,7 @@ while (<ETAB>) {
 	next if $passer;
 	
 	if (/#NEW LINE PAGS/) {
-		print "\n";
+		print "\n\n";
 		next;
 	}
 	

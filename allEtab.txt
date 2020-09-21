@@ -4,6 +4,8 @@
 # represente la date de derniere modif .
 
 # groupe 3
+0370791J; # CLG-ARCHE DU LUDE Clg 37 
+0370768J; # CLG-GEORGES BESSE Clg 37 
 
 0370036N; # LGT-BALZAC Lyc 37 
 0450062Y; # LGT-DUHAMEL DU MONCEAU Lyc 45 
