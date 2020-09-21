@@ -9,8 +9,11 @@ sub readLine(){
 		@col = split  '\t+', $_;
 		return $col[-1], $col[0] . " " . $col[-2];
 	}
-	
+sub writeLine(){
+	$uai = shift;
+	$nom = shift;
+	print "$uai; # $nom \n";	
+}
 while (<>) {
-	($uai, $nom) = readLine();
-	print "$uai; # $nom \n";
+	&writeLine(&readLine());
 }
