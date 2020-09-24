@@ -7,8 +7,7 @@ my  $dataRep = $ENV{'NC_DATA'};
 my $scriptRep = $0;
 $scriptRep =~ s/[^\/]+$//;
 
-print $scriptRep . "\n";
-$dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
+$dataRep = $ENV{'HOME'} . 'data' unless $dataRep;
 
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
