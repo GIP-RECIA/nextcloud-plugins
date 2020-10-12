@@ -138,7 +138,8 @@ sub traitementEtab() {
 	}
 	
 	print $LOG "$commande --ldap-filter='$filtre' \n"; 
-
+		
+		# voir avec open3 et IO::Select pour filtrer les erreurs 
 	open  $COM , "$commande --ldap-filter='$filtre' |"  or die $!;
 	while (<$COM>) {
 		if (/ldap:create-user/) {
