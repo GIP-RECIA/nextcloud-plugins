@@ -4,8 +4,6 @@
 # represente la date de derniere modif .
 
 # 12 Oct groupes6
-
-
 0371098T; # CLG-BEAULIEU Clg 37 
 0371189S; # CLG-GASTON HUET Clg 37 
 0371124W; # CLG-LE REFLESSOIR Clg 37 

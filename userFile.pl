@@ -37,6 +37,21 @@ sub getBucket{
 
 my %allFiles;
 
+sub getUserName {
+	my $uid = shift;
+	my $sql = connectSql();
+	
+	my $sqlQuery= "select uid, displayname from oc_users where uid = ? " ;
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	
+	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
+	my $ary_ref =  $sqlStatement->fetch;
+	unless ($ary_ref) {
+		return 0;
+	}
+	return  $$ary_ref[1];
+}
+
 sub getNextcloudFile{
 	my $uid = shift;
 	my $sql = connectSql();
@@ -53,29 +68,39 @@ sub getNextcloudFile{
 		#print "$path \n";
 	}	
 }
+
+my $nom = getUserName($uid);
+unless ($nom) {
+	die "pas de compte pour $uid\n";	
+}
 my $bucket = getBucket($uid);
 
-getNextcloudFile($uid);
+if ($bucket) {
+	getNextcloudFile($uid);
 
-print "lecture du bucket $bucket\n";
+	print "lecture du bucket $bucket\n";
 
-open S3 , &lsCommande($bucket) . "|"  || die "$!";
+	open S3 , &lsCommande($bucket) . "|"  || die "$!";
 
-while (<S3>) {
-	chop;
-	print ;
-	if (/urn:oid:(\d+)$/) {
-		my $fileId = $1;
-		my $path = $allFiles{$fileId};
-		if ($path) {
-			print "\t$path";
-			delete $allFiles{$fileId};
+	while (<S3>) {
+		chop;
+		print ;
+		if (/urn:oid:(\d+)$/) {
+			my $fileId = $1;
+			my $path = $allFiles{$fileId};
+			if ($path) {
+				print "\t$path";
+				delete $allFiles{$fileId};
+			}
 		}
+		print "\n";
 	}
-	print "\n";
-}
-close S3;
+	close S3;
 
-while (my ($id, $path) = each (%allFiles)) {
-	print "\t$id\t$path\n";
-} 
+	while (my ($id, $path) = each (%allFiles)) {
+		print "\t$id\t$path\n";
+	} 
+} else {
+	print "Pas de bucket ";
+}
+	
