@@ -1,5 +1,9 @@
 #! /usr/bin/perl
 use strict;
+use IPC::Open3;
+use IO::Select;
+use Symbol 'gensym';
+
 my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
 my $wwwRep = $ENV{'NC_WWW'};
@@ -113,6 +117,7 @@ sub traitementEtab() {
 	my $timeStamp = shift;
 	my $LOG;
 	my $COM;
+	my $ERR = gensym;
 	
 	
 	print "\n" , $etab;
@@ -122,6 +127,7 @@ sub traitementEtab() {
 	my $create = 0;
 	my $update = 0;
 	my $debut = time;
+	my $select = IO::Select->new();
 	
 	my $filtre;
 	print $LOG &heure($debut), $etab , "\n" or die "$!";
@@ -140,7 +146,10 @@ sub traitementEtab() {
 	print $LOG "$commande --ldap-filter='$filtre' \n"; 
 		
 		# voir avec open3 et IO::Select pour filtrer les erreurs 
-	open  $COM , "$commande --ldap-filter='$filtre' |"  or die $!;
+	open3(undef,  $COM , $ERR, "$commande --ldap-filter='$filtre'" );
+	
+	$select->add($ERR);
+	
 	while (<$COM>) {
 		if (/ldap:create-user/) {
 				$create++;
@@ -148,8 +157,23 @@ sub traitementEtab() {
 		if (/ldap:update-user/) {
 			$update++;
 		}
+		if ($select->can_read(0)) {
+			my $err = <$ERR>;
+			chop $err;
+			if ($err) {
+				print STDERR "$etab ", $err;
+			} 
+			print STDERR "\n";
+			
+		}
 		print $LOG $_;
 	}
+	if ($select->can_read(0)) {
+		while (<$ERR>) {
+			print STDERR "$etab ", $_;
+		}
+	}
+	close $ERR;
 	close $COM;
 	my $fin = time;
 	my $nbuser = $create + $update; 
