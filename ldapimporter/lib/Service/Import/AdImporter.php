@@ -601,13 +601,18 @@ class AdImporter implements ImporterInterface
     protected function getIdEtablissementFromSiren($siren)
     {
         if (!is_null($siren)) {
-            $qb = $this->db->getQueryBuilder();
-            $qb->select('id')
-                ->from('etablissements')
-                ->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
-            $result = $qb->execute();
-            $idEtabs = $result->fetchAll()[0];
-            return $idEtabs["id"];
+            try {
+				$qb = $this->db->getQueryBuilder();
+				$qb->select('id')
+					->from('etablissements')
+					->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
+				$result = $qb->execute();
+            
+				$idEtabs = $result->fetchAll()[0];
+				return $idEtabs["id"];
+			} catch (\Exception $e) {
+				$this->logger->error(print_r($e, TRUE) . "  [Siren = $siren] ");
+			}
         }
         return null;
     }
