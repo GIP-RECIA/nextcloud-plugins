@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-# script qui permet de sauvegarder la liste des bucket utilisés associé aux uid. 
-
+=pod
+script qui permet de sauvegarder la liste des bucket utilisés associé aux uid. 
+=cut
 
 use strict;
 use utf8;
@@ -11,34 +12,62 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-#create table recia_bucket (
-#	bucket varchar(128) primary key,
-#	uid varchar(64) unique key
-#)
+=begin comment
+create table recia_bucket_history (
+	bucket varchar(128) ,
+	uid varchar(64),
+	creation date,
+	suppression date,
+	primary key (bucket, uid)
+)
 
+=cut
+
+my @date = localtime time;
+
+my $date = sprintf ("%4d-%2d-%2d", $date[5]+1900, $date[4]+1, $date[3]);
+
+my %history;
 
 my $sql = connectSql();
 
 # on recupere les buckets pas encore dans recia_bucket
 
-my $sqlQuery = "select userid uid, configvalue bucket  from oc_preferences where configkey = 'bucket' and configvalue not in (select bucket from recia_bucket)" ;	
-my $sqlInsert1 = "insert into recia_bucket (bucket) values (?)";
-my $sqlInsert2 = "insert into recia_bucket (bucket, uid) values (?, ? )";
 
-my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-	
+my $sqlInsert = "insert into recia_bucket_history (bucket, uid, creation) values (?, ?, ?)";
+
+my $sqlQueryOld = "select bucket, uid  from recia_bucket_history";
+my $sqlQueryExist = "select userid uid, configvalue bucket  from oc_preferences where configkey = 'bucket'";
+
+
+my $sqlStatement = $sql->prepare($sqlQueryOld) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
+
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $bucket = $tuple->{'bucket'};
 	my $uid = $tuple->{'uid'};
-	my $sth;
+	$history{$bucket} .= " $uid ";
+}
+
+$sqlStatement = $sql->prepare($sqlQueryExist) or die $sql->errstr;
+$sqlStatement->execute() or die $sqlStatement->errstr;
+
+while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+	my $bucket = $tuple->{'bucket'};
+	my $uid = $tuple->{'uid'};
 	
-	if (length($bucket) <= 12 ) {
-		$sth = $sql->prepare($sqlInsert1);
-		$sth->execute($bucket) or die $DBI::errstr;
-	} else {
-		$sth = $sql->prepare($sqlInsert2);
-		$sth->execute($bucket, $uid) or die $DBI::errstr . $DBI::error;
-	}
+	my $uids = $history{$bucket};
+	if (!$uids || $uids !~ /\s$uid\s/) {
+		&insert($bucket, $uid);
+	} 
+}
+
+sub insert {
+	my $bucket = shift;
+	my $uid = shift;
+	my $sth = $sql->prepare($sqlInsert);
+	
+	$sth->execute($bucket, $uid, $date) or die $DBI::errstr . $DBI::error;
 	$sth->finish();
 }
+
