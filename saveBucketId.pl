@@ -1,6 +1,26 @@
 #!/usr/bin/perl
+
+=encoding utf8
+
+
 =pod
-script qui permet de sauvegarder la liste des bucket utilisés associé aux uid. 
+
+Script qui permet de sauvegarder la liste des bucket utilisés associé aux uid. 
+
+Il faut créer la table avant utilisation:
+
+=cut
+
+=pod
+
+	create table recia_bucket_history (
+		bucket varchar(128) ,
+		uid varchar(64),
+		creation date,
+		suppression date,
+		primary key (bucket, uid)
+	)
+
 =cut
 
 use strict;
@@ -12,16 +32,7 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-=begin comment
-create table recia_bucket_history (
-	bucket varchar(128) ,
-	uid varchar(64),
-	creation date,
-	suppression date,
-	primary key (bucket, uid)
-)
 
-=cut
 
 my @date = localtime time;
 
