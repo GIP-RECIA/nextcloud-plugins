@@ -5,7 +5,7 @@
 
 =pod
 
-Script qui permet de sauvegarder la liste des bucket utilisés associé aux uid. 
+Script qui permet de sauvegarder la liste des buckets utilisés associé aux uid. 
 
 Il faut créer la table avant utilisation:
 
@@ -36,7 +36,7 @@ use ncUtil;
 
 my @date = localtime time;
 
-my $date = sprintf ("%4d-%2d-%2d", $date[5]+1900, $date[4]+1, $date[3]);
+my $date = sprintf ("%4d-%.2d-%.2d", $date[5]+1900, $date[4]+1, $date[3]);
 
 my %history;
 
