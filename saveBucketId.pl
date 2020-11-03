@@ -25,6 +25,7 @@ Il faut créer la table avant utilisation:
 
 use strict;
 use utf8;
+binmode STDOUT, ':encoding(UTF-8)';
 use DBI();
 # les 2 use suivant permette de trouver les libraries installées
 #  dans le meme path que l'executable
@@ -70,7 +71,6 @@ print "Nb Bucket présents : $nbBucketOld\n";
 $sqlStatement = $sql->prepare($sqlQueryExist) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 
-$nbNewBucket = 0;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $bucket = $tuple->{'bucket'};
 	my $uid = $tuple->{'uid'};
@@ -85,7 +85,7 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 
 my $nbBucket =  scalar keys %history;
 print "Nb Bucket ajouté : ", $nbBucket - $nbBucketOld, "\n";
-print "Soit $nbBucket buckets pour $nbUid uids; total buckets y comprit avatar :", $nbBucket + $nbUid,  "\n";
+print "Soit $nbBucket buckets pour $nbUid uids; total buckets y comprit avatar : ", $nbBucket + $nbUid,  "\n";
 
 
 
