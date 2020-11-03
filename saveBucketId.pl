@@ -54,24 +54,40 @@ my $sqlQueryExist = "select userid uid, configvalue bucket  from oc_preferences 
 my $sqlStatement = $sql->prepare($sqlQueryOld) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 
+my $nbUid = 0;
+
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $bucket = $tuple->{'bucket'};
 	my $uid = $tuple->{'uid'};
 	$history{$bucket} .= " $uid ";
+	
 }
+
+my $nbBucketOld =  scalar keys %history;
+
+print "Nb Bucket présents : $nbBucketOld\n";
 
 $sqlStatement = $sql->prepare($sqlQueryExist) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 
+$nbNewBucket = 0;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $bucket = $tuple->{'bucket'};
 	my $uid = $tuple->{'uid'};
+	$nbUid++;
 	
 	my $uids = $history{$bucket};
 	if (!$uids || $uids !~ /\s$uid\s/) {
 		&insert($bucket, $uid);
+		$history{$bucket} .= " $uid ";
 	} 
 }
+
+my $nbBucket =  scalar keys %history;
+print "Nb Bucket ajouté : ", $nbBucket - $nbBucketOld, "\n";
+print "Soit $nbBucket buckets pour $nbUid uids; total buckets y comprit avatar :", $nbBucket + $nbUid,  "\n";
+
+
 
 sub insert {
 	my $bucket = shift;
