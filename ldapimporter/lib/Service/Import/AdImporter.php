@@ -318,7 +318,8 @@ class AdImporter implements ImporterInterface
                                                 $newName = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $newName, 1);
                                                 $sprintfArray[] = $groupFilterMatches[$match[1]][0];
                                             }
-                                            $groupName = sprintf($newName, ...$sprintfArray);
+                                            $groupName = $this->normalizedGroupeName(sprintf($newName, ...$sprintfArray));
+                                       
                                             if (!is_null($groupFilterMatches) && !is_null($groupFilter["uaiNumber"]) && count($assoEtablissementUaiOrNameAndId) > 0) {
                                                 $nameOrUaiFromUaiNumber = $groupFilterMatches[intval($groupFilter["uaiNumber"])];
                                                 $idEtablissement = $assoEtablissementUaiOrNameAndId[$nameOrUaiFromUaiNumber[0]];
@@ -398,6 +399,7 @@ class AdImporter implements ImporterInterface
                                         if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
                                             $idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
                                             if ($groupName && strlen($groupName) > 0) {
+												$groupName = $this->normalizedGroupeName($groupName);
                                                 $this->addEtablissementAsso($idEtablishement, $groupName);
                                             }
                                             $this->addEtablissementAsso($idEtablishement, $employeeID);
@@ -439,6 +441,19 @@ class AdImporter implements ImporterInterface
         return $users;
     }
 
+	protected function normalizedGroupeName($groupName) {
+	/*	$name = str_replace(aray('é','è','ê','ë'),'e', $groupName);
+		$name = str_replace(aray('É','È','Ê','Ë'),'E', $name);
+		$name = str_replace(aray('à', 'â', 'ä'), 'a', $name);
+		$name = str_replace(aray('À', 'Â', 'Ä'), 'A', $name);
+		* $name = strtr($groupName,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ','aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+	*/	
+		    $accents = array("à","á","â","ã","ä","ç","è","é","ê","ë","ì","í","î","ï","ñ","ò","ó","ô","õ","ö","ù","ú","û","ü","ý","ÿ","À","Á","Â","Ã","Ä","Ç","È","É","Ê","Ë","Ì","Í","Î","Ï","Ñ","Ò","Ó","Ô","Õ","Ö","Ù","Ú","Û","Ü","Ý");
+		$sansAccents = array("a","a","a","a","a","c","e","e","e","e","i","i","i","i","n","o","o","o","o","o","u","u","u","u","y","y","A","A","A","A","A","C","E","E","E","E","I","I","I","I","N","O","O","O","O","O","U","U","U","U","Y");
+		$name = str_replace($accents, $sansAccents, $groupName);
+		return preg_replace("/[^a-zA-Z0-9\.\-_ @]+/", "", $name);
+		
+	}
     /**
      *
      * @param $currentEtablishementIds
@@ -625,6 +640,7 @@ class AdImporter implements ImporterInterface
      */
     protected function addEtablissementAsso($idEtablissement, $groupUserId)
     {
+		
         if (!is_null($groupUserId) && !empty($groupUserId) && !is_null($idEtablissement)) {
             $qb = $this->db->getQueryBuilder();
             $qb->select('*')
