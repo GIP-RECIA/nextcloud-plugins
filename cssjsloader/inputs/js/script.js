@@ -33,6 +33,10 @@ if (body.id == 'body-login') {
 		dom['nc.touraine-eschool.fr'] = 'clg37';
 		dom['nc.chercan.fr'] = 'clg18';
 		dom['nc.colleges41.fr'] = 'clg41';
+		dom['nc.mon-e-college.loiret.fr'] = 'clg45';
+		dom['nc.e-college.indre.fr'] = 'clg36';
+
+
 		
 		EscoNextAddon.classToAdd = dom[host];
 		EscoNextAddon.setClassBody(embedded);
