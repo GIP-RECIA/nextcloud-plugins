@@ -91,6 +91,7 @@ body.embedded {
 	}
 }
 
+
 body {
 	&.clg18.not_embedded {
         @include colorTheme(#004899);
@@ -106,6 +107,12 @@ body {
     }
     &.esco.not_embedded  {
         @include colorTheme(#25b2f3);
+    }
+    &.clg45.not_embedded  {
+        @include colorTheme(#BFD140);
+    }
+    &.clg36.not_embedded  {
+        @include colorTheme(#0069B3);
     }
     &.embedded {
 		@include colorTheme(#888888);
