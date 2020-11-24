@@ -50,9 +50,9 @@ unless (-d $dataRep) {
 }
 unless (@ARGV) {
 	print STDERR "manque d'argument\n" ;
-	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp\n";
-	print "\t $0 [UIA ...] [SIREN ...] [GROUPE...] \n\t\trecharge que les UIA SIREN ou GROUPE donnés , tient compte du timestamp si prédéfinit\n";
-	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN  pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tout les uais)\n\t\t Ne tient pas comptes des timestamp";  
+	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp.\n\n";
+	print "\t $0 [UIA ...] [SIREN ...] [GROUPE...] \n\t\trecharge que les UIA SIREN ou GROUPE donnés , tient compte du timestamp si prédéfinit.\n\n";
+	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN  pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tout les uais)\n\t\t Ne tient pas comptes des timestamps.\n";  
 	exit 1;
 }
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
