@@ -50,6 +50,9 @@ unless (-d $dataRep) {
 }
 unless (@ARGV) {
 	print STDERR "manque d'argument\n" ;
+	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp\n";
+	print "\t $0 [UIA ...] [SIREN ...] [GROUPE...] \n\t\trecharge que les UIA SIREN ou GROUPE donnés , tient compte du timestamp si prédéfinit\n";
+	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN  pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tout les uais)\n\t\t Ne tient pas comptes des timestamp";  
 	exit 1;
 }
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
@@ -89,6 +92,26 @@ if ($ARGV[0] eq 'all' ) {
 	unless ($saveTimestamp) {
 		# si on traite tous les etab alors que l'on  pas trouvé le fichier en donnant la liste
 		die "fichier non lisible $allEtabFile\n";
+	}
+	my $groupe = $ARGV[1] ;
+	if ($groupe) {
+		my @ALLGRP ;
+		if ($groupe =~ /\%UAI\%/) {
+			foreach my $uai (@allEtab) {
+				if ($uai =~ /^\d{7}\w$/) {
+					my $newGroup = $groupe;
+					$newGroup =~ s/\%UAI\%/$uai/g;
+					push @ALLGRP , $newGroup;
+					print "filtre : $newGroup\n";
+				}
+			}
+		}
+		if (@ALLGRP) {
+			@allEtab = @ALLGRP;
+			$saveTimestamp = 0;
+		} else {
+			die "l'association groupe etab a produit une liste vide \n";
+		}
 	}
 } else {
 		# traitement que d'un etab ou un groupe si on a pas son timestamp on traite entierement
