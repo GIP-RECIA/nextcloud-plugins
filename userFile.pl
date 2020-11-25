@@ -96,20 +96,19 @@ if ($bucket) {
 		print "\n";
 	}
 	close S3;
-	
 	print "\nFichier Nextcloud hors bucket\n";
 	while (my ($id, $path) = each (%allFiles)) {
 		print "\t$id\t$path\n";
 	} 
-	
+} else {
+	print "Pas de bucket ";
+}	
 	$bucket = $prefixBucket . "0". lc($uid);
-	print "\nLecture du bucket des avatars $bucket \n");
+	print "\nLecture du bucket des avatars $bucket \n";
 	open S3 , &lsCommande($bucket) . "|"  || die "$!";
 	while (<S3>) {
 		print;
 	}
 	close S3;
-} else {
-	print "Pas de bucket ";
-}
+
 	
