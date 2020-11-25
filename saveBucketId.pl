@@ -5,7 +5,7 @@
 
 =pod
 
-Script qui permet de sauvegarder la liste des buckets utilisés associé aux uid. 
+Script qui permet de sauvegarder la liste des buckets utilisés associés aux uid. 
 
 Il faut créer la table avant utilisation:
 
@@ -43,14 +43,18 @@ my %history;
 
 my $sql = connectSql();
 
-# on recupere les buckets pas encore dans recia_bucket
 
-
+# insertion d'un bucket dans l'historique. 
 my $sqlInsert = "insert into recia_bucket_history (bucket, uid, creation) values (?, ?, ?)";
 
+# donne les buckets déjà dans l'historique.
 my $sqlQueryOld = "select bucket, uid  from recia_bucket_history";
+
+# donne les buckets déclarés dans Nextcloud.
 my $sqlQueryExist = "select userid uid, configvalue bucket  from oc_preferences where configkey = 'bucket'";
 
+# Donne le nombre de compte déclarés.
+my $sqlQueryUidNumber = "select count(uid) from oc_users";
 
 my $sqlStatement = $sql->prepare($sqlQueryOld) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
@@ -83,9 +87,12 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	} 
 }
 
+
+my ($nbCount)= $sql->selectrow_array($sqlQueryUidNumber) or die $sql->errstr;
+
 my $nbBucket =  scalar keys %history;
 print "Nb Bucket ajouté : ", $nbBucket - $nbBucketOld, "\n";
-print "Soit $nbBucket buckets pour $nbUid uids; total buckets y comprit avatar : ", $nbBucket + $nbUid,  "\n";
+print "Soit $nbBucket buckets pour $nbUid uids sur $nbCount comptes; total buckets y comprit avatar : ", $nbBucket + $nbUid,  "\n";
 
 
 
