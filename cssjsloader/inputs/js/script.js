@@ -35,6 +35,7 @@ if (body.id == 'body-login') {
 		dom['nc.colleges41.fr'] = 'clg41';
 		dom['nc.mon-e-college.loiret.fr'] = 'clg45';
 		dom['nc.e-college.indre.fr'] = 'clg36';
+		dom['nc-ent.recia.fr'] = 'esco';
 
 
 		
