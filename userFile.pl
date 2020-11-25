@@ -76,7 +76,7 @@ sub getNexcloudGroups{
 	my $sqlQuery = "select gid from oc_group_user where uid = ?";
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	
-	$sqlStatement->execute('%' . $uid) or die $sqlStatement->errstr;
+	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	my @groups;
 	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 		my $group = $tuple->{'gid'};
