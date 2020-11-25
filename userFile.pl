@@ -69,10 +69,32 @@ sub getNextcloudFile{
 	}	
 }
 
+sub getNexcloudGroups{
+	my $uid = shift;
+	my $sql = connectSql();
+	
+	my $sqlQuery = "select gid from oc_group_user where uid = ?";
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	
+	$sqlStatement->execute('%' . $uid) or die $sqlStatement->errstr;
+	my @groups;
+	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+		my $group = $tuple->{'gid'};
+		push @groups, $group;
+	}
+	return @groups;
+}
+
 my $nom = getUserName($uid);
 unless ($nom) {
 	die "pas de compte pour $uid\n";	
 }
+
+print "Les groupes Nextcloud : \n";
+foreach my $group (&getNexcloudGroups($uid)) {
+	print "\t $group\n";
+}
+
 my $bucket = getBucket($uid);
 
 if ($bucket) {
