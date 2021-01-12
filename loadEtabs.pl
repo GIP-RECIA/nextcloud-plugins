@@ -21,7 +21,7 @@ $dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
 
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
-my $nbThread = 5;
+my $nbThread = 8;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
@@ -119,9 +119,14 @@ if ($ARGV[0] eq 'all' ) {
 }
 
 
-sub heure(){
+sub dateHeure(){
 	my @local = localtime(shift);
 	return sprintf "%d/%02d/%02d %02d:%02d:%02d " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1], $local[0];
+}
+
+sub heure(){
+	my @local = localtime(shift);
+	return sprintf "%02d:%02d:%02d " , $local[2], $local[1], $local[0];
 }
 
 sub temps() {
@@ -142,18 +147,18 @@ sub traitementEtab() {
 	my $COM;
 	my $ERR = gensym;
 	
-	
-	print "\n" , $etab;
+	my $debut = time;
+	print "\n" , &heure($debut), " $etab \n";
 	
 	my $logFileName = "$logRep/$etab.log";
 	open $LOG , "> $logFileName" or die $!;
 	my $create = 0;
 	my $update = 0;
-	my $debut = time;
+	
 	my $select = IO::Select->new();
 	
 	my $filtre;
-	print $LOG &heure($debut), $etab , "\n" or die "$!";
+	print $LOG &dateHeure($debut), $etab , "\n" or die "$!";
 	if ($etab =~ /^\d{7}\w$/) {
 			$filtre = $filterUai;
 	} elsif ($etab =~ /^\d{14,15}$/) {
@@ -184,7 +189,7 @@ sub traitementEtab() {
 			my $err = <$ERR>;
 			chop $err;
 			if ($err) {
-				print STDERR "$etab ", $err;
+				print STDERR &heure(time), " $etab ", $err;
 			} 
 			print STDERR "\n";
 			
@@ -193,7 +198,7 @@ sub traitementEtab() {
 	}
 	if ($select->can_read(0)) {
 		while (<$ERR>) {
-			print STDERR "$etab ", $_;
+			print STDERR &heure(time), " $etab ", $_;
 		}
 	}
 	close $ERR;
@@ -201,7 +206,7 @@ sub traitementEtab() {
 	my $fin = time;
 	my $nbuser = $create + $update; 
 	my $duree = $fin - $debut;
-	print $LOG &heure($fin), "\n durée=", &temps($duree );
+	print $LOG &dateHeure($fin), "\n durée=", &temps($duree );
 	if ($nbuser) {
 		print $LOG ", create-user=$create ", " update-user=$update ", " time by users=" , $duree / $nbuser, "\n";
 	} else {
@@ -209,7 +214,7 @@ sub traitementEtab() {
 	}
 	close $LOG;
 #	system "/bin/gzip -f $logFileName";
-	print "\n$etab $nbuser\n";
+	print "\n", &heure(time), " $etab $nbuser\n";
 	return $nbuser ? 0 : 1;
 }
 
