@@ -3,6 +3,23 @@
 # le timestamp n'est pas obligatoire il doit faire au max 14 chiffres
 # represente la date de derniere modif .
 
+
+# CFA Agricole 14/01/2021
+
+0360766M ;  # CFA AGRICOLE DE L'INDRE
+0451463W ;  # CFA AGRICOLE DU LOIRET
+0371436K ;  # CFA AGRICOLE DE L'INDRE ET LOIRE
+0371587Z ;  # CFA AGRICOLE DE L'INDRE ET LOIRE - ANTENNE DE CHINON
+0410955R ;  # CFA Agricole du Loir et Cher
+0411065K ;  # CFA Agricole du Loir et Cher - Antenne de Vendôme
+0411045N ; # CFA Agricole du Loir et Cher - Antenne de Montoire
+0281041E ; # Lycée / CFA de la Saussaye
+0180847Y ; # CFA AGRICOLE DU CHER
+0180924G ; # CFA AGRICOLE DU CHER - ANTENNE DE ST AMAND
+0371513U ; # CFA AGRICOLE DE L'INDRE ET LOIRE - CFPPA FONDETTES
+0360808H ; # CFA AGRICOLE DE L'INDRE - CFPPA CHATEAUROUX
+
+
 # colleges de l'indre 36
 
 0360001F; # CLG FREDERIC CHOPIN AIGURANDE 
