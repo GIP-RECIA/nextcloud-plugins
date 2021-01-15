@@ -30,6 +30,7 @@ my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
 my $filterUai = "(ESCOUAI=%s)";
 my $filterSiren = "(ESCOSIREN=%s)";
 my $filterGroup = "(IsMemberOf=%s)";
+my $filterUid = "(uid=%s)";
 
 my @allEtab;
 my %etabTimestamp;
@@ -41,6 +42,13 @@ my $noThread = 1;
 
 my $modifytimestamp = &timestampLdap(time);
 
+unless (@ARGV) {
+	print STDERR "manque d'argument\n" ;
+	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp.\n\n";
+	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN ldap pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tous les uais)\n\t\t Ne tient pas comptes des timestamps.\n\n";  
+	print "\t $0 [UAI ...] [SIREN ...] [UID...] [GROUPE...] \n\t\trecharge que les UAI SIREN UID ou GROUPE donnés , tient compte du timestamp si prédéfinit.\n";
+	exit 1;
+}
 
 unless (-d $logRep) {
 	die "erreur sur le repertoire des logs : $logRep\n";
@@ -48,13 +56,7 @@ unless (-d $logRep) {
 unless (-d $dataRep) {
 	die "erreur sur le repertoire des data :  $dataRep\n";
 }
-unless (@ARGV) {
-	print STDERR "manque d'argument\n" ;
-	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp.\n\n";
-	print "\t $0 [UIA ...] [SIREN ...] [GROUPE...] \n\t\trecharge que les UIA SIREN ou GROUPE donnés , tient compte du timestamp si prédéfinit.\n\n";
-	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN  pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tout les uais)\n\t\t Ne tient pas comptes des timestamps.\n";  
-	exit 1;
-}
+
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
         #0180006J 0281047L 0371418R 0371418R 0410017W 0360019A 0451483T 0450064A 0450786K 0370769K 0371159J 0370024A  
 
@@ -163,6 +165,8 @@ sub traitementEtab() {
 			$filtre = $filterUai;
 	} elsif ($etab =~ /^\d{14,15}$/) {
 			$filtre = $filterSiren;
+	} elsif ($etab =~ /^F\w{7}$/) {
+		$filtre = $filterUid;   
 	} else {
 		$filtre = $filterGroup;
 	}
