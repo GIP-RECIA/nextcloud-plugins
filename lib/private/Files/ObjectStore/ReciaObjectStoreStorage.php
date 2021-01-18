@@ -32,7 +32,7 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 	protected $defautId;
 
 	protected $defautObjectStore;
-	protected $avatarObjectStore;
+	protected $reciaObjectStore;
 
 	/**
 	 * @param array $params
@@ -41,7 +41,7 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 		parent::__construct($params);
 		
 		$this->defautObjectStore = $params['objectstore'];
-		$this->avatarObjectStore = new  S3Recia($params);
+		$this->reciaObjectStore = new  S3Recia($params);
 		$this->defautBucket = $this->defautObjectStore->getBucket();
 		$this->defautId = $this->defautObjectStore->getStorageId();
   
@@ -56,13 +56,23 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 			if  (preg_match("/^[^\/]+\/avatar/",$path,  $matches)) {
 				if (preg_match("/avatar\/(F\w{7})(\/.*)?$/",$path,  $matches)) {
 					$uid = $matches[1];
-					if (! is_null($this->avatarObjectStore)) {
-						$this->objectStore = $this->avatarObjectStore;
+					if (! is_null($this->reciaObjectStore)) {
+						$this->objectStore = $this->reciaObjectStore;
 						$this->objectStore->setBucket($this->defautBucket . strtolower($uid));
 
 					}
 				}
-			} else {
+			} elseif  (preg_match("/^appdata_[^\/]+\/preview\/(\d+)/",$path,  $matches)) {
+				$rep = $matches[1];
+				if (! is_null($this->reciaObjectStore)) {
+					$num = $rep % 1000;
+					$this->objectStore = $this->reciaObjectStore;
+					$bucketName = $this->defautBucket .'preview'. $num;
+					$this->objectStore->setBucket($bucketName);
+					#$this->objectStore = $this->defautObjectStore ;
+					#error_log(" bucket name = $bucketName \n " , 3, '/var/www/ncrecette.recia/logs-esco/object.log'); 
+				}
+ 			} else {
 				$this->objectStore = $this->defautObjectStore ;
 			}
 		}
