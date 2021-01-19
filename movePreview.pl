@@ -195,7 +195,14 @@ sub createBucket(){
 		my $commande = getS3command() . " mb " . $bucket;
 		
 		if (&promptCommande($commande, \$choixBucket)) {
-			system $commande and die "$!\n";
+			unless ( system $commande ) {
+				if ($isFork) {
+					print STDERR "$!\n";
+					return 0;
+				} else { 
+					die "$!\n";
+				}
+			}
 			return 1;
 		}
 		return 0;
@@ -208,8 +215,15 @@ sub copyFile(){
 	my $newPath = shift;
 	my $commande = getS3command() . " cp " . $oldPath . " " . $newPath ;
 	if (&promptCommande($commande, \$choixFile)) {
-		system $commande and die "$!\n";
-			return 1;
+		unless ( system $commande ) {
+			if ($isFork) {
+				print STDERR "$!\n";
+				return 0;
+			} else { 
+				die "$!\n";
+			}
+		}
+		return 1;
 	}
 	return 0;
 }
@@ -220,8 +234,15 @@ sub moveFile(){
 	my $newPath = shift;
 	my $commande = getS3command() . " mv " . $oldPath . " " . $newPath ;
 	if (&promptCommande($commande, \$choixFile)) {
-		system $commande and die "$!\n";
-			return 1;
+		unless ( system $commande ) {
+			if ($isFork) {
+				print STDERR "$!\n";
+				return 0;
+			} else { 
+				die "$!\n";
+			}
+		}
+		return 1;
 	}
 	return 0;
 }
@@ -231,7 +252,14 @@ sub deleteFile(){
 	my $oldPath = shift;
 	my $commande = getS3command() . " del " . $oldPath;
 	if (&promptCommande($commande, \$choixFile)) {
-		system $commande and die "$!\n";
+		unless ( system $commande ) {
+			if ($isFork) {
+				print STDERR "$!\n";
+				return 0;
+			} else { 
+				die "$!\n";
+			}
+		}
 		return 1;
 	}
 	return 0;
@@ -243,8 +271,12 @@ sub existS3File() {
 		my $commande = &lsCommande($s3path);
 		#print "$commande \n";
 		my $ok = 0;
-		open LS ,  "$commande |" or die" $!";
-		
+		unless ( open LS ,  "$commande |" ){
+			 if ($isFork ) {
+				 return $ok, $!;
+			}
+			die" $!";
+		}
 		while (<LS>) {
 			chomp;
 			if (/$s3path$/) {
