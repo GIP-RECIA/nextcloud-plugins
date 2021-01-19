@@ -36,16 +36,21 @@ my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
 
+
+sub newConnectSql {
+	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
+	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
+	print " OK \n";
+	$sql_connexion->{'mysql_auto_reconnect'} = 1;
+	$sql_connexion->{'mysql_enable_utf8'} = 1;
+	$sql_connexion->do('SET NAMES utf8');
+	return $sql_connexion ;
+}
 sub connectSql {
 	if ($SQL_CONNEXION) {
 		return $SQL_CONNEXION;
 	}
-	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
-	$SQL_CONNEXION = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
-	print " OK \n";
-	$SQL_CONNEXION->{'mysql_auto_reconnect'} = 1;
-	$SQL_CONNEXION->{'mysql_enable_utf8'} = 1;
-	$SQL_CONNEXION->do('SET NAMES utf8');
+	$SQL_CONNEXION = newConnectSql();
 	return $SQL_CONNEXION ;
 }
 
