@@ -112,11 +112,14 @@ sub oneThread {
 }
 
 if ($isFork) {
-	for (my $numProc = 1; $numProc < 10; $numProc++) {
-		if ( fork ) { 
-			sleep 120;	
-		} else {
+	for (my $numProc = 10; $numProc < 100; $numProc++) {
+		unless ( fork ) { 
 			exit &oneThread($numProc);
+		}
+		if ( $numProc > 8) { # 8 nbThread max
+			wait;
+		} else {
+			sleep 60;
 		}
 	}
 } else {
