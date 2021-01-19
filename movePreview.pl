@@ -19,17 +19,29 @@ use ncUtil;
 
 unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
-	print STDERR  "synopsie : $0 [copy|delete|move] \n";
+	print STDERR  "synopsie : $0 [copy|delete|move] [all|none]\n";
 	print STDERR  "           copy : copie les fichiers preview du bucket 0 dans leurs buckets dédiés , s'ils n'existent pas déjà\n";
 	print STDERR  "           delete : supprime les fichiers preview du bucket 0 s'ils existent dans leurs buckets dédiés\n";
 	print STDERR  "           move : déplace les fichiers preview du bucket 0 dans leurs buckets dédiés; s'ils existaient déjà supprime seulement du bucket 0. \n";
 	exit 1;
 }
 
-my $job = @ARGV[0];
+my $job = $ARGV[0];
 
-my $sql = connectSql();
+my $arg = $ARGV[1];
 
+
+my $isFork = 0;
+my $choixFile;
+
+if ($arg) {
+	if ($arg eq 'all' or $arg eq 'none') {
+		$choixFile = $arg;
+		$isFork = 1;
+	} else {
+		die "Erreur 2 eme argument doit être all ou none ! \n";
+	}
+}
 my $instanceid = $PARAM{'instanceid'} ;
 
 my $nbPreviewBuckets = 0;
@@ -61,34 +73,53 @@ if ($job eq 'copy') {
 my $prefixPath = 'appdata_'. $instanceid . '/preview/';
 my $prefixNewBucket = '0preview'; 
 
-my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}%' ";
-print "$sqlQuery\n";
 
-my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 
-$sqlStatement->execute() or die $sqlStatement->errstr;
+sub oneThread {
+	my $numProc = shift; #chifre de 1 ... 9 ou vide 
+	my $sql = newConnectSql();
+	my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}${numProc}%' ";
+	print "$sqlQuery\n";
 
-while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
-	my $path = $tuple->{'path'};
-	my $fileId = $tuple->{'fileId'};
-	
-	if ($path =~ /$prefixPath(\d+)\//) {
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+
+	$sqlStatement->execute() or die $sqlStatement->errstr;
+
+	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+		my $path = $tuple->{'path'};
+		my $fileId = $tuple->{'fileId'};
 		
-		my $idBucket = $1 % $nbPreviewBuckets; 
-		
-		my $newBucket= $prefixNewBucket . $idBucket;
-		
-		
-		if ($isCopy) {			
+		if ($path =~ /$prefixPath(\d+)\//) {
 			
-			&oneCopy($newBucket, $fileId);
+			my $idBucket = $1 % $nbPreviewBuckets; 
 			
-		} elsif ($isDelete) {
-			&oneDelete($newBucket, $fileId);
-		} elsif ($isMove) {
-			&oneMove($newBucket, $fileId);
+			my $newBucket= $prefixNewBucket . $idBucket;
+			
+			
+			if ($isCopy) {			
+				
+				&oneCopy($newBucket, $fileId);
+				
+			} elsif ($isDelete) {
+				&oneDelete($newBucket, $fileId);
+			} elsif ($isMove) {
+				&oneMove($newBucket, $fileId);
+			}
 		}
 	}
+	return 0;
+}
+
+if ($isFork) {
+	for (my $numProc = 1; $numProc < 10; $numProc++) {
+		if ( fork ) { 
+			sleep 60;	
+		} else {
+			exit &oneThread($numProc);
+		}
+	}
+} else {
+	&oneThread();
 }
 # fin des traitements
 
@@ -166,7 +197,7 @@ sub createBucket(){
 		return 0;
 }
 
-my $choixFile;
+
 
 sub copyFile(){
 	my $oldPath = shift;
