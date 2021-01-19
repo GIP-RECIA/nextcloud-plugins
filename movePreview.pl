@@ -33,10 +33,11 @@ my $arg = $ARGV[1];
 
 my $isFork = 0;
 my $choixFile;
+my $choixBucket = '';
 
 if ($arg) {
 	if ($arg eq 'all' or $arg eq 'none') {
-		$choixFile = $arg;
+		$choixBucket = $choixFile = $arg;
 		$isFork = 1;
 	} else {
 		die "Erreur 2 eme argument doit être all ou none ! \n";
@@ -113,7 +114,7 @@ sub oneThread {
 if ($isFork) {
 	for (my $numProc = 1; $numProc < 10; $numProc++) {
 		if ( fork ) { 
-			sleep 60;	
+			sleep 120;	
 		} else {
 			exit &oneThread($numProc);
 		}
@@ -184,7 +185,7 @@ sub oneDelete() {
 	}
 }
 
-my $choixBucket = '';
+
 
 sub createBucket(){
 		my $bucket = shift;
