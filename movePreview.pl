@@ -36,8 +36,11 @@ my $choixFile;
 my $choixBucket = '';
 
 if ($arg) {
-	if ($arg eq 'all' or $arg eq 'none') {
-		$choixBucket = $choixFile = $arg;
+	if ($arg eq 'all' ) {
+		$choixBucket = $choixFile = 'O';
+		$isFork = 1;
+	} elsif ( $arg eq 'none') {
+		$choixBucket = $choixFile = 'n';
 		$isFork = 1;
 	} else {
 		die "Erreur 2 eme argument doit être all ou none ! \n";
@@ -112,13 +115,15 @@ sub oneThread {
 }
 
 if ($isFork) {
+	my $nbProc = 1;
 	for (my $numProc = 10; $numProc < 100; $numProc++) {
 		unless ( fork ) { 
 			exit &oneThread($numProc);
 		}
-		if ( $numProc > 8) { # 8 nbThread max
+		if ( $nbProc >= 8) { # 8 nbThread max
 			wait;
 		} else {
+			$nbProc++;
 			sleep 60;
 		}
 	}
@@ -195,7 +200,7 @@ sub createBucket(){
 		my $commande = getS3command() . " mb " . $bucket;
 		
 		if (&promptCommande($commande, \$choixBucket)) {
-			unless ( system $commande ) {
+			if ( system $commande ) {
 				if ($isFork) {
 					print STDERR "$!\n";
 					return 0;
@@ -215,7 +220,7 @@ sub copyFile(){
 	my $newPath = shift;
 	my $commande = getS3command() . " cp " . $oldPath . " " . $newPath ;
 	if (&promptCommande($commande, \$choixFile)) {
-		unless ( system $commande ) {
+		if ( system $commande ) {
 			if ($isFork) {
 				print STDERR "$!\n";
 				return 0;
@@ -234,7 +239,7 @@ sub moveFile(){
 	my $newPath = shift;
 	my $commande = getS3command() . " mv " . $oldPath . " " . $newPath ;
 	if (&promptCommande($commande, \$choixFile)) {
-		unless ( system $commande ) {
+		if ( system $commande ) {
 			if ($isFork) {
 				print STDERR "$!\n";
 				return 0;
@@ -252,7 +257,7 @@ sub deleteFile(){
 	my $oldPath = shift;
 	my $commande = getS3command() . " del " . $oldPath;
 	if (&promptCommande($commande, \$choixFile)) {
-		unless ( system $commande ) {
+		if ( system $commande ) {
 			if ($isFork) {
 				print STDERR "$!\n";
 				return 0;
