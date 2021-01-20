@@ -77,13 +77,12 @@ if ($job eq 'copy') {
 my $prefixPath = 'appdata_'. $instanceid . '/preview/';
 my $prefixNewBucket = '0preview'; 
 
-
+my $numProc = '';
 
 sub oneThread {
-	my $numProc = shift; #chifre de 1 ... 9 ou vide 
 	my $sql = newConnectSql();
 	my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}${numProc}%' ";
-	print "$sqlQuery\n";
+	print "$numProc : $sqlQuery\n";
 
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 
@@ -116,9 +115,10 @@ sub oneThread {
 
 if ($isFork) {
 	my $nbProc = 1;
-	for (my $numProc = 10; $numProc < 100; $numProc++) {
+	for (my $proc = 10; $proc < 100; $proc++) {
 		unless ( fork ) { 
-			exit &oneThread($numProc);
+			$numProc = $proc;
+			exit &oneThread();
 		}
 		if ( $nbProc >= 8) { # 8 nbThread max
 			wait;
@@ -195,79 +195,53 @@ sub oneDelete() {
 
 
 
-sub createBucket(){
-		my $bucket = shift;
-		my $commande = getS3command() . " mb " . $bucket;
-		
-		if (&promptCommande($commande, \$choixBucket)) {
-			if ( system $commande ) {
-				if ($isFork) {
-					print STDERR "$!\n";
+
+sub executeCommand{
+	my $commande = shift;
+	my $refChoix =shift;
+	if (&promptCommande("$numProc $commande", $refChoix)) {
+		if (system $commande) {
+			my $err= $!;
+			if ($isFork) {
+					print STDERR "$err\n";
 					return 0;
 				} else { 
-					die "$!\n";
+					die "$err\n";
 				}
-			}
-			return 1;
 		}
-		return 0;
+		return 1;
+	}
+	return 0;
 }
 
 
+
+sub createBucket{
+	my $bucket = shift;
+	my $commande = getS3command() . " mb " . $bucket;
+	
+	return &executeCommand($commande, \$choixBucket);
+}
 
 sub copyFile(){
 	my $oldPath = shift;
 	my $newPath = shift;
 	my $commande = getS3command() . " cp " . $oldPath . " " . $newPath ;
-	if (&promptCommande($commande, \$choixFile)) {
-		if ( system $commande ) {
-			if ($isFork) {
-				print STDERR "$!\n";
-				return 0;
-			} else { 
-				die "$!\n";
-			}
-		}
-		return 1;
-	}
-	return 0;
+	return &executeCommande($commande, \$choixFile);
 }
-
 
 sub moveFile(){
 	my $oldPath = shift;
 	my $newPath = shift;
 	my $commande = getS3command() . " mv " . $oldPath . " " . $newPath ;
-	if (&promptCommande($commande, \$choixFile)) {
-		if ( system $commande ) {
-			if ($isFork) {
-				print STDERR "$!\n";
-				return 0;
-			} else { 
-				die "$!\n";
-			}
-		}
-		return 1;
-	}
-	return 0;
+	return &executeCommande($commande, \$choixFile);
 }
 
 
 sub deleteFile(){
 	my $oldPath = shift;
 	my $commande = getS3command() . " del " . $oldPath;
-	if (&promptCommande($commande, \$choixFile)) {
-		if ( system $commande ) {
-			if ($isFork) {
-				print STDERR "$!\n";
-				return 0;
-			} else { 
-				die "$!\n";
-			}
-		}
-		return 1;
-	}
-	return 0;
+	return &executeCommande($commande, \$choixFile);
 }
 	
 sub existS3File() {
