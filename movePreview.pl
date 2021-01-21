@@ -17,9 +17,11 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-unless (@ARGV) {
+
+my $nbParam = scalar @ARGV;
+unless ($nbParam) {
 	print STDERR  "manque d'argument\n" ;
-	print STDERR  "synopsie : $0 [copy|delete|move] [all|none]\n";
+	print STDERR  "synopsie : $0 [copy|delete|move] [all [nbThread] | none [nbThread]]\n";
 	print STDERR  "           copy : copie les fichiers preview du bucket 0 dans leurs buckets dédiés , s'ils n'existent pas déjà\n";
 	print STDERR  "           delete : supprime les fichiers preview du bucket 0 s'ils existent dans leurs buckets dédiés\n";
 	print STDERR  "           move : déplace les fichiers preview du bucket 0 dans leurs buckets dédiés; s'ils existaient déjà supprime seulement du bucket 0. \n";
@@ -28,14 +30,21 @@ unless (@ARGV) {
 
 my $job = $ARGV[0];
 
-my $arg = $ARGV[1];
+
+my $arg;
 
 
 my $isFork = 0;
 my $choixFile;
 my $choixBucket = '';
+my $nbMaxThread = 6;
 
-if ($arg) {
+if ($nbParam > 1) {
+	$arg = $ARGV[1];
+	
+	if ($nbParam == 3) {
+		$nbMaxThread = $ARGV[2];
+	} 
 	if ($arg eq 'all' ) {
 		$choixBucket = $choixFile = 'O';
 		$isFork = 1;
@@ -79,6 +88,9 @@ my $prefixNewBucket = '0preview';
 
 my $numProc = '';
 
+#print "$nbMaxThread, $choixBucket\n";
+#__END__
+
 sub oneThread {
 	my $sql = newConnectSql();
 	my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}${numProc}%' ";
@@ -120,7 +132,7 @@ if ($isFork) {
 			$numProc = $proc;
 			exit &oneThread();
 		}
-		if ( $nbProc >= 8) { # 8 nbThread max
+		if ( $nbProc >= $nbMaxThread) { 
 			wait;
 		} else {
 			$nbProc++;
@@ -196,7 +208,7 @@ sub oneDelete() {
 
 
 
-sub executeCommand{
+sub executeCommande{
 	my $commande = shift;
 	my $refChoix =shift;
 	if (&promptCommande("$numProc $commande", $refChoix)) {
@@ -220,7 +232,7 @@ sub createBucket{
 	my $bucket = shift;
 	my $commande = getS3command() . " mb " . $bucket;
 	
-	return &executeCommand($commande, \$choixBucket);
+	return &executeCommande($commande, \$choixBucket);
 }
 
 sub copyFile(){
