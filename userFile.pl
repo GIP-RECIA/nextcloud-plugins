@@ -17,7 +17,39 @@ my $s3lsFormat = "/usr/bin/s3cmd ls %s";
 my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
 
-my $uid = $ARGV[0];
+
+
+my $uid;
+
+if ($ARGV[0] =~ /^\d+$/) {
+	# si on a un fichier on chercher a qui il appartient.
+	$uid = getOwnerUid($ARGV[0]);
+} else {
+    $uid = $ARGV[0];
+}
+
+
+sub getOwnerUid{
+	my $fileId = shift;
+	my $sql = connectSql();
+	
+	my $uid;
+	my $sqlQuery = "select s.id , f.path from oc_storages s, oc_filecache f  where f.fileid = ? and f.storage = s.numeric_id " ;
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	
+	$sqlStatement->execute($fileId) or die $sqlStatement->errstr;
+	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+		my $storageId = $tuple->{'id'};
+		my $path = $tuple->{'path'};
+		print "$storageId \t $fileId : $path \n";
+		if ($storageId =~ /object::user:(\w{8})$/) {
+			$uid = $1;
+		}
+	}	
+	return  $uid;
+}
+
+
 
 sub getBucket{
 	my $uid = shift;
@@ -52,7 +84,7 @@ sub getUserName {
 	return  $$ary_ref[1];
 }
 
-sub getNextcloudFile{
+sub getNextcloudFiles{
 	my $uid = shift;
 	my $sql = connectSql();
 	
@@ -68,6 +100,7 @@ sub getNextcloudFile{
 		#print "$path \n";
 	}	
 }
+
 
 sub getNexcloudGroups{
 	my $uid = shift;
@@ -98,7 +131,7 @@ foreach my $group (&getNexcloudGroups($uid)) {
 my $bucket = getBucket($uid);
 
 if ($bucket) {
-	getNextcloudFile($uid);
+	getNextcloudFiles($uid);
 
 	print "lecture du bucket $bucket\n";
 
