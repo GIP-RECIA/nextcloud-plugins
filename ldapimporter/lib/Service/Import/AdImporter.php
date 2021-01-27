@@ -431,6 +431,9 @@ class AdImporter implements ImporterInterface
                         $idsEtabUser = array_merge($idsEtabUser, $this->getIdsEtablissementFromSirenArray($m['escosiren']));
                     }
                     $this->removeObsoleteAssoUaiUser(array_unique($idsEtabUser), $employeeID);
+                    if ($this->config->getUserValue($employeeID, 'core', 'enabled') === 'false') {
+                        $this->config->setUserValue($employeeID, 'core', 'enabled', 'true');
+                    }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
             }

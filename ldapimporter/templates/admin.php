@@ -13,10 +13,57 @@ style('ldapimporter', 'settings');
 
     <div id="casSettings" class="personalblock">
         <ul>
+            <li><a href="#casSettings-1"><?php p($l->t('CAS Server')); ?></a></li>
             <li><a href="#casSettings-6"><?php p($l->t('Config LDAP')); ?></a></li>
             <li><a href="#casSettings-8"><?php p($l->t('Filtre & nommage de groupe')); ?></a></li>
         </ul>
         <!-- CAS Server Settings -->
+        <fieldset id="casSettings-1">
+            <p><label for="cas_server_version"><?php p($l->t('CAS Server Version')); ?></label>
+                <select id="cas_server_version" name="cas_server_version">
+                    <?php $version = $_['cas_server_version']; ?>
+                    <option value="3.0" <?php echo $version === '3.0' ? 'selected' : ''; ?>>CAS 3.0</option>
+                    <option value="2.0" <?php echo $version === '2.0' ? 'selected' : ''; ?>>CAS 2.0</option>
+                    <option value="1.0" <?php echo $version === '1.0' ? 'selected' : ''; ?>>CAS 1.0</option>
+                    <option value="S1" <?php echo $version === 'S1' ? 'selected' : ''; ?>>SAML 1.1</option>
+                </select>
+            </p>
+            <p><label for="cas_server_hostname"><?php p($l->t('CAS Server Hostname')); ?></label><input
+                        id="cas_server_hostname"
+                        name="cas_server_hostname"
+                        value="<?php p($_['cas_server_hostname']); ?>">
+            </p>
+            <p><label for="cas_server_port"><?php p($l->t('CAS Server Port')); ?></label><input
+                        id="cas_server_port"
+                        name="cas_server_port"
+                        placeholder="443"
+                        autocomplete="off"
+                        value="<?php if( !empty($_['cas_server_port']) ) { p($_['cas_server_port']); } else { p('443'); } ?>">
+            </p>
+            <p><label for="cas_server_path"><?php p($l->t('CAS Server Path')); ?></label><input
+                        id="cas_server_path"
+                        name="cas_server_path"
+                        autocomplete="off"
+                        placeholder="/cas"
+                        value="<?php if( !empty($_['cas_server_path']) ) { p($_['cas_server_path']);} else { p('/cas'); } ?>">
+            </p>
+            <p><label for="cas_service_url"><?php p($l->t('Service URL')); ?></label><input
+                        id="cas_service_url"
+                        name="cas_service_url"
+                        value="<?php p($_['cas_service_url']); ?>">
+            </p>
+            <p><label
+                        for="cas_cert_path"><?php p($l->t('Certification file path (.crt).')); ?></label><input
+                        autocomplete="off" id="cas_cert_path" name="cas_cert_path" value="<?php p($_['cas_cert_path']); ?>"> <span
+                        class="csh"><?php p($l->t('Leave empty if you don’t want to validate your CAS server instance')); ?></span>
+            </p>
+            <p>
+                <input type="checkbox" id="cas_use_proxy"
+                       name="cas_use_proxy" <?php print_unescaped((($_['cas_use_proxy'] === 'true' || $_['cas_use_proxy'] === 'on' || $_['cas_use_proxy'] === '1') ? 'checked="checked"' : '')); ?>>
+                <label class='checkbox'
+                       for="cas_use_proxy"><?php p($l->t('Use CAS proxy initialization')); ?></label>
+            </p>
+        </fieldset>
         <!-- Import-CLI Settings -->
         <fieldset id="casSettings-6">
 
@@ -47,6 +94,7 @@ style('ldapimporter', 'settings');
             </p>
             <p><label for="cas_import_ad_password"><?php p($l->t('LDAP User Password')); ?></label>
                 <input
+                        autocomplete="off"
                         type="password"
                         id="cas_import_ad_password"
                         name="cas_import_ad_password"/>
