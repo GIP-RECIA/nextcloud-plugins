@@ -168,6 +168,18 @@ class AdImporter implements ImporterInterface
                 ')';
             $this->db->executeQuery($sql);
         }
+        
+        if (!$this->db->tableExists("recia_user_history")) {
+            $sql =
+                'CREATE TABLE `reca_user_history`' .
+                '(' .
+                'uid char(8) PRIMARY KEY,' .
+                'add tinyint(1),' .
+                'del tinyint(1),' .
+                'dat date'.
+                ')';
+            $this->db->executeQuery($sql);
+        }
 
         $pageSize = $this->config->getAppValue($this->appName, 'cas_import_ad_sync_pagesize');
 
@@ -437,6 +449,7 @@ class AdImporter implements ImporterInterface
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
             }
+            # pl fin de l'ecture d'un user
         }
 
         $this->logger->info("Users have been retrieved : " . count($users));
