@@ -125,7 +125,7 @@ class AdImporter implements ImporterInterface
         $arrayRegexNameUai = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_regex_name_uai'), true);
 
         $quotaAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_quota');
-        $enableAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_enabled');
+        $enableAttribute =strtolower($this->config->getAppValue($this->appName, 'cas_import_map_enabled'));
         $dnAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_dn');
         $mergeAttribute = boolval($this->config->getAppValue($this->appName, 'cas_import_merge'));
         $primaryAccountDnStartswWith = $this->config->getAppValue($this->appName, 'cas_import_map_dn_filter');
@@ -444,7 +444,7 @@ class AdImporter implements ImporterInterface
                 }
 				
 				/* pl mettre l'historique a jours. */
-				if ($eta && ($alreadyExists || $addUser)) {
+				if ($etat && ($alreadyExists || $addUser)) {
 					$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
 				}
                 
@@ -477,7 +477,8 @@ class AdImporter implements ImporterInterface
             ->where($qbHist->expr()->eq('uid', $qbHist->createNamedParameter($uid)))
         ;
         $result = $qbHist->execute();
-        return count($result) > 0;
+        $uids = $result->fetchAll();
+        return count($uids) > 0;
 	}
 	
 	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date){
