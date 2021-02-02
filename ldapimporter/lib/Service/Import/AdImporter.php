@@ -105,7 +105,7 @@ class AdImporter implements ImporterInterface
      */
     public function getUsers()
     {
-
+		$date = date('Y-m-d');
         $uidAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_uid');
 
         $displayNameAttribute1 = $this->config->getAppValue($this->appName, 'cas_import_map_displayname');
@@ -171,12 +171,13 @@ class AdImporter implements ImporterInterface
         
         if (!$this->db->tableExists("recia_user_history")) {
             $sql =
-                'CREATE TABLE `reca_user_history`' .
+                'CREATE TABLE `recia_user_history`' .
                 '(' .
                 'uid char(8) PRIMARY KEY,' .
+                'dat date, '.
+                'eta varchar(32),' .
                 'add tinyint(1),' .
-                'del tinyint(1),' .
-                'dat date'.
+                'del tinyint(1)' 
                 ')';
             $this->db->executeQuery($sql);
         }
@@ -226,22 +227,14 @@ class AdImporter implements ImporterInterface
 
 
                 $enable = 1;
-
+				$etat = false;
+				$alreadyExist= false;
+				
                 # Shift enable attribute bytewise?
-                if (isset($m[$enableAttribute][0])) {
-
-                    if (strlen($andEnableAttributeBitwise) > 0) {
-
-                        if (is_numeric($andEnableAttributeBitwise)) {
-
-                            $andEnableAttributeBitwise = intval($andEnableAttributeBitwise);
-                        }
-
-                        $enable = intval((intval($m[$enableAttribute][0]) & $andEnableAttributeBitwise) == 0);
-                    } else {
-
-                        $enable = intval($m[$enableAttribute][0]);
-                    }
+                if (isset($m[$enableAttribute][0]) && $employeeID) {
+					$etat = $m[$enableAttribute][0];
+					/* on pourrait filtrer en fonction de l'état ... */
+					$alreadyExists = userHistoryExists($employeeID);
                 }
 
                 $groupsArray = [];
@@ -448,8 +441,13 @@ class AdImporter implements ImporterInterface
                     }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
+				
+				/* pl mettre l'historique a jours. */
+				if ($alreadyExists || $addUser) {
+					saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
+				}
+                
             }
-            # pl fin de l'ecture d'un user
         }
 
         $this->logger->info("Users have been retrieved : " . count($users));
@@ -470,6 +468,39 @@ class AdImporter implements ImporterInterface
 		return preg_replace("/[^a-zA-Z0-9\.\-_ @]+/", "", $name);
 		
 	}
+	
+	protected function userHistoryExists( $uid) {
+		$qbAsso = $this->db->getQueryBuilder();
+        $qbAsso->select('uid')
+            ->from('recia_user_history')
+            ->where($qbAsso->expr()->eq('uid', $qbAsso->createNamedParameter($uid)))
+        ;
+        $result = $qbAsso->getSingleResult();
+        return isset($result);
+	}
+	
+	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date){
+		$qbHist = $this->db->getQueryBuilder();
+		if ($isExists) {
+			$qbHist->update('recia_user_history')
+				->values([
+					'eta' => $qbHist->createNamedParameter($etat),
+					'add' => $qbHist->createNamedParameter($isAdded ? 1, 0),
+					'dat' => $qbHist->createNamedParameter($date)
+				])->where $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid) ;
+			$qbHist->execute();
+				
+		} else {
+			$qbHist->insert('recia_user_history')
+				->values([
+					'uid' => $qbHist->createNamedParameter($uid),
+					'eta' => $qbHist->createNamedParameter($etat),
+					'add' => $qbHist->createNamedParameter($isAdded ? 1, 0),
+					'dat' => $qbHist->createNamedParameter($date)
+				]);
+			$qbHist->execute();
+		}
+	
     /**
      *
      * @param $currentEtablishementIds
