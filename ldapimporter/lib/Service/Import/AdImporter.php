@@ -228,15 +228,7 @@ class AdImporter implements ImporterInterface
 
 
                 $enable = 1;
-				$etat = false;
-				$alreadyExist= false;
 				
-                # Shift enable attribute bytewise?
-                if (isset($m[$enableAttribute][0]) && $employeeID) {
-					$etat = $m[$enableAttribute][0];
-					/* on pourrait filtrer en fonction de l'état ... */
-					$alreadyExists =$this->userHistoryExists($employeeID);
-                }
 
                 $groupsArray = [];
 
@@ -444,10 +436,19 @@ class AdImporter implements ImporterInterface
                 }
 				
 				/* pl mettre l'historique a jours. */
-				if ($etat && ($alreadyExists || $addUser)) {
-					$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
-				}
+				$etat = false;
+				$alreadyExist= false;
+				
                 
+                if (isset($m[$enableAttribute][0]) && $employeeID) {
+					$etat = $m[$enableAttribute][0];
+					if ($etat ) {
+						$alreadyExists =$this->userHistoryExists($employeeID);
+						if ($alreadyExists || $addUser)) {						
+							$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
+						}
+					}	
+                }
             }
         }
 
