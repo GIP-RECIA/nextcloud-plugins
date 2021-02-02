@@ -170,14 +170,15 @@ class AdImporter implements ImporterInterface
         }
         
         if (!$this->db->tableExists("recia_user_history")) {
+			$this->logger->error("Creation de la table :" );
             $sql =
-                'CREATE TABLE `recia_user_history`' .
+                'CREATE TABLE `*PREFIX*recia_user_history`' .
                 '(' .
                 'uid char(8) PRIMARY KEY,' .
                 'dat date, '.
                 'eta varchar(32),' .
-                'add tinyint(1),' .
-                'del tinyint(1)' 
+                'isadd tinyint(1),' .
+                'isdel tinyint(1)' .
                 ')';
             $this->db->executeQuery($sql);
         }
@@ -234,7 +235,7 @@ class AdImporter implements ImporterInterface
                 if (isset($m[$enableAttribute][0]) && $employeeID) {
 					$etat = $m[$enableAttribute][0];
 					/* on pourrait filtrer en fonction de l'état ... */
-					$alreadyExists = userHistoryExists($employeeID);
+					$alreadyExists =$this->userHistoryExists($employeeID);
                 }
 
                 $groupsArray = [];
@@ -443,8 +444,8 @@ class AdImporter implements ImporterInterface
                 }
 				
 				/* pl mettre l'historique a jours. */
-				if ($alreadyExists || $addUser) {
-					saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
+				if ($eta && ($alreadyExists || $addUser)) {
+					$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
 				}
                 
             }
@@ -470,24 +471,23 @@ class AdImporter implements ImporterInterface
 	}
 	
 	protected function userHistoryExists( $uid) {
-		$qbAsso = $this->db->getQueryBuilder();
-        $qbAsso->select('uid')
+		$qbHist = $this->db->getQueryBuilder();
+        $qbHist->select('uid')
             ->from('recia_user_history')
-            ->where($qbAsso->expr()->eq('uid', $qbAsso->createNamedParameter($uid)))
+            ->where($qbHist->expr()->eq('uid', $qbHist->createNamedParameter($uid)))
         ;
-        $result = $qbAsso->getSingleResult();
-        return isset($result);
+        $result = $qbHist->execute();
+        return count($result) > 0;
 	}
 	
 	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date){
 		$qbHist = $this->db->getQueryBuilder();
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
-				->values([
-					'eta' => $qbHist->createNamedParameter($etat),
-					'add' => $qbHist->createNamedParameter($isAdded ? 1, 0),
-					'dat' => $qbHist->createNamedParameter($date)
-				])->where $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid) ;
+				->set('eta', $qbHist->createNamedParameter($etat))
+				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
+				->set('dat', $qbHist->createNamedParameter($date))
+				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
 			$qbHist->execute();
 				
 		} else {
@@ -495,12 +495,12 @@ class AdImporter implements ImporterInterface
 				->values([
 					'uid' => $qbHist->createNamedParameter($uid),
 					'eta' => $qbHist->createNamedParameter($etat),
-					'add' => $qbHist->createNamedParameter($isAdded ? 1, 0),
+					'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
 					'dat' => $qbHist->createNamedParameter($date)
 				]);
 			$qbHist->execute();
 		}
-	
+	}
     /**
      *
      * @param $currentEtablishementIds
