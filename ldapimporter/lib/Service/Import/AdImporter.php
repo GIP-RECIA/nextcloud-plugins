@@ -504,7 +504,7 @@ class AdImporter implements ImporterInterface
 				->set('eta', $qbHist->createNamedParameter($etat))
 				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
 				->set('dat', $qbHist->createNamedParameter($date))
-				->set('siren', $qbHist->createNamedParameter($sirn))
+				->set('siren', $qbHist->createNamedParameter($siren))
 				->set('isdel', $qbHist->createNamedParameter($del))
 				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
 			$qbHist->execute();

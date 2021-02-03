@@ -193,16 +193,20 @@ class DeleteService
             $qb->select(['u.uid'])
                 ->from('users', 'u')
                 ->join('u', 'asso_uai_user_group', 'g', 'u.uid = g.user_group')
-                ->join('g', 'etablissements', 'e', 'g.id_etablissement = e.id');
-            if (!is_null($uaiArray)) {
-                $qb->orWhere($qb->expr()->in('e.uai', $qb->createNamedParameter(
-                    $uaiArray,
-                    Connection::PARAM_STR_ARRAY
-                )));
-            }
+                ->join('g', 'etablissements', 'e', 'g.id_etablissement = e.id')
+                ->join('e', 'recia_user_history', 'r', 'e.siren = r.siren')
+                ->where ($qb->expr()->eq('u.uid', 'r.uid'))
+                ->andWhere($qb->expr()->eq('r.isdel', $qb->createNamedParameter(1)));
+                
+           
             if (!is_null($sirenArray)) {
                 $qb->orWhere($qb->expr()->in('e.siren', $qb->createNamedParameter(
                     $sirenArray,
+                    Connection::PARAM_STR_ARRAY
+                )));
+            }  elseif (!is_null($uaiArray)) {
+                $qb->orWhere($qb->expr()->in('e.uai', $qb->createNamedParameter(
+                    $uaiArray,
                     Connection::PARAM_STR_ARRAY
                 )));
             }

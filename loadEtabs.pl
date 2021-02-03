@@ -25,7 +25,8 @@ my $nbThread = 8;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
-#$commande = "echo " . $commande; # pour la dev
+my $commandeDel = "/usr/bin/php occ ldap:disable-deleted-user -vvv -d 3 ";
+# $commande = "echo " . $commande; # pour la dev
 
 my $filterUai = "(ESCOUAI=%s)";
 my $filterSiren = "(ESCOSIREN=%s)";
