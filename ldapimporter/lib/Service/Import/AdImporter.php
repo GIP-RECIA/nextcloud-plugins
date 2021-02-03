@@ -180,7 +180,8 @@ class AdImporter implements ImporterInterface
                 'dat date, '.
                 'eta varchar(32),' .
                 'isadd tinyint(1),' .
-                'isdel tinyint(1)' .
+                'isdel tinyint(1),' .
+                'UNIQUE (siren, isdel, uid)' .
                 ')';
             $this->db->executeQuery($sql);
         }
@@ -452,10 +453,11 @@ class AdImporter implements ImporterInterface
 								$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date, $grp[1]);
 							} else {
 								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
+							}
 						}
 					} else {
 						if ($adduser) {
-							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n";
+							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
 						}
 					}
                 }
