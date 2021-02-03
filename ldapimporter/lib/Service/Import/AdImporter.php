@@ -137,6 +137,7 @@ class AdImporter implements ImporterInterface
         //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupe
         $keep[] = 'ESCOUAICourant';
         $keep[] = 'ESCOSIREN';
+        $keep[] = 'ENTPersonStructRattach';
         if (sizeof($arrayGroupsAttrPedagogic) > 0) {
             foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
                 if (array_key_exists("field", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["field"]) > 0 &&
@@ -175,6 +176,7 @@ class AdImporter implements ImporterInterface
                 'CREATE TABLE `*PREFIX*recia_user_history`' .
                 '(' .
                 'uid char(8) PRIMARY KEY,' .
+                'siren varchar(15), ' .
                 'dat date, '.
                 'eta varchar(32),' .
                 'isadd tinyint(1),' .
@@ -442,12 +444,20 @@ class AdImporter implements ImporterInterface
                 
                 if (isset($m[$enableAttribute][0]) && $employeeID) {
 					$etat = $m[$enableAttribute][0];
-					if ($etat ) {
+					$etabRatach = $m['entpersonstructrattach'][0];
+					if ($etat && $etabRatach ) {
 						$alreadyExists =$this->userHistoryExists($employeeID);
-						if ($alreadyExists || $addUser)) {						
-							$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date);
+						if ($alreadyExists || $addUser) {
+							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
+								$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+							} else {
+								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
 						}
-					}	
+					} else {
+						if ($adduser) {
+							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n";
+						}
+					}
                 }
             }
         }
@@ -482,13 +492,18 @@ class AdImporter implements ImporterInterface
         return count($uids) > 0;
 	}
 	
-	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date){
+	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date, $siren){
 		$qbHist = $this->db->getQueryBuilder();
+		
+		$del = stripos($chaine, 'DELETE') !== false ? 1 : 0;
+		
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
 				->set('eta', $qbHist->createNamedParameter($etat))
 				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
 				->set('dat', $qbHist->createNamedParameter($date))
+				->set('siren', $qbHist->createNamedParameter($sirn))
+				->set('isdel', $qbHist->createNamedParameter($del))
 				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
 			$qbHist->execute();
 				
@@ -498,7 +513,9 @@ class AdImporter implements ImporterInterface
 					'uid' => $qbHist->createNamedParameter($uid),
 					'eta' => $qbHist->createNamedParameter($etat),
 					'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
-					'dat' => $qbHist->createNamedParameter($date)
+					'dat' => $qbHist->createNamedParameter($date),
+					'siren' => $qbHist->createNamedParameter($siren),
+					'isdel' => $qbHist->createNamedParameter($del)
 				]);
 			$qbHist->execute();
 		}
