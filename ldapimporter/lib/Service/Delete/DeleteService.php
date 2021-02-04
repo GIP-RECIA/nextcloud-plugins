@@ -116,10 +116,13 @@ class DeleteService
     {
         $queryBuilder = $this->db->getQueryBuilder();
         $queryBuilder->select('userid')
-            ->from('preferences')
-            ->where($queryBuilder->expr()->eq('appid', $queryBuilder->createNamedParameter('core')))
-            ->andWhere($queryBuilder->expr()->eq('configkey', $queryBuilder->createNamedParameter('enabled')))
-            ->andWhere($queryBuilder->expr()->eq('configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR));
+            ->from('preferences', 'p')
+            ->join('p', 'recia_user_history', 'r' , 'p.userid = r.uid')
+            ->where($queryBuilder->expr()->eq('p.appid', $queryBuilder->createNamedParameter('core')))
+            ->andWhere($queryBuilder->expr()->eq('p.configkey', $queryBuilder->createNamedParameter('enabled')))
+            ->andWhere($queryBuilder->expr()->eq('p.configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR))
+            ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(2)))
+            ->andWhere($queryBuilder->expr()->gt('datediff(now(), dat)', $queryBuilder->createNamedParameter(30)));
         $result = $queryBuilder->execute();
         $disabledUsers = $result->fetchAll();
 
@@ -133,6 +136,7 @@ class DeleteService
             $user = $this->userManager->get($uidUser);
             if ($user->delete()) {
                 $this->logger->info('User with uid :' . $uidUser . ' was deleted');
+                $this->markDelUserHistory($uidUser, 3);
             }
         }
     }
@@ -227,13 +231,18 @@ class DeleteService
     }
     
     protected function disableUser($idUser) {
-		 $this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $userUid);
+		$this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $userUid);
 		$this->config->setUserValue($idUser, 'core', 'enabled', 'false');
-		$qb = $this->db->getQueryBuilder();
-		$qb->update('recia_user_history')
-			->set('isdel', $qb->createNamedParameter(2))
-			->where( $qb->expr()->eq('uid' , $qb->createNamedParameter($idUser))) ;
-		$qb->execute();
+		$this->markDelUserHistory($idUser, 2);
+	}
+	
+	protected function markDelUserHistory($idUser, $value) {
+		$qbUruh = $this->db->getQueryBuilder();
+		$qbUruh->update('recia_user_history')
+			->set('dat', 'curdate()')
+			->set('isdel', $qbUruh->createNamedParameter($value))
+			->where( $qbUruh->expr()->eq('uid' , $qbUruh->createNamedParameter($idUser))) ;
+		$qbUruh->execute();
 	}
 
     /**
