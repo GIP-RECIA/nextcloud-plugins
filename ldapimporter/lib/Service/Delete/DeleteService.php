@@ -147,8 +147,7 @@ class DeleteService
         if (!is_null($usersUid)) {
             foreach ($usersUid as $userUid) {
                 if (!$this->userExist($userUid) && $this->userIsInBdd($userUid)) {
-                    $this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $userUid);
-                    $this->config->setUserValue($userUid, 'core', 'enabled', 'false');
+                    $this->disableUser($userUid);
                 }
             }
 
@@ -182,9 +181,9 @@ class DeleteService
 
             $removedUsers = array_diff($dbIdUsers, $ldapIds);
 
-            $this->logger->info("Désactivation des utilisateurs avec l'uid : " . implode(" | ", $removedUsers));
+            //$this->logger->info("Désactivation des utilisateurs avec l'uid : " . implode(" | ", $removedUsers));
             foreach ($removedUsers as $removedUser) {
-                $this->config->setUserValue($removedUser, 'core', 'enabled', 'false');
+                $this->disableUser($removedUser);
             }
         }
         else {
@@ -221,11 +220,21 @@ class DeleteService
 
             foreach ($dbIdUsers as $dbIdUser) {
                 if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
-                    $this->config->setUserValue($dbIdUser, 'core', 'enabled', 'false');
+                    $this->disableUser($dbIdUser);
                 }
             }
         }
     }
+    
+    protected function disableUser($idUser) {
+		 $this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $userUid);
+		$this->config->setUserValue($idUser, 'core', 'enabled', 'false');
+		$qb = $this->db->getQueryBuilder();
+		$qb->update('recia_user_history')
+			->set('isdel', $qb->createNamedParameter(2))
+			->where( $qb->expr()->eq('uid' , $qb->createNamedParameter($idUser))) ;
+		$qb->execute();
+	}
 
     /**
      * @param $uid
