@@ -118,49 +118,6 @@ sub getNexcloudGroups{
 	return @groups;
 }
 
-sub printPartage {
-	my $uid = shift;
-	my $sql = connectSql();
-	
-	my $lastFile;
-	my $cpt;
-	
-	my $sqlQuery = "select share_with, file_source, file_target , item_type from oc_share where uid_owner = ? order by file_target, file_source";
-	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-	
-	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
-	
-	print "\n\nLes partages de l'utilisateur:\n";
-	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
-		my $fileName = $tuple->{'file_target'};
-		my $fileId = $tuple->{'file_source'};
-		my $uidTarget = $tuple->{'share_with'};
-		my $type = $tuple->{'item_type'};
-		if ($lastFile ne $fileId ) {
-			$lastFile = $fileId;
-			 print "\n $fileId : $type  $fileName";
-			 $cpt = 0;
-		}
-		if ($cpt++ % 5) {
-			print ", $uidTarget"
-		} else {
-			print "\n\t-> $uidTarget"
-		}
-	}
-	print "\n\n";
-	
-	$sqlQuery = "select uid_owner, file_source, file_target from oc_share item_type where share_with = ? order by file_target, file_source";
-	$sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
-	
-	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
-		my $fileName = $tuple->{'file_target'};
-		my $fileId = $tuple->{'file_source'};
-		my $uidOwner = $tuple->{'uid_owner'};
-		print "$fileId : $type $fileName <- $uidOwner \n";
-	}
-}
-
 my $nom = getUserName($uid);
 unless ($nom) {
 	die "pas de compte pour $uid\n";	
@@ -208,7 +165,5 @@ if ($bucket) {
 		print;
 	}
 	close S3;
-	
-	&printPartage($uid);
 
 	
