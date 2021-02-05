@@ -203,12 +203,12 @@ class DeleteService
                 
            
             if (!is_null($sirenArray)) {
-                $qb->orWhere($qb->expr()->in('e.siren', $qb->createNamedParameter(
+                $qb->andWhere($qb->expr()->in('e.siren', $qb->createNamedParameter(
                     $sirenArray,
                     Connection::PARAM_STR_ARRAY
                 )));
             }  elseif (!is_null($uaiArray)) {
-                $qb->orWhere($qb->expr()->in('e.uai', $qb->createNamedParameter(
+                $qb->andWhere($qb->expr()->in('e.uai', $qb->createNamedParameter(
                     $uaiArray,
                     Connection::PARAM_STR_ARRAY
                 )));
@@ -237,12 +237,8 @@ class DeleteService
 	}
 	
 	protected function markDelUserHistory($idUser, $value) {
-		$qbUruh = $this->db->getQueryBuilder();
-		$qbUruh->update('recia_user_history')
-			->set('dat', 'curdate()')
-			->set('isdel', $qbUruh->createNamedParameter($value))
-			->where( $qbUruh->expr()->eq('uid' , $qbUruh->createNamedParameter($idUser))) ;
-		$qbUruh->execute();
+		$query = "update oc_recia_user_history set dat = curdate(), isdel = ? where uid = ?";
+		$this->db->executeQuery($query , [$value, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR]);
 	}
 
     /**
