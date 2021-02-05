@@ -122,7 +122,7 @@ class DeleteService
             ->andWhere($queryBuilder->expr()->eq('p.configkey', $queryBuilder->createNamedParameter('enabled')))
             ->andWhere($queryBuilder->expr()->eq('p.configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR))
             ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(2)))
-            ->andWhere($queryBuilder->expr()->gt('datediff(now(), dat)', $queryBuilder->createNamedParameter(30)));
+            ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(30));
         $result = $queryBuilder->execute();
         $disabledUsers = $result->fetchAll();
 
@@ -231,7 +231,7 @@ class DeleteService
     }
     
     protected function disableUser($idUser) {
-		$this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $userUid);
+		$this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $idUser);
 		$this->config->setUserValue($idUser, 'core', 'enabled', 'false');
 		$this->markDelUserHistory($idUser, 2);
 	}
