@@ -122,7 +122,7 @@ class DeleteService
             ->andWhere($queryBuilder->expr()->eq('p.configkey', $queryBuilder->createNamedParameter('enabled')))
             ->andWhere($queryBuilder->expr()->eq('p.configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR))
             ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(2)))
-            ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(30));
+            ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(60));
         $result = $queryBuilder->execute();
         $disabledUsers = $result->fetchAll();
 
