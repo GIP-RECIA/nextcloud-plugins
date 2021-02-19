@@ -193,7 +193,7 @@ class DeleteService
         else {
             $qb = $this->db->getQueryBuilder();
 
-            $qb->select(['u.uid'])
+            $qb->select(['u.uid', 'u.displayname'])
                 ->from('users', 'u')
                 ->join('u', 'asso_uai_user_group', 'g', 'u.uid = g.user_group')
                 ->join('g', 'etablissements', 'e', 'g.id_etablissement = e.id')
@@ -217,6 +217,7 @@ class DeleteService
             $dbUsers = $qb->execute()->fetchAll();
 
             $dbIdUsers = array_unique(array_map(function ($admin) {
+				$this->logger->info("user to disabled : ". implode(" ", $admin));
                 return $admin['uid'];
             }, $dbUsers));
 
@@ -231,8 +232,8 @@ class DeleteService
     }
     
     protected function disableUser($idUser) {
-		$this->logger->info("Désactivation de l'utilisateur avec l'uid : " . $idUser);
 		$this->config->setUserValue($idUser, 'core', 'enabled', 'false');
+		$this->logger->info("ldap:disable-user, " . $idUser);
 		$this->markDelUserHistory($idUser, 2);
 	}
 	

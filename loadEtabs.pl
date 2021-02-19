@@ -25,7 +25,7 @@ my $nbThread = 8;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
-my $commandeDel = "/usr/bin/php occ ldap:disable-deleted-user -vvv -d 3 ";
+my $commandeDel = "/usr/bin/php occ ldap:disable-deleted-user -vvv  ";
 # $commande = "echo " . $commande; # pour la dev
 
 my $filterUai = "(ESCOUAI=%s)";
@@ -228,18 +228,19 @@ sub traitementEtab() {
 		$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
 	}
 	
+	my $disable =0 ;
 	my($create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
-	if ($typekey) { # Desctivation des comptes supprmés:
-		&executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG);
+	if ($typeKey) { # Desctivation des comptes supprmés:
+		$disable = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
 	}
 	my $fin = time;
 	my $nbuser = $create + $update; 
 	my $duree = $fin - $debut;
 	print $LOG &dateHeure($fin), "\n durée=", &temps($duree );
 	if ($nbuser) {
-		print $LOG ", create-user=$create ", " update-user=$update ", " time by users=" , $duree / $nbuser, "\n";
+		print $LOG ", create-user=$create ", " update-user=$update ", "disable-user=$disable ", " time by users=" , $duree / $nbuser, "\n";
 	} else {
-		print $LOG ", nb-user = 0 \n";
+		print $LOG ", disable-user=$disable ","nb-user = 0 \n";
 	}
 	close $LOG;
 #	system "/bin/gzip -f $logFileName";
