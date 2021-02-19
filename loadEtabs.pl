@@ -25,7 +25,8 @@ my $nbThread = 8;
 my $delai = 1; # delai entre 2 threads en secondes minimum 1
 
 my $commande = "/usr/bin/php occ ldap:import-users-ad -vvv -d 3 " ;
-#$commande = "echo " . $commande; # pour la dev
+my $commandeDel = "/usr/bin/php occ ldap:disable-deleted-user -vvv  ";
+# $commande = "echo " . $commande; # pour la dev
 
 my $filterUai = "(ESCOUAI=%s)";
 my $filterSiren = "(ESCOSIREN=%s)";
@@ -142,53 +143,35 @@ sub timestampLdap() {
 	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
 }	
 
-sub traitementEtab() {
+
+sub executeWithLogFilter {
+	my $commande= shift;
 	my $etab = shift;
-	my $timeStamp = shift;
-	my $LOG;
+	my $LOG = shift;
+	my @regexes = @_;
+	
 	my $COM;
 	my $ERR = gensym;
 	
-	my $debut = time;
-	print "\n" , &heure($debut), " $etab \n";
+	my @res;
 	
-	my $logFileName = "$logRep/$etab.log";
-	open $LOG , "> $logFileName" or die $!;
-	my $create = 0;
-	my $update = 0;
 	
 	my $select = IO::Select->new();
 	
-	my $filtre;
-	print $LOG &dateHeure($debut), $etab , "\n" or die "$!";
-	if ($etab =~ /^\d{7}\w$/) {
-			$filtre = $filterUai;
-	} elsif ($etab =~ /^\d{14,15}$/) {
-			$filtre = $filterSiren;
-	} elsif ($etab =~ /^F\w{7}$/) {
-		$filtre = $filterUid;   
-	} else {
-		$filtre = $filterGroup;
-	}
-	$filtre = sprintf($filtre, $etab);
-	if ($timeStamp) {
-		$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
-	}
-	
-	print $LOG "$commande --ldap-filter='$filtre' \n"; 
+	print $LOG "$commande \n"; 
 		
 		# voir avec open3 et IO::Select pour filtrer les erreurs 
-	open3(undef,  $COM , $ERR, "$commande --ldap-filter='$filtre'" );
+	open3(undef,  $COM , $ERR, $commande );
 	
 	$select->add($ERR);
 	
 	while (<$COM>) {
-		if (/ldap:create-user/) {
-				$create++;
+		for (my $i=0; $i < @regexes; $i++){
+			if (/$regexes[$i]/) {
+				$res[$i]++;
+			}
 		}
-		if (/ldap:update-user/) {
-			$update++;
-		}
+		
 		if ($select->can_read(0)) {
 			my $err = <$ERR>;
 			chop $err;
@@ -207,18 +190,62 @@ sub traitementEtab() {
 	}
 	close $ERR;
 	close $COM;
+	return @res;
+}
+
+
+sub traitementEtab() {
+	my $etab = shift;
+	my $timeStamp = shift;
+	my $LOG;
+	
+	
+	
+	my $debut = time;
+	print "\n" , &heure($debut), " $etab \n";
+	
+	my $logFileName = "$logRep/$etab.log";
+	open $LOG , "> $logFileName" or die $!;
+	
+	my $filtre;
+	my $typeKey;
+	
+	print $LOG &dateHeure($debut), $etab , "\n" or die "$!";
+	if ($etab =~ /^\d{7}\w$/) {
+			$filtre = $filterUai;
+			$typeKey = "uai";
+	} elsif ($etab =~ /^\d{14,15}$/) {
+			$filtre = $filterSiren;
+			$typeKey = "siren";
+	} elsif ($etab =~ /^F\w{7}$/) {
+		$filtre = $filterUid;
+		$typeKey = "users";   
+	} else {
+		$filtre = $filterGroup;
+	}
+	$filtre = sprintf($filtre, $etab);
+	if ($timeStamp) {
+		$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
+	}
+	
+	my $disable =0 ;
+	my($create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
+	if ($typeKey) { # Desctivation des comptes supprmés:
+		$disable = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
+	}
 	my $fin = time;
 	my $nbuser = $create + $update; 
 	my $duree = $fin - $debut;
 	print $LOG &dateHeure($fin), "\n durée=", &temps($duree );
 	if ($nbuser) {
-		print $LOG ", create-user=$create ", " update-user=$update ", " time by users=" , $duree / $nbuser, "\n";
+		print $LOG ", create-user=$create ", " update-user=$update ", "disable-user=$disable ", " time by users=" , $duree / $nbuser, "\n";
 	} else {
-		print $LOG ", nb-user = 0 \n";
+		print $LOG ", disable-user=$disable ","nb-user = 0 \n";
 	}
 	close $LOG;
 #	system "/bin/gzip -f $logFileName";
 	print "\n", &heure(time), " $etab $nbuser\n";
+	
 	return $nbuser ? 0 : 1;
 }
 

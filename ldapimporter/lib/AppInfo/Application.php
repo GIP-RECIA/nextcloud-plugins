@@ -8,10 +8,12 @@ use \OCP\IContainer;
 
 use OCA\LdapImporter\Service\UserService;
 use OCA\LdapImporter\Service\AppService;
-use OCA\LdapImporter\Controller\SettingsImporterController;
+use OCA\LdapImporter\Controller\SettingsController;
 use OCA\LdapImporter\User\Backend;
 use OCA\LdapImporter\User\NextBackend;
 use OCA\LdapImporter\Service\LoggingService;
+use OCA\LdapImporter\Hooks\UserHooks;
+use OCA\LdapImporter\Controller\AuthenticationController;
 
 /**
  * Class Application
@@ -128,10 +130,10 @@ class Application extends App
         });
 
         /**
-         * Register SettingsImporterController
+         * Register SettingsController
          */
-        $container->registerService('SettingsImporterController', function (IContainer $c) {
-            return new SettingsImporterController(
+        $container->registerService('SettingsController', function (IContainer $c) {
+            return new SettingsController(
                 $c->query('AppName'),
                 $c->query('Request'),
                 $c->query('Config'),
@@ -139,5 +141,35 @@ class Application extends App
             );
         });
 
+        /**
+         * Register AuthenticationController
+         */
+        $container->registerService('AuthenticationController', function (IContainer $c) {
+            return new AuthenticationController(
+                $c->query('AppName'),
+                $c->query('Request'),
+                $c->query('Config'),
+                $c->query('UserService'),
+                $c->query('AppService'),
+                $c->query('ServerContainer')->getUserSession(),
+                $c->query('LoggingService')
+            );
+        });
+
+        /**
+         * Register UserHooks
+         */
+        $container->registerService('UserHooks', function (IContainer $c) {
+            return new UserHooks(
+                $c->query('AppName'),
+                $c->query('ServerContainer')->getUserManager(),
+                $c->query('ServerContainer')->getUserSession(),
+                $c->query('Config'),
+                $c->query('UserService'),
+                $c->query('AppService'),
+                $c->query('LoggingService'),
+                $c->query('Backend')
+            );
+        });
     }
 }
