@@ -465,7 +465,7 @@ class AppService
 
             $this->casInitialized = TRUE;
 
-            $this->loggingService->write(\LdapImporter\Service\LoggingService::DEBUG, "phpCAS has already been initialized.");
+            $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, "phpCAS has already been initialized.");
             #\OCP\Util::writeLog('cas', "phpCAS has already been initialized.", \LdapImporter\Service\LoggingService::DEBUG);
         }
     }
@@ -553,7 +553,7 @@ class AppService
 
                                         $isEnforced = FALSE;
 
-                                        $this->loggingService->write(\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $endIp . " | Users Remote Address: " . $remoteAddress);
+                                        $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $endIp . " | Users Remote Address: " . $remoteAddress);
                                     }
                                 }
                             }
@@ -572,7 +572,7 @@ class AppService
 
                                     $isEnforced = FALSE;
 
-                                    $this->loggingService->write(\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $endIp . " | Users Remote Address: " . $remoteAddress);
+                                    $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $endIp . " | Users Remote Address: " . $remoteAddress);
                                 }
                             }
                         }
@@ -583,7 +583,7 @@ class AppService
 
                             $isEnforced = FALSE;
 
-                            $this->loggingService->write(\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $forceLoginExceptionRanges[0] . " | Users Remote Address: " . $remoteAddress);
+                            $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, "phpCAS Enforce Login NOT triggered. Test Address: " . $forceLoginExceptionRanges[0] . " | Users Remote Address: " . $remoteAddress);
                         }
                     }
                 }

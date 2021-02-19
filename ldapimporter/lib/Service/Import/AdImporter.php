@@ -105,7 +105,7 @@ class AdImporter implements ImporterInterface
      */
     public function getUsers()
     {
-
+		$date = date('Y-m-d');
         $uidAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_uid');
 
         $displayNameAttribute1 = $this->config->getAppValue($this->appName, 'cas_import_map_displayname');
@@ -125,7 +125,7 @@ class AdImporter implements ImporterInterface
         $arrayRegexNameUai = json_decode($this->config->getAppValue($this->appName, 'cas_import_map_regex_name_uai'), true);
 
         $quotaAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_quota');
-        $enableAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_enabled');
+        $enableAttribute =strtolower($this->config->getAppValue($this->appName, 'cas_import_map_enabled'));
         $dnAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_dn');
         $mergeAttribute = boolval($this->config->getAppValue($this->appName, 'cas_import_merge'));
         $primaryAccountDnStartswWith = $this->config->getAppValue($this->appName, 'cas_import_map_dn_filter');
@@ -137,6 +137,7 @@ class AdImporter implements ImporterInterface
         //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupe
         $keep[] = 'ESCOUAICourant';
         $keep[] = 'ESCOSIREN';
+        $keep[] = 'ENTPersonStructRattach';
         if (sizeof($arrayGroupsAttrPedagogic) > 0) {
             foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
                 if (array_key_exists("field", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["field"]) > 0 &&
@@ -165,6 +166,22 @@ class AdImporter implements ImporterInterface
                 'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
                 'id_etablissement VARCHAR(255),' .
                 'user_group VARCHAR(255)' .
+                ')';
+            $this->db->executeQuery($sql);
+        }
+        
+        if (!$this->db->tableExists("recia_user_history")) {
+			$this->logger->error("Creation de la table :" );
+            $sql =
+                'CREATE TABLE `*PREFIX*recia_user_history`' .
+                '(' .
+                'uid char(8) PRIMARY KEY,' .
+                'siren varchar(15), ' .
+                'dat date, '.
+                'eta varchar(32),' .
+                'isadd tinyint(1),' .
+                'isdel tinyint(1),' .
+                'UNIQUE (siren, isdel, uid)' .
                 ')';
             $this->db->executeQuery($sql);
         }
@@ -214,23 +231,7 @@ class AdImporter implements ImporterInterface
 
 
                 $enable = 1;
-
-                # Shift enable attribute bytewise?
-                if (isset($m[$enableAttribute][0])) {
-
-                    if (strlen($andEnableAttributeBitwise) > 0) {
-
-                        if (is_numeric($andEnableAttributeBitwise)) {
-
-                            $andEnableAttributeBitwise = intval($andEnableAttributeBitwise);
-                        }
-
-                        $enable = intval((intval($m[$enableAttribute][0]) & $andEnableAttributeBitwise) == 0);
-                    } else {
-
-                        $enable = intval($m[$enableAttribute][0]);
-                    }
-                }
+				
 
                 $groupsArray = [];
 
@@ -431,7 +432,34 @@ class AdImporter implements ImporterInterface
                         $idsEtabUser = array_merge($idsEtabUser, $this->getIdsEtablissementFromSirenArray($m['escosiren']));
                     }
                     $this->removeObsoleteAssoUaiUser(array_unique($idsEtabUser), $employeeID);
+                    if ($this->config->getUserValue($employeeID, 'core', 'enabled') === 'false') {
+                        $this->config->setUserValue($employeeID, 'core', 'enabled', 'true');
+                    }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
+                }
+				
+				/* pl mettre l'historique a jours. */
+				$etat = false;
+				$alreadyExist= false;
+				
+                
+                if (isset($m[$enableAttribute][0]) && $employeeID) {
+					$etat = $m[$enableAttribute][0];
+					$etabRatach = $m['entpersonstructrattach'][0];
+					if ($etat && $etabRatach ) {
+						$alreadyExists =$this->userHistoryExists($employeeID);
+						if ($alreadyExists || $addUser) {
+							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
+								$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+							} else {
+								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
+							}
+						}
+					} else {
+						if ($adduser) {
+							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
+						}
+					}
                 }
             }
         }
@@ -453,6 +481,46 @@ class AdImporter implements ImporterInterface
 		$name = str_replace($accents, $sansAccents, $groupName);
 		return preg_replace("/[^a-zA-Z0-9\.\-_ @]+/", "", $name);
 		
+	}
+	
+	protected function userHistoryExists( $uid) {
+		$qbHist = $this->db->getQueryBuilder();
+        $qbHist->select('uid')
+            ->from('recia_user_history')
+            ->where($qbHist->expr()->eq('uid', $qbHist->createNamedParameter($uid)))
+        ;
+        $result = $qbHist->execute();
+        $uids = $result->fetchAll();
+        return count($uids) > 0;
+	}
+	
+	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date, $siren){
+		$qbHist = $this->db->getQueryBuilder();
+		
+		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+		
+		if ($isExists) {
+			$qbHist->update('recia_user_history')
+				->set('eta', $qbHist->createNamedParameter($etat))
+				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
+				->set('dat', $qbHist->createNamedParameter($date))
+				->set('siren', $qbHist->createNamedParameter($siren))
+				->set('isdel', $qbHist->createNamedParameter($del))
+				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
+			$qbHist->execute();
+				
+		} else {
+			$qbHist->insert('recia_user_history')
+				->values([
+					'uid' => $qbHist->createNamedParameter($uid),
+					'eta' => $qbHist->createNamedParameter($etat),
+					'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
+					'dat' => $qbHist->createNamedParameter($date),
+					'siren' => $qbHist->createNamedParameter($siren),
+					'isdel' => $qbHist->createNamedParameter($del)
+				]);
+			$qbHist->execute();
+		}
 	}
     /**
      *
