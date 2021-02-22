@@ -149,7 +149,7 @@ sub printPartage {
 	}
 	print "\n\n";
 	
-	$sqlQuery = "select uid_owner, file_source, file_target from oc_share item_type where share_with = ? order by file_target, file_source";
+	$sqlQuery = "select uid_owner, file_source, file_target, item_type from oc_share  where share_with = ? order by file_target, file_source";
 	$sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	
@@ -157,6 +157,7 @@ sub printPartage {
 		my $fileName = $tuple->{'file_target'};
 		my $fileId = $tuple->{'file_source'};
 		my $uidOwner = $tuple->{'uid_owner'};
+		my $type = $tuple->{'item_type'};
 		print "$fileId : $type $fileName <- $uidOwner \n";
 	}
 }
