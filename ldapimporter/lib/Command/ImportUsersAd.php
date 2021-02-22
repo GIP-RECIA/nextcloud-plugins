@@ -173,7 +173,7 @@ $logger->info(" " . implode(',' , array_slice($arguments, 0,  6)). "[" . implode
 
                         $input = new ArrayInput($arguments);
 
-                        $createCommand->run($input, new NullOutput());
+                        $createCommand->run($input, $output);
                     } # Update user if he already exists and delta update is true
                     else if ($this->userManager->userExists($user["uid"]) && $deltaUpdate) {
 
@@ -186,7 +186,7 @@ $logger->info(" " . implode(',' , array_slice($arguments, 0, 6)). "[" . implode(
                         }
                         $input = new ArrayInput($arguments);
 
-                        $updateCommand->run($input, new NullOutput());
+                        $updateCommand->run($input, $output);
                     }
 
                     $progressBar->advance();
