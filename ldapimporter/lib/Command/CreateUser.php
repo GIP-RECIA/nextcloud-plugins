@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 
 
 /**
@@ -191,25 +192,24 @@ class CreateUser extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
+		$logger = new ConsoleLogger($output);
         $uid = $input->getArgument('uid');
         if ($this->userManager->userExists($uid)) {
             $output->writeln('<error>The user "' . $uid . '" already exists.</error>');
+            $logger->error('The user "' . $uid . '" already exists');
             return 1;
         }
 
         // Validate email before we create the user
-        if ($input->getOption('email')) {
+        $email = $input->getOption('email');
+        if ($email !== null) {
             // Validate first
-            if (!$this->mailer->validateMailAddress($input->getOption('email'))) {
+            if (!$this->mailer->validateMailAddress($email)) {
                 // Invalid! Error
                 $output->writeln('<error>Invalid email address supplied</error>');
-                return 1;
-            } else {
-                $email = $input->getOption('email');
+                $logger->error('Invalide email ($email) for $uid');
+                $email = null;
             }
-        } else {
-            $email = null;
         }
 
         # Register Backend
