@@ -211,7 +211,7 @@ class UpdateUser extends Command
 		$logger = new ConsoleLogger($output);
         $uid = $input->getArgument('uid');
         if (!$this->userManager->userExists($uid)) {
-            $output->writeln('<error>The user "' . $uid . '" does not exist.</error>');
+            //$output->writeln('<error>The user "' . $uid . '" does not exist.</error>');
             $logger->error('The user "' . $uid . '" does not exist');
             return 1;
         }
@@ -222,8 +222,8 @@ class UpdateUser extends Command
             // Validate first
             if (!$this->mailer->validateMailAddress($email)) {
                 // Invalid! Error
-                $output->writeln('<error>Invalid email address supplied</error>');
-                $logger->error('Invalide email ($email) for $uid');
+                //$output->writeln('<error>Invalid email address supplied</error>');
+                $logger->error("Invalide email ($email) for $uid");
                 $email = null;
             } 
         } 
@@ -241,8 +241,8 @@ class UpdateUser extends Command
             $output->writeln('<info>The user "' . $user->getUID() . '" has been found</info>');
         } else {
 
-            $output->writeln('<error>An error occurred while finding the user</error>');
-            $logger->error('An error occurred while finding the user $uid');
+            //$output->writeln('<error>An error occurred while finding the user</error>');
+            $logger->error("An error occurred while finding the user $uid");
             return 1;
         }
 

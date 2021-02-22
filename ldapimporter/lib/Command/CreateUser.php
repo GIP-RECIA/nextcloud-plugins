@@ -195,7 +195,7 @@ class CreateUser extends Command
 		$logger = new ConsoleLogger($output);
         $uid = $input->getArgument('uid');
         if ($this->userManager->userExists($uid)) {
-            $output->writeln('<error>The user "' . $uid . '" already exists.</error>');
+            //$output->writeln('<error>The user "' . $uid . '" already exists.</error>');
             $logger->error('The user "' . $uid . '" already exists');
             return 1;
         }
@@ -206,8 +206,8 @@ class CreateUser extends Command
             // Validate first
             if (!$this->mailer->validateMailAddress($email)) {
                 // Invalid! Error
-                $output->writeln('<error>Invalid email address supplied</error>');
-                $logger->error('Invalide email ($email) for $uid');
+                //$output->writeln('<error>Invalid email address supplied</error>');
+                $logger->error("Invalide email ($email) for $uid");
                 $email = null;
             }
         }
@@ -225,7 +225,8 @@ class CreateUser extends Command
             $output->writeln('<info>The user "' . $user->getUID() . '" was created successfully</info>');
         } else {
 
-            $output->writeln('<error>An error occurred while creating the user</error>');
+            //$output->writeln('<error>An error occurred while creating the user</error>');
+            $logger->error("An error occurred while creating the user $uid");
             return 1;
         }
 
