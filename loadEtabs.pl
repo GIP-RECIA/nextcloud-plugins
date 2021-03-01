@@ -41,6 +41,8 @@ my %pid2etab;
 
 my $noThread = 1;
 
+my $debug = 0; #pour supprimer les debugs des logs
+
 my $modifytimestamp = &timestampLdap(time);
 
 unless (@ARGV) {
@@ -119,6 +121,7 @@ if ($ARGV[0] eq 'all' ) {
 } else {
 		# traitement que d'un etab ou un groupe si on a pas son timestamp on traite entierement
 	@allEtab = @ARGV;
+	$debug = 1; # on passe en mode debug
 }
 
 
@@ -181,7 +184,11 @@ sub executeWithLogFilter {
 			print STDERR "\n";
 			
 		}
-		print $LOG $_;
+		if ($debug) {
+			print $LOG $_;
+		} else unless (/^\[debug\]/) {
+			print $LOG $_;
+		}
 	}
 	if ($select->can_read(0)) {
 		while (<$ERR>) {
@@ -243,7 +250,7 @@ sub traitementEtab() {
 		print $LOG ", disable-user=$disable ","nb-user = 0 \n";
 	}
 	close $LOG;
-#	system "/bin/gzip -f $logFileName";
+	system "/bin/gzip -f $logFileName" unless ($debug) ;
 	print "\n", &heure(time), " $etab $nbuser\n";
 	
 	return $nbuser ? 0 : 1;
