@@ -16,19 +16,19 @@ defaut:
 	@echo $(NEXTCLOUD_PATH)
 
 
-cssjsloader:
+CSSJSLOADER:
 	cp -rT cssjsloader  $(APPS)/cssjsloader 
-	
-files_sharing:
+
+FILES_SHARING:
 	cp -rT files_sharing $(APPS)/files_sharing
-	
-ldapimporter:
+
+LDAPIMPORTER:
 	cp -rT ldapimporter $(APPS)/ldapimporter
 
-skeleton:
+SKELETON:
 	cp -rT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
-lib: 
+LIB: 
 	echo cp -rTb lib $(NEXTCLOUD_PATH)/lib
 
 css: $(CSS)/reciaStyle.css
