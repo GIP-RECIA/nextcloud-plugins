@@ -114,6 +114,10 @@ body {
     &.clg36.not_embedded  {
         @include colorTheme(#0069B3);
     }
+    &.clg28.not_embedded  {
+        /* @include colorTheme(#FFCC00); */
+         @include colorTheme(#303030);
+    }
     &.embedded {
 		@include colorTheme(#888888);
 	}

@@ -83,6 +83,13 @@ body.clg36.not_embedded#body-user #header, body.clg36.not_embedded#body-settings
   background-image: none; }
   body.clg36.not_embedded#body-user #header a#nextcloud, body.clg36.not_embedded#body-user #header ul#appmenu, body.clg36.not_embedded#body-user #header div.header-right, body.clg36.not_embedded#body-settings #header a#nextcloud, body.clg36.not_embedded#body-settings #header ul#appmenu, body.clg36.not_embedded#body-settings #header div.header-right, body.clg36.not_embedded#body-public #header a#nextcloud, body.clg36.not_embedded#body-public #header ul#appmenu, body.clg36.not_embedded#body-public #header div.header-right {
     background-color: #0069B3; }
+body.clg28.not_embedded {
+  /* @include colorTheme(#FFCC00); */ }
+  body.clg28.not_embedded#body-user #header, body.clg28.not_embedded#body-settings #header, body.clg28.not_embedded#body-public #header {
+    background-color: #303030;
+    background-image: none; }
+    body.clg28.not_embedded#body-user #header a#nextcloud, body.clg28.not_embedded#body-user #header ul#appmenu, body.clg28.not_embedded#body-user #header div.header-right, body.clg28.not_embedded#body-settings #header a#nextcloud, body.clg28.not_embedded#body-settings #header ul#appmenu, body.clg28.not_embedded#body-settings #header div.header-right, body.clg28.not_embedded#body-public #header a#nextcloud, body.clg28.not_embedded#body-public #header ul#appmenu, body.clg28.not_embedded#body-public #header div.header-right {
+      background-color: #303030; }
 body.embedded#body-user #header, body.embedded#body-settings #header, body.embedded#body-public #header {
   background-color: #888888;
   background-image: none; }
