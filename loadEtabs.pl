@@ -186,8 +186,10 @@ sub executeWithLogFilter {
 		}
 		if ($debug) {
 			print $LOG $_;
-		} else unless (/^\[debug\]/) {
-			print $LOG $_;
+		} else { 
+			unless (/^\[debug\]/) {
+				print $LOG $_;
+			}
 		}
 	}
 	if ($select->can_read(0)) {
