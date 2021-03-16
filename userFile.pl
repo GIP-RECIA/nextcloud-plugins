@@ -184,7 +184,7 @@ if ($bucket) {
 		if (/(\d+)/) {
 			my $o = $1;
 			if ($o >= 1024) {
-				my $k = int($O/1024);
+				my $k = int($o/1024);
 				$o = $o % 1024;
 				if ($k >= 1024) {
 					my $m = int($k / 1024);
@@ -192,12 +192,12 @@ if ($bucket) {
 					if ($m >= 1024) {
 						my $g = int($m / 1024);
 						$m = $m % 1024;
-						print ("soit ${g}G ${m}M ${k}K $o\n");
+						print (" soit ${g}G ${m}M ${k}K $o\n");
 					} else {
-						print ("soit ${m}M ${k}K $o\n");
+						print (" soit ${m}M ${k}K $o\n");
 					}
 				} else {
-					print ("soit ${k}K $o\n");
+					print (" soit ${k}K $o\n");
 				}
 			}
 		}
