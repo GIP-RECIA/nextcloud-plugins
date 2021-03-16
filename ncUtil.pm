@@ -86,6 +86,10 @@ sub lsCommande() {
 	return "$s3command ls ".shift;
 }
 
+sub duCommande() {
+	return "$s3command du ".shift;
+}
+
 sub getS3command(){
 	return $s3command;
 }

@@ -177,8 +177,32 @@ my $bucket = getBucket($uid);
 if ($bucket) {
 	getNextcloudFiles($uid);
 
-	print "lecture du bucket $bucket\n";
-
+	print "lecture du bucket \n";
+	open S3 , &duCommande($bucket) . "|"  || die "$!";
+	while (<S3>) {
+		print;
+		if (/(\d+)/ {
+			my $o = $1;
+			if ($o >= 1024) {
+				my $k = int($0/1024);
+				$o = $o % 1024;
+				if ($k >= 1024) {
+					my $m = int($k / 1024);
+					$k = $k % 1024;
+					if ($m >= 1024) {
+						my $g = int($m / 1024)
+						$m = $m % 1024;
+						print ("$g G $m M $k K $o\n");
+					} else {
+						print ("$m M $k K $o\n");
+					}
+				} else {
+					print ("$k K $o\n");
+				}
+			}
+		}
+	}
+	close S3;
 	open S3 , &lsCommande($bucket) . "|"  || die "$!";
 
 	while (<S3>) {
