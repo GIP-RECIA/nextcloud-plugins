@@ -2,6 +2,11 @@
 body {
 
 /* les suppresions d'affichage */
+	&#body-public.not_embedded footer {
+		/* on supprime dans les liens transmis public les liens de pub nextcloud */
+		display: none;
+	}
+
 	div#contactsmenu {
 		display: none;
 	}

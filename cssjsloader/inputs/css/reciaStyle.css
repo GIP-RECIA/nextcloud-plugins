@@ -2,6 +2,9 @@ body {
   /* les suppresions d'affichage */
   /* le dimentionnement */
   /* les couleurs */ }
+  body#body-public.not_embedded footer {
+    /* on supprime dans les liens transmis public les liens de pub nextcloud */
+    display: none; }
   body div#contactsmenu {
     display: none; }
   body li[data-id="firstrunwizard-about"], body li[data-id="help"] {
