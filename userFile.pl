@@ -10,9 +10,11 @@ use DBI();
 use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
+binmode STDOUT, ':encoding(UTF-8)';
 
 my $s3lsFormat = "/usr/bin/s3cmd ls %s";
 
+my $reportCommande = "/usr/bin/php occ usage-report:generate ";
 
 my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
@@ -162,6 +164,27 @@ sub printPartage {
 	}
 }
 
+sub toGiga {
+	my $o = shift;
+	if ($o >= 1024) {
+		my $k = int($o/1024);
+		$o = $o % 1024;
+		if ($k >= 1024) {
+			my $m = int($k / 1024);
+			$k = $k % 1024;
+			if ($m >= 1024) {
+				my $g = int($m / 1024);
+				$m = $m % 1024;
+				return  " ${g}G ${m}M ${k}K $o ";
+			} 
+			return " ${m}M ${k}K $o ";
+			
+		}
+		return " ${k}K $o ";
+	}
+	return " ${o}O";
+}
+
 my $nom = getUserName($uid);
 unless ($nom) {
 	die "pas de compte pour $uid\n";	
@@ -182,24 +205,7 @@ if ($bucket) {
 	while (<S3>) {
 		print;
 		if (/(\d+)/) {
-			my $o = $1;
-			if ($o >= 1024) {
-				my $k = int($o/1024);
-				$o = $o % 1024;
-				if ($k >= 1024) {
-					my $m = int($k / 1024);
-					$k = $k % 1024;
-					if ($m >= 1024) {
-						my $g = int($m / 1024);
-						$m = $m % 1024;
-						print (" soit ${g}G ${m}M ${k}K $o\n");
-					} else {
-						print (" soit ${m}M ${k}K $o\n");
-					}
-				} else {
-					print (" soit ${k}K $o\n");
-				}
-			}
+			print " soit: " . &toGiga($1). "\n";
 		}
 	}
 	close S3;
@@ -237,3 +243,15 @@ if ($bucket) {
 	&printPartage($uid);
 
 	
+	## on finit par executer le usage-report:
+	chdir 'web';
+	#'"User","Quota","Space used","Number of Files","Number of Shares","Newly created files","Downloaded/Viewed"'
+	open REPORT , "$reportCommande $uid |"  || die "$!";
+	while (<REPORT>) {
+		chop;
+		my @tab = split ',';
+		if (@tab > 7) {
+			print "Quota : " . &toGiga($tab[2]) . "; Utilisé : " . &toGiga($tab[3]) . "; Fichiers : " . $tab[4] . "; Partagés : " . $tab[5] . "; Récents : " .  $tab[6] . "; Visités : " .   $tab[7] . ".";
+		}
+	}
+	close REPORT;
