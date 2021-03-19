@@ -39,6 +39,8 @@ unless (@ARGV) {
 
 my $bucket = $ARGV[0];
 my $nbJour = $ARGV[1];
+my $modeAuto = '';
+my $globalChoix = ''; #n == none; O == all
 
 my $forceDelete = 0;
 my $display;
@@ -51,14 +53,25 @@ if ($bucket eq $bucketCorbeille) {
 }
 
 if ($nbJour) {
+	$modeAuto = $ARGV[2];
 	if ($nbJour =~ /^(\d+)$/) {
 		$nbJour = $1;
 	} else {
 		die "Le nombre de jours ($nbJour) doit être un entier positif\n";
 	}
 } else {
+	$modeAuto = $ARGV[1];
 	$nbJour = $nbJourDefaut;
 }
+
+if ($modeAuto) {
+	if ($modeAuto eq 'all') {
+		$globalChoix = 'o';
+	} else {
+		$globalChoix = 'n';
+	}
+}
+		
 
 sub date(){
 	my @local = localtime(shift);
@@ -85,7 +98,7 @@ my $datLimit = &date(time - $nbJour * 24 * 3600);
 
 my $s3commande = sprintf($s3lsFormat, $bucket);
 
-my $globalChoix = ''; #n == none; O == all
+
 my $cptOk; 
 my $cptKo;
 my $cptDel;
