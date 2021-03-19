@@ -82,7 +82,7 @@ sub fileIdInbase() {
 	return $$ary_ref[0];
 }
 
-my $datLimit = &date(time);
+my $datLimit = &date(time - $nbJour * 24 * 3600);
 
 my $s3commande = sprintf($s3lsFormat, $bucket);
 
@@ -102,7 +102,7 @@ while (<S3LS>) {
 		} else {
 			$cptKo++;
 			
-			unless (($dateFile cmp $datLimit) < 0) {
+			if (($dateFile cmp $datLimit) < 0) {
 				my $choix ;
 				my $rmCommande;
 				if ($forceDelete || ($fileSize <= 1 )) {
@@ -129,7 +129,7 @@ while (<S3LS>) {
 				} 
 				
 			} else {
-				print "no delete $dateFile\n";
+				print "no delete $dateFile > $datLimit\n";
 			}
 			
 			
