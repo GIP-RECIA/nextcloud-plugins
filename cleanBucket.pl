@@ -127,7 +127,7 @@ while (<S3LS>) {
 				}
 				if ($choix eq "O") {
 						print " ... ";
-						system $rmCommande && print "ok\n" || print "KO!\n";
+						system ($rmCommande) == 0 and print "ok\n" or print "KO! $?\n";
 						$cptDel ++;
 				} else {
 					print " abort \n";
