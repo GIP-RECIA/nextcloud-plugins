@@ -116,18 +116,21 @@ while (<S3LS>) {
 					$choix = $globalChoix;
 					print "$_; $display ";
 				} else {
-					print "$_; $display :  O/n/all/none ? ";
+					print "$_; $display :  o/n/all/none/q ? ";
 					$choix = <STDIN>;
 					chomp $choix;
+					
+					last if $choix eq 'q';
+					
 					if ($choix eq 'none') {
 						$choix = $globalChoix = 'n';
 					} elsif ($choix eq 'all') {
-						$choix = $globalChoix = 'O';
+						$choix = $globalChoix = 'o';
 					}
 				}
-				if ($choix eq "O") {
+				if ($choix eq "o") {
 						print " ... ";
-						system ($rmCommande) == 0 and print "ok\n" or print "KO! $?\n";
+						system ($rmCommande);
 						$cptDel ++;
 				} else {
 					print " abort \n";
