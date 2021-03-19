@@ -114,7 +114,7 @@ while (<S3LS>) {
 				}
 				if ($globalChoix) {
 					$choix = $globalChoix;
-					print "$_; $display \n";
+					print "$_; $display ";
 				} else {
 					print "$_; $display :  O/n/all/none ? ";
 					$choix = <STDIN>;
@@ -126,10 +126,12 @@ while (<S3LS>) {
 					}
 				}
 				if ($choix eq "O") {
-						system $rmCommande;
+						print " ... ";
+						system $rmCommande && print "ok\n" || print "KO!\n";
 						$cptDel ++;
-				} 
-				
+				} else {
+					print " abort \n";
+				}
 			} else {
 				print "$_; none : $dateFile >= $datLimit\n";
 			}
