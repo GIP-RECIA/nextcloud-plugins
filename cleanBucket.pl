@@ -1,5 +1,9 @@
 #!/usr/bin/perl
-# script qui prend en entré un bucket s3 et propose la suppressions des ses  fichiers qui ne sont pas réferencés dans la base de nextcloud (oc_filecache)
+# script qui prend en entré un bucket s3 et propose la suppressions ou le deplacement  des ses  fichiers qui ne sont pas réferencés dans la base de nextcloud (oc_filecache)
+# pour le deplacement il faut parametré un bucket corbeille. les fichiers d'1 octet seront effacer et pas deplacé.
+# une deuxieme entre sera le nombre de jours passé a partir duquel on delete ou deplace si pas de valeuril y a une valeur par defaut dans le script 
+
+
 use strict;
 use utf8;
 use DBI();
@@ -9,26 +13,52 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-my $s3lsFormat = "/usr/bin/s3cmd ls %s";
-my $s3rmFormat = "/usr/bin/s3cmd del %s/urn:oid:%s"; 
+
+my $s3cmd = "/usr/bin/s3cmd ";
+my $s3lsFormat = "$s3cmd ls %s";
+my $s3rmFormat = "$s3cmd del %s/urn:oid:%s"; 
+my $s3mvFormat = "$s3cmd mv %s/urn:oid:%s  %s";
 
 
 my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
 
+my $bucketCorbeille = $prefixBucket . "corbeille";
+
+my $nbJourDefaut = 30;
+
 unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
-	print STDERR  "Donner le bucket dont on veut supprimer les fichiers non référencés dans Nexcloud\n";
+	print STDERR  "$0 bucket [nbJour]"; 
+	print STDERR  "bucket est  le bucket dont on veut supprimer les fichiers non référencés dans Nexcloud\n";
+	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJourDefaut."
 	print STDERR  " la liste des buckets peut être obtenue par la commande suivante :\n";
 	print STDERR  "s3cmd ls\n";
 	exit 1;
 }
 
 my $bucket = $ARGV[0];
-my $uid = $ARGV[1];
+my $nbJour = $ARGV[1];
+
+my $forceDelete = 0;
+my $displayCommande = "to $bucketCorbeill (si non vide) ";
 
 unless ($bucket =~ /^$prefixBucket/) {
 	die "Mauvais nom de bucket : doit commencer par $prefixBucket\n";
+}
+if ($bucket eq $bucketCorbeille) { 
+	$forceDelete = 1;
+	$displayCommande = "delete ";
+}
+
+if ($nbJour) {
+	if ($nbJour =~ /^\d+$/)
+		$nbJour = $1;
+	else {
+		die "Le nombre de jours ($nbJour) doit être un entier positif\n";
+	}
+} else {
+	$nbJour = $nbJourDefaut;
 }
 
 sub date(){
@@ -52,7 +82,7 @@ sub fileIdInbase() {
 	return $$ary_ref[0];
 }
 
-my $dateJour = &date(time);
+my $datLimit = &date(time);
 
 my $s3commande = sprintf($s3lsFormat, $bucket);
 
@@ -62,22 +92,29 @@ my $cptKo;
 my $cptDel;
 open S3LS, "$s3commande |" or die "$!";
 while (<S3LS>) {
-	if (/^(\d{4}-\d{2}-\d{2}).*($bucket\/urn:oid:(\d+))$/) {
+	if (/^(\d{4}-\d{2}-\d{2})\s+(\S+)\s+(\d+)\s+($bucket\/urn:oid:(\d+))$/) {
 		my $dateFile = $1;
-		my $fileName = $2;
-		my $fileId = $3;
+		my $fileName = $4;
+		my $fileId = $5;
+		my $fileSize = $3;
 		if (&fileIdInbase($fileId)) {
 			$cptOk++;
 		} else {
 			$cptKo++;
-			my $choix ;
-			my $rmCommande = sprintf $s3rmFormat, $bucket, $fileId;
-			unless ($dateFile eq $dateJour) {
+			
+			unless (($dateFile cmp $datLimit) < 0) {
+				my $choix ;
+				my $rmCommande;
+				if ($forceDelete || ($fileSize <= 1 )) {
+					$rmCommande = sprintf $s3rmFormat, $bucket, $fileId;
+				} else {
+					$rmCommande = sprintf $s3mvFormat, $bucket, $fileId, $bucketCorbeille;
+				}
 				if ($globalChoix) {
 					$choix = $globalChoix;
-					print "$rmCommande \n";
+					print "$_ \n";
 				} else {
-					print "$rmCommande  O/n/all/none ? ";
+					print "$_ $displayCommande :  O/n/all/none ? ";
 					$choix = <STDIN>;
 					chomp $choix;
 					if ($choix eq 'none') {
