@@ -12,7 +12,7 @@ use DBI();
 use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
-
+binmode STDOUT, ':encoding(UTF-8)';
 
 my $s3cmd = "/usr/bin/s3cmd ";
 my $s3lsFormat = "$s3cmd ls %s";
@@ -31,7 +31,7 @@ unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
 	print STDERR  "$0 bucket [nbJour]"; 
 	print STDERR  "bucket est  le bucket dont on veut supprimer les fichiers non référencés dans Nexcloud\n";
-	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJourDefaut."
+	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJourDefaut.\n";
 	print STDERR  " la liste des buckets peut être obtenue par la commande suivante :\n";
 	print STDERR  "s3cmd ls\n";
 	exit 1;
@@ -41,7 +41,7 @@ my $bucket = $ARGV[0];
 my $nbJour = $ARGV[1];
 
 my $forceDelete = 0;
-my $displayCommande = "to $bucketCorbeill (si non vide) ";
+my $displayCommande = "to $bucketCorbeille (si non vide) ";
 
 unless ($bucket =~ /^$prefixBucket/) {
 	die "Mauvais nom de bucket : doit commencer par $prefixBucket\n";
@@ -52,9 +52,9 @@ if ($bucket eq $bucketCorbeille) {
 }
 
 if ($nbJour) {
-	if ($nbJour =~ /^\d+$/)
+	if ($nbJour =~ /^\d+$/) {
 		$nbJour = $1;
-	else {
+	} else {
 		die "Le nombre de jours ($nbJour) doit être un entier positif\n";
 	}
 } else {
