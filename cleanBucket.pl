@@ -110,7 +110,7 @@ while (<S3LS>) {
 					$display = " delete "; 
 				} else {
 					$rmCommande = sprintf $s3mvFormat, $bucket, $fileId, $bucketCorbeille;
-					$dosplay = " move ";
+					$display = " move ";
 				}
 				if ($globalChoix) {
 					$choix = $globalChoix;
