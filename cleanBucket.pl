@@ -41,18 +41,17 @@ my $bucket = $ARGV[0];
 my $nbJour = $ARGV[1];
 
 my $forceDelete = 0;
-my $displayCommande = "to $bucketCorbeille (si non vide) ";
+my $display;
 
 unless ($bucket =~ /^$prefixBucket/) {
 	die "Mauvais nom de bucket : doit commencer par $prefixBucket\n";
 }
 if ($bucket eq $bucketCorbeille) { 
 	$forceDelete = 1;
-	$displayCommande = "delete ";
 }
 
 if ($nbJour) {
-	if ($nbJour =~ /^\d+$/) {
+	if ($nbJour =~ /^(\d+)$/) {
 		$nbJour = $1;
 	} else {
 		die "Le nombre de jours ($nbJour) doit être un entier positif\n";
@@ -97,6 +96,7 @@ while (<S3LS>) {
 		my $fileName = $4;
 		my $fileId = $5;
 		my $fileSize = $3;
+		chop;
 		if (&fileIdInbase($fileId)) {
 			$cptOk++;
 		} else {
@@ -107,14 +107,16 @@ while (<S3LS>) {
 				my $rmCommande;
 				if ($forceDelete || ($fileSize <= 1 )) {
 					$rmCommande = sprintf $s3rmFormat, $bucket, $fileId;
+					$display = " delete "; 
 				} else {
 					$rmCommande = sprintf $s3mvFormat, $bucket, $fileId, $bucketCorbeille;
+					$dosplay = " move ";
 				}
 				if ($globalChoix) {
 					$choix = $globalChoix;
-					print "$_ \n";
+					print "$_; $display \n";
 				} else {
-					print "$_ $displayCommande :  O/n/all/none ? ";
+					print "$_; $display :  O/n/all/none ? ";
 					$choix = <STDIN>;
 					chomp $choix;
 					if ($choix eq 'none') {
@@ -129,7 +131,7 @@ while (<S3LS>) {
 				} 
 				
 			} else {
-				print "no delete $dateFile > $datLimit\n";
+				print "$_; none : $dateFile >= $datLimit\n";
 			}
 			
 			
