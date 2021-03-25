@@ -150,7 +150,7 @@ while (<S3LS>) {
 				if ($choix eq "o") {
 						print " ... ";
 						if (system ($rmCommande) != 0) {
-							my $erreur = ' ERROR ', &heure(), " : $! \n" ;
+							my $erreur = ' ERROR ' .  &heure() .  " : $! \n" ;
 							print STDERR  $erreur;
 							unless ($isNotRedirect) {
 								print $erreur;
