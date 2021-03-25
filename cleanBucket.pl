@@ -25,20 +25,21 @@ my $prefixBucket = "s3://$defautBucket";
 
 my $bucketCorbeille = $prefixBucket . "corbeille";
 
-my $nbJourDefaut = 30;
+my $nbJour = 30;
 
 unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
-	print STDERR  "$0 bucket [nbJour]"; 
+	print STDERR  "$0 bucket [nbJour] [all|none]"; 
 	print STDERR  "bucket est  le bucket dont on veut supprimer les fichiers non référencés dans Nexcloud\n";
-	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJourDefaut.\n";
+	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJour.\n";
 	print STDERR  " la liste des buckets peut être obtenue par la commande suivante :\n";
 	print STDERR  "s3cmd ls\n";
 	exit 1;
 }
 
 my $bucket = $ARGV[0];
-my $nbJour = $ARGV[1];
+my $arg2 = $ARGV[1];
+
 my $modeAuto = '';
 my $globalChoix = ''; #n == none; O == all
 
@@ -52,26 +53,25 @@ if ($bucket eq $bucketCorbeille) {
 	$forceDelete = 1;
 }
 
-if ($nbJour) {
-	$modeAuto = $ARGV[2];
-	if ($nbJour =~ /^(\d+)$/) {
+if ($arg2) {
+	if ($arg2 =~ /^(\d+)$/) {
 		$nbJour = $1;
+		$modeAuto = $ARGV[2];
 	} else {
-		die "Le nombre de jours ($nbJour) doit être un entier positif\n";
+		$modeAuto = $arg2;
 	}
-} else {
-	$modeAuto = $ARGV[1];
-	$nbJour = $nbJourDefaut;
+	if ($modeAuto) {
+		if ($modeAuto eq 'all') {
+			$globalChoix = 'o';
+		} elsif ($modeAuto eq 'none') {
+			$globalChoix = 'n';
+		} else {
+			die "Le nombre de jours ($nbJour) doit être un entier positif \n";
+		}
+	}
 }
 
-if ($modeAuto) {
-	if ($modeAuto eq 'all') {
-		$globalChoix = 'o';
-	} else {
-		$globalChoix = 'n';
-	}
-}
-		
+
 
 sub date(){
 	my @local = localtime(shift);
