@@ -27,6 +27,8 @@ my $bucketCorbeille = $prefixBucket . "corbeille";
 
 my $nbJour = 30;
 
+my $isNotRedirect = (-t STDOUT);
+
 unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
 	print STDERR  "$0 bucket [nbJour] [all|none]"; 
@@ -78,6 +80,10 @@ sub date(){
 	return sprintf "%d-%02d-%02d" , $local[5] + 1900,  $local[4]+1, $local[3];
 }
 
+sub heure(){
+	my @local = localtime(time);
+	return sprintf "%02dH%02d:%02d", $local[2], $local[1], $local[0];
+}
 
 sub fileIdInbase() {
 	my $fileId = shift;
@@ -143,8 +149,16 @@ while (<S3LS>) {
 				}
 				if ($choix eq "o") {
 						print " ... ";
-						system ($rmCommande);
-						$cptDel ++;
+						if (system ($rmCommande) != 0) {
+							my $erreur = ' ERROR ', &heure(), " : $! \n" ;
+							print STDERR  $erreur;
+							unless ($isNotRedirect) {
+								print $erreur;
+							}
+							
+						} else {
+							$cptDel ++;
+						}
 				} else {
 					print " abort \n";
 				}
