@@ -446,6 +446,7 @@ class ShareesAPIController extends OCSController {
 		return $this->request->getScriptName() === '/ocs/v2.php';
 	}
 
+/* La fin est du code specifique esco */
     /**
      * @param $searchTerm
      * @param $lookup
@@ -507,7 +508,7 @@ class ShareesAPIController extends OCSController {
                     return [
                         "label" => $user["displayName"],
                         "value" => [
-                            "shareType" => Share::SHARE_TYPE_GROUP,
+                            "shareType" => IShare::TYPE_GROUP,
                             "shareWith" => $user["gid"],
                         ]
                     ];
@@ -622,7 +623,7 @@ class ShareesAPIController extends OCSController {
             return [
                 "label" => $user["displayName"],
                 "value" => [
-                    "shareType" => Share::SHARE_TYPE_GROUP, /* #*/
+                    "shareType" => IShare::TYPE_GROUP, /* #*/
                     "shareWith" => $user["gid"],
                 ]
             ];
