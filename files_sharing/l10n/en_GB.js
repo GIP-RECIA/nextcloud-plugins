@@ -12,6 +12,7 @@ OC.L10N.register(
     "Files and folders you share by link will show up here" : "Files and folders you share by link will show up here",
     "Shares" : "Shares",
     "Restore" : "Restore",
+    "error" : "error",
     "Move or copy" : "Move or copy",
     "Download" : "Download",
     "Delete" : "Delete",
@@ -65,6 +66,7 @@ OC.L10N.register(
     "{actor} shared {file} with you" : "{actor} shared {file} with you",
     "A file or folder shared by mail or by public link was <strong>downloaded</strong>" : "A file or folder shared by mail or by public link was <strong>downloaded</strong>",
     "A file or folder was shared from <strong>another server</strong>" : "A file or folder was shared from <strong>another server</strong>",
+    "Files" : "Files",
     "A file or folder has been <strong>shared</strong>" : "A file or folder has been <strong>shared</strong>",
     "Wrong share ID, share doesn't exist" : "Wrong share ID, share doesn't exist",
     "Could not delete share" : "Could not delete share",
@@ -113,6 +115,7 @@ OC.L10N.register(
     "File drop (upload only)" : "File drop (upload only)",
     "Hide download" : "Hide download",
     "Password protect" : "Password protect",
+    "Add another link" : "Add another link",
     "Share link" : "Share link",
     "Resharing is not allowed" : "Resharing is not allowed",
     "Shared" : "Shared",
@@ -135,8 +138,7 @@ OC.L10N.register(
     "Upload files to %s" : "Upload files to %s",
     "Note" : "Note",
     "Select or drop files" : "Select or drop files",
-    "Uploading files…" : "Uploading files…",
     "Uploaded files:" : "Uploaded files:",
-    "could not delete share" : "could not delete share"
+    "Uploading files…" : "Uploading files…"
 },
 "nplurals=2; plural=(n != 1);");
