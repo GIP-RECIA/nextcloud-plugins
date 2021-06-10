@@ -164,26 +164,20 @@ sub printPartage {
 	}
 }
 
+
 sub toGiga {
-	my $o = shift;
-	if ($o >= 1024) {
-		my $k = int($o/1024);
-		$o = $o % 1024;
-		if ($k >= 1024) {
-			my $m = int($k / 1024);
-			$k = $k % 1024;
-			if ($m >= 1024) {
-				my $g = int($m / 1024);
-				$m = $m % 1024;
-				return  " ${g}G ${m}M ${k}K $o ";
-			} 
-			return " ${m}M ${k}K $o ";
-			
+	my $val = shift;
+	my $unit = shift;
+	if ($val) {
+		if (@_) {
+			return toGiga(int($val/1024),@_) . $val % 1024 . "$unit ";
+		} else {
+			return $unit ? "$val$unit " : toGiga($val, ' o ', ' Ko ', ' Mo ', ' Go ', ' To '); 
 		}
-		return " ${k}K $o ";
 	}
-	return " ${o}O";
+	return $unit ? "" : " 0 o ";
 }
+
 
 my $nom = getUserName($uid);
 unless ($nom) {
