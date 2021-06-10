@@ -2,15 +2,17 @@
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>files_sharing</id>
-	<name>School sharing</name>
-	<summary>School sharing</summary>
+	<name>File sharing</name>
+	<summary>File sharing</summary>
 	<description>
-		This application enables users to share files within Nextcloud between their school groups and users.
-		/!\ Please remove the 'File Sharing' plugin before enable this one. /!\
+		This application enables users to share files within Nextcloud. If enabled, the admin can choose which groups can share files. The applicable users can then share files and folders with other users and groups within Nextcloud. In addition, if the admin enables the share link feature, an external link can be used to share files with other users outside of Nextcloud. Admins can also enforce passwords, expirations dates, and enable server to server sharing via share links, as well as sharing from mobile devices.
+Turning the feature off removes shared files and folders on the server for all share recipients, and also on the sync clients and mobile apps. More information is available in the Nextcloud Documentation.
+
 	</description>
-	<version>1.0.0</version>
+	<version>1.10.1</version>
 	<licence>agpl</licence>
-	<author>Recia</author>
+	<author>Michael Gapczynski</author>
+	<author>Bjoern Schiessle</author>
 	<namespace>Files_Sharing</namespace>
 	<default_enable/>
 	<types>

@@ -56,6 +56,7 @@ use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\IL10N;
+use OCP\IPreview;
 use OCP\IRequest;
 use OCP\IServerContainer;
 use OCP\IURLGenerator;
@@ -97,6 +98,8 @@ class ShareAPIController extends OCSController {
 	private $appManager;
 	/** @var IServerContainer */
 	private $serverContainer;
+	/** @var IPreview */
+	private $previewManager;
 
 	/**
 	 * Share20OCS constructor.
@@ -126,7 +129,8 @@ class ShareAPIController extends OCSController {
 		IL10N $l10n,
 		IConfig $config,
 		IAppManager $appManager,
-		IServerContainer $serverContainer
+		IServerContainer $serverContainer,
+		IPreview $previewManager
 	) {
 		parent::__construct($appName, $request);
 
@@ -141,6 +145,7 @@ class ShareAPIController extends OCSController {
 		$this->config = $config;
 		$this->appManager = $appManager;
 		$this->serverContainer = $serverContainer;
+		$this->previewManager = $previewManager;
 	}
 
 	/**
@@ -201,6 +206,7 @@ class ShareAPIController extends OCSController {
 		}
 
 		$result['mimetype'] = $node->getMimetype();
+		$result['has_preview'] = $this->previewManager->isAvailable($node);
 		$result['storage_id'] = $node->getStorage()->getId();
 		$result['storage'] = $node->getStorage()->getCache()->getNumericStorageId();
 		$result['item_source'] = $node->getId();
@@ -217,6 +223,9 @@ class ShareAPIController extends OCSController {
 			$sharedWith = $this->userManager->get($share->getSharedWith());
 			$result['share_with'] = $share->getSharedWith();
 			$result['share_with_displayname'] = $sharedWith !== null ? $sharedWith->getDisplayName() : $share->getSharedWith();
+			$result['share_with_displayname_unique'] = $sharedWith !== null ? (
+				 $sharedWith->getEMailAddress() !== '' ? $sharedWith->getEMailAddress() : $sharedWith->getUID()
+			) : $share->getSharedWith();
 		} else if ($share->getShareType() === Share::SHARE_TYPE_GROUP) {
 			$group = $this->groupManager->get($share->getSharedWith());
 			$result['share_with'] = $share->getSharedWith();
@@ -292,7 +301,7 @@ class ShareAPIController extends OCSController {
 		$result = \OC::$server->getContactsManager()->search($query, [$property]);
 		foreach ($result as $r) {
 			foreach ($r[$property] as $value) {
-				if ($value === $query) {
+				if ($value === $query && $r['FN']) {
 					return $r['FN'];
 				}
 			}
@@ -490,15 +499,20 @@ class ShareAPIController extends OCSController {
 					throw new OCSNotFoundException($this->l->t('Public upload is only possible for publicly shared folders'));
 				}
 
-				$share->setPermissions(
-					Constants::PERMISSION_READ |
+				$permissions = Constants::PERMISSION_READ |
 					Constants::PERMISSION_CREATE |
 					Constants::PERMISSION_UPDATE |
-					Constants::PERMISSION_DELETE
-				);
+					Constants::PERMISSION_DELETE;
 			} else {
-				$share->setPermissions(Constants::PERMISSION_READ);
+				$permissions = Constants::PERMISSION_READ;
 			}
+
+			// TODO: It might make sense to have a dedicated setting to allow/deny converting link shares into federated ones
+			if (($permissions & Constants::PERMISSION_READ) && $this->shareManager->outgoingServer2ServerSharesAllowed()) {
+				$permissions |= Constants::PERMISSION_SHARE;
+			}
+
+			$share->setPermissions($permissions);
 
 			// Set password
 			if ($password !== '') {
@@ -601,12 +615,12 @@ class ShareAPIController extends OCSController {
 
 		$shares = array_merge($userShares, $groupShares, $circleShares, $roomShares);
 
-		$shares = array_filter($shares, function(IShare $share) {
+		$filteredShares = array_filter($shares, function(IShare $share) {
 			return $share->getShareOwner() !== $this->currentUser;
 		});
 
 		$formatted = [];
-		foreach ($shares as $share) {
+		foreach ($filteredShares as $share) {
 			if ($this->canAccessShare($share)) {
 				try {
 					$formatted[] = $this->formatShare($share);
@@ -651,7 +665,8 @@ class ShareAPIController extends OCSController {
 		$resharingRight = false;
 		$known = [];
 		foreach ($shares as $share) {
-			if (in_array($share->getId(), $known) || $share->getSharedWith() === $this->currentUser) {
+			if (in_array($share->getId(), $known)
+				|| ($share->getSharedWith() === $this->currentUser && $share->getShareType() === IShare::TYPE_USER)) {
 				continue;
 			}
 
@@ -840,8 +855,12 @@ class ShareAPIController extends OCSController {
 			throw new OCSNotFoundException($this->l->t('Could not lock path'));
 		}
 
-		// current User has resharing rights ?
-		$this->confirmSharingRights($node);
+		if (!($node->getPermissions() & Constants::PERMISSION_SHARE)) {
+			throw new SharingRightsException('no sharing rights on this item');
+		}
+
+		// The current top parent we have access to
+		$parent = $node;
 
 		// initiate real owner.
 		$owner = $node->getOwner()
@@ -869,10 +888,25 @@ class ShareAPIController extends OCSController {
 			$nodes[] = $node;
 		}
 
+		// The user that is requesting this list
+		$currentUserFolder = $this->rootFolder->getUserFolder($this->currentUser);
+
 		// for each nodes, retrieve shares.
 		$shares = [];
+
 		foreach ($nodes as $node) {
 			$getShares = $this->getFormattedShares($owner, $node, false, true);
+
+			$currentUserNodes = $currentUserFolder->getById($node->getId());
+			if (!empty($currentUserNodes)) {
+				$parent = array_pop($currentUserNodes);
+			}
+
+			$subPath = $currentUserFolder->getRelativePath($parent->getPath());
+			foreach ($getShares as &$share) {
+				$share['via_fileid'] = $parent->getId();
+				$share['via_path'] = $subPath;
+			}
 			$this->mergeFormattedShares($shares, $getShares);
 		}
 
@@ -1011,6 +1045,11 @@ class ShareAPIController extends OCSController {
 			}
 
 			if ($newPermissions !== null) {
+				// TODO: It might make sense to have a dedicated setting to allow/deny converting link shares into federated ones
+				if (($newPermissions & Constants::PERMISSION_READ) && $this->shareManager->outgoingServer2ServerSharesAllowed()) {
+					$newPermissions |= Constants::PERMISSION_SHARE;
+				}
+
 				$share->setPermissions($newPermissions);
 				$permissions = $newPermissions;
 			}
@@ -1573,10 +1612,11 @@ class ShareAPIController extends OCSController {
 			$hasCircleId = (substr($share->getSharedWith(), -1) === ']');
 			$shareWithStart = ($hasCircleId ? strrpos($share->getSharedWith(), '[') + 1 : 0);
 			$shareWithLength = ($hasCircleId ? -1 : strpos($share->getSharedWith(), ' '));
-			if (is_bool($shareWithLength)) {
-				$shareWithLength = -1;
+			if ($shareWithLength === false) {
+				$sharedWith = substr($share->getSharedWith(), $shareWithStart);
+			} else {
+				$sharedWith = substr($share->getSharedWith(), $shareWithStart, $shareWithLength);
 			}
-			$sharedWith = substr($share->getSharedWith(), $shareWithStart, $shareWithLength);
 			try {
 				$member = \OCA\Circles\Api\v1\Circles::getMember($sharedWith, $userId, 1);
 				if ($member->getLevel() >= 4) {
