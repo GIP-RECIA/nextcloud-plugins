@@ -53069,24 +53069,48 @@
                 }))), function(t, e) {
                     return nt.apply(this, arguments)
                 }),
-                getSuggestions: (K = X(regeneratorRuntime.mark((function e(n) {
-                    var lookupSchoolEnabled = true
-                    var r, o, a, s, A, u, l, f, d, p, h, v = this,
+                
+                getSuggestions: (et = q(regeneratorRuntime.mark((function e(n) {
+                    var r, o, a, s, A, u, l, f, d, p, h, v, g, m = this,
                         b = arguments;
+                     var lookupSchoolEnabled = true;
                     return regeneratorRuntime.wrap((function(e) {
                         for (;;) switch (e.prev = e.next) {
                             case 0:
-                                return r = b.length > 1 && void 0 !== b[1] && b[1], this.loading = !0, !0 === OC.getCapabilities().files_sharing.sharee.query_lookup_default && (r = !0), o = [this.SHARE_TYPES.SHARE_TYPE_USER, this.SHARE_TYPES.SHARE_TYPE_GROUP, this.SHARE_TYPES.SHARE_TYPE_REMOTE, this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, this.SHARE_TYPES.SHARE_TYPE_CIRCLE, this.SHARE_TYPES.SHARE_TYPE_ROOM, this.SHARE_TYPES.SHARE_TYPE_GUEST], !0 === OC.getCapabilities().files_sharing.public.enabled && o.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL), e.next = 7, c.a.get(Object(i.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees", {
-                                    params: {
-                                        format: "json",
-                                        itemType: "dir" === this.fileInfo.type ? "folder" : "file",
-                                        search: n,
-                                        lookup: r,
-                                    lookupSchool: q,
-                                        perPage: this.config.maxAutocompleteResults,
-                                        shareType: o
-                                    }
-                                });
+                                return r = b.length > 1 &&
+                                         void 0 !== b[1] && 
+                                            b[1] &&
+                                            b[1].lookup && 
+                                            void 0 !== b[1].lookup, 
+                                            bLookupSchool = b.length > 1 && 
+                                            b[1] && 
+                                            b[1].lookupSchool &&
+                                            void 0 !== b[1].lookupSchool,          
+                                        this.loading = !0, 
+                                        !0 === OC.getCapabilities().files_sharing.sharee.query_lookup_default && 
+                                            (r = !0), 
+                                         o = [this.SHARE_TYPES.SHARE_TYPE_USER, 
+                                              this.SHARE_TYPES.SHARE_TYPE_GROUP, 
+                                              this.SHARE_TYPES.SHARE_TYPE_REMOTE, 
+                                              this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, 
+                                              this.SHARE_TYPES.SHARE_TYPE_CIRCLE, 
+                                              this.SHARE_TYPES.SHARE_TYPE_ROOM, 
+                                              this.SHARE_TYPES.SHARE_TYPE_GUEST], 
+                                        !0 === OC.getCapabilities().files_sharing.public.enabled && 
+                                            o.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL), 
+                                        e.next = 7, 
+                                        c.a.get(Object(i.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees", 
+                                            {
+                                                params: {
+                                                    format: "json",
+                                                    itemType: "dir" === this.fileInfo.type ? "folder" : "file",
+                                                    search: n,
+                                                    lookup: r,
+                                                    lookupSchool: bLookupSchool,
+                                                    perPage: this.config.maxAutocompleteResults,
+                                                    shareType: o
+                                                }
+                                            });
                             case 7:
                                 if (100 === (a = e.sent).data.ocs.meta.statuscode) {
                                     e.next = 11;
@@ -53110,7 +53134,7 @@
                                     isNoUser: !0,
                                     displayName: t("files_sharing", "Recherche dans tous les établissements"),
                                     lookup: !0
-                                }), !r &&!q && p.push({
+                                }), !r && !bLookupSchool && p.push({
                                     isNoUser: !0,
                                     displayName: t("files_sharing", "Recherche dans vos établissements"),
                                     lookupSchool: !0
@@ -53131,6 +53155,8 @@
                 }))), function(t) {
                     return et.apply(this, arguments)
                 }),
+                
+                
                 debounceGetSuggestions: j()((function() {
                     this.getSuggestions.apply(this, arguments)
                 }), 300),
