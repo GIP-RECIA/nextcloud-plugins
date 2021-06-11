@@ -53082,7 +53082,7 @@
                                             b[1] &&
                                             b[1].lookup && 
                                             void 0 !== b[1].lookup, 
-                                            bLookupSchool = b.length > 1 && 
+                                            tt = b.length > 1 && 
                                             b[1] && 
                                             b[1].lookupSchool &&
                                             void 0 !== b[1].lookupSchool,          
@@ -53106,7 +53106,7 @@
                                                     itemType: "dir" === this.fileInfo.type ? "folder" : "file",
                                                     search: n,
                                                     lookup: r,
-                                                    lookupSchool: bLookupSchool,
+                                                    lookupSchool: tt,
                                                     perPage: this.config.maxAutocompleteResults,
                                                     shareType: o
                                                 }
@@ -53134,7 +53134,7 @@
                                     isNoUser: !0,
                                     displayName: t("files_sharing", "Recherche dans tous les établissements"),
                                     lookup: !0
-                                }), !r && !bLookupSchool && p.push({
+                                }), !r && !tt && p.push({
                                     isNoUser: !0,
                                     displayName: t("files_sharing", "Recherche dans vos établissements"),
                                     lookupSchool: !0
