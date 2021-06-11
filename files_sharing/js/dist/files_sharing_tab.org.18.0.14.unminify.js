@@ -256,7 +256,8 @@
             } else {
                 var l = c.beforeCreate;
                 c.beforeCreate = l ? [].concat(l, A) : [A]
-            } return {
+            }
+        return {
             exports: t,
             options: c
         }
@@ -44502,9 +44503,7 @@
             A = {
                 methods: {
                     highlightText: function(t, e) {
-                            //console.info("highlight : ", t, e)
-                            return e.length ? t.replace(" - ", "</br>") : t
-                            //return e.length ? t.replace(new RegExp(e, "gi"), "<strong>".concat(e, "</strong>")).replace(" - ", "</br>") : t
+                        return e.length ? t.replace(new RegExp(e, "gi"), "<strong>".concat(e, "</strong>")) : t
                     }
                 }
             },
@@ -45407,7 +45406,8 @@
                         } else {
                             var l = c.beforeCreate;
                             c.beforeCreate = l ? [].concat(l, A) : [A]
-                            } return {
+                        }
+                    return {
                         exports: t,
                         options: c
                     }
@@ -52161,7 +52161,27 @@
             r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(t, r.key, r)
         }
     }
-    
+    /**
+     * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+     *
+     * @author John Molakvoæ <skjnldsv@protonmail.com>
+     *
+     * @license GNU AGPL version 3 or any later version
+     *
+     * This program is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU Affero General Public License as
+     * published by the Free Software Foundation, either version 3 of the
+     * License, or (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU Affero General Public License for more details.
+     *
+     * You should have received a copy of the GNU Affero General Public License
+     * along with this program. If not, see <http://www.gnu.org/licenses/>.
+     *
+     */
     var d = function() {
         function t() {
             ! function(t, e) {
@@ -53069,9 +53089,8 @@
                 }))), function(t, e) {
                     return nt.apply(this, arguments)
                 }),
-                getSuggestions: (K = X(regeneratorRuntime.mark((function e(n) {
-                    var lookupSchoolEnabled = true
-                    var r, o, a, s, A, u, l, f, d, p, h, v = this,
+                getSuggestions: (et = q(regeneratorRuntime.mark((function e(n) {
+                    var r, o, a, s, A, u, l, f, d, p, h, v, g, m = this,
                         b = arguments;
                     return regeneratorRuntime.wrap((function(e) {
                         for (;;) switch (e.prev = e.next) {
@@ -53082,7 +53101,6 @@
                                         itemType: "dir" === this.fileInfo.type ? "folder" : "file",
                                         search: n,
                                         lookup: r,
-                                    lookupSchool: q,
                                         perPage: this.config.maxAutocompleteResults,
                                         shareType: o
                                     }
@@ -53108,12 +53126,8 @@
                                     return t.shareType - e.shareType
                                 })), p = [], s.lookupEnabled && !r && p.push({
                                     isNoUser: !0,
-                                    displayName: t("files_sharing", "Recherche dans tous les établissements"),
+                                    displayName: t("files_sharing", "Search globally"),
                                     lookup: !0
-                                }), !r &&!q && p.push({
-                                    isNoUser: !0,
-                                    displayName: t("files_sharing", "Recherche dans vos établissements"),
-                                    lookupSchool: !0
                                 }), h = this.externalResults.filter((function(t) {
                                     return !t.condition || t.condition(m)
                                 })), v = f.concat(d).concat(h).concat(p), g = v.reduce((function(t, e) {
@@ -53219,7 +53233,6 @@
                         user: e.uuid || e.value.shareWith,
                         isNoUser: e.value.shareType !== this.SHARE_TYPES.SHARE_TYPE_USER,
                         displayName: e.name || e.label,
-                        email: e.email,
                         desc: n,
                         shareWithDisplayNameUnique: e.shareWithDisplayNameUnique || "",
                         icon: this.shareTypeToIcon(e.value.shareType)
@@ -53230,11 +53243,11 @@
                     return regeneratorRuntime.wrap((function(t) {
                         for (;;) switch (t.prev = t.next) {
                             case 0:
-                                if (!e.lookup && !e.lookupSchool) {
+                                if (!e.lookup) {
                                     t.next = 5;
                                     break
                                 }
-                                return t.next = 3, this.getSuggestions(this.query, {lookup: e.lookup ? e.lookup : false, lookupSchool: e.lookupSchool ? e.lookupSchool : false});
+                                return t.next = 3, this.getSuggestions(this.query, !0);
                             case 3:
                                 return this.$nextTick((function() {
                                     a.$refs.multiselect.$el.querySelector(".multiselect__input").focus()
