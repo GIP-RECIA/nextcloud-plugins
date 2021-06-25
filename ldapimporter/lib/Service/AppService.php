@@ -295,7 +295,8 @@ class AppService
 
                 # Handle logout servers
                 if (!$this->casDisableLogout) {
-
+					
+					\phpCAS::setSingleSignoutCallback([$this, 'casSingleSignOut']);
                     \phpCAS::handleLogoutRequests(true, $this->casHandleLogoutServers);
                 }
 
@@ -750,6 +751,58 @@ class AppService
     }
 
 
+	/**
+     * Callback function for CAS singleSignOut call
+     *
+     * @author Vincent <https://github.com/pingou2712>
+     *
+     * @param string $ticket Ticket Object
+     */
+    public function casSingleSignOut($ticket)
+    {
+        // Extract the userID from the SAML Request
+        $decodedLogoutRequest = urldecode($_POST['logoutRequest']);
+        preg_match(
+            "|<saml:NameID[^>]*>(.*)</saml:NameID>|",
+            $decodedLogoutRequest, $tick, PREG_OFFSET_CAPTURE, 3
+        );
+        $wrappedSamlNameId = preg_replace(
+            '|<saml:NameID[^>]*>|', '', $tick[0][0]
+        );
+        $nameId = preg_replace(
+            '|</saml:NameID>|', '', $wrappedSamlNameId
+        );
+
+        //Kill Session Of UserID:
+        $this->killSessionUserName($nameId);
+    }
+
+ /**
+     * Kill the username's session.
+     *
+     * @author Vincent <https://github.com/pingou2712>
+     * @author Felix Rupp <kontakt@felixrupp.com>
+     *
+     * @param string $username The username of the user.
+     * @return NULL
+     */
+    private function killSessionUserName($username)
+    {
+
+        if ($this->userManager->userExists($username)) {
+
+            $tokenType = IToken::TEMPORARY_TOKEN;
+
+            $sql = "DELETE FROM oc_authtoken WHERE uid = ? AND type = ? AND password IS NULL;";
+            $stmt = \OC::$server->getDatabaseConnection()->prepare($sql);
+            $stmt->bindParam(1, $username, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $tokenType, \PDO::PARAM_INT);
+
+            $stmt->execute();
+        }
+
+        return NULL;
+    }
     ## Setters/Getters
 
     /**
