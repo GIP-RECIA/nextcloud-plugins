@@ -103,7 +103,7 @@ OC.L10N.register(
     "Please specify a file or folder path" : "Lütfen bir dosya ya da klasör yolu belirtin",
     "Wrong path, file/folder doesn't exist" : "Yol yanlış. Dosya ya da klasör bulunamadı",
     "Could not create share" : "Paylaşılamadı",
-    "invalid permissions" : "izinler geçersiz",
+    "Invalid permissions" : "İzinler geçersiz",
     "Please specify a valid user" : "Lütfen geçerli bir kullanıcı belirtin",
     "Group sharing is disabled by the administrator" : "Grup paylaşımı BT yöneticisi tarafından devre dışı bırakılmış",
     "Please specify a valid group" : "Lütfen geçerli bir grup belirtin",
@@ -113,6 +113,8 @@ OC.L10N.register(
     "Sharing %s sending the password by Nextcloud Talk failed because Nextcloud Talk is not enabled" : "Nextcloud Talk etkinleştirilmemiş olduğundan, Nextcloud Talk ile parola gönderilerek %s paylaşılamadı",
     "Invalid date, date format must be YYYY-MM-DD" : "Tarih geçersiz. Tarih biçimi YYYY-AA-GG olmalıdır",
     "Sharing %1$s failed because the back end does not allow shares from type %2$s" : "Yönetim bölümünden %2$s türündeki paylaşımlar yapılamadığından %1$s paylaşılamadı",
+    "Please specify a valid federated user id" : "Lütfen geçerli bir birleşmiş kullanıcı kodu belirtin",
+    "Please specify a valid federated group id" : "Lütfen geçerli bir birleşmiş grup kodu belirtin",
     "You cannot share to a Circle if the app is not enabled" : "Uygulama etkinleştirilmemiş ise bir Çevre ile paylaşamazsınız",
     "Please specify a valid circle" : "Lütfen geçerli bir çevre belirtin",
     "Sharing %s failed because the back end does not support room shares" : "Arka uç oda paylaşımlarına izin vermediğinden %s paylaşılamadı",
@@ -183,6 +185,7 @@ OC.L10N.register(
     "Create a new share link" : "Yeni bir paylaşım bağlantısı ekle",
     "{shareWith} by {initiator}" : "{initiator} tarafından {shareWith}",
     "Shared via link by {initiator}" : "{initiator} tarafından bağlantı ile paylaşıldı",
+    "Mail share ({label})" : "E-posta paylaşımı ({label})",
     "Share link ({label})" : "Bağlantıyı paylaş ({label})",
     "Share link" : "Paylaşım bağlantısı",
     "Error, please enter proper password and/or expiration date" : "Hata. Lütfen uygun bir parola ya da son kullanma tarihi yazın",
@@ -234,7 +237,7 @@ OC.L10N.register(
     "Uploading files" : "Dosyalar yükleniyor",
     "Uploaded files:" : "Yüklenmiş dosyalar:",
     "By uploading files, you agree to the %1$sterms of service%2$s." : "Dosya yükleyerek %1$shizmet koşullarını%2$s kabul etmiş olursunuz.",
-    "Name, email, or federated cloud ID …" : "Ad, e-posta ya da Birleşik Bulut Kodu …",
-    "Uploading files…" : "Dosyalar yükleniyor …"
+    "invalid permissions" : "izinler geçersiz",
+    "Name, email, or federated cloud ID …" : "Ad, e-posta ya da Birleşik Bulut Kodu …"
 },
 "nplurals=2; plural=(n > 1);");

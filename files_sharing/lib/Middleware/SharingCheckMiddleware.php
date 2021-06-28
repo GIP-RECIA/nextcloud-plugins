@@ -3,6 +3,7 @@
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
  * @author Bjoern Schiessle <bjoern@schiessle.org>
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Lukas Reschke <lukas@statuscode.ch>
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
@@ -27,7 +28,6 @@
 namespace OCA\Files_Sharing\Middleware;
 
 use OCA\Files_Sharing\Controller\ExternalSharesController;
-use OCA\Files_Sharing\Controller\ShareController;
 use OCA\Files_Sharing\Exceptions\S2SException;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
@@ -94,7 +94,7 @@ class SharingCheckMiddleware extends Middleware {
 	 * @throws ShareNotFound
 	 */
 	public function beforeController($controller, $methodName) {
-		if(!$this->isSharingEnabled()) {
+		if (!$this->isSharingEnabled()) {
 			throw new NotFoundException('Sharing is disabled.');
 		}
 
@@ -114,7 +114,7 @@ class SharingCheckMiddleware extends Middleware {
 	 * @throws \Exception
 	 */
 	public function afterException($controller, $methodName, \Exception $exception) {
-		if(is_a($exception, NotFoundException::class)) {
+		if (is_a($exception, NotFoundException::class)) {
 			return new NotFoundResponse();
 		}
 
@@ -130,14 +130,13 @@ class SharingCheckMiddleware extends Middleware {
 	 * @return bool
 	 */
 	private function externalSharesChecks() {
-
 		if (!$this->reflector->hasAnnotation('NoIncomingFederatedSharingRequired') &&
 			$this->config->getAppValue('files_sharing', 'incoming_server2server_share_enabled', 'yes') !== 'yes') {
 			return false;
 		}
 
 		if (!$this->reflector->hasAnnotation('NoOutgoingFederatedSharingRequired') &&
-		    $this->config->getAppValue('files_sharing', 'outgoing_server2server_share_enabled', 'yes') !== 'yes') {
+			$this->config->getAppValue('files_sharing', 'outgoing_server2server_share_enabled', 'yes') !== 'yes') {
 			return false;
 		}
 
@@ -151,13 +150,10 @@ class SharingCheckMiddleware extends Middleware {
 	private function isSharingEnabled() {
 		// FIXME: This check is done here since the route is globally defined and not inside the files_sharing app
 		// Check whether the sharing application is enabled
-		if(!$this->appManager->isEnabledForUser($this->appName)) {
+		if (!$this->appManager->isEnabledForUser($this->appName)) {
 			return false;
 		}
 
 		return true;
 	}
-
-
-
 }

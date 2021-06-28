@@ -25,7 +25,6 @@
 
 namespace OCA\Files_Sharing\Controller;
 
-use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\FileDisplayResponse;
@@ -97,7 +96,6 @@ class PublicPreviewController extends PublicShareController {
 		int $y = 32,
 		$a = false
 	) {
-
 		if ($token === '' || $x === 0 || $y === 0) {
 			return new DataResponse([], Http::STATUS_BAD_REQUEST);
 		}

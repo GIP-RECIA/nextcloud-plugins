@@ -5,7 +5,6 @@
  * @author Bjoern Schiessle <bjoern@schiessle.org>
  * @author Björn Schießle <bjoern@schiessle.org>
  * @author Joas Schilling <coding@schilljs.com>
- * @author Lukas Reschke <lukas@statuscode.ch>
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
@@ -29,10 +28,9 @@
 namespace OCA\Files_Sharing;
 
 use OC\Files\Filesystem;
-use OCA\FederatedFileSharing\DiscoveryManager;
+use OCP\EventDispatcher\IEventDispatcher;
 
 class Hooks {
-
 	public static function deleteUser($params) {
 		$manager = new External\Manager(
 			\OC::$server->getDatabaseConnection(),
@@ -45,7 +43,9 @@ class Hooks {
 			\OC::$server->getCloudFederationFactory(),
 			\OC::$server->getGroupManager(),
 			\OC::$server->getUserManager(),
-			$params['uid']);
+			$params['uid'],
+			\OC::$server->query(IEventDispatcher::class)
+		);
 
 		$manager->removeUserShares($params['uid']);
 	}

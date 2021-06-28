@@ -103,7 +103,6 @@ OC.L10N.register(
     "Please specify a file or folder path" : "Nurodykite kelią iki duomenų",
     "Wrong path, file/folder doesn't exist" : "Neteisingas kelias, failo/aplanko nėra",
     "Could not create share" : "Nepavyko sukurti viešinio",
-    "invalid permissions" : "neteisingi leidimai",
     "Please specify a valid user" : "Nurodykite naudotoją",
     "Group sharing is disabled by the administrator" : "Administratorius išjungė bendrinimą su grupėmis",
     "Please specify a valid group" : "Nurodykite teisingą grupę",
@@ -202,7 +201,9 @@ OC.L10N.register(
     "Expires {relativetime}" : "Galioja iki {relativetime}",
     "this share just expired." : "šis viešinys ką tik nustojo galioti.",
     "Link to a file" : "Nuoroda į failą",
+    "Error creating the share: {errorMessage}" : "Klaida kuriant viešinį: {errorMessage}",
     "Error creating the share" : "Klaida kuriant viešinį",
+    "Error updating the share: {errorMessage}" : "Klaida atnaujinant viešinį: {errorMessage}",
     "Error updating the share" : "Klaida atnaujinant viešinį",
     "Shared" : "Bendrinama",
     "Share" : "Dalintis",
@@ -231,7 +232,7 @@ OC.L10N.register(
     "Uploading files" : "Įkeliami failai",
     "Uploaded files:" : "Įkelti failai:",
     "By uploading files, you agree to the %1$sterms of service%2$s." : "Įkeldami failus, sutinkate su %1$snaudojimosi sąlygomis%2$s.",
-    "Name, email, or federated cloud ID …" : "Vardas, el. paštas ar federacinės debesijos ID…",
-    "Uploading files…" : "Įkeliami failai…"
+    "invalid permissions" : "neteisingi leidimai",
+    "Name, email, or federated cloud ID …" : "Vardas, el. paštas ar federacinės debesijos ID…"
 },
 "nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);");

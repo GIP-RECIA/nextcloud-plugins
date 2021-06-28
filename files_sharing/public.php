@@ -2,6 +2,8 @@
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
  * @author Lukas Reschke <lukas@statuscode.ch>
  * @author Morris Jobke <hey@morrisjobke.de>
  *
@@ -34,7 +36,7 @@ if ($token !== '') {
 	} else {
 		http_response_code(307);
 	}
-	header('Location: ' . $urlGenerator->linkToRoute($route, array('token' => $token)));
+	header('Location: ' . $urlGenerator->linkToRoute($route, ['token' => $token]));
 } else {
 	http_response_code(404);
 	$tmpl = new OCP\Template('', '404', 'guest');

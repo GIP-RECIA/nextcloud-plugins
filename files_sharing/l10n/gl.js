@@ -103,7 +103,6 @@ OC.L10N.register(
     "Please specify a file or folder path" : "Especifique a ruta dun ficheiro ou cartafol",
     "Wrong path, file/folder doesn't exist" : "Ruta incorrecta, o ficheiro/cartafol non existe",
     "Could not create share" : "Non foi posíbel crear o recurso compartido",
-    "invalid permissions" : "permisos incorrectos",
     "Please specify a valid user" : "Especifique un usuario correcto",
     "Group sharing is disabled by the administrator" : "A opción de compartir en grupo foi desactivada polo administrador",
     "Please specify a valid group" : "Especifique un grupo correcto",
@@ -183,6 +182,7 @@ OC.L10N.register(
     "Create a new share link" : "Crear unha nova ligazón de compartición",
     "{shareWith} by {initiator}" : "{shareWith} por {initiator}",
     "Shared via link by {initiator}" : "Compartido mediante ligazón por {initiator}",
+    "Mail share ({label})" : "Compartir correo ({label})",
     "Share link ({label})" : "Compartir a ligazón ({label})",
     "Share link" : "Compartir ligazón",
     "Error, please enter proper password and/or expiration date" : "Erro, introduza un contrasinal ou unha data de caducidade correctos",
@@ -234,7 +234,7 @@ OC.L10N.register(
     "Uploading files" : "Enviando ficheiros",
     "Uploaded files:" : "Ficheiros enviados:",
     "By uploading files, you agree to the %1$sterms of service%2$s." : "Ao enviar ficheiros acepta os %1$s termos do servizo %2$s.",
-    "Name, email, or federated cloud ID …" : "Nome, correo ou ID da nube federada...",
-    "Uploading files…" : "Enviando ficheiros…"
+    "invalid permissions" : "permisos incorrectos",
+    "Name, email, or federated cloud ID …" : "Nome, correo ou ID da nube federada..."
 },
 "nplurals=2; plural=(n != 1);");

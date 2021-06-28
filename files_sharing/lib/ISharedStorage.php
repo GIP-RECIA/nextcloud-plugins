@@ -2,6 +2,7 @@
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
  *
@@ -23,6 +24,5 @@
 
 namespace OCA\Files_Sharing;
 
-interface ISharedStorage{
-
+interface ISharedStorage {
 }
