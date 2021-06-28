@@ -2,6 +2,7 @@
 /**
  * @copyright Copyright (c) 2016 Joas Schilling <coding@schilljs.com>
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Joas Schilling <coding@schilljs.com>
  *
  * @license GNU AGPL version 3 or any later version
@@ -23,14 +24,13 @@
 
 namespace OCA\Files_Sharing\Activity;
 
-
 use OCP\Activity\IFilter;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 
 class Filter implements IFilter {
-	const TYPE_REMOTE_SHARE = 'remote_share';
-	const TYPE_SHARED = 'shared';
+	public const TYPE_REMOTE_SHARE = 'remote_share';
+	public const TYPE_SHARED = 'shared';
 
 	/** @var IL10N */
 	protected $l;

@@ -28,7 +28,7 @@ use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
-use OCP\Share;
+use OCP\Share\IShare;
 
 /**
  * Class OwncloudGuestShareType
@@ -69,8 +69,8 @@ class OwncloudGuestShareType implements IRepairStep {
 
 		$query = $this->connection->getQueryBuilder();
 		$query->update('share')
-			->set('share_type',  $query->createNamedParameter(Share::SHARE_TYPE_GUEST))
-			->where($query->expr()->eq('share_type', $query->createNamedParameter(Share::SHARE_TYPE_EMAIL)));
+			->set('share_type',  $query->createNamedParameter(IShare::TYPE_GUEST))
+			->where($query->expr()->eq('share_type', $query->createNamedParameter(IShare::TYPE_EMAIL)));
 		$query->execute();
 	}
 
@@ -79,5 +79,4 @@ class OwncloudGuestShareType implements IRepairStep {
 		return $appVersion === '0.10.0' ||
 			$this->config->getAppValue('core', 'vendor', '') === 'owncloud';
 	}
-
 }

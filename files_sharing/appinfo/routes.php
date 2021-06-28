@@ -31,6 +31,38 @@ return [
 	],
 	'routes' => [
 		[
+			'name' => 'Share#showShare',
+			'url' => '/s/{token}',
+			'verb' => 'GET',
+			'root' => '',
+		],
+		[
+			'name' => 'Share#showAuthenticate',
+			'url' => '/s/{token}/authenticate/{redirect}',
+			'verb' => 'GET',
+			'root' => '',
+		],
+		[
+			'name' => 'Share#authenticate',
+			'url' => '/s/{token}/authenticate/{redirect}',
+			'verb' => 'POST',
+			'root' => '',
+		],
+		[
+			'name' => 'Share#downloadShare',
+			'url' => '/s/{token}/download/{filename}',
+			'verb' => 'GET',
+			'root' => '',
+			'defaults' => ['filename' => '']
+		],
+		[
+			'name' => 'PublicPreview#directLink',
+			'url' => '/s/{token}/preview',
+			'verb' => 'GET',
+			'root' => '',
+		],
+
+		[
 			'name' => 'externalShares#testRemote',
 			'url' => '/testremote',
 			'verb' => 'GET'
@@ -62,42 +94,42 @@ return [
 		 */
 		[
 			'name' => 'ShareAPI#getShares',
-			'url'  => '/api/v1/shares',
+			'url' => '/api/v1/shares',
 			'verb' => 'GET',
 		],
 		[
 			'name' => 'ShareAPI#getInheritedShares',
-			'url'  => '/api/v1/shares/inherited',
+			'url' => '/api/v1/shares/inherited',
 			'verb' => 'GET',
 		],
 		[
 			'name' => 'ShareAPI#createShare',
-			'url'  => '/api/v1/shares',
+			'url' => '/api/v1/shares',
 			'verb' => 'POST',
 		],
 		[
 			'name' => 'ShareAPI#pendingShares',
-			'url'  => '/api/v1/shares/pending',
+			'url' => '/api/v1/shares/pending',
 			'verb' => 'GET',
 		],
 		[
 			'name' => 'ShareAPI#getShare',
-			'url'  => '/api/v1/shares/{id}',
+			'url' => '/api/v1/shares/{id}',
 			'verb' => 'GET',
 		],
 		[
 			'name' => 'ShareAPI#updateShare',
-			'url'  => '/api/v1/shares/{id}',
+			'url' => '/api/v1/shares/{id}',
 			'verb' => 'PUT',
 		],
 		[
 			'name' => 'ShareAPI#deleteShare',
-			'url'  => '/api/v1/shares/{id}',
+			'url' => '/api/v1/shares/{id}',
 			'verb' => 'DELETE',
 		],
 		[
 			'name' => 'ShareAPI#acceptShare',
-			'url'  => '/api/v1/shares/pending/{id}',
+			'url' => '/api/v1/shares/pending/{id}',
 			'verb' => 'POST',
 		],
 		/*
@@ -105,12 +137,12 @@ return [
 		 */
 		[
 			'name' => 'DeletedShareAPI#index',
-			'url'  => '/api/v1/deletedshares',
+			'url' => '/api/v1/deletedshares',
 			'verb' => 'GET',
 		],
 		[
 			'name' => 'DeletedShareAPI#undelete',
-			'url'  => '/api/v1/deletedshares/{id}',
+			'url' => '/api/v1/deletedshares/{id}',
 			'verb' => 'POST',
 		],
 		/*

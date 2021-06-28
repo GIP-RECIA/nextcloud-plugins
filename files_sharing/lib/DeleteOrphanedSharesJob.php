@@ -2,9 +2,10 @@
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Joas Schilling <coding@schilljs.com>
  * @author Morris Jobke <hey@morrisjobke.de>
- * @author Vincent Petry <pvince81@owncloud.com>
+ * @author Vincent Petry <vincent@nextcloud.com>
  *
  * @license AGPL-3.0
  *
@@ -41,7 +42,7 @@ class DeleteOrphanedSharesJob extends TimedJob {
 	/**
 	 * sets the correct interval for this timed job
 	 */
-	public function __construct(){
+	public function __construct() {
 		$this->interval = $this->defaultIntervalMin * 60;
 	}
 
@@ -62,5 +63,4 @@ class DeleteOrphanedSharesJob extends TimedJob {
 		$deletedEntries = $connection->executeUpdate($sql);
 		$logger->debug("$deletedEntries orphaned share(s) deleted", ['app' => 'DeleteOrphanedSharesJob']);
 	}
-
 }

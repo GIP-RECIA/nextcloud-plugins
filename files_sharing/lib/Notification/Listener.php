@@ -5,6 +5,7 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2019, Joas Schilling <coding@schilljs.com>
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Joas Schilling <coding@schilljs.com>
  *
  * @license GNU AGPL version 3 or any later version
@@ -66,7 +67,7 @@ class Listener {
 			$notification->setSubject(Notifier::INCOMING_USER_SHARE)
 				->setUser($share->getSharedWith());
 			$this->notificationManager->notify($notification);
-		} else if ($share->getShareType() === IShare::TYPE_GROUP) {
+		} elseif ($share->getShareType() === IShare::TYPE_GROUP) {
 			$notification->setSubject(Notifier::INCOMING_GROUP_SHARE);
 			$group = $this->groupManager->get($share->getSharedWith());
 

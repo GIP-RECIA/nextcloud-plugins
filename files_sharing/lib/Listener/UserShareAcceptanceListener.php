@@ -5,6 +5,8 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2019, Roeland Jago Douma <roeland@famdouma.nl>
  *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author Julius Härtl <jus@bitgrid.net>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
  *
  * @license GNU AGPL version 3 or any later version
@@ -59,7 +61,7 @@ class UserShareAcceptanceListener implements IEventListener {
 
 		if ($share->getShareType() === IShare::TYPE_USER) {
 			$this->handleAutoAccept($share, $share->getSharedWith());
-		} else if ($share->getShareType() === IShare::TYPE_GROUP) {
+		} elseif ($share->getShareType() === IShare::TYPE_GROUP) {
 			$group = $this->groupManager->get($share->getSharedWith());
 
 			if ($group === null) {
@@ -71,7 +73,6 @@ class UserShareAcceptanceListener implements IEventListener {
 				$this->handleAutoAccept($share, $user->getUID());
 			}
 		}
-
 	}
 
 	private function handleAutoAccept(IShare $share, string $userId) {
@@ -81,5 +82,4 @@ class UserShareAcceptanceListener implements IEventListener {
 			$this->shareManager->acceptShare($share, $userId);
 		}
 	}
-
 }

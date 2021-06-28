@@ -101,7 +101,6 @@
     "Please specify a file or folder path" : "Укажите путь к файлу или каталогу",
     "Wrong path, file/folder doesn't exist" : "Неверный путь, файл или каталог не существует",
     "Could not create share" : "Не удалось создать общий ресурс",
-    "invalid permissions" : "неверные права доступа",
     "Please specify a valid user" : "Укажите верного пользователя",
     "Group sharing is disabled by the administrator" : "Возможность делиться с группами отключена администратором",
     "Please specify a valid group" : "Укажите верную группу",
@@ -111,6 +110,8 @@
     "Sharing %s sending the password by Nextcloud Talk failed because Nextcloud Talk is not enabled" : "Не удалось отправить пароль для доступа к «%s»: приложение Nextcloud Talk отключено.",
     "Invalid date, date format must be YYYY-MM-DD" : "Неверная дата, формат даты должен быть ГГГГ-ММ-ДД",
     "Sharing %1$s failed because the back end does not allow shares from type %2$s" : "Не удалось предоставить общий доступ к  «%1$s», поскольку механизм удалённого обмена не разрешает публикации типа %2$s",
+    "Please specify a valid federated user id" : "Укажите действительный идентификатор федеративного пользователя",
+    "Please specify a valid federated group id" : "Укажите действительный идентификатор федеративной группы",
     "You cannot share to a Circle if the app is not enabled" : "Вы не можете поделиться с кругом, если приложение «Круг» не включено",
     "Please specify a valid circle" : "Укажите верный круг",
     "Sharing %s failed because the back end does not support room shares" : "Не удалось предоставить общий доступ к  «%s» поскольку механизм обмена не поддерживает общий доступ такого типа",
@@ -181,6 +182,7 @@
     "Create a new share link" : "Создать ссылку доступа",
     "{shareWith} by {initiator}" : "{shareWith} предоставлено {initiator}",
     "Shared via link by {initiator}" : "{initiator} предоставил(а) доступ по ссылке",
+    "Mail share ({label})" : "Отправка почты ({label})",
     "Share link ({label})" : "Ссылка общего доступа ({label})",
     "Share link" : "Общий доступ по ссылке",
     "Error, please enter proper password and/or expiration date" : "Введите действительный пароль и/или дату истечения",
@@ -201,7 +203,9 @@
     "Expires {relativetime}" : "Истекает {relativetime}",
     "this share just expired." : "срок действия этого общего ресурса только что истёк.",
     "Link to a file" : "Ссылка на файл",
+    "Error creating the share: {errorMessage}" : "Не удалось создать общий ресурс: {errorMessage}",
     "Error creating the share" : "Ошибка создания общего доступа",
+    "Error updating the share: {errorMessage}" : "Не удалось изменить общий ресурс: {errorMessage}",
     "Error updating the share" : "Ошибка изменения параметров общего доступа",
     "Shared" : "Опубликованное",
     "Share" : "Поделиться",
@@ -230,7 +234,7 @@
     "Uploading files" : "Загрузка файлов",
     "Uploaded files:" : "Отправленные файлы:",
     "By uploading files, you agree to the %1$sterms of service%2$s." : "Передачей файлов на сервер, вы принимаете %1$sусловия обслуживания%2$s.",
-    "Name, email, or federated cloud ID …" : "Имя или ID межсерверного обмена…",
-    "Uploading files…" : "Файлы передаются на сервер…"
+    "invalid permissions" : "неверные права доступа",
+    "Name, email, or federated cloud ID …" : "Имя или ID межсерверного обмена…"
 },"pluralForm" :"nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
 }

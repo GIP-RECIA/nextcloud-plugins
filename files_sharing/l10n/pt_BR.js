@@ -103,7 +103,7 @@ OC.L10N.register(
     "Please specify a file or folder path" : "Por favor especifique um arquivo ou um caminho de pasta",
     "Wrong path, file/folder doesn't exist" : "Caminho errado, o arquivo ou pasta não existe",
     "Could not create share" : "Não foi possível criar o compartilhamento",
-    "invalid permissions" : "permissões inválidas",
+    "Invalid permissions" : "Permissões inválidas",
     "Please specify a valid user" : "Por favor especifique um usuário válido",
     "Group sharing is disabled by the administrator" : "O compartilhamento para grupos foi desabilitado pelo administrador",
     "Please specify a valid group" : "Por favor especifique um grupo válido",
@@ -113,6 +113,8 @@ OC.L10N.register(
     "Sharing %s sending the password by Nextcloud Talk failed because Nextcloud Talk is not enabled" : "O compartilhamento %s falhou ao enviar a senha ao Nextcloud Talk porque este não está ativado",
     "Invalid date, date format must be YYYY-MM-DD" : "Data inválida, o formato da data deve ser YYYY-MM-DD",
     "Sharing %1$s failed because the back end does not allow shares from type %2$s" : "O compartilhamento %1$s falhou porque a infraestrutura não permite compartilhamentos do tipo %2$s",
+    "Please specify a valid federated user id" : "Especifique um ID de usuário federado válido",
+    "Please specify a valid federated group id" : "Especifique um ID de grupo federado válido",
     "You cannot share to a Circle if the app is not enabled" : "Você não pode compartilhar para um círculo se o aplicativo não está habilitado",
     "Please specify a valid circle" : "Por favor especifique um círculo válido",
     "Sharing %s failed because the back end does not support room shares" : "Falhou ao compartilhar %s porque o sistema não suporta compartilhamento de salas",
@@ -183,6 +185,7 @@ OC.L10N.register(
     "Create a new share link" : "Criar um novo link de compartilhamento",
     "{shareWith} by {initiator}" : "{shareWith} por {initiator}",
     "Shared via link by {initiator}" : "Compartilhado via link por {initiator}",
+    "Mail share ({label})" : "Compartilhar por e-mail ({label})",
     "Share link ({label})" : "Compartilhar link ({label})",
     "Share link" : "Link de compartilhamento",
     "Error, please enter proper password and/or expiration date" : "Erro, digite a senha correta e/ou a data de validade",
@@ -234,7 +237,7 @@ OC.L10N.register(
     "Uploading files" : "Enviando arquivos...",
     "Uploaded files:" : "Arquivos enviados:",
     "By uploading files, you agree to the %1$sterms of service%2$s." : "Ao enviar arquivos, você concorda com os %1$stermos de serviço%2$s.",
-    "Name, email, or federated cloud ID …" : "Nome, e-mail, ou ID da nuvem federada...",
-    "Uploading files…" : "Enviando arquivos..."
+    "invalid permissions" : "permissões inválidas",
+    "Name, email, or federated cloud ID …" : "Nome, e-mail, ou ID da nuvem federada..."
 },
 "nplurals=2; plural=(n > 1);");
