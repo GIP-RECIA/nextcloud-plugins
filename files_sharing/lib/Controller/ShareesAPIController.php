@@ -11,6 +11,8 @@ declare(strict_types=1);
  * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
  * @author Joas Schilling <coding@schilljs.com>
+ * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
  * @author Maxence Lange <maxence@nextcloud.com>
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
@@ -36,7 +38,8 @@ namespace OCA\Files_Sharing\Controller;
 
 use Doctrine\DBAL\Connection;
 use OCP\IDBConnection;
-use function array_filter;
+//use function array_filter;
+use OCP\Constants;
 use function array_slice;
 use function array_values;
 use Generator;
@@ -51,7 +54,7 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\Share\IShare;
-use OCP\Share;
+//use OCP\Share;
 use OCP\Share\IManager;
 use function usort;
 
@@ -70,10 +73,10 @@ class ShareesAPIController extends OCSController {
 	protected $shareManager;
 
 	/** @var bool */
-	protected $shareWithGroupOnly = false;
+//	protected $shareWithGroupOnly = false;
 
 	/** @var bool */
-	protected $shareeEnumeration = true;
+//	protected $shareeEnumeration = true;
 
 	/** @var int */
 	protected $offset = 0;
@@ -91,6 +94,7 @@ class ShareesAPIController extends OCSController {
 			'emails' => [],
 			'circles' => [],
 			'rooms' => [],
+			'deck' => [],
 		],
 		'users' => [],
 		'groups' => [],
@@ -100,6 +104,7 @@ class ShareesAPIController extends OCSController {
 		'lookup' => [],
 		'circles' => [],
 		'rooms' => [],
+		'deck' => [],
 		'lookupEnabled' => false,
 	];
 
@@ -162,7 +167,7 @@ class ShareesAPIController extends OCSController {
 		}
 
 		// never return more than the max. number of results configured in the config.php
-		$maxResults = (int)$this->config->getSystemValue('sharing.maxAutocompleteResults', 0);
+		$maxResults = $this->config->getSystemValueInt('sharing.maxAutocompleteResults', Constants::SHARING_MAX_AUTOCOMPLETE_RESULTS_DEFAULT);
 		if ($maxResults > 0) {
 			$perPage = min($perPage, $maxResults);
 		}
@@ -199,6 +204,10 @@ class ShareesAPIController extends OCSController {
 			if ($this->shareManager->shareProviderExists(IShare::TYPE_ROOM)) {
 				$shareTypes[] = IShare::TYPE_ROOM;
 			}
+
+			if ($this->shareManager->shareProviderExists(IShare::TYPE_DECK)) {
+				$shareTypes[] = IShare::TYPE_DECK;
+			}
 		} else {
 			$shareTypes[] = IShare::TYPE_GROUP;
 			$shareTypes[] = IShare::TYPE_EMAIL;
@@ -209,16 +218,18 @@ class ShareesAPIController extends OCSController {
 			$shareTypes[] = IShare::TYPE_CIRCLE;
 		}
 
+		if ($this->shareManager->shareProviderExists(IShare::TYPE_DECK)) {
+			$shareTypes[] = IShare::TYPE_DECK;
+		}
+
 		if ($shareType !== null && is_array($shareType)) {
 			$shareTypes = array_intersect($shareTypes, $shareType);
-		} else if (is_numeric($shareType)) {
+		} elseif (is_numeric($shareType)) {
 			$shareTypes = array_intersect($shareTypes, [(int) $shareType]);
 		}
 		sort($shareTypes);
 
-		$this->shareWithGroupOnly = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members', 'no') === 'yes';
-		$this->shareeEnumeration = $this->config->getAppValue('core', 'shareapi_allow_share_dialog_user_enumeration', 'yes') === 'yes';
-		$this->limit = (int) $perPage;
+		$this->limit = $perPage;
 		$this->offset = $perPage * ($page - 1);
 
 		// In global scale mode we always search the loogup server
@@ -233,10 +244,9 @@ class ShareesAPIController extends OCSController {
 
 		$result = $this->searchResults($search, $lookup, $lookupSchool);
 		// extra treatment for 'exact' subarray, with a single merge expected keys might be lost
-		if(isset($result['exact'])) {
+		if (isset($result['exact'])) {
 			$result['exact'] = array_merge($this->result['exact'], $result['exact']);
 		}
-
 		$this->result = array_merge($this->result, $result);
 		$response = new DataResponse($this->result);
 
@@ -280,7 +290,7 @@ class ShareesAPIController extends OCSController {
 	}
 
 	private function sortShareesByFrequency(array $sharees): array {
-		usort($sharees, function(array $s1, array $s2) {
+		usort($sharees, function (array $s1, array $s2) {
 			return $s2['count'] - $s1['count'];
 		});
 		return $sharees;
@@ -385,7 +395,7 @@ class ShareesAPIController extends OCSController {
 		if (isset($_GET['shareType']) && is_array($_GET['shareType'])) {
 			$shareTypes = array_intersect($shareTypes, $_GET['shareType']);
 			sort($shareTypes);
-		} else if (is_numeric($shareType)) {
+		} elseif (is_numeric($shareType)) {
 			$shareTypes = array_intersect($shareTypes, [(int) $shareType]);
 			sort($shareTypes);
 		}
