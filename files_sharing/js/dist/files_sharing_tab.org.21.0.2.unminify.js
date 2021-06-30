@@ -42872,51 +42872,24 @@
                         }), e)
                     })))()
                 },
-                /* Modfif recia */
                 getSuggestions: function(e) {
                     var n = arguments,
                         r = this;
                     return et(regeneratorRuntime.mark((function o() {
-                        var i, s, a, c, l, u, m, p, f, g, h, v, b, tt;
+                        var i, s, a, c, l, u, m, p, f, g, h, v, b;
                         return regeneratorRuntime.wrap((function(o) {
                             for (;;) switch (o.prev = o.next) {
                                 case 0:
-                                    return i = n.length > 1 && 
-                                            void 0 !== n[1] && 
-                                                n[1] &&
-                                                n[1].lookup && 
-                                                void 0 !== n[1].lookup, 
-                                                tt = n.length > 1 && 
-                                                n[1] && 
-                                                n[1].lookupSchool &&
-                                                void 0 !== n[1].lookupSchool, 
-                                             n[1],
-                                            r.loading = !0, 
-                                            !0 === OC.getCapabilities().files_sharing.sharee.query_lookup_default && 
-                                            (i = !0), 
-                                            s = [r.SHARE_TYPES.SHARE_TYPE_USER, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_GROUP, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_REMOTE, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_CIRCLE, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_ROOM, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_GUEST, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_DECK], 
-                                            !0 === OC.getCapabilities().files_sharing.public.enabled && 
-                                            s.push(r.SHARE_TYPES.SHARE_TYPE_EMAIL), 
-                                            o.next = 7, 
-                                            d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees", 
-                                                {
-                                                    params: {
-                                                        format: "json",
-                                                        itemType: "dir" === r.fileInfo.type ? "folder" : "file",
-                                                        search: e,
-                                                        lookup: i,
-                                                        lookupSchool: tt,
-                                                        perPage: r.config.maxAutocompleteResults,
-                                                        shareType: s
-                                                    }
-                                                });
+                                    return i = n.length > 1 && void 0 !== n[1] && n[1], r.loading = !0, !0 === OC.getCapabilities().files_sharing.sharee.query_lookup_default && (i = !0), s = [r.SHARE_TYPES.SHARE_TYPE_USER, r.SHARE_TYPES.SHARE_TYPE_GROUP, r.SHARE_TYPES.SHARE_TYPE_REMOTE, r.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, r.SHARE_TYPES.SHARE_TYPE_CIRCLE, r.SHARE_TYPES.SHARE_TYPE_ROOM, r.SHARE_TYPES.SHARE_TYPE_GUEST, r.SHARE_TYPES.SHARE_TYPE_DECK], !0 === OC.getCapabilities().files_sharing.public.enabled && s.push(r.SHARE_TYPES.SHARE_TYPE_EMAIL), o.next = 7, d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees", {
+                                        params: {
+                                            format: "json",
+                                            itemType: "dir" === r.fileInfo.type ? "folder" : "file",
+                                            search: e,
+                                            lookup: i,
+                                            perPage: r.config.maxAutocompleteResults,
+                                            shareType: s
+                                        }
+                                    });
                                 case 7:
                                     if (100 === (a = o.sent).data.ocs.meta.statuscode) {
                                         o.next = 11;
@@ -42938,12 +42911,8 @@
                                         return t.shareType - e.shareType
                                     })), g = [], c.lookupEnabled && !i && g.push({
                                         isNoUser: !0,
-                                        displayName: t("files_sharing", "Recherche dans tous les établissements"),
+                                        displayName: t("files_sharing", "Search globally"),
                                         lookup: !0
-                                    }), !i && !tt && p.push({
-                                        isNoUser: !0,
-                                        displayName: t("files_sharing", "Recherche dans vos établissements"),
-                                        lookupSchool: !0
                                     }), h = r.externalResults.filter((function(t) {
                                         return !t.condition || t.condition(r)
                                     })), v = p.concat(f).concat(h).concat(g), b = v.reduce((function(t, e) {
@@ -42960,7 +42929,6 @@
                         }), o)
                     })))()
                 },
-                /* fin modif recia */
                 debounceGetSuggestions: R()((function() {
                     this.getSuggestions.apply(this, arguments)
                 }), 300),
@@ -43067,7 +43035,6 @@
                         icon: this.shareTypeToIcon(e.value.shareType)
                     }
                 },
-                /* Deb modif recia */
                 addShare: function(t) {
                     var e = this;
                     return et(regeneratorRuntime.mark((function n() {
@@ -43075,17 +43042,11 @@
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
                                 case 0:
-                                    if (!t.lookup && !t.lookupSchool) {
+                                    if (!t.lookup) {
                                         n.next = 5;
                                         break
                                     }
-                                    return n.next = 3, e.getSuggestions(
-                                                        e.query, 
-                                                        {   lookup: t.lookup ? t.lookup : false, 
-                                                            lookupSchool: t.lookupSchool ? t.lookupSchool : false
-                                                        }
-                                                    );
-                                    
+                                    return n.next = 3, e.getSuggestions(e.query, !0);
                                 case 3:
                                     return e.$nextTick((function() {
                                         e.$refs.multiselect.$el.querySelector(".multiselect__input").focus()
@@ -43121,7 +43082,6 @@
                         ])
                     })))()
                 }
-                /* fin modif recia */
             }
         },
         rt = r(219),
