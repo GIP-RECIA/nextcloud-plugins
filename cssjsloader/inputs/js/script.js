@@ -28,6 +28,7 @@ if (body.id == 'body-login') {
 		dom['test-clg37.giprecia.net']='clg37';
 		dom['test-lycee.giprecia.net']='esco';
 		dom['recette-pub.nextcloud.recia.aquaray.com']='esco';
+		dom['prod.nextcloud.recia.aquaray.com']='esco';
 		dom['nc-lycees.netocentre.fr']='esco';
 		dom['nc-agri.netocentre.fr']= 'agri';
 		dom['nc.touraine-eschool.fr'] = 'clg37';
