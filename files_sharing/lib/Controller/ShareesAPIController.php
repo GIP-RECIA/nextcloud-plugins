@@ -511,12 +511,13 @@ class ShareesAPIController extends OCSController {
 
                     }
                     return [
-                        "label" => $user["displayName"] . " - " . $userEmail,
+                        "label" => $user["displayName"],
                         "email" => $userEmail,
                         "value" => [
                             "shareType" => 0,
                             "shareWith" => $user["uid"],
-                        ]
+                        ],
+                        "shareWithDisplayNameUnique" =>  $userEmail,
                     ];
                 }, $usersFetched);
                 $groups = array_map(function ($user) {
@@ -626,12 +627,13 @@ class ShareesAPIController extends OCSController {
 
             }
             return [
-                "label" => $user["displayName"] . " - " . $userEmail,
+                "label" => $user["displayName"] ,
                 "email" => $userEmail,
                 "value" => [
                     "shareType" => 0,
                     "shareWith" => $user["uid"],
                 ]
+                "shareWithDisplayNameUnique" => $userEmail,
             ];
         }, $usersFetched);
         $groups = array_map(function ($user) {
