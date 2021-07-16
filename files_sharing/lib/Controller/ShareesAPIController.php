@@ -10,6 +10,7 @@ declare(strict_types=1);
  * @author Björn Schießle <bjoern@schiessle.org>
  * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
+ * @author Daniel Kesselberg <mail@danielkesselberg.de>
  * @author Joas Schilling <coding@schilljs.com>
  * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
  * @author Julius Härtl <jus@bitgrid.net>
@@ -38,7 +39,6 @@ namespace OCA\Files_Sharing\Controller;
 
 use Doctrine\DBAL\Connection;
 use OCP\IDBConnection;
-//use function array_filter;
 use OCP\Constants;
 use function array_slice;
 use function array_values;
@@ -54,13 +54,12 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\Share\IShare;
-//use OCP\Share;
 use OCP\Share\IManager;
 use function usort;
 
 class ShareesAPIController extends OCSController {
 
-	/** @var userId */
+	/** @var string */
 	protected $userId;
 
 	/** @var IConfig */
@@ -72,11 +71,11 @@ class ShareesAPIController extends OCSController {
 	/** @var IManager */
 	protected $shareManager;
 
-	/** @var bool */
-//	protected $shareWithGroupOnly = false;
+	/** @var int */
+	//protected $shareWithGroupOnly = false;
 
 	/** @var bool */
-//	protected $shareeEnumeration = true;
+	//protected $shareeEnumeration = true;
 
 	/** @var int */
 	protected $offset = 0;
@@ -239,26 +238,33 @@ class ShareesAPIController extends OCSController {
 		} else {
 			$this->result['lookupEnabled'] = $this->config->getAppValue('files_sharing', 'lookupServerEnabled', 'yes') === 'yes';
 		}
-// Ancienne recherche
-	//		list($result, $hasMoreResults) = $this->collaboratorSearch->search($search, $shareTypes, $lookup, $this->limit, $this->offset);
 
-		$result = $this->searchResults($search, $lookup, $lookupSchool);
+		if ($lookup === true) {
+			// la recherche etendu est la  recherche d'origine nextcloud
+			$lookup = false; 
+			list($result, $hasMoreResults) = $this->collaboratorSearch->search($search, $shareTypes, $lookup, $this->limit, $this->offset);
+		} else {
+			// la recherche recia
+			$result = $this->searchResults($search, $lookup, $lookupSchool);
+			$hasMoreResults = 0;
+		}
 		// extra treatment for 'exact' subarray, with a single merge expected keys might be lost
 		if (isset($result['exact'])) {
 			$result['exact'] = array_merge($this->result['exact'], $result['exact']);
 		}
+
 		$this->result = array_merge($this->result, $result);
 		$response = new DataResponse($this->result);
 
-		// Ancienne pagination
-//		if ($hasMoreResults) {
-//			$response->addHeader('Link', $this->getPaginationLink($page, [
-//				'search' => $search,
-//				'itemType' => $itemType,
-//				'shareType' => $shareTypes,
-//				'perPage' => $perPage,
-//			]));
-//		}
+		// pagination d'origine n'est pas effective sur la recherche recia
+		if ($hasMoreResults) {
+			$response->addHeader('Link', $this->getPaginationLink($page, [
+				'search' => $search,
+				'itemType' => $itemType,
+				'shareType' => $shareTypes,
+				'perPage' => $perPage,
+			]));
+		}
 
 		return $response;
 	}
@@ -456,7 +462,6 @@ class ShareesAPIController extends OCSController {
 		return $this->request->getScriptName() === '/ocs/v2.php';
 	}
 
-/* La fin est du code specifique esco */
     /**
      * @param $searchTerm
      * @param $lookup
@@ -633,7 +638,7 @@ class ShareesAPIController extends OCSController {
             return [
                 "label" => $user["displayName"],
                 "value" => [
-                    "shareType" => IShare::TYPE_GROUP, /* #*/
+                    "shareType" => IShare::TYPE_GROUP, // Share::SHARE_TYPE_GROUP, /* #*/
                     "shareWith" => $user["gid"],
                 ]
             ];

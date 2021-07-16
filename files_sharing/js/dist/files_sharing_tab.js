@@ -31543,8 +31543,8 @@
         "version": 3,
         "sources": ["webpack://./apps/files_sharing/src/components/SharingInput.vue"],
         "names": [],
-        "mappings": "AAqeA,eACC,UAAW,CACX,aAAc,CAFf,4DAQI,uCAAwC,CACxC,2BAA4B,CAC5B,0BAA2B,CAC3B,yDAA0D,CAX9D,gEAaK,YAAa",
-        "sourcesContent": ["\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.sharing-input {\n\twidth: 100%;\n\tmargin: 10px 0;\n\n\t// properly style the lookup entry\n\t.multiselect__option {\n\t\tspan[lookup] {\n\t\t\t.avatardiv {\n\t\t\t\tbackground-image: var(--icon-search-fff);\n\t\t\t\tbackground-repeat: no-repeat;\n\t\t\t\tbackground-position: center;\n\t\t\t\tbackground-color: var(--color-text-maxcontrast) !important;\n\t\t\t\tdiv {\n\t\t\t\t\tdisplay: none;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n"],
+        "mappings": "AAueA,eACC,UAAW,CACX,aAAc,CAFf,4DAQI,uCAAwC,CACxC,2BAA4B,CAC5B,0BAA2B,CAC3B,yDAA0D,CAX9D,gEAaK,YAAa",
+        "sourcesContent": ["\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.sharing-input {\n\twidth: 100%;\n\tmargin: 10px 0;\n\n\t// properly style the lookup entry\n\t.multiselect__option {\n\t\tspan[lookup] {\n\t\t\t.avatardiv {\n\t\t\t\tbackground-image: var(--icon-search-fff);\n\t\t\t\tbackground-repeat: no-repeat;\n\t\t\t\tbackground-position: center;\n\t\t\t\tbackground-color: var(--color-text-maxcontrast) !important;\n\t\t\t\tdiv {\n\t\t\t\t\tdisplay: none;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n"],
         "sourceRoot": ""
     }]), e.a = s
 }, function(t, e, n) {
@@ -31581,7 +31581,7 @@
         o = n.n(r),
         i = n(20),
         s = n.n(i)()(o.a);
-    s.push([t.i, ".sharing-entry[data-v-0770fcce]{display:flex;align-items:center;min-height:44px}.sharing-entry__desc[data-v-0770fcce]{display:flex;flex-direction:column;justify-content:space-between;padding:8px;line-height:1.2em;overflow:hidden}.sharing-entry__desc h5[data-v-0770fcce]{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.sharing-entry:not(.sharing-entry--share) .sharing-entry__actions .new-share-link[data-v-0770fcce]{border-top:1px solid var(--color-border)}.sharing-entry[data-v-0770fcce]  .avatar-link-share{background-color:var(--color-primary)}.sharing-entry .sharing-entry__action--public-upload[data-v-0770fcce]{border-bottom:1px solid var(--color-border)}.sharing-entry__loading[data-v-0770fcce]{width:44px;height:44px;margin:0;padding:14px;margin-left:auto}.sharing-entry .action-item[data-v-0770fcce]{margin-left:auto}.sharing-entry .action-item ~ .action-item[data-v-0770fcce],.sharing-entry .action-item ~ .sharing-entry__loading[data-v-0770fcce]{margin-left:0}.sharing-entry .icon-checkmark-color[data-v-0770fcce]{opacity:1}\n", "", {
+    s.push([t.i, ".sharing-entry[data-v-55d9fd32]{display:flex;align-items:center;min-height:44px}.sharing-entry__desc[data-v-55d9fd32]{display:flex;flex-direction:column;justify-content:space-between;padding:8px;line-height:1.2em;overflow:hidden}.sharing-entry__desc h5[data-v-55d9fd32]{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.sharing-entry:not(.sharing-entry--share) .sharing-entry__actions .new-share-link[data-v-55d9fd32]{border-top:1px solid var(--color-border)}.sharing-entry[data-v-55d9fd32]  .avatar-link-share{background-color:var(--color-primary)}.sharing-entry .sharing-entry__action--public-upload[data-v-55d9fd32]{border-bottom:1px solid var(--color-border)}.sharing-entry__loading[data-v-55d9fd32]{width:44px;height:44px;margin:0;padding:14px;margin-left:auto}.sharing-entry .action-item[data-v-55d9fd32]{margin-left:auto}.sharing-entry .action-item ~ .action-item[data-v-55d9fd32],.sharing-entry .action-item ~ .sharing-entry__loading[data-v-55d9fd32]{margin-left:0}.sharing-entry .icon-checkmark-color[data-v-55d9fd32]{opacity:1}\n", "", {
         "version": 3,
         "sources": ["webpack://./apps/files_sharing/src/components/SharingEntryLink.vue"],
         "names": [],
@@ -42134,177 +42134,181 @@
         return t
     }
     var v = 0;
-    var b = "__private_" + v++ + "_" + "share",
-        y = function() {
+
+    function b(t) {
+        return "__private_" + v++ + "_" + t
+    }
+    var y = b("share"),
+        C = function() {
             function t(e) {
                 ! function(t, e) {
                     if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
-                }(this, t), Object.defineProperty(this, b, {
+                }(this, t), Object.defineProperty(this, y, {
                     writable: !0,
                     value: void 0
-                }), e.ocs && e.ocs.data && e.ocs.data[0] && (e = e.ocs.data[0]), e.hide_download = !!e.hide_download, e.mail_send = !!e.mail_send, h(this, b)[b] = e
+                }), e.ocs && e.ocs.data && e.ocs.data[0] && (e = e.ocs.data[0]), e.hide_download = !!e.hide_download, e.mail_send = !!e.mail_send, h(this, y)[y] = e
             }
             var e, n, r;
             return e = t, (n = [{
                 key: "state",
                 get: function() {
-                    return h(this, b)[b]
+                    return h(this, y)[y]
                 }
             }, {
                 key: "id",
                 get: function() {
-                    return h(this, b)[b].id
+                    return h(this, y)[y].id
                 }
             }, {
                 key: "type",
                 get: function() {
-                    return h(this, b)[b].share_type
+                    return h(this, y)[y].share_type
                 }
             }, {
                 key: "permissions",
                 get: function() {
-                    return h(this, b)[b].permissions
+                    return h(this, y)[y].permissions
                 },
                 set: function(t) {
-                    h(this, b)[b].permissions = t
+                    h(this, y)[y].permissions = t
                 }
             }, {
                 key: "owner",
                 get: function() {
-                    return h(this, b)[b].uid_owner
+                    return h(this, y)[y].uid_owner
                 }
             }, {
                 key: "ownerDisplayName",
                 get: function() {
-                    return h(this, b)[b].displayname_owner
+                    return h(this, y)[y].displayname_owner
                 }
             }, {
                 key: "shareWith",
                 get: function() {
-                    return h(this, b)[b].share_with
+                    return h(this, y)[y].share_with
                 }
             }, {
                 key: "shareWithDisplayName",
                 get: function() {
-                    return h(this, b)[b].share_with_displayname || h(this, b)[b].share_with
+                    return h(this, y)[y].share_with_displayname || h(this, y)[y].share_with
                 }
             }, {
                 key: "shareWithDisplayNameUnique",
                 get: function() {
-                    return h(this, b)[b].share_with_displayname_unique || h(this, b)[b].share_with
+                    return h(this, y)[y].share_with_displayname_unique || h(this, y)[y].share_with
                 }
             }, {
                 key: "shareWithLink",
                 get: function() {
-                    return h(this, b)[b].share_with_link
+                    return h(this, y)[y].share_with_link
                 }
             }, {
                 key: "shareWithAvatar",
                 get: function() {
-                    return h(this, b)[b].share_with_avatar
+                    return h(this, y)[y].share_with_avatar
                 }
             }, {
                 key: "uidFileOwner",
                 get: function() {
-                    return h(this, b)[b].uid_file_owner
+                    return h(this, y)[y].uid_file_owner
                 }
             }, {
                 key: "displaynameFileOwner",
                 get: function() {
-                    return h(this, b)[b].displayname_file_owner || h(this, b)[b].uid_file_owner
+                    return h(this, y)[y].displayname_file_owner || h(this, y)[y].uid_file_owner
                 }
             }, {
                 key: "createdTime",
                 get: function() {
-                    return h(this, b)[b].stime
+                    return h(this, y)[y].stime
                 }
             }, {
                 key: "expireDate",
                 get: function() {
-                    return h(this, b)[b].expiration
+                    return h(this, y)[y].expiration
                 },
                 set: function(t) {
-                    h(this, b)[b].expiration = t
+                    h(this, y)[y].expiration = t
                 }
             }, {
                 key: "token",
                 get: function() {
-                    return h(this, b)[b].token
+                    return h(this, y)[y].token
                 }
             }, {
                 key: "note",
                 get: function() {
-                    return h(this, b)[b].note
+                    return h(this, y)[y].note
                 },
                 set: function(t) {
-                    h(this, b)[b].note = t
+                    h(this, y)[y].note = t
                 }
             }, {
                 key: "label",
                 get: function() {
-                    return h(this, b)[b].label
+                    return h(this, y)[y].label
                 },
                 set: function(t) {
-                    h(this, b)[b].label = t
+                    h(this, y)[y].label = t
                 }
             }, {
                 key: "mailSend",
                 get: function() {
-                    return !0 === h(this, b)[b].mail_send
+                    return !0 === h(this, y)[y].mail_send
                 }
             }, {
                 key: "hideDownload",
                 get: function() {
-                    return !0 === h(this, b)[b].hide_download
+                    return !0 === h(this, y)[y].hide_download
                 },
                 set: function(t) {
-                    h(this, b)[b].hide_download = !0 === t
+                    h(this, y)[y].hide_download = !0 === t
                 }
             }, {
                 key: "password",
                 get: function() {
-                    return h(this, b)[b].password
+                    return h(this, y)[y].password
                 },
                 set: function(t) {
-                    h(this, b)[b].password = t
+                    h(this, y)[y].password = t
                 }
             }, {
                 key: "sendPasswordByTalk",
                 get: function() {
-                    return h(this, b)[b].send_password_by_talk
+                    return h(this, y)[y].send_password_by_talk
                 },
                 set: function(t) {
-                    h(this, b)[b].send_password_by_talk = t
+                    h(this, y)[y].send_password_by_talk = t
                 }
             }, {
                 key: "path",
                 get: function() {
-                    return h(this, b)[b].path
+                    return h(this, y)[y].path
                 }
             }, {
                 key: "itemType",
                 get: function() {
-                    return h(this, b)[b].item_type
+                    return h(this, y)[y].item_type
                 }
             }, {
                 key: "mimetype",
                 get: function() {
-                    return h(this, b)[b].mimetype
+                    return h(this, y)[y].mimetype
                 }
             }, {
                 key: "fileSource",
                 get: function() {
-                    return h(this, b)[b].file_source
+                    return h(this, y)[y].file_source
                 }
             }, {
                 key: "fileTarget",
                 get: function() {
-                    return h(this, b)[b].file_target
+                    return h(this, y)[y].file_target
                 }
             }, {
                 key: "fileParent",
                 get: function() {
-                    return h(this, b)[b].file_parent
+                    return h(this, y)[y].file_parent
                 }
             }, {
                 key: "hasCreatePermission",
@@ -42329,51 +42333,51 @@
             }, {
                 key: "canEdit",
                 get: function() {
-                    return !0 === h(this, b)[b].can_edit
+                    return !0 === h(this, y)[y].can_edit
                 }
             }, {
                 key: "canDelete",
                 get: function() {
-                    return !0 === h(this, b)[b].can_delete
+                    return !0 === h(this, y)[y].can_delete
                 }
             }, {
                 key: "viaFileid",
                 get: function() {
-                    return h(this, b)[b].via_fileid
+                    return h(this, y)[y].via_fileid
                 }
             }, {
                 key: "viaPath",
                 get: function() {
-                    return h(this, b)[b].via_path
+                    return h(this, y)[y].via_path
                 }
             }, {
                 key: "parent",
                 get: function() {
-                    return h(this, b)[b].parent
+                    return h(this, y)[y].parent
                 }
             }, {
                 key: "storageId",
                 get: function() {
-                    return h(this, b)[b].storage_id
+                    return h(this, y)[y].storage_id
                 }
             }, {
                 key: "storage",
                 get: function() {
-                    return h(this, b)[b].storage
+                    return h(this, y)[y].storage
                 }
             }, {
                 key: "itemSource",
                 get: function() {
-                    return h(this, b)[b].item_source
+                    return h(this, y)[y].item_source
                 }
             }, {
                 key: "status",
                 get: function() {
-                    return h(this, b)[b].status
+                    return h(this, y)[y].status
                 }
             }]) && g(e.prototype, n), r && g(e, r), t
         }(),
-        C = {
+        x = {
             data: function() {
                 return {
                     SHARE_TYPES: {
@@ -42391,19 +42395,19 @@
                 }
             }
         },
-        x = r(100),
-        E = r.n(x),
-        w = r(63),
-        M = r.n(w),
-        T = r(54),
-        k = r.n(T),
-        B = {
+        E = r(100),
+        w = r.n(E),
+        M = r(63),
+        T = r.n(M),
+        k = r(54),
+        B = r.n(k),
+        S = {
             name: "SharingEntrySimple",
             components: {
-                Actions: M.a
+                Actions: T.a
             },
             directives: {
-                Tooltip: k.a
+                Tooltip: B.a
             },
             props: {
                 title: {
@@ -42425,15 +42429,15 @@
                 }
             }
         },
-        S = r(18),
-        I = r.n(S),
-        N = r(217),
-        j = {
+        I = r(18),
+        N = r.n(I),
+        j = r(217),
+        P = {
             insert: "head",
             singleton: !1
         },
-        P = (I()(N.a, j), N.a.locals, r(11)),
-        _ = Object(P.a)(B, (function() {
+        _ = (N()(j.a, P), j.a.locals, r(11)),
+        D = Object(_.a)(S, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -42455,7 +42459,7 @@
             }, [t._t("default")], 2) : t._e()], 2)
         }), [], !1, null, "1436bf4a", null).exports;
 
-    function D(t, e, n, r, o, i, s) {
+    function O(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -42464,11 +42468,11 @@
         }
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
-    var O = {
+    var L = {
             name: "SharingEntryInternal",
             components: {
-                ActionLink: E.a,
-                SharingEntrySimple: _
+                ActionLink: w.a,
+                SharingEntrySimple: D
             },
             props: {
                 fileInfo: {
@@ -42525,11 +42529,11 @@
                             var i = t.apply(e, n);
 
                             function s(t) {
-                                D(i, r, o, s, a, "next", t)
+                                O(i, r, o, s, a, "next", t)
                             }
 
                             function a(t) {
-                                D(i, r, o, s, a, "throw", t)
+                                O(i, r, o, s, a, "throw", t)
                             }
                             s(void 0)
                         }))
@@ -42537,12 +42541,12 @@
                 }
             }
         },
-        L = r(218),
-        U = {
+        U = r(218),
+        Q = {
             insert: "head",
             singleton: !1
         },
-        Q = (I()(L.a, U), L.a.locals, Object(P.a)(O, (function() {
+        F = (N()(U.a, Q), U.a.locals, Object(_.a)(L, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -42575,14 +42579,14 @@
                 }
             }, [t._v("\n\t\t" + t._s(t.clipboardTooltip) + "\n\t")])], 1)
         }), [], !1, null, "8239c8d6", null).exports),
-        F = r(43),
-        z = r(153),
-        R = r.n(z),
-        Y = r(152),
-        G = r.n(Y);
+        z = r(43),
+        R = r(153),
+        Y = r.n(R),
+        G = r(152),
+        H = r.n(G);
     r(335);
 
-    function H(t, e, n, r, o, i, s) {
+    function $(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -42592,7 +42596,7 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
 
-    function $(t) {
+    function W(t) {
         return function() {
             var e = this,
                 n = arguments;
@@ -42600,29 +42604,29 @@
                 var i = t.apply(e, n);
 
                 function s(t) {
-                    H(i, r, o, s, a, "next", t)
+                    $(i, r, o, s, a, "next", t)
                 }
 
                 function a(t) {
-                    H(i, r, o, s, a, "throw", t)
+                    $(i, r, o, s, a, "throw", t)
                 }
                 s(void 0)
             }))
         }
     }
-    var W = Object(A.generateOcsUrl)("apps/files_sharing/api/v1", 2) + "shares",
-        Z = {
+    var Z = Object(A.generateOcsUrl)("apps/files_sharing/api/v1", 2) + "shares",
+        J = {
             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
         },
-        J = {
+        V = {
             methods: {
                 createShare: function(e) {
-                    return $(regeneratorRuntime.mark((function n() {
+                    return W(regeneratorRuntime.mark((function n() {
                         var r, o, i, s, a, c, A, l, u, m, p, f, g, h, v, b;
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
                                 case 0:
-                                    return r = e.path, o = e.permissions, i = e.shareType, s = e.shareWith, a = e.publicUpload, c = e.password, A = e.sendPasswordByTalk, l = e.expireDate, u = e.label, n.prev = 1, n.next = 4, d.a.post(W, {
+                                    return r = e.path, o = e.permissions, i = e.shareType, s = e.shareWith, a = e.publicUpload, c = e.password, A = e.sendPasswordByTalk, l = e.expireDate, u = e.label, n.prev = 1, n.next = 4, d.a.post(Z, {
                                         path: r,
                                         permissions: o,
                                         shareType: i,
@@ -42640,7 +42644,7 @@
                                     }
                                     throw p;
                                 case 7:
-                                    return n.abrupt("return", new y(p.data.ocs.data));
+                                    return n.abrupt("return", new C(p.data.ocs.data));
                                 case 10:
                                     throw n.prev = 10, n.t0 = n.catch(1), console.error("Error while creating share", n.t0), b = null === n.t0 || void 0 === n.t0 || null === (f = n.t0.response) || void 0 === f || null === (g = f.data) || void 0 === g || null === (h = g.ocs) || void 0 === h || null === (v = h.meta) || void 0 === v ? void 0 : v.message, OC.Notification.showTemporary(b ? t("files_sharing", "Error creating the share: {errorMessage}", {
                                         errorMessage: b
@@ -42657,12 +42661,12 @@
                     })))()
                 },
                 deleteShare: function(e) {
-                    return $(regeneratorRuntime.mark((function n() {
+                    return W(regeneratorRuntime.mark((function n() {
                         var r, o, i, s, a, c, A;
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
                                 case 0:
-                                    return n.prev = 0, n.next = 3, d.a.delete(W + "/".concat(e));
+                                    return n.prev = 0, n.next = 3, d.a.delete(Z + "/".concat(e));
                                 case 3:
                                     if (null != (o = n.sent) && null !== (r = o.data) && void 0 !== r && r.ocs) {
                                         n.next = 6;
@@ -42687,12 +42691,12 @@
                     })))()
                 },
                 updateShare: function(e, n) {
-                    return $(regeneratorRuntime.mark((function r() {
+                    return W(regeneratorRuntime.mark((function r() {
                         var o, i, s, a, c, A, l, u;
                         return regeneratorRuntime.wrap((function(r) {
                             for (;;) switch (r.prev = r.next) {
                                 case 0:
-                                    return r.prev = 0, r.next = 3, d.a.put(W + "/".concat(e), n, Z);
+                                    return r.prev = 0, r.next = 3, d.a.put(Z + "/".concat(e), n, J);
                                 case 3:
                                     if (null != (i = r.sent) && null !== (o = i.data) && void 0 !== o && o.ocs) {
                                         r.next = 6;
@@ -42719,15 +42723,15 @@
             }
         };
 
-    function V(t) {
-        return (V = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
+    function X(t) {
+        return (X = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
             return typeof t
         } : function(t) {
             return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t
         })(t)
     }
 
-    function X(t, e) {
+    function K(t, e) {
         var n = Object.keys(t);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(t);
@@ -42738,19 +42742,19 @@
         return n
     }
 
-    function K(t) {
+    function q(t) {
         for (var e = 1; e < arguments.length; e++) {
             var n = null != arguments[e] ? arguments[e] : {};
-            e % 2 ? X(Object(n), !0).forEach((function(e) {
-                q(t, e, n[e])
-            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(n)) : X(Object(n)).forEach((function(e) {
+            e % 2 ? K(Object(n), !0).forEach((function(e) {
+                tt(t, e, n[e])
+            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(n)) : K(Object(n)).forEach((function(e) {
                 Object.defineProperty(t, e, Object.getOwnPropertyDescriptor(n, e))
             }))
         }
         return t
     }
 
-    function q(t, e, n) {
+    function tt(t, e, n) {
         return e in t ? Object.defineProperty(t, e, {
             value: n,
             enumerable: !0,
@@ -42759,7 +42763,7 @@
         }) : t[e] = n, t
     }
 
-    function tt(t, e, n, r, o, i, s) {
+    function et(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -42769,7 +42773,7 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
 
-    function et(t) {
+    function nt(t) {
         return function() {
             var e = this,
                 n = arguments;
@@ -42777,22 +42781,22 @@
                 var i = t.apply(e, n);
 
                 function s(t) {
-                    tt(i, r, o, s, a, "next", t)
+                    et(i, r, o, s, a, "next", t)
                 }
 
                 function a(t) {
-                    tt(i, r, o, s, a, "throw", t)
+                    et(i, r, o, s, a, "throw", t)
                 }
                 s(void 0)
             }))
         }
     }
-    var nt = {
+    var rt = {
             name: "SharingInput",
             components: {
-                Multiselect: G.a
+                Multiselect: H.a
             },
-            mixins: [C, J],
+            mixins: [x, V],
             props: {
                 shares: {
                     type: Array,
@@ -42814,7 +42818,7 @@
                     required: !0
                 },
                 reshare: {
-                    type: y,
+                    type: C,
                     default: null
                 },
                 canReshare: {
@@ -42856,7 +42860,7 @@
             methods: {
                 asyncFind: function(t, e) {
                     var n = this;
-                    return et(regeneratorRuntime.mark((function e() {
+                    return nt(regeneratorRuntime.mark((function e() {
                         return regeneratorRuntime.wrap((function(e) {
                             for (;;) switch (e.prev = e.next) {
                                 case 0:
@@ -42872,11 +42876,11 @@
                         }), e)
                     })))()
                 },
-                /* Modfif recia */
+                /* Modif recia */
                 getSuggestions: function(e) {
                     var n = arguments,
                         r = this;
-                    return et(regeneratorRuntime.mark((function o() {
+                    return nt(regeneratorRuntime.mark((function o() {
                         var i, s, a, c, l, u, m, p, f, g, h, v, b, tt;
                         return regeneratorRuntime.wrap((function(o) {
                             for (;;) switch (o.prev = o.next) {
@@ -42890,22 +42894,24 @@
                                                 n[1] && 
                                                 n[1].lookupSchool &&
                                                 void 0 !== n[1].lookupSchool, 
-                                             n[1],
+                                            n[1], 
                                             r.loading = !0, 
                                             !0 === OC.getCapabilities().files_sharing.sharee.query_lookup_default && 
                                             (i = !0), 
                                             s = [r.SHARE_TYPES.SHARE_TYPE_USER, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_GROUP, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_REMOTE, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_CIRCLE, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_ROOM, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_GUEST, 
-                                                 r.SHARE_TYPES.SHARE_TYPE_DECK], 
+                                            r.SHARE_TYPES.SHARE_TYPE_GROUP, 
+                                            r.SHARE_TYPES.SHARE_TYPE_REMOTE, 
+                                            r.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP, 
+                                            r.SHARE_TYPES.SHARE_TYPE_CIRCLE, 
+                                            r.SHARE_TYPES.SHARE_TYPE_ROOM, 
+                                            r.SHARE_TYPES.SHARE_TYPE_GUEST, 
+                                            r.SHARE_TYPES.SHARE_TYPE_DECK], 
                                             !0 === OC.getCapabilities().files_sharing.public.enabled && 
                                             s.push(r.SHARE_TYPES.SHARE_TYPE_EMAIL), 
-                                            o.next = 7, 
-                                            d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees", 
+                                            a = null, 
+                                            o.prev = 6, 
+                                            o.next = 9, 
+                                            d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1", 2) + "sharees", 
                                                 {
                                                     params: {
                                                         format: "json",
@@ -42917,13 +42923,12 @@
                                                         shareType: s
                                                     }
                                                 });
-                                case 7:
-                                    if (100 === (a = o.sent).data.ocs.meta.statuscode) {
-                                        o.next = 11;
-                                        break
-                                    }
-                                    return console.error("Error fetching suggestions", a), o.abrupt("return");
-                                case 11:
+                                case 9:
+                                    a = o.sent, o.next = 16;
+                                    break;
+                                case 12:
+                                    return o.prev = 12, o.t0 = o.catch(6), console.error("Error fetching suggestions", o.t0), o.abrupt("return");
+                                case 16:
                                     c = a.data.ocs.data, l = a.data.ocs.data.exact, c.exact = [], u = Object.values(l).reduce((function(t, e) {
                                         return t.concat(e)
                                     }), []), m = Object.values(c).reduce((function(t, e) {
@@ -42940,7 +42945,7 @@
                                         isNoUser: !0,
                                         displayName: t("files_sharing", "Recherche dans tous les établissements"),
                                         lookup: !0
-                                    }), !i && !tt && p.push({
+                                    }), !i && !tt && g.push({
                                         isNoUser: !0,
                                         displayName: t("files_sharing", "Recherche dans vos établissements"),
                                         lookupSchool: !0
@@ -42949,62 +42954,66 @@
                                     })), v = p.concat(f).concat(h).concat(g), b = v.reduce((function(t, e) {
                                         return e.displayName ? (t[e.displayName] || (t[e.displayName] = 0), t[e.displayName]++, t) : t
                                     }), {}), r.suggestions = v.map((function(t) {
-                                        return b[t.displayName] > 1 && !t.desc ? K(K({}, t), {}, {
+                                        return b[t.displayName] > 1 && !t.desc ? q(q({}, t), {}, {
                                             desc: t.shareWithDisplayNameUnique
                                         }) : t
                                     })), r.loading = !1, console.info("suggestions", r.suggestions);
-                                case 26:
+                                case 31:
                                 case "end":
                                     return o.stop()
                             }
-                        }), o)
+                        }), o, null, [
+                            [6, 12]
+                        ])
                     })))()
                 },
-                /* fin modif recia */
-                debounceGetSuggestions: R()((function() {
+		/* fin modif recia */
+                
+                debounceGetSuggestions: Y()((function() {
                     this.getSuggestions.apply(this, arguments)
                 }), 300),
                 getRecommendations: function() {
                     var t = this;
-                    return et(regeneratorRuntime.mark((function e() {
-                        var n, r, o, i;
+                    return nt(regeneratorRuntime.mark((function e() {
+                        var n, r, o;
                         return regeneratorRuntime.wrap((function(e) {
                             for (;;) switch (e.prev = e.next) {
                                 case 0:
-                                    return t.loading = !0, e.next = 3, d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1") + "sharees_recommended", {
+                                    return t.loading = !0, n = null, e.prev = 2, e.next = 5, d.a.get(Object(A.generateOcsUrl)("apps/files_sharing/api/v1", 2) + "sharees_recommended", {
                                         params: {
                                             format: "json",
                                             itemType: t.fileInfo.type
                                         }
                                     });
-                                case 3:
-                                    if (100 === (n = e.sent).data.ocs.meta.statuscode) {
-                                        e.next = 7;
-                                        break
-                                    }
-                                    return console.error("Error fetching recommendations", n), e.abrupt("return");
-                                case 7:
+                                case 5:
+                                    n = e.sent, e.next = 12;
+                                    break;
+                                case 8:
+                                    return e.prev = 8, e.t0 = e.catch(2), console.error("Error fetching recommendations", e.t0), e.abrupt("return");
+                                case 12:
                                     r = t.externalResults.filter((function(e) {
                                         return !e.condition || e.condition(t)
-                                    })), o = n.data.ocs.data.exact, i = Object.values(o).reduce((function(t, e) {
+                                    })), o = Object.values(n.data.ocs.data.exact).reduce((function(t, e) {
                                         return t.concat(e)
-                                    }), []), t.recommendations = t.filterOutExistingShares(i).map((function(e) {
+                                    }), []), t.recommendations = t.filterOutExistingShares(o).map((function(e) {
                                         return t.formatForMultiselect(e)
                                     })).concat(r), t.loading = !1, console.info("recommendations", t.recommendations);
-                                case 13:
+                                case 17:
                                 case "end":
                                     return e.stop()
                             }
-                        }), e)
+                        }), e, null, [
+                            [2, 8]
+                        ])
                     })))()
                 },
                 filterOutExistingShares: function(t) {
                     var e = this;
                     return t.reduce((function(t, n) {
-                        if ("object" !== V(n)) return t;
+                        if ("object" !== X(n)) return t;
                         try {
                             if (n.value.shareType === e.SHARE_TYPES.SHARE_TYPE_USER) {
-                                if (n.value.shareWith === Object(F.getCurrentUser)().uid) return t;
+                                if (n.value.shareWith === Object(z.getCurrentUser)().uid) return t;
                                 if (e.reshare && n.value.shareWith === e.reshare.owner) return t
                             }
                             if (n.value.shareType === e.SHARE_TYPES.SHARE_TYPE_EMAIL) {
@@ -43070,7 +43079,7 @@
                 /* Deb modif recia */
                 addShare: function(t) {
                     var e = this;
-                    return et(regeneratorRuntime.mark((function n() {
+                    return nt(regeneratorRuntime.mark((function n() {
                         var r, o, i, s;
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
@@ -43097,7 +43106,7 @@
                                     }
                                     return n.next = 8, t.handler(e);
                                 case 8:
-                                    return r = n.sent, e.$emit("add:share", new y(r)), n.abrupt("return", !0);
+                                    return r = n.sent, e.$emit("add:share", new C(r)), n.abrupt("return", !0);
                                 case 11:
                                     return e.loading = !0, n.prev = 12, o = (e.fileInfo.path + "/" + e.fileInfo.name).replace("//", "/"), n.next = 16, e.createShare({
                                         path: o,
@@ -43124,19 +43133,19 @@
                 /* fin modif recia */
             }
         },
-        rt = r(219),
-        ot = {
+        ot = r(219),
+        it = {
             insert: "head",
             singleton: !1
         },
-        it = (I()(rt.a, ot), rt.a.locals, Object(P.a)(nt, (function() {
+        st = (N()(ot.a, it), ot.a.locals, Object(_.a)(rt, (function() {
             var t = this,
                 e = t.$createElement;
             return (t._self._c || e)("Multiselect", {
                 ref: "multiselect",
                 staticClass: "sharing-input",
                 attrs: {
-                    "clear-on-select": !0,
+                    "clear-on-select": !1, //recia origine !0
                     "disabled": !t.canReshare,
                     "hide-selected": !0,
                     "internal-search": !1,
@@ -43168,15 +43177,15 @@
                 }])
             })
         }), [], !1, null, null, null).exports),
-        st = r(49),
-        at = r.n(st),
-        ct = r(277),
-        At = r(154),
-        lt = r.n(At),
-        ut = r(278),
-        mt = r.n(ut);
+        at = r(49),
+        ct = r.n(at),
+        At = r(277),
+        lt = r(154),
+        ut = r.n(lt),
+        mt = r(278),
+        dt = r.n(mt);
 
-    function dt(t, e, n, r, o, i, s) {
+    function pt(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -43186,7 +43195,7 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
 
-    function pt(t) {
+    function ft(t) {
         return function() {
             var e = this,
                 n = arguments;
@@ -43194,18 +43203,18 @@
                 var i = t.apply(e, n);
 
                 function s(t) {
-                    dt(i, r, o, s, a, "next", t)
+                    pt(i, r, o, s, a, "next", t)
                 }
 
                 function a(t) {
-                    dt(i, r, o, s, a, "throw", t)
+                    pt(i, r, o, s, a, "throw", t)
                 }
                 s(void 0)
             }))
         }
     }
-    var ft = {
-            mixins: [J, C],
+    var gt = {
+            mixins: [V, x],
             props: {
                 fileInfo: {
                     type: Object,
@@ -43213,7 +43222,7 @@
                     required: !0
                 },
                 share: {
-                    type: y,
+                    type: C,
                     default: null
                 },
                 isUnique: {
@@ -43229,7 +43238,7 @@
                     loading: !1,
                     saving: !1,
                     open: !1,
-                    updateQueue: new mt.a({
+                    updateQueue: new dt.a({
                         concurrency: 1
                     }),
                     reactiveState: null === (t = this.share) || void 0 === t ? void 0 : t.state,
@@ -43271,7 +43280,7 @@
                     }
                 },
                 isShareOwner: function() {
-                    return this.share && this.share.owner === Object(F.getCurrentUser)().uid
+                    return this.share && this.share.owner === Object(z.getCurrentUser)().uid
                 }
             },
             methods: {
@@ -43295,7 +43304,7 @@
                 },
                 onDelete: function() {
                     var t = this;
-                    return pt(regeneratorRuntime.mark((function e() {
+                    return ft(regeneratorRuntime.mark((function e() {
                         return regeneratorRuntime.wrap((function(e) {
                             for (;;) switch (e.prev = e.next) {
                                 case 0:
@@ -43323,7 +43332,7 @@
                             var o = {};
                             n.map((function(e) {
                                 return o[e] = t.share[e].toString()
-                            })), this.updateQueue.add(pt(regeneratorRuntime.mark((function e() {
+                            })), this.updateQueue.add(ft(regeneratorRuntime.mark((function e() {
                                 var r;
                                 return regeneratorRuntime.wrap((function(e) {
                                     for (;;) switch (e.prev = e.next) {
@@ -43365,7 +43374,7 @@
                             this.$set(this.errors, t, e), this.share.sendPasswordByTalk = !this.share.sendPasswordByTalk
                     }
                 },
-                debounceQueueUpdate: R()((function(t) {
+                debounceQueueUpdate: Y()((function(t) {
                     this.queueUpdate(t)
                 }), 500),
                 disabledDate: function(t) {
@@ -43374,19 +43383,19 @@
                 }
             }
         },
-        gt = {
+        ht = {
             name: "SharingEntryInherited",
             components: {
-                ActionButton: at.a,
-                ActionLink: E.a,
-                ActionText: lt.a,
+                ActionButton: ct.a,
+                ActionLink: w.a,
+                ActionText: ut.a,
                 Avatar: u.a,
-                SharingEntrySimple: _
+                SharingEntrySimple: D
             },
-            mixins: [ft],
+            mixins: [gt],
             props: {
                 share: {
-                    type: y,
+                    type: C,
                     required: !0
                 }
             },
@@ -43397,16 +43406,16 @@
                     })
                 },
                 viaFolderName: function() {
-                    return Object(ct.basename)(this.share.viaPath)
+                    return Object(At.basename)(this.share.viaPath)
                 }
             }
         },
-        ht = r(220),
-        vt = {
+        vt = r(220),
+        bt = {
             insert: "head",
             singleton: !1
         },
-        bt = (I()(ht.a, vt), ht.a.locals, Object(P.a)(gt, (function() {
+        yt = (N()(vt.a, bt), vt.a.locals, Object(_.a)(ht, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -43455,7 +43464,7 @@
             }, [t._v("\n\t\t" + t._s(t.t("files_sharing", "Unshare")) + "\n\t")]) : t._e()], 1)
         }), [], !1, null, "c58e421a", null).exports);
 
-    function yt(t, e, n, r, o, i, s) {
+    function Ct(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -43464,12 +43473,12 @@
         }
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
-    var Ct = {
+    var xt = {
             name: "SharingInherited",
             components: {
-                ActionButton: at.a,
-                SharingEntryInherited: bt,
-                SharingEntrySimple: _
+                ActionButton: ct.a,
+                SharingEntryInherited: yt,
+                SharingEntrySimple: D
             },
             props: {
                 fileInfo: {
@@ -43522,7 +43531,7 @@
                                     return n.loading = !0, e.prev = 1, r = Object(A.generateOcsUrl)("apps/files_sharing/api/v1/shares/inherited?format=json&path=".concat(encodeURIComponent(n.fullPath)), 2), e.next = 5, d.a.get(r.replace(/\/$/, ""));
                                 case 5:
                                     o = e.sent, n.shares = o.data.ocs.data.map((function(t) {
-                                        return new y(t)
+                                        return new C(t)
                                     })).sort((function(t, e) {
                                         return e.createdTime - t.createdTime
                                     })), console.info(n.shares), n.loaded = !0, e.next = 14;
@@ -43547,11 +43556,11 @@
                             var i = e.apply(t, n);
 
                             function s(t) {
-                                yt(i, r, o, s, a, "next", t)
+                                Ct(i, r, o, s, a, "next", t)
                             }
 
                             function a(t) {
-                                yt(i, r, o, s, a, "throw", t)
+                                Ct(i, r, o, s, a, "throw", t)
                             }
                             s(void 0)
                         }))
@@ -43562,12 +43571,12 @@
                 }
             }
         },
-        xt = r(221),
-        Et = {
+        Et = r(221),
+        wt = {
             insert: "head",
             singleton: !1
         },
-        wt = (I()(xt.a, Et), xt.a.locals, Object(P.a)(Ct, (function() {
+        Mt = (N()(Et.a, wt), Et.a.locals, Object(_.a)(xt, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -43609,24 +43618,24 @@
                 })
             }))], 2)
         }), [], !1, null, "2aaadd32", null).exports),
-        Mt = r(155),
-        Tt = r.n(Mt),
-        kt = r(279),
-        Bt = r.n(kt),
-        St = r(156),
-        It = r.n(St),
-        Nt = r(157),
-        jt = r.n(Nt);
+        Tt = r(155),
+        kt = r.n(Tt),
+        Bt = r(279),
+        St = r.n(Bt),
+        It = r(156),
+        Nt = r.n(It),
+        jt = r(157),
+        Pt = r.n(jt);
 
-    function Pt(t) {
-        return (Pt = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
+    function _t(t) {
+        return (_t = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
             return typeof t
         } : function(t) {
             return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t
         })(t)
     }
 
-    function _t(t, e, n, r, o, i, s) {
+    function Dt(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -43636,7 +43645,7 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
 
-    function Dt(t) {
+    function Ot(t) {
         return function() {
             var e = this,
                 n = arguments;
@@ -43644,34 +43653,34 @@
                 var i = t.apply(e, n);
 
                 function s(t) {
-                    _t(i, r, o, s, a, "next", t)
+                    Dt(i, r, o, s, a, "next", t)
                 }
 
                 function a(t) {
-                    _t(i, r, o, s, a, "throw", t)
+                    Dt(i, r, o, s, a, "throw", t)
                 }
                 s(void 0)
             }))
         }
     }
-    var Ot = "abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789",
-        Lt = {
+    var Lt = "abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789",
+        Ut = {
             name: "SharingEntryLink",
             components: {
-                Actions: M.a,
-                ActionButton: at.a,
-                ActionCheckbox: Tt.a,
-                ActionRadio: Bt.a,
-                ActionInput: It.a,
-                ActionLink: E.a,
-                ActionText: lt.a,
-                ActionTextEditable: jt.a,
+                Actions: T.a,
+                ActionButton: ct.a,
+                ActionCheckbox: kt.a,
+                ActionRadio: St.a,
+                ActionInput: Nt.a,
+                ActionLink: w.a,
+                ActionText: ut.a,
+                ActionTextEditable: Pt.a,
                 Avatar: u.a
             },
             directives: {
-                Tooltip: k.a
+                Tooltip: B.a
             },
-            mixins: [ft],
+            mixins: [gt],
             props: {
                 canReshare: {
                     type: Boolean,
@@ -43729,7 +43738,7 @@
                     },
                     set: function(t) {
                         var e = this;
-                        return Dt(regeneratorRuntime.mark((function n() {
+                        return Ot(regeneratorRuntime.mark((function n() {
                             return regeneratorRuntime.wrap((function(n) {
                                 for (;;) switch (n.prev = n.next) {
                                     case 0:
@@ -43765,7 +43774,7 @@
                     },
                     set: function(t) {
                         var e = this;
-                        return Dt(regeneratorRuntime.mark((function n() {
+                        return Ot(regeneratorRuntime.mark((function n() {
                             return regeneratorRuntime.wrap((function(n) {
                                 for (;;) switch (n.prev = n.next) {
                                     case 0:
@@ -43817,13 +43826,13 @@
                     return this.ExternalLinkActions.actions
                 },
                 isPasswordPolicyEnabled: function() {
-                    return "object" === Pt(this.config.passwordPolicy)
+                    return "object" === _t(this.config.passwordPolicy)
                 }
             },
             methods: {
                 onNewLinkShare: function() {
                     var e = this;
-                    return Dt(regeneratorRuntime.mark((function n() {
+                    return Ot(regeneratorRuntime.mark((function n() {
                         var r, o, i, s;
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
@@ -43870,14 +43879,14 @@
                                 case 23:
                                     r.password = n.sent;
                                 case 24:
-                                    return o = new y(r), n.next = 27, new Promise((function(t) {
+                                    return o = new C(r), n.next = 27, new Promise((function(t) {
                                         e.$emit("add:share", o, t)
                                     }));
                                 case 27:
                                     i = n.sent, e.open = !1, e.pending = !1, i.open = !0, n.next = 36;
                                     break;
                                 case 33:
-                                    return s = new y(r), n.next = 36, e.pushNewLinkShare(s);
+                                    return s = new C(r), n.next = 36, e.pushNewLinkShare(s);
                                 case 36:
                                 case "end":
                                     return n.stop()
@@ -43887,7 +43896,7 @@
                 },
                 pushNewLinkShare: function(t, e) {
                     var n = this;
-                    return Dt(regeneratorRuntime.mark((function r() {
+                    return Ot(regeneratorRuntime.mark((function r() {
                         var o, i, s, a, c;
                         return regeneratorRuntime.wrap((function(r) {
                             for (;;) switch (r.prev = r.next) {
@@ -43949,7 +43958,7 @@
                 },
                 generatePassword: function() {
                     var t = this;
-                    return Dt(regeneratorRuntime.mark((function e() {
+                    return Ot(regeneratorRuntime.mark((function e() {
                         var n;
                         return regeneratorRuntime.wrap((function(e) {
                             for (;;) switch (e.prev = e.next) {
@@ -43972,7 +43981,7 @@
                                     e.prev = 9, e.t0 = e.catch(1), console.info("Error generating password from password_policy", e.t0);
                                 case 12:
                                     return e.abrupt("return", Array(10).fill(0).reduce((function(t, e) {
-                                        return t += Ot.charAt(Math.floor(Math.random() * Ot.length))
+                                        return t += Lt.charAt(Math.floor(Math.random() * Lt.length))
                                     }), ""));
                                 case 13:
                                 case "end":
@@ -43985,7 +43994,7 @@
                 },
                 copyLink: function() {
                     var t = this;
-                    return Dt(regeneratorRuntime.mark((function e() {
+                    return Ot(regeneratorRuntime.mark((function e() {
                         return regeneratorRuntime.wrap((function(e) {
                             for (;;) switch (e.prev = e.next) {
                                 case 0:
@@ -44028,15 +44037,15 @@
                 }
             }
         },
-        Ut = r(222),
-        Qt = {
+        Qt = r(222),
+        Ft = {
             insert: "head",
             singleton: !1
         },
-        Ft = (I()(Ut.a, Qt), Ut.a.locals, {
+        zt = (N()(Qt.a, Ft), Qt.a.locals, {
             name: "SharingLinkList",
             components: {
-                SharingEntryLink: Object(P.a)(Lt, (function() {
+                SharingEntryLink: Object(_.a)(Ut, (function() {
                     var t = this,
                         e = t.$createElement,
                         n = t._self._c || e;
@@ -44085,7 +44094,7 @@
                             },
                             "close": t.onMenuClose
                         }
-                    }, [t.share ? [t.share.canEdit ? [n("ActionInput", {
+                    }, [t.share ? [t.share.canEdit && t.canReshare ? [n("ActionInput", {
                         directives: [{
                             name: "tooltip",
                             rawName: "v-tooltip.auto",
@@ -44481,9 +44490,9 @@
                             }
                         }
                     }, [t._v("\n\t\t\t" + t._s(t.t("files_sharing", "Cancel")) + "\n\t\t")])], 1)], 1)
-                }), [], !1, null, "0770fcce", null).exports
+                }), [], !1, null, "55d9fd32", null).exports
             },
-            mixins: [C],
+            mixins: [x],
             props: {
                 fileInfo: {
                     type: Object,
@@ -44539,7 +44548,7 @@
                 }
             }
         }),
-        zt = Object(P.a)(Ft, (function() {
+        Rt = Object(_.a)(zt, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -44576,27 +44585,27 @@
             })) : t._e()], 2) : t._e()
         }), [], !1, null, null, null).exports;
 
-    function Rt(t) {
-        return (Rt = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
+    function Yt(t) {
+        return (Yt = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
             return typeof t
         } : function(t) {
             return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t
         })(t)
     }
-    var Yt = {
+    var Gt = {
             name: "SharingEntry",
             components: {
-                Actions: M.a,
-                ActionButton: at.a,
-                ActionCheckbox: Tt.a,
-                ActionInput: It.a,
-                ActionTextEditable: jt.a,
+                Actions: T.a,
+                ActionButton: ct.a,
+                ActionCheckbox: kt.a,
+                ActionInput: Nt.a,
+                ActionTextEditable: Pt.a,
                 Avatar: u.a
             },
             directives: {
-                Tooltip: k.a
+                Tooltip: B.a
             },
-            mixins: [ft],
+            mixins: [gt],
             data: function() {
                 return {
                     permissionsEdit: OC.PERMISSION_UPDATE,
@@ -44697,7 +44706,7 @@
                     return this.config.isDefaultInternalExpireDateEnforced && moment().add(1 + this.config.defaultInternalExpireDate, "days")
                 },
                 hasStatus: function() {
-                    return this.share.type === this.SHARE_TYPES.SHARE_TYPE_USER && ("object" === Rt(this.share.status) && !Array.isArray(this.share.status))
+                    return this.share.type === this.SHARE_TYPES.SHARE_TYPE_USER && ("object" === Yt(this.share.status) && !Array.isArray(this.share.status))
                 }
             },
             methods: {
@@ -44719,39 +44728,39 @@
                 }
             }
         },
-        Gt = r(223),
-        Ht = {
+        Ht = r(223),
+        $t = {
             insert: "head",
             singleton: !1
         };
-    I()(Gt.a, Ht), Gt.a.locals;
+    N()(Ht.a, $t), Ht.a.locals;
 
-    function $t(t) {
+    function Wt(t) {
         return function(t) {
-            if (Array.isArray(t)) return Wt(t)
+            if (Array.isArray(t)) return Zt(t)
         }(t) || function(t) {
             if ("undefined" != typeof Symbol && Symbol.iterator in Object(t)) return Array.from(t)
         }(t) || function(t, e) {
             if (!t) return;
-            if ("string" == typeof t) return Wt(t, e);
+            if ("string" == typeof t) return Zt(t, e);
             var n = Object.prototype.toString.call(t).slice(8, -1);
             "Object" === n && t.constructor && (n = t.constructor.name);
             if ("Map" === n || "Set" === n) return Array.from(t);
-            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Wt(t, e)
+            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Zt(t, e)
         }(t) || function() {
             throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
         }()
     }
 
-    function Wt(t, e) {
+    function Zt(t, e) {
         (null == e || e > t.length) && (e = t.length);
         for (var n = 0, r = new Array(e); n < e; n++) r[n] = t[n];
         return r
     }
-    var Zt = {
+    var Jt = {
             name: "SharingList",
             components: {
-                SharingEntry: Object(P.a)(Yt, (function() {
+                SharingEntry: Object(_.a)(Gt, (function() {
                     var t = this,
                         e = t.$createElement,
                         n = t._self._c || e;
@@ -44935,7 +44944,7 @@
                     }, [t._v("\n\t\t\t" + t._s(t.t("files_sharing", "Unshare")) + "\n\t\t")]) : t._e()], 2)], 1)
                 }), [], !1, null, "c38bfe3e", null).exports
             },
-            mixins: [C],
+            mixins: [x],
             props: {
                 fileInfo: {
                     type: Object,
@@ -44957,7 +44966,7 @@
                 isUnique: function() {
                     var t = this;
                     return function(e) {
-                        return $t(t.shares).filter((function(n) {
+                        return Wt(t.shares).filter((function(n) {
                             return e.type === t.SHARE_TYPES.SHARE_TYPE_USER && e.shareWithDisplayName === n.shareWithDisplayName
                         })).length <= 1
                     }
@@ -44972,7 +44981,7 @@
                 }
             }
         },
-        Jt = Object(P.a)(Zt, (function() {
+        Vt = Object(_.a)(Jt, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -44993,7 +45002,7 @@
             })), 1)
         }), [], !1, null, null, null).exports;
 
-    function Vt(t, e) {
+    function Xt(t, e) {
         return function(t) {
             if (Array.isArray(t)) return t
         }(t) || function(t, e) {
@@ -45016,23 +45025,23 @@
             return n
         }(t, e) || function(t, e) {
             if (!t) return;
-            if ("string" == typeof t) return Xt(t, e);
+            if ("string" == typeof t) return Kt(t, e);
             var n = Object.prototype.toString.call(t).slice(8, -1);
             "Object" === n && t.constructor && (n = t.constructor.name);
             if ("Map" === n || "Set" === n) return Array.from(t);
-            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Xt(t, e)
+            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Kt(t, e)
         }(t, e) || function() {
             throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
         }()
     }
 
-    function Xt(t, e) {
+    function Kt(t, e) {
         (null == e || e > t.length) && (e = t.length);
         for (var n = 0, r = new Array(e); n < e; n++) r[n] = t[n];
         return r
     }
 
-    function Kt(t, e, n, r, o, i, s) {
+    function qt(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -45042,7 +45051,7 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
 
-    function qt(t) {
+    function te(t) {
         return function() {
             var e = this,
                 n = arguments;
@@ -45050,29 +45059,29 @@
                 var i = t.apply(e, n);
 
                 function s(t) {
-                    Kt(i, r, o, s, a, "next", t)
+                    qt(i, r, o, s, a, "next", t)
                 }
 
                 function a(t) {
-                    Kt(i, r, o, s, a, "throw", t)
+                    qt(i, r, o, s, a, "throw", t)
                 }
                 s(void 0)
             }))
         }
     }
-    var te = {
+    var ee = {
             name: "SharingTab",
             components: {
                 Avatar: u.a,
                 CollectionList: c.a,
-                SharingEntryInternal: Q,
-                SharingEntrySimple: _,
-                SharingInherited: wt,
-                SharingInput: it,
-                SharingLinkList: zt,
-                SharingList: Jt
+                SharingEntryInternal: F,
+                SharingEntrySimple: D,
+                SharingInherited: Mt,
+                SharingInput: st,
+                SharingLinkList: Rt,
+                SharingList: Vt
             },
-            mixins: [C],
+            mixins: [x],
             data: function() {
                 return {
                     config: new f,
@@ -45098,7 +45107,7 @@
             methods: {
                 update: function(t) {
                     var e = this;
-                    return qt(regeneratorRuntime.mark((function n() {
+                    return te(regeneratorRuntime.mark((function n() {
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
                                 case 0:
@@ -45112,7 +45121,7 @@
                 },
                 getShares: function() {
                     var e = this;
-                    return qt(regeneratorRuntime.mark((function n() {
+                    return te(regeneratorRuntime.mark((function n() {
                         var r, o, i, s, a, c, l, u;
                         return regeneratorRuntime.wrap((function(n) {
                             for (;;) switch (n.prev = n.next) {
@@ -45131,7 +45140,7 @@
                                         }
                                     }), n.next = 9, Promise.all([i, s]);
                                 case 9:
-                                    a = n.sent, c = Vt(a, 2), l = c[0], u = c[1], e.loading = !1, e.processSharedWithMe(u), e.processShares(l), n.next = 23;
+                                    a = n.sent, c = Xt(a, 2), l = c[0], u = c[1], e.loading = !1, e.processSharedWithMe(u), e.processShares(l), n.next = 23;
                                     break;
                                 case 18:
                                     n.prev = 18, n.t0 = n.catch(0), e.error = t("files_sharing", "Unable to load the shares list"), e.loading = !1, console.error("Error loading the shares list", n.t0);
@@ -45158,7 +45167,7 @@
                         n = t.data;
                     if (n.ocs && n.ocs.data && n.ocs.data.length > 0) {
                         var r = n.ocs.data.map((function(t) {
-                            return new y(t)
+                            return new C(t)
                         })).sort((function(t, e) {
                             return e.createdTime - t.createdTime
                         }));
@@ -45172,7 +45181,7 @@
                 processSharedWithMe: function(e) {
                     var n = e.data;
                     if (n.ocs && n.ocs.data && n.ocs.data[0]) {
-                        var r = new y(n),
+                        var r = new C(n),
                             o = function(e) {
                                 return e.type === OC.Share.SHARE_TYPE_GROUP ? t("files_sharing", "Shared with you and the group {group} by {owner}", {
                                     group: e.shareWithDisplayName,
@@ -45213,7 +45222,7 @@
                 }
             }
         },
-        ee = Object(P.a)(te, (function() {
+        ne = Object(_.a)(ee, (function() {
             var t = this,
                 e = t.$createElement,
                 n = t._self._c || e;
@@ -45292,129 +45301,135 @@
             }))]], 2)
         }), [], !1, null, null, null).exports;
 
-    function ne(t, e) {
+    function re(t, e) {
         for (var n = 0; n < e.length; n++) {
             var r = e[n];
             r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(t, r.key, r)
         }
     }
 
-    function re(t, e) {
+    function oe(t, e) {
         if (!Object.prototype.hasOwnProperty.call(t, e)) throw new TypeError("attempted to use private field on non-instance");
         return t
     }
-    var oe = 0;
-    var ie = function(t) {
-            return "__private_" + oe++ + "_" + t
-        }("state"),
-        se = function() {
+    var ie = 0;
+
+    function se(t) {
+        return "__private_" + ie++ + "_" + t
+    }
+    var ae = se("state"),
+        ce = function() {
             function t() {
                 ! function(t, e) {
                     if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
-                }(this, t), Object.defineProperty(this, ie, {
+                }(this, t), Object.defineProperty(this, ae, {
                     writable: !0,
                     value: void 0
-                }), re(this, ie)[ie] = {}, re(this, ie)[ie].results = [], console.debug("OCA.Sharing.ShareSearch initialized")
+                }), oe(this, ae)[ae] = {}, oe(this, ae)[ae].results = [], console.debug("OCA.Sharing.ShareSearch initialized")
             }
             var e, n, r;
             return e = t, (n = [{
                 key: "addNewResult",
                 value: function(t) {
-                    return "" !== t.displayName.trim() && "function" == typeof t.handler ? (re(this, ie)[ie].results.push(t), !0) : (console.error("Invalid search result provided", t), !1)
+                    return "" !== t.displayName.trim() && "function" == typeof t.handler ? (oe(this, ae)[ae].results.push(t), !0) : (console.error("Invalid search result provided", t), !1)
                 }
             }, {
                 key: "state",
                 get: function() {
-                    return re(this, ie)[ie]
+                    return oe(this, ae)[ae]
                 }
-            }]) && ne(e.prototype, n), r && ne(e, r), t
+            }]) && re(e.prototype, n), r && re(e, r), t
         }();
 
-    function ae(t) {
-        return (ae = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
+    function Ae(t) {
+        return (Ae = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
             return typeof t
         } : function(t) {
             return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t
         })(t)
     }
 
-    function ce(t, e) {
+    function le(t, e) {
         for (var n = 0; n < e.length; n++) {
             var r = e[n];
             r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(t, r.key, r)
         }
     }
 
-    function Ae(t, e) {
+    function ue(t, e) {
         if (!Object.prototype.hasOwnProperty.call(t, e)) throw new TypeError("attempted to use private field on non-instance");
         return t
     }
-    var le = 0;
-    var ue = function(t) {
-            return "__private_" + le++ + "_" + t
-        }("state"),
-        me = function() {
+    var me = 0;
+
+    function de(t) {
+        return "__private_" + me++ + "_" + t
+    }
+    var pe = de("state"),
+        fe = function() {
             function t() {
                 ! function(t, e) {
                     if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
-                }(this, t), Object.defineProperty(this, ue, {
+                }(this, t), Object.defineProperty(this, pe, {
                     writable: !0,
                     value: void 0
-                }), Ae(this, ue)[ue] = {}, Ae(this, ue)[ue].actions = [], console.debug("OCA.Sharing.ExternalLinkActions initialized")
+                }), ue(this, pe)[pe] = {}, ue(this, pe)[pe].actions = [], console.debug("OCA.Sharing.ExternalLinkActions initialized")
             }
             var e, n, r;
             return e = t, (n = [{
                 key: "registerAction",
                 value: function(t) {
-                    return "object" === ae(t) && t.icon && t.name && t.url ? (Ae(this, ue)[ue].actions.push(t), !0) : (console.error("Invalid action provided", t), !1)
+                    return "object" === Ae(t) && t.icon && t.name && t.url ? (ue(this, pe)[pe].actions.push(t), !0) : (console.error("Invalid action provided", t), !1)
                 }
             }, {
                 key: "state",
                 get: function() {
-                    return Ae(this, ue)[ue]
+                    return ue(this, pe)[pe]
                 }
-            }]) && ce(e.prototype, n), r && ce(e, r), t
+            }]) && le(e.prototype, n), r && le(e, r), t
         }();
 
-    function de(t, e) {
+    function ge(t, e) {
         for (var n = 0; n < e.length; n++) {
             var r = e[n];
             r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(t, r.key, r)
         }
     }
 
-    function pe(t, e) {
+    function he(t, e) {
         if (!Object.prototype.hasOwnProperty.call(t, e)) throw new TypeError("attempted to use private field on non-instance");
         return t
     }
-    var fe = 0;
-    var ge = function(t) {
-            return "__private_" + fe++ + "_" + t
-        }("sections"),
-        he = function() {
+    var ve = 0;
+
+    function be(t) {
+        return "__private_" + ve++ + "_" + t
+    }
+    var ye = be("sections"),
+        Ce = function() {
             function t() {
                 ! function(t, e) {
                     if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
-                }(this, t), Object.defineProperty(this, ge, {
+                }(this, t), Object.defineProperty(this, ye, {
                     writable: !0,
                     value: void 0
-                }), pe(this, ge)[ge] = []
+                }), he(this, ye)[ye] = []
             }
             var e, n, r;
             return e = t, (n = [{
                 key: "registerSection",
                 value: function(t) {
-                    pe(this, ge)[ge].push(t)
+                    he(this, ye)[ye].push(t)
                 }
             }, {
                 key: "getSections",
                 value: function() {
-                    return pe(this, ge)[ge]
+                    return he(this, ye)[ye]
                 }
-            }]) && de(e.prototype, n), r && de(e, r), t
+            }]) && ge(e.prototype, n), r && ge(e, r), t
         }();
 
-    function ve(t, e, n, r, o, i, s) {
+    function xe(t, e, n, r, o, i, s) {
         try {
             var a = t[i](s),
                 c = a.value
@@ -45424,14 +45439,14 @@
         a.done ? e(c) : Promise.resolve(c).then(r, o)
     }
     window.OCA.Sharing || (window.OCA.Sharing = {}), Object.assign(window.OCA.Sharing, {
-        ShareSearch: new se
+        ShareSearch: new ce
     }), Object.assign(window.OCA.Sharing, {
-        ExternalLinkActions: new me
+        ExternalLinkActions: new fe
     }), Object.assign(window.OCA.Sharing, {
-        ShareTabSections: new he
+        ShareTabSections: new Ce
     }), o.default.prototype.t = a.translate, o.default.prototype.n = a.translatePlural, o.default.use(s.a);
-    var be = o.default.extend(ee),
-        ye = null;
+    var Ee = o.default.extend(ne),
+        we = null;
     window.addEventListener("DOMContentLoaded", (function() {
         OCA.Files && OCA.Files.Sidebar && OCA.Files.Sidebar.registerTab(new OCA.Files.Sidebar.Tab({
             id: "sharing",
@@ -45442,11 +45457,11 @@
                     return regeneratorRuntime.wrap((function(r) {
                         for (;;) switch (r.prev = r.next) {
                             case 0:
-                                return ye && ye.$destroy(), ye = new be({
+                                return we && we.$destroy(), we = new Ee({
                                     parent: n
-                                }), r.next = 4, ye.update(e);
+                                }), r.next = 4, we.update(e);
                             case 4:
-                                ye.$mount(t);
+                                we.$mount(t);
                             case 5:
                             case "end":
                                 return r.stop()
@@ -45459,11 +45474,11 @@
                         var i = r.apply(t, e);
 
                         function s(t) {
-                            ve(i, n, o, s, a, "next", t)
+                            xe(i, n, o, s, a, "next", t)
                         }
 
                         function a(t) {
-                            ve(i, n, o, s, a, "throw", t)
+                            xe(i, n, o, s, a, "throw", t)
                         }
                         s(void 0)
                     }))
@@ -45471,10 +45486,10 @@
                 var r
             },
             update: function(t) {
-                ye.update(t)
+                we.update(t)
             },
             destroy: function() {
-                ye.$destroy(), ye = null
+                we.$destroy(), we = null
             }
         }))
     }))
