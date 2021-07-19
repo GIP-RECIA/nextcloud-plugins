@@ -20,7 +20,7 @@ CSSJSLOADER:
 	cp -rT cssjsloader  $(APPS)/cssjsloader 
 
 FILES_SHARING:
-	cp -rT files_sharing $(APPS)/files_sharing
+	cp -rubT files_sharing $(APPS)/files_sharing
 
 LDAPIMPORTER:
 	cp -rT ldapimporter $(APPS)/ldapimporter
