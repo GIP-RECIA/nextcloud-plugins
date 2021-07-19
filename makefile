@@ -20,7 +20,7 @@ CSSJSLOADER:
 	cp -rT cssjsloader  $(APPS)/cssjsloader 
 
 FILES_SHARING:
-	cp -rubT files_sharing $(APPS)/files_sharing
+	cp -rubviT files_sharing $(APPS)/files_sharing
 
 LDAPIMPORTER:
 	cp -rT ldapimporter $(APPS)/ldapimporter
@@ -29,7 +29,7 @@ SKELETON:
 	cp -rT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 LIB: 
-	echo cp -rTb lib $(NEXTCLOUD_PATH)/lib
+	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
 
 css: $(CSS)/reciaStyle.css
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
