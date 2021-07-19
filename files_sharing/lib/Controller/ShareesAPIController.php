@@ -632,7 +632,7 @@ class ShareesAPIController extends OCSController {
                 "value" => [
                     "shareType" => 0,
                     "shareWith" => $user["uid"],
-                ]
+                ],
                 "shareWithDisplayNameUnique" => $userEmail,
             ];
         }, $usersFetched);
