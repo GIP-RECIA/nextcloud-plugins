@@ -18,16 +18,16 @@ defaut:
 
 
 CSSJSLOADER:
-	cp -rT cssjsloader  $(APPS)/cssjsloader 
+	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
 FILES_SHARING:
 	cp -rubviT files_sharing $(APPS)/files_sharing
 
 LDAPIMPORTER:
-	cp -rT ldapimporter $(APPS)/ldapimporter
+	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 SKELETON:
-	cp -rT skeleton $(NEXTCLOUD_PATH)/core/skeleton
+	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 LIB: 
 	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
