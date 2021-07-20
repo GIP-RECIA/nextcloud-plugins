@@ -181,6 +181,7 @@ class AdImporter implements ImporterInterface
                 'eta varchar(32),' .
                 'isadd tinyint(1),' .
                 'isdel tinyint(1),' .
+                'name varchar(100),' .
                 'UNIQUE (siren, isdel, uid)' .
                 ')';
             $this->db->executeQuery($sql);
@@ -450,7 +451,7 @@ class AdImporter implements ImporterInterface
 						$alreadyExists =$this->userHistoryExists($employeeID);
 						if ($alreadyExists || $addUser) {
 							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
-								$this->saveUserHistory($employeeID, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etat, $date, $grp[1]);
 							} else {
 								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
 							}
@@ -494,7 +495,7 @@ class AdImporter implements ImporterInterface
         return count($uids) > 0;
 	}
 	
-	protected function saveUserHistory($uid, $isExists, $isAdded, $etat, $date, $siren){
+	protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
 		$qbHist = $this->db->getQueryBuilder();
 		
 		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
@@ -506,6 +507,7 @@ class AdImporter implements ImporterInterface
 				->set('dat', $qbHist->createNamedParameter($date))
 				->set('siren', $qbHist->createNamedParameter($siren))
 				->set('isdel', $qbHist->createNamedParameter($del))
+				->set('name', $qbHist->createNamedParameter($name))
 				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
 			$qbHist->execute();
 				
@@ -517,7 +519,8 @@ class AdImporter implements ImporterInterface
 					'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
 					'dat' => $qbHist->createNamedParameter($date),
 					'siren' => $qbHist->createNamedParameter($siren),
-					'isdel' => $qbHist->createNamedParameter($del)
+					'isdel' => $qbHist->createNamedParameter($del),
+					'name' => $qbHist->createNamedParameter($name),
 				]);
 			$qbHist->execute();
 		}
