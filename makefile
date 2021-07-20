@@ -13,7 +13,7 @@ SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
 defaut:
-	@echo CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB css
+	@echo CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
 	@echo $(NEXTCLOUD_PATH)
 
 
@@ -32,8 +32,10 @@ SKELETON:
 LIB: 
 	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
 
-css: $(CSS)/reciaStyle.css
+CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
+
+sass: $(CSS)/reciaStyle.css
 
 $(CSS)/%.css: $(SCSS)/*.scss
 	sass  $(SCSS)/$*.scss $@
