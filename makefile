@@ -13,6 +13,7 @@ SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
 defaut:
+	@echo CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB css
 	@echo $(NEXTCLOUD_PATH)
 
 
