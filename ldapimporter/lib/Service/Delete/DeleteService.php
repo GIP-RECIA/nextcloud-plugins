@@ -157,37 +157,33 @@ class DeleteService
 
         }
         elseif (is_null($uaiArray) && is_null($sirenArray)) {
+			/* si on a ni siren ni uai on traite les comptes 
+			 * dont le siren n'est pas dans oc_etablissements
+			 */ 
             $qb = $this->db->getQueryBuilder();
-            $qb->select('uid')
-                ->from('users');
+            $this->logger->debug(" NO UID NO UAI NO SIREN \n" );
+			$qb->select(['u.uid', 'u.displayname'])
+				->from('recia_user_history ', 'r')
+				->leftJoin('r', 'etablissements', 'e', 'r.siren = e.siren')
+				->join('r' , 'users', 'u',  'u.uid = r.uid')
+				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(1)))
+				->andWhere('e.siren is null');
+	
+            
+
             $dbUsers = $qb->execute()->fetchAll();
 
-            $dbIdUsers = array_map(function ($admin) {
-                return $admin['uid'];
-            }, $dbUsers);
+            $dbIdUsers = array_unique(array_map(function ($user) {
+				$this->logger->info("user to disabled : ". implode(" ", $user));
+                return $user['uid'];
+            }, $dbUsers));
 
-            $ldapUsers = $this->getLdapList(
-                $this->config->getAppValue($this->appName, 'cas_import_ad_base_dn'),
-                $this->config->getAppValue($this->appName, 'cas_import_ad_sync_filter'),
-                ["uid"]
-            );
+            $adminUids = $this->getAdminUids();
 
-            $ldapIds = [];
-
-            foreach ($ldapUsers[0] as $ldapUser) {
-                if (is_array($ldapUser) && array_key_exists("uid", $ldapUser) && count($ldapUser["uid"]) > 1) {
-                    $ldapIds[] = $ldapUser["uid"][0];
+            foreach ($dbIdUsers as $dbIdUser) {
+                if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
+                    $this->disableUser($dbIdUser);
                 }
-            }
-
-            // On ajout les administrateur nextcloud dans la liste pour ne pas qu'on les supprime
-            $ldapIds = array_merge($ldapIds, $this->getAdminUids());
-
-            $removedUsers = array_diff($dbIdUsers, $ldapIds);
-
-            //$this->logger->info("Désactivation des utilisateurs avec l'uid : " . implode(" | ", $removedUsers));
-            foreach ($removedUsers as $removedUser) {
-                $this->disableUser($removedUser);
             }
         }
         else {
