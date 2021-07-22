@@ -229,18 +229,29 @@ sub traitementEtab() {
 	} elsif ($etab =~ /^F\w{7}$/) {
 		$filtre = $filterUid;
 		$typeKey = "users";   
+	} elseif ($etab eq 'HORS_ETAB') {
+		$filtre = '';
 	} else {
 		$filtre = $filterGroup;
 	}
-	$filtre = sprintf($filtre, $etab);
-	if ($timeStamp) {
-		$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
+	my $disable = 0;
+	my $create =0 ;
+	my $update = 0;
+	
+	if ($filtre) {
+		$filtre = sprintf($filtre, $etab);
+		if ($timeStamp) {
+			$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
+		}
+		($create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
 	}
 	
-	my $disable =0 ;
-	my($create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
-	if ($typeKey) { # Desctivation des comptes supprmés:
+	if ($typeKey) { # Desctivation des comptes supprimés:
 		$disable = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
+	} else unless ($filtre) {
+				# on est dans le cas HORS_ETAB
+				$disable = &executeWithLogFilter("$commandeDel", $etab, $LOG, qr/ldap:disable-user/);
+		}
 	}
 	my $fin = time;
 	my $nbuser = $create + $update; 
@@ -325,6 +336,11 @@ if ($saveTimestamp) {
 		print NEW $_."\n";
 	}
 }
+
+# on fait le menage dans les comptes hors étab ou pas modifiés depuis longtemps.
+&traitementEtab('HORS_ETAB', 0);
+
+
 __END__
 attribut ldap de detection des changement modifytimestamp>=20080601070000
 
