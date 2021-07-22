@@ -149,7 +149,7 @@ class DeleteService
 	 * 
 	 * return la liste des uid des users non desactivé.
 	 **/ 
-	protect function testAndDisableDbUsers($dbUsers) {
+	protected function testAndDisableDbUsers($dbUsers) {
 		$usersNotDeleted = [];
 		
 		$dbIdUsers = array_unique(array_map(function ($user) {
@@ -203,7 +203,7 @@ class DeleteService
 	
             $dbUsers = $qb->execute()->fetchAll();
 
-			testAndDisableDbUsers($dbUsers);
+			$this->testAndDisableDbUsers($dbUsers);
             
             /* liste des comptes anciennement mise-a-jour */
             $qb = $this->db->getQueryBuilder();
@@ -212,14 +212,14 @@ class DeleteService
 				->join('r' , 'users', 'u',  'u.uid = r.uid')
 				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(0)))
 				->orderBy('r.dat')
-				->setMaxResult(100);
+				->setMaxResults(100);
 				
 			$dbUsers = $qb->execute()->fetchAll();
 			
-			foreach (testAndDisableDbUsers($dbUsers) as $idUser) {
+			foreach ($this->testAndDisableDbUsers($dbUsers) as $idUser) {
 				// on met a jour la date de l'historique de ceux non désactivé
 				// pour ne pas y revenir 
-				markDelUserHistory($idUser, 0);
+				$this->markDelUserHistory($idUser, 0);
 			}
         }
         else {
@@ -248,7 +248,7 @@ class DeleteService
 
             $dbUsers = $qb->execute()->fetchAll();
 			
-			testAndDisableDbUsers($dbUsers);
+			$this->testAndDisableDbUsers($dbUsers);
            
         }
     }
