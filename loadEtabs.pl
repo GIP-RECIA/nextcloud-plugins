@@ -229,13 +229,13 @@ sub traitementEtab() {
 	} elsif ($etab =~ /^F\w{7}$/) {
 		$filtre = $filterUid;
 		$typeKey = "users";   
-	} elseif ($etab eq 'HORS_ETAB') {
+	} elsif ($etab eq 'HORS_ETAB') {
 		$filtre = '';
 	} else {
 		$filtre = $filterGroup;
 	}
 	my $disable = 0;
-	my $create =0 ;
+	my $create = 0;
 	my $update = 0;
 	
 	if ($filtre) {
@@ -247,10 +247,11 @@ sub traitementEtab() {
 	}
 	
 	if ($typeKey) { # Desctivation des comptes supprimés:
-		$disable = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
-	} else unless ($filtre) {
-				# on est dans le cas HORS_ETAB
-				$disable = &executeWithLogFilter("$commandeDel", $etab, $LOG, qr/ldap:disable-user/);
+		($disable) = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
+	} else { 
+		unless ($filtre) {
+			# on est dans le cas HORS_ETAB
+			($disable) = &executeWithLogFilter("$commandeDel", $etab, $LOG, qr/ldap:disable-user/);
 		}
 	}
 	my $fin = time;
