@@ -163,7 +163,7 @@ class DeleteService
             $qb = $this->db->getQueryBuilder();
             $this->logger->debug(" NO UID NO UAI NO SIREN \n" );
 			$qb->select(['u.uid', 'u.displayname'])
-				->from('recia_user_history ', 'r')
+				->from('recia_user_history', 'r')
 				->leftJoin('r', 'etablissements', 'e', 'r.siren = e.siren')
 				->join('r' , 'users', 'u',  'u.uid = r.uid')
 				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(1)))
