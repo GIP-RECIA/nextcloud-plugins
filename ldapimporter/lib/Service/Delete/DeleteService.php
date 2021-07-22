@@ -141,6 +141,35 @@ class DeleteService
         }
     }
 
+	/**
+	 * @param $dbUsers resultat d'une requette contenant l'uid des users a désactiver 
+	 * 
+	 * Pour chaque uid verifie que le compte n'est pas admin et n'est plus dans le ldap
+	 * dans ce cas le désactive de NC. 
+	 * 
+	 * return la liste des uid des users non desactivé.
+	 **/ 
+	protect function testAndDisableDbUsers($dbUsers) {
+		$usersNotDeleted = [];
+		
+		$dbIdUsers = array_unique(array_map(function ($user) {
+			$this->logger->info("user to disabled : ". implode(" ", $user));
+			return $user['uid'];
+		}, $dbUsers));
+
+
+		$adminUids = $this->getAdminUids();
+
+		foreach ($dbIdUsers as $dbIdUser) {
+			if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
+				$this->disableUser($dbIdUser);
+			} else {
+				$usersNotDeleted[] = $dbIdUser;
+			}
+		}
+		return $usersNotDeleted;
+    }
+
     /**
      * @param $uaiArray
      * @param $sirenArray
@@ -159,7 +188,10 @@ class DeleteService
         elseif (is_null($uaiArray) && is_null($sirenArray)) {
 			/* si on a ni siren ni uai on traite les comptes 
 			 * dont le siren n'est pas dans oc_etablissements
+			 * et on verifie les comptes les plus aciennements mise a jours.
 			 */ 
+			 
+			 /* liste des comptes hors etab */
             $qb = $this->db->getQueryBuilder();
             $this->logger->debug(" NO UID NO UAI NO SIREN \n" );
 			$qb->select(['u.uid', 'u.displayname'])
@@ -169,22 +201,26 @@ class DeleteService
 				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(1)))
 				->andWhere('e.siren is null');
 	
-            
-
             $dbUsers = $qb->execute()->fetchAll();
 
-            $dbIdUsers = array_unique(array_map(function ($user) {
-				$this->logger->info("user to disabled : ". implode(" ", $user));
-                return $user['uid'];
-            }, $dbUsers));
-
-            $adminUids = $this->getAdminUids();
-
-            foreach ($dbIdUsers as $dbIdUser) {
-                if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
-                    $this->disableUser($dbIdUser);
-                }
-            }
+			testAndDisableDbUsers($dbUsers);
+            
+            /* liste des comptes anciennement mise-a-jour */
+            $qb = $this->db->getQueryBuilder();
+            $qb->select(['u.uid', 'u.displayname' ])
+				->from('recia_user_history', 'r')
+				->join('r' , 'users', 'u',  'u.uid = r.uid')
+				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(0)))
+				->orderBy('r.dat')
+				->setMaxResult(100);
+				
+			$dbUsers = $qb->execute()->fetchAll();
+			
+			foreach (testAndDisableDbUsers($dbUsers) as $idUser) {
+				// on met a jour la date de l'historique de ceux non désactivé
+				// pour ne pas y revenir 
+				markDelUserHistory($idUser, 0);
+			}
         }
         else {
             $qb = $this->db->getQueryBuilder();
@@ -211,19 +247,9 @@ class DeleteService
             }
 
             $dbUsers = $qb->execute()->fetchAll();
-
-            $dbIdUsers = array_unique(array_map(function ($admin) {
-				$this->logger->info("user to disabled : ". implode(" ", $admin));
-                return $admin['uid'];
-            }, $dbUsers));
-
-            $adminUids = $this->getAdminUids();
-
-            foreach ($dbIdUsers as $dbIdUser) {
-                if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
-                    $this->disableUser($dbIdUser);
-                }
-            }
+			
+			testAndDisableDbUsers($dbUsers);
+           
         }
     }
     
