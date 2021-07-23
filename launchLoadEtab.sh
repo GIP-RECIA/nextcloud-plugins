@@ -37,7 +37,7 @@ date
 
 echo suppression des groupes vides
 logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
-/usr/bin/nice $rcode/deleteGroupeVide.pl >  $logClean 
+/usr/bin/nice $rcode/deleteGroupeVide.pl all >  $logClean 
 
 grep -v 'was removed' $logClean
 

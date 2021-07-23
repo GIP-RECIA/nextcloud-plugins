@@ -55,7 +55,7 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	}
 }
 
-print " cpt= $cpt\n";
+print " Nombre de groupe supprimés = $cpt\n";
 
  
 
