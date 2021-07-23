@@ -33,3 +33,12 @@ echo nettoyage de nc-prod-corbeille
 
 tail -1 $logClean
 
+date
+
+echo suppression des groupes vides
+logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
+/usr/bin/nice $rcode/deleteGroupeVide.pl >  $logClean 
+
+grep -v 'was removed' $logClean
+
+date
