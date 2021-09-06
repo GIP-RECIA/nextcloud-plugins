@@ -20,17 +20,25 @@ my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
 
 
-
+my $bucket;
 my $uid;
-
-if ($ARGV[0] =~ /^\d+$/) {
+if ($ARGV[0] =~ /^$defautBucket/){
+	# on passe un bucket il faut trouver a qui il est 
+	$bucket = $ARGV[0];
+	$uid = getUidByBucket($bucket);
+} elsif ($ARGV[0] =~ /^\d+$/) {
 	# si on a un fichier on chercher a qui il appartient.
 	$uid = getOwnerUid($ARGV[0]);
 } else {
     $uid = $ARGV[0];
 }
 
-
+if ($uid) {
+	print "UID = $uid\n";
+} else {
+	die "pas de compte correspondant \n";
+}
+#nc-prod-c3pb36tyb5wgocok4c4k480wg
 sub getOwnerUid{
 	my $fileId = shift;
 	my $sql = connectSql();
@@ -51,7 +59,18 @@ sub getOwnerUid{
 	return  $uid;
 }
 
-
+sub getUidByBucket{
+	my $bucket = shift;
+	my $sql = connectSql();
+	my $sqlQuery= "select userid from oc_preferences where configvalue = ? and configkey = 'bucket'" ;
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	$sqlStatement->execute($bucket)  or die $sqlStatement->errstr;
+	my $ary_ref =  $sqlStatement->fetch;
+	unless ($ary_ref) {
+		return 0;
+	}	
+	return $$ary_ref[0];
+}
 
 sub getBucket{
 	my $uid = shift;
@@ -120,6 +139,24 @@ sub getNexcloudGroups{
 	return @groups;
 }
 
+sub permissionDecode {
+	my $perm = shift;
+	my $flags = '($perm : ';
+	
+	if ($perm & 2 ) {
+		$flags .= 'Mo'; #Modification
+	}
+	if ($perm & 4 ) {
+		$flags .= 'Cr'; # création
+	} 
+	$perm & 8 ) {
+		$flags .= 'Su'; # Supression
+	}
+	$perm & 16 ) {
+		$flags .= 'Re'; # Repartage
+	}
+	return $flags . ')';
+}
 sub printPartage {
 	my $uid = shift;
 	my $sql = connectSql();
@@ -127,7 +164,7 @@ sub printPartage {
 	my $lastFile;
 	my $cpt;
 	
-	my $sqlQuery = "select share_with, file_source, file_target , item_type from oc_share where uid_owner = ? order by file_target, file_source";
+	my $sqlQuery = "select share_with, file_source, file_target , item_type , permissions from oc_share where uid_owner = ? order by file_target, file_source";
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
@@ -138,6 +175,7 @@ sub printPartage {
 		my $fileId = $tuple->{'file_source'};
 		my $uidTarget = $tuple->{'share_with'};
 		my $type = $tuple->{'item_type'};
+		$uidTarget .= &permissionDecode( $tuple->{'permissions'});
 		if ($lastFile ne $fileId ) {
 			$lastFile = $fileId;
 			 print "\n $fileId : $type  $fileName";
@@ -151,7 +189,7 @@ sub printPartage {
 	}
 	print "\n\n";
 	
-	$sqlQuery = "select uid_owner, file_source, file_target, item_type from oc_share  where share_with = ? order by file_target, file_source";
+	$sqlQuery = "select uid_owner, file_source, file_target, item_type, permissions from oc_share  where share_with = ? order by file_target, file_source";
 	$sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	
@@ -160,7 +198,8 @@ sub printPartage {
 		my $fileId = $tuple->{'file_source'};
 		my $uidOwner = $tuple->{'uid_owner'};
 		my $type = $tuple->{'item_type'};
-		print "$fileId : $type $fileName <- $uidOwner \n";
+		my $perm = $permissionDecode($tuple->{'permissions'});
+		print "$fileId : $type $fileName <- $uidOwner $perm\n";
 	}
 }
 
@@ -180,7 +219,9 @@ sub toGiga {
 
 
 my $nom = getUserName($uid);
-unless ($nom) {
+if ($nom) {
+	print "Nom = $nom\n";
+} else {
 	die "pas de compte pour $uid\n";	
 }
 
@@ -189,7 +230,9 @@ foreach my $group (&getNexcloudGroups($uid)) {
 	print "\t $group\n";
 }
 
-my $bucket = getBucket($uid);
+
+$bucket = getBucket($uid);
+
 
 if ($bucket) {
 	getNextcloudFiles($uid);
