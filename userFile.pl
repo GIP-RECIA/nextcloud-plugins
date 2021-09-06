@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # script qui prend en entré un uid 
-# et donne toutes info nexcloud utile 
+# et donne toutes info nextcloud utile 
 
 use strict;
 use utf8;
@@ -22,15 +22,38 @@ my $prefixBucket = "s3://$defautBucket";
 
 my $bucket;
 my $uid;
-if ($ARGV[0] =~ /^$defautBucket/){
+
+my $noarg = 0; 
+my $bucketOnly = 0;
+my $bucketLess = 0;
+
+unless (@ARGV) {
+	print "usage :\t$0 [-b|+b] (uid|bucket|file)\n";
+	print "\t prend en entré un uid , un bucket ou un nom de fichier\n";
+	print "\t et donne la liste des fichiers correspondant au compte et d'autres infos utiles\n";
+	print "\t si -b ne donne que les infos complémentaire (sans les fichiers/bucket).\n";
+	print "\t si +b ne donne que les fichiers dans ou hors bucket.\n";
+	exit 1;
+}
+
+if ($ARGV[$noarg] =~ /([+-])b/){
+	$noarg=1;
+	if ($1 eq '+') {
+		$bucketOnly = 1;
+	} else {
+		$bucketLess = 1;
+	}
+}
+
+if ($ARGV[$noarg] =~ /^$defautBucket/){
 	# on passe un bucket il faut trouver a qui il est 
-	$bucket = $ARGV[0];
+	$bucket = $ARGV[$noarg];
 	$uid = getUidByBucket($bucket);
-} elsif ($ARGV[0] =~ /^\d+$/) {
+} elsif ($ARGV[$noarg] =~ /^\d+$/) {
 	# si on a un fichier on chercher a qui il appartient.
-	$uid = getOwnerUid($ARGV[0]);
+	$uid = getOwnerUid($ARGV[$noarg]);
 } else {
-    $uid = $ARGV[0];
+    $uid = $ARGV[$noarg];
 }
 
 if ($uid) {
@@ -141,19 +164,19 @@ sub getNexcloudGroups{
 
 sub permissionDecode {
 	my $perm = shift;
-	my $flags = '($perm : ';
+	my $flags = "($perm";
 	
 	if ($perm & 2 ) {
-		$flags .= 'Mo'; #Modification
+		$flags .= ' Mo'; #Modification
 	}
 	if ($perm & 4 ) {
-		$flags .= 'Cr'; # création
+		$flags .= ' Cr'; # création
 	} 
-	$perm & 8 ) {
-		$flags .= 'Su'; # Supression
+	if ($perm & 8 ) {
+		$flags .= ' Su'; # Supression
 	}
-	$perm & 16 ) {
-		$flags .= 'Re'; # Repartage
+	if ($perm & 16 ) {
+		$flags .= ' Re'; # Repartage
 	}
 	return $flags . ')';
 }
@@ -198,7 +221,7 @@ sub printPartage {
 		my $fileId = $tuple->{'file_source'};
 		my $uidOwner = $tuple->{'uid_owner'};
 		my $type = $tuple->{'item_type'};
-		my $perm = $permissionDecode($tuple->{'permissions'});
+		my $perm = &permissionDecode($tuple->{'permissions'});
 		print "$fileId : $type $fileName <- $uidOwner $perm\n";
 	}
 }
@@ -225,50 +248,51 @@ if ($nom) {
 	die "pas de compte pour $uid\n";	
 }
 
-print "Les groupes Nextcloud : \n";
-foreach my $group (&getNexcloudGroups($uid)) {
-	print "\t $group\n";
+unless ($bucketOnly) {
+	print "Les groupes Nextcloud : \n";
+	foreach my $group (&getNexcloudGroups($uid)) {
+		print "\t $group\n";
+	}
 }
-
 
 $bucket = getBucket($uid);
 
+unless ($bucketLess) {
+	if ($bucket) {
+		getNextcloudFiles($uid);
 
-if ($bucket) {
-	getNextcloudFiles($uid);
-
-	print "lecture du bucket \n";
-	open S3 , &duCommande($bucket) . "|"  || die "$!";
-	while (<S3>) {
-		print;
-		if (/(\d+)/) {
-			print " soit: " . &toGiga($1). "\n";
-		}
-	}
-	close S3;
-	open S3 , &lsCommande($bucket) . "|"  || die "$!";
-
-	while (<S3>) {
-		chop;
-		print ;
-		if (/urn:oid:(\d+)$/) {
-			my $fileId = $1;
-			my $path = $allFiles{$fileId};
-			if ($path) {
-				print "\t$path";
-				delete $allFiles{$fileId};
+		print "lecture du bucket \n";
+		open S3 , &duCommande($bucket) . "|"  || die "$!";
+		while (<S3>) {
+			print;
+			if (/(\d+)/) {
+				print " soit: " . &toGiga($1). "\n";
 			}
 		}
-		print "\n";
-	}
-	close S3;
-	print "\nFichier Nextcloud hors bucket\n";
-	while (my ($id, $path) = each (%allFiles)) {
-		print "\t$id\t$path\n";
-	} 
-} else {
-	print "Pas de bucket ";
-}	
+		close S3;
+		open S3 , &lsCommande($bucket) . "|"  || die "$!";
+
+		while (<S3>) {
+			chop;
+			print ;
+			if (/urn:oid:(\d+)$/) {
+				my $fileId = $1;
+				my $path = $allFiles{$fileId};
+				if ($path) {
+					print "\t$path";
+					delete $allFiles{$fileId};
+				}
+			}
+			print "\n";
+		}
+		close S3;
+		print "\nFichier Nextcloud hors bucket\n";
+		while (my ($id, $path) = each (%allFiles)) {
+			print "\t$id\t$path\n";
+		} 
+	} else {
+		print "Pas de bucket ";
+	}	
 	$bucket = $prefixBucket . "0". lc($uid);
 	print "\nLecture du bucket des avatars $bucket \n";
 	open S3 , &lsCommande($bucket) . "|"  || die "$!";
@@ -276,7 +300,9 @@ if ($bucket) {
 		print;
 	}
 	close S3;
-	
+}
+
+unless ($bucketOnly) {
 	&printPartage($uid);
 
 	
@@ -292,3 +318,4 @@ if ($bucket) {
 		}
 	}
 	close REPORT;
+}
