@@ -166,8 +166,11 @@ sub permissionDecode {
 	my $perm = shift;
 	my $flags = "($perm";
 	
+	if ($perm < 0) {
+		return  "(permission possible:  Modification Création Supression Repartage.)";
+	}
 	if ($perm & 2 ) {
-		$flags .= ' Mo'; #Modification
+		$flags .= ' Mo'; # Modification
 	}
 	if ($perm & 4 ) {
 		$flags .= ' Cr'; # création
@@ -192,7 +195,7 @@ sub printPartage {
 	
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	
-	print "\n\nLes partages de l'utilisateur:\n";
+	print "\n\nLes partages de l'utilisateur " . &permissionDecode(-1) . ":\n";
 	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 		my $fileName = $tuple->{'file_target'};
 		my $fileId = $tuple->{'file_source'};
