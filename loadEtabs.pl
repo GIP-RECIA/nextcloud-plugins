@@ -233,6 +233,9 @@ sub traitementEtab() {
 		$filtre = '';
 	} else {
 		$filtre = $filterGroup;
+		# ici $etab peut etre un nom de groupe (contenant des ()) on les vire.
+		$etab = s/\(/\\28/g;
+		 $etab = s/\)/\\29/g;
 	}
 	my $disable = 0;
 	my $create = 0;
