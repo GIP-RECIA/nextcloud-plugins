@@ -167,7 +167,7 @@ sub permissionDecode {
 	my $flags = "($perm";
 	
 	if ($perm < 0) {
-		return  "(permission possible:  Modification Création Supression Repartage.)";
+		return  "(permission possible:  Modification Création Supression Repartage)";
 	}
 	if ($perm & 2 ) {
 		$flags .= ' Mo'; # Modification
