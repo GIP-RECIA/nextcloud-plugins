@@ -38,7 +38,7 @@ unless ($grpPattern) {
 
 my $sqlGroup = "select gid from  oc_groups where gid like ?";
 
-
+my %uid2name;
 
 my $sql = connectSql();
 
@@ -82,9 +82,11 @@ sub printMembers {
 	my $cpt = 0;
 	my $text ='';
 	while (my $tuple =  $sqlMemberStatement->fetchrow_hashref()) {
-		 
+		my $uid = $tuple->{'uid'};
+		my $name = $tuple->{displayname};
 		my $tab;
 		
+		$uid2name{$uid} = $name;
 		
 		unless ($cpt++ % 4) {
 			$tab = "\n\t\t";
@@ -92,7 +94,7 @@ sub printMembers {
 			$tab = (" " x int((40-length($text))));
 		}
 		
-		$text = "$tuple->{'uid'} $tuple->{displayname}";
+		$text = "$uid $name";
 		print "$tab$text";
 	}
 	print "\n";
@@ -111,13 +113,18 @@ sub printPartage {
 	$sqlPartageStatment->execute($gid) or die $sqlStatement->errstr;
 	print "\t les partages :\n" ;
 	
+	my $text ='';
+	
 	while (my $partageFile =  $sqlPartageStatment->fetchrow_hashref()) {
 		my $fileName = $partageFile->{'path'};
 		my $fileId = $partageFile->{'file_source'};
 		my $uidOwner = $partageFile->{'uid_owner'};
 		my $type = $partageFile->{'item_type'};
 		my $perm = &permissionDecode($partageFile->{'permissions'});
-		print "\t\t$fileId : $type $fileName <- $uidOwner $perm";
+		my $nameOwner = $uid2name{$uidOwner};
+		my $tab;
+		
+		print "\t\t$fileId : $type $fileName <-- $uidOwner $nameOwner $perm";
 		
 		$sqlPartagesUserStatement->execute($fileId , $partageFile->{'id'}) or die $sqlPartagesUserStatement->errstr; 
 		my $cpt = 0;
@@ -125,11 +132,15 @@ sub printPartage {
 		while (my $partageUser =  $sqlPartagesUserStatement->fetchrow_hashref()) {
 			my $uid = $partageUser->{'share_with'};
 			my $perm = &permissionDecode($partageUser->{'permissions'});
-			unless ($cpt++ % 5 ) {
-				print "\n\t\t--> $uid $perm";
+			my $name = $uid2name{$uid};
+			
+			unless ($cpt++ % 4 ) {
+				$tab = "\n\t\t--> ";
 			} else {
-				print ",\t\t$uid $perm";
+				$tab = (" " x int((40-length($text))));
 			}
+			$text = "$uid $name $perm";
+			print "$tab$text";
 		}
 		print "\n";
 	}
