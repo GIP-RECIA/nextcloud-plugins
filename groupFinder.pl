@@ -105,9 +105,9 @@ sub printPartage {
 	our $sqlPartageStatment;
 	our $sqlPartagesUserStatement;
 	unless ($sqlPartageStatment) {
-		my $sqlQuery = "select uid_owner, file_source, path, item_type, permissions , id from recia_share  where share_with = ? order by path , uid_owner";
+		my $sqlQuery = "select uid_owner, file_source, path, item_type, permissions , id from recia_share  where share_with = ? and share_type = 1 order by path , uid_owner";
 		$sqlPartageStatment = $sql->prepare($sqlQuery) or die $sql->errstr;
-		$sqlQuery = "select share_with,  permissions from oc_share where file_source = ? and share_type = 2 and parent = ? order by share_with";
+		$sqlQuery = "select share_with,  permissions, id from oc_share where file_source = ? and share_type = 2 and parent = ? order by share_with";
 		$sqlPartagesUserStatement =  $sql->prepare($sqlQuery) or die $sql->errstr;
 	}
 	$sqlPartageStatment->execute($gid) or die $sqlStatement->errstr;
@@ -122,24 +122,26 @@ sub printPartage {
 		my $type = $partageFile->{'item_type'};
 		my $perm = &permissionDecode($partageFile->{'permissions'});
 		my $nameOwner = $uid2name{$uidOwner};
+		my $partageId = $partageFile->{'id'};
 		my $tab;
 		
-		print "\t\t$fileId : $type $fileName <-- $uidOwner $nameOwner $perm";
+		print "\t\t$fileId : $type $fileName <-- $uidOwner $nameOwner $perm"."[$partageId] ";
 		
-		$sqlPartagesUserStatement->execute($fileId , $partageFile->{'id'}) or die $sqlPartagesUserStatement->errstr; 
+		$sqlPartagesUserStatement->execute($fileId , $partageId) or die $sqlPartagesUserStatement->errstr; 
 		my $cpt = 0;
 		
 		while (my $partageUser =  $sqlPartagesUserStatement->fetchrow_hashref()) {
 			my $uid = $partageUser->{'share_with'};
 			my $perm = &permissionDecode($partageUser->{'permissions'});
 			my $name = $uid2name{$uid};
+			my $partageId = $partageUser->{'id'};
 			
 			unless ($cpt++ % 4 ) {
 				$tab = "\n\t\t--> ";
 			} else {
 				$tab = (" " x int((40-length($text))));
 			}
-			$text = "$uid $name $perm";
+			$text = "$uid $name $perm"."[$partageId] ";
 			print "$tab$text";
 		}
 		print "\n";
