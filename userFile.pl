@@ -108,7 +108,7 @@ sub getBucket{
 	unless ($ary_ref) {
 		return 0;
 	}	
-	return $$ary_ref[1];		
+	return $$ary_ref[1];
 }
 
 my %allFiles;

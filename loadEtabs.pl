@@ -4,6 +4,13 @@ use IPC::Open3;
 use IO::Select;
 use Symbol 'gensym';
 
+use DBI();
+# les 2 use suivant permette de trouver les libraries installées
+#  dans le meme path que l'executable
+use FindBin; 			# ou est mon executable
+use lib $FindBin::Bin; 	# chercher les lib au meme endroit
+use ncUtil;
+
 my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
 my $wwwRep = $ENV{'NC_WWW'};
@@ -63,7 +70,9 @@ unless (-d $dataRep) {
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
         #0180006J 0281047L 0371418R 0371418R 0410017W 0360019A 0451483T 0450064A 0450786K 0370769K 0371159J 0370024A  
 
-	# lecture du fichier contenant les timestamps;
+my %etabATraiter; # ensembles des etabs a traiter pour ne pas en oublier
+
+	# lecture du fichier contenant les timestamps;   
 if (-r $allEtabFile) {
 		open ETAB, $allEtabFile or die "$!" ;
 		while (<ETAB>) {
@@ -77,11 +86,16 @@ if (-r $allEtabFile) {
 				my $ts = $4;
 				$etab =~ s/\s+$//; 	#suppression de \s en fin d'etab
 				if ($etab) {
-					push @allEtab ,$etab;
+					
 					if ($ts) { 		# si on a un timestamp il est normalisé à 14 chifres
 						my $size = 10 ** (14 - length($ts));
 						$ts = $ts * $size; 	# on complete avec des 0
 						$etabTimestamp{$etab} = $ts;
+						$etabATraiter{$etab} = 1;
+					} else {
+						# les etab sans timestamp sont placé en tete de liste pour etre traiter en premier
+						# les autres seront ordonnés en fonction de leurs tailles si besoin dans le traitement du param 'all'
+						push @allEtab ,$etab;
 					}
 				}
 			}
@@ -117,6 +131,30 @@ if ($ARGV[0] eq 'all' ) {
 		} else {
 			die "l'association groupe etab a produit une liste vide \n";
 		}
+	} else { # on doit mettre les etabs avec timestamp dans @allEtab par ordre de taille décroissante.
+		my $sql = connectSql();
+		my $sqlQuery = q/select uai, siren  from  recia_etab_par_taille/;
+		print "$sqlQuery\n";
+		my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+		$sqlStatement->execute() or die $sqlStatement->errstr;
+		my $cpt = 0;
+		while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+			my $uai = $tuple->{'uai'};
+			my $siren = $tuple->{'siren'};
+			if ($uai) {
+				if (delete $etabATraiter{$uai}) {
+					push @allEtab , $uai;
+				} elsif (delete $etabATraiter{$siren}) {
+					push @allEtab , $siren;
+				}
+			} else {
+				if (delete $etabATraiter{$siren}) {
+					push @allEtab , $siren;
+				}
+			}
+		}
+		# on complete avec ceux restant a traiter;
+		push @allEtab , keys %etabATraiter;
 	}
 } else {
 		# traitement que d'un etab ou un groupe si on a pas son timestamp on traite entierement
@@ -347,5 +385,3 @@ if ($saveTimestamp) {
 
 __END__
 attribut ldap de detection des changement modifytimestamp>=20080601070000
-
-
