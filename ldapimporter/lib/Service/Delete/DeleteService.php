@@ -212,7 +212,7 @@ class DeleteService
 				->join('r' , 'users', 'u',  'u.uid = r.uid')
 				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(0)))
 				->orderBy('r.dat')
-				->setMaxResults(100);
+				->setMaxResults(1000);
 				
 			$dbUsers = $qb->execute()->fetchAll();
 			
