@@ -306,7 +306,7 @@ sub traitementEtab() {
 	}
 	close $LOG;
 	system "/bin/gzip -f $logFileName" unless ($debug) ;
-	print "\n", &heure(time), " $etab $nbuser\n";
+	print "\n", &heure(time), " $etab $nbuser",  $disable ? " - $disable\n" : "\n";
 	
 	return $nbuser ? 0 : 1;
 }
