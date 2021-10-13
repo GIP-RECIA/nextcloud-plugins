@@ -11,7 +11,7 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-my $logRep = $PARAM{'NC_LOG'};
+my $logRep = $PARAM{'NC_LOG'} . "/Loader";
 my  $dataRep = $PARAM{'NC_DATA'};
 my $wwwRep = $PARAM{'NC_WWW'};
 
