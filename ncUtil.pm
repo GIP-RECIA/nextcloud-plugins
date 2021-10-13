@@ -8,12 +8,22 @@ BEGIN {
     }
 use vars      @EXPORT_OK;
 
-my $configFile = "web/config/config.php";
+my $logRep = $ENV{'NC_LOG'};
+my  $dataRep = $ENV{'NC_DATA'};
+my $wwwRep = $ENV{'NC_WWW'};
+
+$wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
+$logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
+$dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
+
+my $configFile = "$wwwRep/config/config.php";
 
 chdir;
 our %PARAM;
 
-
+$PARAM{'NC_LOG'} = $logRep;
+$PARAM{'NC_DATA'} = $dataRep;
+$PARAM{'NC_WWW'} = $wwwRep;
 	
 	# lecture des paramatres de conf
 

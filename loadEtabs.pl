@@ -11,20 +11,12 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 
-my $logRep = $ENV{'NC_LOG'};
-my  $dataRep = $ENV{'NC_DATA'};
-my $wwwRep = $ENV{'NC_WWW'};
+my $logRep = $PARAM{'NC_LOG'};
+my  $dataRep = $PARAM{'NC_DATA'};
+my $wwwRep = $PARAM{'NC_WWW'};
 
-$wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 chdir $wwwRep;
 
-if ($logRep) {
-	$logRep .= '/Loader';
-} else {
-	$logRep = $ENV{'HOME'} . '/logs-esco/Loader'
-}
-
-$dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
 
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
