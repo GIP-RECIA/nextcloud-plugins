@@ -594,29 +594,48 @@ class ShareesAPIController extends OCSController {
      * @return mixed
      */
     private function getUsersAndGroupsFromIdsListAndSearchTerm($searchedUserGroup, $searchTerm) {
+		
+		/* TODO revoir le mélange uid gid de la table oc_asso_uai_user_group qui cause ces embrouilles */
+		$searchedUser = array_filter( /* supprime les elements qui sont clairement des groupes */
+								$searchedUserGroup, 
+								function($userOrGroup) {
+									return ! strpos($userOrGroup,  '.') ;
+								}
+							);
+		$searchedGroup = array_filter( /* on supprime les éméments qui sont clairement des uids */
+								$searchedUserGroup, 
+								function($userOrGroup) {
+									return ! (preg_match('/^F\w{7}$/',$userOrGroup));
+								}
+							);
+		
         $usersQuery = $this->db->getQueryBuilder();
         $usersQuery->select(['u.uid', 'u.displayName', 'a.data'])
             ->from('users', 'u')
             ->join('u', 'accounts', 'a', 'u.uid = a.uid')
             ->where('LOWER(JSON_EXTRACT(a.data, \'$.email.value\')) LIKE LOWER(\'%' . $searchTerm . '%\')')
             ->where('LOWER(u.displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
-            ->andWhere($usersQuery->expr()->in('u.uid', $usersQuery->createNamedParameter(
-                $searchedUserGroup,
-                Connection::PARAM_STR_ARRAY
-            )))
+            ->andWhere($usersQuery->expr()->in('u.uid', $usersQuery->createParameter('uids')))
             ->orderBy('u.displayName');
-
-        $usersFetched = $usersQuery->execute()->fetchAll();
+            
+		$usersFetched = [];
+		foreach (array_chunk($searchedUser, 1000) as $chunk) {
+			$usersQuery->setParameter('uids', $chunk, Connection::PARAM_STR_ARRAY);
+			array_push($usersFetched, ...$usersQuery->execute()->fetchAll());
+		}
+        
+        
         $groupsQuery = $this->db->getQueryBuilder();
         $groupsQuery->select(['gid', 'displayName'])
             ->from('groups')
             ->where('LOWER(displayName) LIKE LOWER(\'%' . $searchTerm . '%\')')
-            ->andWhere($groupsQuery->expr()->in('gid', $groupsQuery->createNamedParameter(
-                $searchedUserGroup,
-                Connection::PARAM_STR_ARRAY
-            )));
+            ->andWhere($groupsQuery->expr()->in('gid', $groupsQuery->createParameter('gids')));
 
-        $groupsFetched = $groupsQuery->execute()->fetchAll();
+        $groupsFetched = [];
+        foreach (array_chunk($searchedGroup, 1000) as $chunk) {
+			$groupsQuery->setParameter('gids', $chunk, Connection::PARAM_STR_ARRAY);
+			array_push($groupsFetched , ...$groupsQuery->execute()->fetchAll());
+		}
         $users = array_map(function ($user) {
             $userEmail = "";
             if (!is_null($user["data"])) {
