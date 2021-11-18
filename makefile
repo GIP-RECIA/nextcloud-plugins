@@ -15,12 +15,12 @@ SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
 defaut:
-	@echo CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
 	@echo $(NEXTCLOUD_PATH) 
 
-SCRIPTS:
-	cp -rvt scripts $(NEXTCLOUD_SCRIPTS)
-	cp allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
+SCRIPTS: 
+	cp -rvUt scripts $(NEXTCLOUD_SCRIPTS)
+	cp -U allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
