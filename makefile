@@ -2,6 +2,8 @@
 
 NEXTCLOUD_PATH := ${NC_WWW}
 
+NEXTCLOUD_SCRIPTS := ${HOME}/scripts
+
 ifeq ($(NEXTCLOUD_PATH), )
 	NEXTCLOUD_PATH = ../web
 endif
@@ -14,8 +16,11 @@ CSS=$(LOADER)/inputs/css
 
 defaut:
 	@echo CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
-	@echo $(NEXTCLOUD_PATH)
+	@echo $(NEXTCLOUD_PATH) 
 
+SCRIPTS:
+	cp -rvt scripts $(NEXTCLOUD_SCRIPTS)
+	cp allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
@@ -39,4 +44,3 @@ sass: $(CSS)/reciaStyle.css
 
 $(CSS)/%.css: $(SCSS)/*.scss
 	sass  $(SCSS)/$*.scss $@
-
