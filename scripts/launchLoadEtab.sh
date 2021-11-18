@@ -1,7 +1,7 @@
 date
 rlog=$HOME/logs-esco
 fdata=$HOME/data
-rcode=$HOME/esco-nextcloud-plugins
+rcode=$HOME/scripts
 
 find $rlog \( -name '*.log' -o -name '*.log.*gz' \) -a -ctime +7 -delete
 
