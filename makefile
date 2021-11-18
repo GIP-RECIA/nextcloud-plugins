@@ -19,8 +19,8 @@ defaut:
 	@echo $(NEXTCLOUD_PATH) 
 
 SCRIPTS: 
-	cp -rvUt scripts $(NEXTCLOUD_SCRIPTS)
-	cp -U allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
+	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
+	cp -uv allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
