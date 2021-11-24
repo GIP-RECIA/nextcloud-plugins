@@ -21,6 +21,8 @@ defaut:
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
 	cp -uv allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
+	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
+
 
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
