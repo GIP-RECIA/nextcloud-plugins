@@ -21,7 +21,14 @@ CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
 FILES_SHARING:
-	cp -rubviT files_sharing $(APPS)/files_sharing
+	mkdir -p $(APPS)/backup
+	rm -vf $(APPS)/backup/last_files_sharing
+	mv -vf $(APPS)/files_sharing $(APPS)/backup/last_files_sharing
+	cp -rvT files_sharing $(APPS)/files_sharing
+
+RESTORE_FILES_SHARING:
+	rm -rvf $(APPS)/files_sharing
+	cp -rvT $(APPS)/backup/last_files_sharing $(APPS)/files_sharing
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
