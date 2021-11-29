@@ -34,10 +34,12 @@ use OCP\IConfig;
 use OCP\Share\IManager;
 use OCP\IDBConnection;
 use OCP\IGroupManager;
+use OC\URLGenerator;
 
 // use OCA\Files_Sharing\Controller\ShareesAPIController;
 use OCA\Files_Sharing\Db\EtablissementMapper;
 use OCA\Files_Sharing\Db\SearchDB;
+use Symfony\Component\Routing\Generator\UrlGenerator as GeneratorUrlGenerator;
 
 class ReciaRechercheAPIController extends OCSController {
 
@@ -66,6 +68,11 @@ class ReciaRechercheAPIController extends OCSController {
 	private $searchDB;
 
 	/**
+	 * @var urlGenerator
+	 */
+	private $urlGenerator;
+
+	/**
 	 * @var boolean
 	 */
 	private $debug = false;
@@ -88,7 +95,8 @@ class ReciaRechercheAPIController extends OCSController {
         IDBConnection $db,
 		EtablissementMapper $etabMapper,
 		SearchDB $searchDB,
-		IGroupManager $groupManager
+		IGroupManager $groupManager,
+		URLGenerator $urlGenerator
 	)
 	{
 		parent::__construct($appName, $request);
@@ -99,6 +107,7 @@ class ReciaRechercheAPIController extends OCSController {
 		$this->etabMapper = $etabMapper;
 		$this->searchDB = $searchDB;
 		$this->groupManager = $groupManager;
+		$this->urlGenerator = $urlGenerator;
 		$this->debug = (bool)$this->config->getSystemValue('debug', false);
 	}
 
@@ -201,8 +210,8 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-        return '19450042700035';
-		/*try {
+    //return '19450042700035';
+		try {
             $currentSchool = null;
 
             $host = $this->config->getAppValue('ldapimporter', 'cas_import_ad_host');
@@ -248,7 +257,7 @@ class ReciaRechercheAPIController extends OCSController {
         if(isset($ldapConnection)) {
             ldap_close($ldapConnection);
         }
-        return $currentSchool;*/
+        return $currentSchool;
 
 	}
 
