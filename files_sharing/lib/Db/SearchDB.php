@@ -24,7 +24,6 @@ namespace OCA\Files_Sharing\Db;
 
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-use OCP\ILogger;
 use OCP\Share\IShare;
 
 
@@ -32,9 +31,8 @@ class SearchDB {
 	private $db;
 	private $logger;
 
-	public function __construct(ILogger $logger, IDBConnection $db)
+	public function __construct(IDBConnection $db)
 	{
-		$this->logger = $logger;
 		$this->db = $db;
 	}
 
@@ -86,9 +84,7 @@ class SearchDB {
 			->orderBy('u.displayName')
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
-		$this->logger->error($qb->getSQL());
 		$usersFetched = $qb->execute()->fetchAll();
-		$this->logger->error(print_r($usersFetched,true));
 		if(count($usersFetched)>$limit){
 			$hasMore = true;
 			array_pop($usersFetched);
@@ -108,7 +104,6 @@ class SearchDB {
 			];
 			return $formattedUser;
 		},$usersFetched);
-		$this->logger->error(print_r($formattedUsers,true));
 		return [$formattedUsers??[],$hasMore];
 
 	}
@@ -135,9 +130,7 @@ class SearchDB {
 			->where($whereClauses)
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
-		$this->logger->error($qb->getSQL());
 		$groupsFetched = $qb->execute()->fetchAll();
-		$this->logger->error(print_r($groupsFetched,true));
 		if(count($groupsFetched)>$limit){
 			$hasMore = true;
 			array_pop($usersFetched);
@@ -155,7 +148,6 @@ class SearchDB {
 			];
 			return $formattedGroup;
 		},$groupsFetched);
-		$this->logger->error(print_r($formattedGroups,true));
 		return [$formattedGroups??[],$hasMore];
 	}
 }
