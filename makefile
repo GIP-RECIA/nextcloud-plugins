@@ -22,7 +22,7 @@ CSSJSLOADER:
 
 FILES_SHARING:
 	mkdir -p $(APPS)/backup
-	rm -vf $(APPS)/backup/last_files_sharing
+	rm -rvf $(APPS)/backup/last_files_sharing
 	mv -vf $(APPS)/files_sharing $(APPS)/backup/last_files_sharing
 	cp -rvT files_sharing $(APPS)/files_sharing
 
