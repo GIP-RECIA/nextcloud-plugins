@@ -24,6 +24,7 @@ namespace OCA\Files_Sharing\Db;
 
 use OCP\IDBConnection;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 
 class EtablissementMapper extends QBMapper {
 
@@ -37,7 +38,7 @@ class EtablissementMapper extends QBMapper {
         $qb->select('*')
             ->from($this->getTableName())
             ->where(
-                    $qb->expr()->eq('uid', $qb->createNamedParameter($uid))
+                    $qb->expr()->eq('uid', $qb->createNamedParameter($uid,IQueryBuilder::PARAM_STR))
             );
 
         return $this->findEntity($qb);
@@ -49,7 +50,7 @@ class EtablissementMapper extends QBMapper {
         $qb->select('*')
             ->from($this->getTableName())
             ->where(
-                    $qb->expr()->eq('siren', $qb->createNamedParameter($siren))
+                    $qb->expr()->eq('siren', $qb->createNamedParameter($siren,IQueryBuilder::PARAM_STR))
             );
 
         return $this->findEntity($qb);
@@ -73,7 +74,7 @@ class EtablissementMapper extends QBMapper {
            ->from($this->getTableName(),'etab')
 		   ->join('etab','asso_uai_user_group','etabgrp','etab.id = etabgrp.id_etablissement')
 		   ->where(
-				$qb->expr()->eq('etabgrp.user_group', $qb->createNamedParameter($userId))
+				$qb->expr()->eq('etabgrp.user_group', $qb->createNamedParameter($userId,IQueryBuilder::PARAM_STR))
 			)
 		   ->orderBy('etab.name')
            ->setMaxResults($limit)
