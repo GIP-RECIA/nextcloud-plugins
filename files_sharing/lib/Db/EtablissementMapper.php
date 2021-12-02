@@ -61,6 +61,7 @@ class EtablissementMapper extends QBMapper {
 
         $qb->select('*')
            ->from($this->getTableName())
+		   ->orderBy('name')
            ->setMaxResults($limit)
            ->setFirstResult($offset);
 
