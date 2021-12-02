@@ -54,6 +54,7 @@ import { getCurrentUser } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
 import debounce from 'debounce'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
+import MultiselectMixin from '../mixins/MultiselectMixin'
 
 import Config from '../services/ConfigService'
 import Share from '../models/Share'
@@ -70,7 +71,7 @@ export default {
 		Multiselect,
 	},
 
-	mixins: [ShareTypes, ShareRequests],
+	mixins: [ShareTypes, ShareRequests, MultiselectMixin],
 
 	props: {
 		shares: {
@@ -302,7 +303,6 @@ export default {
 			})
 
 			this.loading = false
-			console.info('suggestions', this.suggestions)
 		},
 
 		/**
@@ -387,7 +387,6 @@ export default {
 			})
 
 			this.loading = false
-			console.info('suggestions', this.suggestions)
 		},
 
 		/**
@@ -431,7 +430,6 @@ export default {
 				.concat(externalResults)
 
 			this.loading = false
-			console.info('recommendations', this.recommendations)
 		},
 
 		/**
@@ -603,10 +601,8 @@ export default {
 		},
 
 		reset() {
-			// eslint-disable-next-line no-console
-			console.log('reset')
 			this.query = ''
-			this.$refs.multiselect.$children[0].search = ''
+			this.resetSearch()
 			this.suggestions = []
 		},
 	},

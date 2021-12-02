@@ -347,12 +347,10 @@ export default {
 		/** start Recia */
 		updateSearchType(type) {
 			this.searchType = type
-			console.info('Search type change : ', this.searchType)
 		},
 
 		updateSelectedEtabs(etabs) {
 			this.selectedEtabs = etabs
-			console.info('Search type change : ', this.selectedEtabs)
 		},
 		/** end Recia */
 	},

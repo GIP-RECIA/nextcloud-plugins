@@ -252,6 +252,9 @@ OC.L10N.register(
 	"Search on :" : "Rechercher sur :",
 	"Your establishments" : "Vos établissements",
 	"All platform" : "Tout le monde",
-	"Establishments" : "Etablissements"
+	"Establishments" : "Etablissements",
+	"Close" : "Fermer",
+	"Select all" : "Tout selectionner",
+	"Select none" : "Tout déselectionner"
 },
 "nplurals=2; plural=(n > 1);");
