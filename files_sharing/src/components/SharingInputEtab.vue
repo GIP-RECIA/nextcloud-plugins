@@ -227,6 +227,9 @@ export default {
 .sharing-input-etab {
 	width: 100%;
 	margin: 10px 0;
+	.multiselect__content-wrapper{
+		min-height:150px;
+	}
 	.option__desc{
 		display: flex;
 		flex-direction: column;
