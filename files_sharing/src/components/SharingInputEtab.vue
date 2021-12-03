@@ -125,6 +125,7 @@ export default {
 		closeBtnTitle() {
 			return t('files_sharing', 'Close')
 		},
+
 		selectallBtnTitle() {
 			if (this.selected.length === this.etabs.length) {
 				return t('files_sharing', 'Unselect all')
@@ -167,21 +168,7 @@ export default {
 
 		change() {
 			this.isOpen && this.toggle()
-			const sirenList = this.selected.map(etab => etab.siren)
-			this.$emit('change', sirenList)
-			this.etabs.sort((etab1, etab2) => {
-				etab1.selected = sirenList.includes(etab1.siren)
-				etab2.selected = sirenList.includes(etab2.siren)
-				if (etab1.selected && etab2.selected) {
-					return etab1.name.localeCompare(etab2.name)
-				} else {
-					if (etab1.selected || etab2.selected) {
-						return etab1.selected ? -1 : +1
-					} else {
-						return etab1.name.localeCompare(etab2.name)
-					}
-				}
-			})
+			this.isChanging()
 		},
 
 		saveQuery(searchQuery) {
@@ -205,12 +192,32 @@ export default {
 
 		selectAll() {
 			this.selected = this.etabs
+			this.isChanging()
 			this.toggle()
 		},
 
 		deselectAll() {
 			this.selected = []
+			this.isChanging()
 			this.toggle()
+		},
+
+		isChanging() {
+			const sirenList = this.selected.map(etab => etab.siren)
+			this.$emit('change', sirenList)
+			this.etabs.sort((etab1, etab2) => {
+				etab1.selected = sirenList.includes(etab1.siren)
+				etab2.selected = sirenList.includes(etab2.siren)
+				if (etab1.selected && etab2.selected) {
+					return etab1.name.localeCompare(etab2.name)
+				} else {
+					if (etab1.selected || etab2.selected) {
+						return etab1.selected ? -1 : +1
+					} else {
+						return etab1.name.localeCompare(etab2.name)
+					}
+				}
+			})
 		},
 	},
 }
