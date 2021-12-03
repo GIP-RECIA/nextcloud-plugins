@@ -6,6 +6,17 @@ ifeq ($(NEXTCLOUD_PATH), )
 	NEXTCLOUD_PATH = ../web
 endif
 
+NEXTCLOUD_OWNER := ${NC_OWNER}
+NEXTCLOUD_GROUP := ${NC_GROUP}
+
+ifeq ($(NEXTCLOUD_OWNER), )
+	NEXTCLOUD_OWNER = 'www-data'
+endif
+
+ifeq ($(NEXTCLOUD_GROUP), )
+	NEXTCLOUD_GROUP = 'www-data'
+endif
+
 APPS = $(NEXTCLOUD_PATH)/apps
 
 LOADER=cssjsloader
@@ -21,14 +32,13 @@ CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
 FILES_SHARING:
-	mkdir -p $(APPS)/backup
-	rm -rvf $(APPS)/backup/last_files_sharing
-	mv -vf $(APPS)/files_sharing $(APPS)/backup/last_files_sharing
-	cp -rvT files_sharing $(APPS)/files_sharing
+	mkdir -p ./backups
+	mkdir -p ./backups/files_sharing_last
+	rsync -v -a --delete $(APPS)/files_sharing/ ./backups/files_sharing_last/
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/ $(APPS)/files_sharing/
 
 RESTORE_FILES_SHARING:
-	rm -rvf $(APPS)/files_sharing
-	cp -rvT $(APPS)/backup/last_files_sharing $(APPS)/files_sharing
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_last/ $(APPS)/files_sharing/
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
