@@ -280,8 +280,12 @@ class AdImporter implements ImporterInterface
                                             $uaiEtab = $groupAttr['entstructureuai'][0];
                                         }
 
-                                        $idEtab = $this->addEtablissement($uaiEtab, $nameEtablissement, $sirenEtab);
-                                        $assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
+                                        if($idEtab = $this->addEtablissement($uaiEtab, $nameEtablissement, $sirenEtab)){
+                                            $assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
+                                        }else{
+                                            $this->logger->exception("La regex " . $regexNameUaiGroup["nameUai"] . " appliquée au groupe ". $resultGroupsAttribute ."retourne un établissement incomplet (name:$nameEtablissement,uai:$uaiEtab,siren:$sirenEtab)");
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -628,7 +632,7 @@ class AdImporter implements ImporterInterface
      */
     protected function addEtablissement($uai, $name, $siren)
     {
-        if (!is_null($name)) {
+        if (!is_null($name) && !is_null($siren)) {
             $qbEtablissement = $this->db->getQueryBuilder();
             $qbEtablissement->select('*')
                 ->from('etablissements')
