@@ -176,6 +176,7 @@ export default {
 		},
 
 		highlight(text) {
+			if (text === null) return ''
 			if (!this.query.length) return text
 			return text.replace(new RegExp(this.query, 'gi'), function(match) {
 				return '<strong>' + match + '</strong>'
