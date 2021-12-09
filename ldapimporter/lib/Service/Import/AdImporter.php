@@ -283,7 +283,7 @@ class AdImporter implements ImporterInterface
                                         if($idEtab = $this->addEtablissement($uaiEtab, $nameEtablissement, $sirenEtab)){
                                             $assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
                                         }else{
-                                            $this->logger->exception("La regex " . $regexNameUaiGroup["nameUai"] . " appliquée au groupe ". $resultGroupsAttribute ."retourne un établissement incomplet (name:$nameEtablissement,uai:$uaiEtab,siren:$sirenEtab)");
+                                            $this->logger->error("La regex " . $regexNameUaiGroup["nameUai"] . " appliquée au groupe ". $resultGroupsAttribute ."retourne un établissement incomplet (name:$nameEtablissement,uai:$uaiEtab,siren:$sirenEtab)");
                                         }
                                         
                                     }
