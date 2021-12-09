@@ -183,7 +183,7 @@ export default {
 		},
 
 		searchLabel(etab) {
-			return `${etab.name} ${etab.uai ?? 't'}`
+			return `${etab.name} ${etab.uai ?? ''}`
 		},
 
 		showLabel(etab) {
