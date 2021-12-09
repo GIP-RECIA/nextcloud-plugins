@@ -26,7 +26,7 @@
 		<Multiselect ref="multiselect"
 			v-model="selected"
 			class="sharing-input-etab"
-			track-by="uai"
+			track-by="id"
 			label="name"
 			:limit="3"
 			:custom-label="searchLabel"
@@ -183,7 +183,7 @@ export default {
 		},
 
 		searchLabel(etab) {
-			return `${etab.name} ${etab.uai}`
+			return `${etab.name} ${etab.uai ?? 't'}`
 		},
 
 		showLabel(etab) {
