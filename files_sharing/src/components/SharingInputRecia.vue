@@ -187,8 +187,6 @@ export default {
 				// start loading now to have proper ux feedback
 				// during the debounce
 				this.loading = true
-				// eslint-disable-next-line no-console
-				console.log(this.searchEtabs)
 				if (this.searchType === 'etab' && this.searchEtabs.filter(i => i).length >= 1) {
 					await this.debounceGetReciaSuggestions(query)
 				} else {
