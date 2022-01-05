@@ -1,4 +1,4 @@
-html {
+html.ng-scp {
   /* FIX : files_sharing popover overflow : ticket I-126229 */
   height: auto !important; }
 
