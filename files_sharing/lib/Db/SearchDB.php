@@ -24,17 +24,13 @@ namespace OCA\Files_Sharing\Db;
 
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-use OCP\ILogger;
 use OCP\Share\IShare;
-
 
 class SearchDB {
 	private $db;
-	private $logger;
 
-	public function __construct(ILogger $logger, IDBConnection $db)
+	public function __construct(IDBConnection $db)
 	{
-		$this->logger = $logger;
 		$this->db = $db;
 	}
 
@@ -66,14 +62,13 @@ class SearchDB {
 		$whereClauses = $qb->expr()->andx();
 		$whereClauses->add($qb->expr()->in('e.siren',$qb->createNamedParameter($etabs,IQueryBuilder::PARAM_STR_ARRAY)));
 		$nameSearchClause = $qb->expr()->orx();
-		$nameSearchClause->add($qb->expr()->ilike('u.displayName',$qb->createNamedParameter("%$search%",IQueryBuilder::PARAM_STR)));
+		$nameSearchClause->add($qb->expr()->ilike('u.displayName',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClauseIfNull = $qb->expr()->andx();
 		$nameSearchClauseIfNull->add($qb->expr()->isNull('u.displayName'));
-		$nameSearchClauseIfNull->add($qb->expr()->ilike('u.uid',$qb->createNamedParameter("%$search%",IQueryBuilder::PARAM_STR)));
+		$nameSearchClauseIfNull->add($qb->expr()->ilike('u.uid',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClause->add($nameSearchClauseIfNull);
 		$whereClauses->add($nameSearchClause);
-		$whereClauses->add($qb->expr()->ilike($qb->createFunction("JSON_EXTRACT(a.data, '$.email.value')"),$qb->createNamedParameter("%$search%",IQueryBuilder::PARAM_STR)));
-
+		$whereClauses->add($qb->expr()->ilike($qb->createFunction("JSON_EXTRACT(a.data, '$.email.value')"),$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$qb->select(
 				'u.uid',
 				'u.displayName',
@@ -118,10 +113,10 @@ class SearchDB {
 		$whereClauses = $qb->expr()->andx();
 		$whereClauses->add($qb->expr()->in('e.siren',$qb->createNamedParameter($etabs,IQueryBuilder::PARAM_STR_ARRAY)));
 		$nameSearchClause = $qb->expr()->orx();
-		$nameSearchClause->add($qb->expr()->ilike('g.displayName',$qb->createNamedParameter("%$search%",IQueryBuilder::PARAM_STR)));
+		$nameSearchClause->add($qb->expr()->ilike('g.displayName',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClauseIfNull = $qb->expr()->andx();
 		$nameSearchClauseIfNull->add($qb->expr()->isNull('g.displayName'));
-		$nameSearchClauseIfNull->add($qb->expr()->ilike('g.gid',$qb->createNamedParameter("%$search%",IQueryBuilder::PARAM_STR)));
+		$nameSearchClauseIfNull->add($qb->expr()->ilike('g.gid',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClause->add($nameSearchClauseIfNull);
 		$whereClauses->add($nameSearchClause);
 
