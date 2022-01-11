@@ -38,6 +38,13 @@
 			open-direction="below"
 			@search-change="asyncFind"
 			@select="addShare">
+			<template slot="beforeList" v-if="!this.isValidQuery">
+				<li>
+					<span>
+						{{ t('files_sharing', 'Suggestions :') }}
+					</span>
+				</li>
+			</template>
 			<template #noOptions>
 				{{ t('files_sharing', 'No recommendations. Start typing.') }}
 			</template>
@@ -223,7 +230,7 @@ export default {
 				shareType.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL)
 			}
 
-			if (this.searchCancelSource) {
+			if (searchCancelSource) {
 				searchCancelSource.cancel('Canceled by sharees search')
 			}
 			searchCancelSource = CancelToken.source()
@@ -322,9 +329,10 @@ export default {
 		async getReciaSuggestions(search) {
 			this.loading = true
 
-			if (this.searchCancelSource) {
-				searchCancelSource.cancel('Canceled by etab search')
+			if (searchCancelSource) {
+				searchCancelSource.cancel('Canceled by sharees search')
 			}
+
 			searchCancelSource = CancelToken.source()
 
 			let request = null
@@ -627,6 +635,11 @@ export default {
 				}
 			}
 		}
+	}
+
+	.list_header{
+		padding: 5px;
+		color: var(--color-text-lighter);
 	}
 }
 </style>
