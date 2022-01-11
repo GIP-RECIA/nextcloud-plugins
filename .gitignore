@@ -204,8 +204,7 @@ yarn-error.log
 ###< nextcloud ###
 /data
 ###< nextcloud ###
-/.sass-cache/babaa7f97766229ef3d4fd284b02f74c40828aed/reciaStyle.scssc
-
+/.sass-cache/**
 ###< backups ###
 backups/**
 
