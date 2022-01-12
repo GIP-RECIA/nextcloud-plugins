@@ -249,7 +249,7 @@ export default {
 					},
 				})
 			} catch (error) {
-				if (error === 'Canceled') {
+				if (error.message === 'Canceled') {
 					console.debug('Cancel fetching suggestions', error)
 				} else {
 					console.error('Error fetching suggestions', error)
@@ -351,7 +351,7 @@ export default {
 					},
 				})
 			} catch (error) {
-				if (error === 'Canceled') {
+				if (error.message === 'Canceled') {
 					console.debug('Cancel fetching suggestions', error)
 				} else {
 					console.error('Error fetching suggestions', error)
