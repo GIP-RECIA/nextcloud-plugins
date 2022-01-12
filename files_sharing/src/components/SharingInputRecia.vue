@@ -38,6 +38,13 @@
 			open-direction="below"
 			@search-change="asyncFind"
 			@select="addShare">
+			<template slot="beforeList" v-if="!this.isValidQuery">
+				<li>
+					<span>
+						{{ t('files_sharing', 'Recommendations :') }}
+					</span>
+				</li>
+			</template>
 			<template #noOptions>
 				{{ t('files_sharing', 'No recommendations. Start typing.') }}
 			</template>
@@ -223,8 +230,8 @@ export default {
 				shareType.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL)
 			}
 
-			if (this.searchCancelSource) {
-				searchCancelSource.cancel('Canceled by sharees search')
+			if (searchCancelSource) {
+				searchCancelSource.cancel('Canceled')
 			}
 			searchCancelSource = CancelToken.source()
 
@@ -242,7 +249,11 @@ export default {
 					},
 				})
 			} catch (error) {
-				console.error('Error fetching suggestions', error)
+				if (error.message === 'Canceled') {
+					console.debug('Cancel fetching suggestions', error)
+				} else {
+					console.error('Error fetching suggestions', error)
+				}
 				return
 			}
 
@@ -322,9 +333,10 @@ export default {
 		async getReciaSuggestions(search) {
 			this.loading = true
 
-			if (this.searchCancelSource) {
-				searchCancelSource.cancel('Canceled by etab search')
+			if (searchCancelSource) {
+				searchCancelSource.cancel('Canceled')
 			}
+
 			searchCancelSource = CancelToken.source()
 
 			let request = null
@@ -339,7 +351,11 @@ export default {
 					},
 				})
 			} catch (error) {
-				console.error('Error fetching Recia suggestions', error)
+				if (error.message === 'Canceled') {
+					console.debug('Cancel fetching suggestions', error)
+				} else {
+					console.error('Error fetching suggestions', error)
+				}
 				return
 			}
 
@@ -627,6 +643,11 @@ export default {
 				}
 			}
 		}
+	}
+
+	.list_header{
+		padding: 5px;
+		color: var(--color-text-lighter);
 	}
 }
 </style>
