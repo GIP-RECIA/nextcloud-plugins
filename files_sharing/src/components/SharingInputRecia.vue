@@ -41,7 +41,7 @@
 			<template slot="beforeList" v-if="!this.isValidQuery">
 				<li>
 					<span>
-						{{ t('files_sharing', 'Suggestions :') }}
+						{{ t('files_sharing', 'Recommendations :') }}
 					</span>
 				</li>
 			</template>
@@ -231,7 +231,7 @@ export default {
 			}
 
 			if (searchCancelSource) {
-				searchCancelSource.cancel('Canceled by sharees search')
+				searchCancelSource.cancel('Canceled')
 			}
 			searchCancelSource = CancelToken.source()
 
@@ -249,7 +249,11 @@ export default {
 					},
 				})
 			} catch (error) {
-				console.error('Error fetching suggestions', error)
+				if (error === 'Canceled') {
+					console.debug('Cancel fetching suggestions', error)
+				} else {
+					console.error('Error fetching suggestions', error)
+				}
 				return
 			}
 
@@ -330,7 +334,7 @@ export default {
 			this.loading = true
 
 			if (searchCancelSource) {
-				searchCancelSource.cancel('Canceled by sharees search')
+				searchCancelSource.cancel('Canceled')
 			}
 
 			searchCancelSource = CancelToken.source()
@@ -347,7 +351,11 @@ export default {
 					},
 				})
 			} catch (error) {
-				console.error('Error fetching Recia suggestions', error)
+				if (error === 'Canceled') {
+					console.debug('Cancel fetching suggestions', error)
+				} else {
+					console.error('Error fetching suggestions', error)
+				}
 				return
 			}
 
