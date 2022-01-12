@@ -196,7 +196,7 @@ OC.L10N.register(
     "Share link ({label})" : "Partager le lien ({label})",
     "Share link" : "Lien de partage",
     "Error, please enter proper password and/or expiration date" : "Erreur. Merci d'entrer un mot de passe valide et/ou une date d'expiration",
-    "No recommendations. Start typing." : "Aucune recommandation. Commencez à écrire.",
+    "No recommendations. Start typing." : "Aucune suggestion. Commencez à écrire.",
     "Resharing is not allowed" : "Le repartage n'est pas autorisé",
     "Name or email …" : "Nom ou adresse courriel ...",
     "Name, email, or Federated Cloud ID …" : "Nom, adresse e-mail ou identifiant Federated Cloud…",
@@ -255,6 +255,7 @@ OC.L10N.register(
 	"Establishments" : "Etablissements",
 	"Close" : "Fermer",
 	"Select all" : "Tout selectionner",
-	"Select none" : "Tout déselectionner"
+	"Select none" : "Tout déselectionner",
+	"Recommendations :" : "Suggestions"
 },
 "nplurals=2; plural=(n > 1);");
