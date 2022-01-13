@@ -87,7 +87,7 @@ class SearchDB {
 			->setFirstResult($offset);
 
 		$usersFetched = $qb->execute()->fetchAll();
-		//print_r($usersFetched);
+
 		if(count($usersFetched)>$limit){
 			$hasMore = true;
 			array_pop($usersFetched);
