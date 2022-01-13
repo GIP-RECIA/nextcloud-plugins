@@ -44,13 +44,13 @@ class SearchDB {
 			'groups' => [],
 		];
 		list($result['users'],$hasMoreUsers)=$this->searchUsers($search, $etabs, $limit, $offset);
-		$result['exact']['users']=array_filter($result['users'],function($user) use ($search){
+		/*$result['exact']['users']=array_filter($result['users'],function($user) use ($search){
 			return $user['label'] == $search || $user['shareWithDisplayNameUnique'] == $search;
-		});
+		});*/
 		list($result['groups'],$hasMoreGroups)=$this->searchGroups($search, $etabs, $limit, $offset);
-		$result['exact']['groups']=array_filter($result['groups'],function($groups) use ($search){
+		/*$result['exact']['groups']=array_filter($result['groups'],function($groups) use ($search){
 			return $groups['label'] == $search;
-		});
+		});*/
 		return [$result,$hasMoreUsers||$hasMoreGroups];
 	}
 
@@ -61,35 +61,43 @@ class SearchDB {
 
 		$whereClauses = $qb->expr()->andx();
 		$whereClauses->add($qb->expr()->in('e.siren',$qb->createNamedParameter($etabs,IQueryBuilder::PARAM_STR_ARRAY)));
-		$nameSearchClause = $qb->expr()->orx();
-		$nameSearchClause->add($qb->expr()->ilike('u.displayName',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
+
+		$nameSearch = $qb->expr()->orx();
+
+		$nameSearch->add($qb->expr()->ilike('u.displayname',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClauseIfNull = $qb->expr()->andx();
-		$nameSearchClauseIfNull->add($qb->expr()->isNull('u.displayName'));
+		$nameSearchClauseIfNull->add($qb->expr()->isNull('u.displayname'));
 		$nameSearchClauseIfNull->add($qb->expr()->ilike('u.uid',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
-		$nameSearchClause->add($nameSearchClauseIfNull);
-		$whereClauses->add($nameSearchClause);
-		$whereClauses->add($qb->expr()->ilike($qb->createFunction("JSON_EXTRACT(a.data, '$.email.value')"),$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
-		$qb->select(
-				'u.uid',
-				'u.displayName',
-				$qb->createFunction("JSON_EXTRACT(a.data, '$.email.value') as email"))
+		$nameSearch->add($nameSearchClauseIfNull);
+
+		$nameSearch->add($qb->expr()->ilike($qb->createFunction("JSON_EXTRACT(a.data, '$.email.value')"),$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
+
+		$whereClauses->add($nameSearch);
+
+		$qb->selectDistinct(['u.uid',
+				'u.displayname',
+				$qb->createFunction("JSON_EXTRACT(a.data, '$.email.value') as email")])
 			->from('users', 'u')
 			->join('u', 'accounts', 'a', 'u.uid = a.uid')
 			->join('u', 'asso_uai_user_group', 'egu', 'u.uid = egu.user_group')
 			->join('egu', 'etablissements', 'e', 'egu.id_etablissement = e.id')
 			->where($whereClauses)
-			->orderBy('u.displayName')
+			->orderBy('u.displayname')
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
+
 		$usersFetched = $qb->execute()->fetchAll();
+
 		if(count($usersFetched)>$limit){
 			$hasMore = true;
 			array_pop($usersFetched);
 		}
 
+
+
 		$formattedUsers = array_map(function($user){
 			$formattedUser = [
-				'label' => $user['displayName']??$user['uid'],
+				'label' => $user['displayname']??$user['uid'],
 				'subline' => '',
 				'icon' => 'icon-user',
 				'value' => [
@@ -113,14 +121,14 @@ class SearchDB {
 		$whereClauses = $qb->expr()->andx();
 		$whereClauses->add($qb->expr()->in('e.siren',$qb->createNamedParameter($etabs,IQueryBuilder::PARAM_STR_ARRAY)));
 		$nameSearchClause = $qb->expr()->orx();
-		$nameSearchClause->add($qb->expr()->ilike('g.displayName',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
+		$nameSearchClause->add($qb->expr()->ilike('g.displayname',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClauseIfNull = $qb->expr()->andx();
-		$nameSearchClauseIfNull->add($qb->expr()->isNull('g.displayName'));
+		$nameSearchClauseIfNull->add($qb->expr()->isNull('g.displayname'));
 		$nameSearchClauseIfNull->add($qb->expr()->ilike('g.gid',$qb->createNamedParameter('%' . $this->db->escapeLikeParameter($search) . '%',IQueryBuilder::PARAM_STR)));
 		$nameSearchClause->add($nameSearchClauseIfNull);
 		$whereClauses->add($nameSearchClause);
 
-		$qb->select('g.gid', 'g.displayName')
+		$qb->select('g.gid', 'g.displayname')
 			->from('groups', 'g')
 			->join('g', 'asso_uai_user_group', 'egu', 'g.gid = egu.user_group')
 			->join('egu', 'etablissements', 'e', 'egu.id_etablissement = e.id')
@@ -135,7 +143,7 @@ class SearchDB {
 
 		$formattedGroups = array_map(function($group){
 			$formattedGroup = [
-				'label' => $group['displayName']??$group['gid'],
+				'label' => $group['displayname']??$group['gid'],
 				'subline' => '',
 				'icon' => 'icon-group',
 				'value' => [
