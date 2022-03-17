@@ -23,6 +23,7 @@
 
 namespace OC\Files\ObjectStore;
 
+use OCP\IConfig;
 use OCP\IUser;
 
 /**
@@ -36,13 +37,18 @@ class Mapper {
 	/** @var IUser */
 	private $user;
 
+	/** @var IConfig */
+	private $config;
+
 	/**
 	 * Mapper constructor.
 	 *
 	 * @param IUser $user
+	 * @param IConfig $config
 	 */
-	public function __construct(IUser $user) {
+	public function __construct(IUser $user, IConfig $config) {
 		$this->user = $user;
+		$this->config = $config;
 	}
 
 	/**
@@ -50,10 +56,16 @@ class Mapper {
 	 * @return string
 	 */
 	public function getBucket($numBuckets = 64) {
-		$hash = md5($this->user->getUID());
-		if ($numBuckets == 0 ) return base_convert($hash, 16, 36);
-		$num = hexdec(substr($hash, 0, 4));
-		return (string)($num % $numBuckets);
-	}
+		if ($numBuckets == 0) return base_convert($hash, 16, 36);
+		// Get the bucket config and shift if provided.
+		// Allow us to prevent writing in old filled buckets
+		$config = $this->config->getSystemValue('objectstore_multibucket');
+		$minBucket = is_array($config) && isset($config['arguments']['min_bucket'])
+			? (int)$config['arguments']['min_bucket']
+			: 0;
 
+		$hash = md5($this->user->getUID());
+		$num = hexdec(substr($hash, 0, 4));
+		return (string)(($num % ($numBuckets - $minBucket)) + $minBucket);
+	}
 }
