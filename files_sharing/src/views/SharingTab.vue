@@ -63,6 +63,9 @@
 				:search-type="searchType"
 				:search-etabs="selectedEtabs"
 				@add:share="addShare" />
+			<!-- end Recia  -->
+
+			<!-- add new share input -->
 			<!--
 			<SharingInput v-if="!loading"
 				:can-reshare="canReshare"
@@ -72,7 +75,6 @@
 				:shares="shares"
 				@add:share="addShare" />
 			-->
-			<!-- end Recia  -->
 
 			<!-- link shares list -->
 			<SharingLinkList v-if="!loading"
@@ -120,10 +122,8 @@ import Share from '../models/Share'
 import ShareTypes from '../mixins/ShareTypes'
 import SharingEntryInternal from '../components/SharingEntryInternal'
 import SharingEntrySimple from '../components/SharingEntrySimple'
-/** startRecia */
 // import SharingInput from '../components/SharingInput'
 import SharingInputRecia from '../components/SharingInputRecia'
-/** end Recia */
 import SharingInputEtab from '../components/SharingInputEtab'
 import SharingInputChoice from '../components/SharingInputChoice'
 
@@ -140,11 +140,12 @@ export default {
 		SharingEntryInternal,
 		SharingEntrySimple,
 		SharingInherited,
+		/* SharingInput, */
 		SharingInputRecia,
-		SharingLinkList,
-		SharingList,
 		SharingInputEtab,
 		SharingInputChoice,
+		SharingLinkList,
+		SharingList,
 	},
 
 	mixins: [ShareTypes],
@@ -324,6 +325,19 @@ export default {
 					this.updateExpirationSubtitle(share)
 					// interval update
 					this.expirationInterval = setInterval(this.updateExpirationSubtitle, 10000, share)
+				}
+			} else if (this.fileInfo && this.fileInfo.shareOwnerId !== undefined ? this.fileInfo.shareOwnerId !== OC.currentUser : false) {
+				// Fallback to compare owner and current user.
+				this.sharedWithMe = {
+					displayName: this.fileInfo.shareOwner,
+					title: t(
+						'files_sharing',
+						'Shared with you by {owner}',
+						{ owner: this.fileInfo.shareOwner },
+						undefined,
+						{ escape: false }
+					),
+					user: this.fileInfo.shareOwnerId,
 				}
 			}
 		},
