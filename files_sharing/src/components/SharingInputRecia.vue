@@ -278,7 +278,7 @@ export default {
 			// lookup clickable entry
 			// show if enabled and not already requested
 			const lookupEntry = []
-			/*
+
 			if (data.lookupEnabled && !lookup) {
 				lookupEntry.push({
 					isNoUser: true,
@@ -286,7 +286,6 @@ export default {
 					lookup: true,
 				})
 			}
-			*/
 
 			// if there is a condition specified, filter it
 			const externalResults = this.externalResults.filter(result => !result.condition || result.condition(this))

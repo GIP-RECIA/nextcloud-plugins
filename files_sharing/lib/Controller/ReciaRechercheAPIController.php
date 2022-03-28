@@ -210,7 +210,8 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-    //return '19450042700035';
+    	return '19450042700035';
+		/*
 		try {
             $currentSchool = null;
 
@@ -258,7 +259,7 @@ class ReciaRechercheAPIController extends OCSController {
             ldap_close($ldapConnection);
         }
         return $currentSchool;
-
+		*/
 	}
 
 	/**

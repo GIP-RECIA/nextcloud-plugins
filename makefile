@@ -55,6 +55,7 @@ SKELETON:
 
 LIB: 
 	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
+	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
