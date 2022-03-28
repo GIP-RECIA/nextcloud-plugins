@@ -10,10 +10,12 @@
 |	|	+-- EtablissementMapper.php
 |	|	+-- SearchDB.php
 +-- src
-|	+-- Components
+|	+-- components
 |	|	+-- SharingInputChoice.vue
 |	|	+-- SharingInputEtab.vue
 |	|	+-- SharingInputRecia.vue
+|	+-- mixins
+|	|	+-- MultiselectMixin.js
 ```
 
 ## Fichiers à modifier :
@@ -145,12 +147,10 @@ methods: {
 
 	updateSearchType(type) {
 		this.searchType = type
-		console.info('Search type change : ', this.searchType)
 	},
 
 	updateSelectedEtabs(etabs) {
 		this.selectedEtabs = etabs
-		console.info('Search type change : ', this.selectedEtabs)
 	},
 },
 ```

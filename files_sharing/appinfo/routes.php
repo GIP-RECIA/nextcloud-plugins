@@ -159,10 +159,9 @@ return [
 			'url' => '/api/v1/sharees_recommended',
 			'verb' => 'GET',
 		],
-		/** Start Recia */
 		/*
-		 * Recia Sharee API
-		 */
+		* Recia Sharee API
+		*/
 		[
 			'name' => 'ReciaRechercheAPI#search',
 			'url' => '/api/v1/recia_search',
@@ -173,7 +172,6 @@ return [
 			'url' => '/api/v1/recia_list_etabs',
 			'verb' => 'GET',
 		],
-		/** End Recia */
 		/*
 		 * Remote Shares
 		 */
