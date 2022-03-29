@@ -25,17 +25,17 @@ LOADER=cssjsloader
 SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
-ifeq (${USER}, 'ncgip')
+ifeq (${USER}, ncgip)
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
 	@echo SCRIPTS LDAPIMPORTER
-	@echo $(NEXTCLOUD_PATH) 
+	@echo ${USER} $(NEXTCLOUD_PATH) 
 else
 ALLETAB=allEtab.txt
 defaut:
 	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
-	@echo $(NEXTCLOUD_PATH) 
+	@echo ${USER} $(NEXTCLOUD_PATH) 
 endif
 
 SCRIPTS: 
@@ -47,7 +47,7 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 
-ifneq (${USER}, 'ncgip')
+ifneq (${USER}, ncgip)
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
