@@ -25,18 +25,32 @@ LOADER=cssjsloader
 SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
+ifeq (${USER}, 'ncgip')
+ALLETAB=allEtab_ncgip.txt
+
+defaut:
+	@echo SCRIPTS LDAPIMPORTER
+	@echo $(NEXTCLOUD_PATH) 
+else
+ALLETAB=allEtab.txt
 defaut:
 	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS
 	@echo $(NEXTCLOUD_PATH) 
+endif
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
-	cp -uv allEtab.txt $(NEXTCLOUD_SCRIPTS)/allEtab.txt
+	cp -uv $(ALLETAB) $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 
+LDAPIMPORTER:
+	cp -rvT ldapimporter $(APPS)/ldapimporter
 
+
+ifneq (${USER}, 'ncgip')
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
+
 
 FILES_SHARING:
 	mkdir -p ./backups
@@ -47,8 +61,7 @@ FILES_SHARING:
 RESTORE_FILES_SHARING:
 	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_last/ $(APPS)/files_sharing/
 
-LDAPIMPORTER:
-	cp -rvT ldapimporter $(APPS)/ldapimporter
+
 
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
@@ -59,6 +72,8 @@ LIB:
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
+
+endif
 
 sass: $(CSS)/reciaStyle.css
 
