@@ -1,3 +1,25 @@
+#### Adaptation a nextcloud pour le gip recia
+
+Le recia à deux déploiements de NC sur la même architecture une pour les
+ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip)
+
+
+Les modifications portent principalement sur :
+- la gestion des groupes (ldap importer):
+Données les droits (quota) et créer les groupes NC à partir des groupes LDAP.
+
+- La recherche de groupe et personne pour le partage (file_sharing):
+uniquement pour 'nc-ent'.
+
+- gestion des buckets (nc-ent uniquement):
+n'avoir qu'un bucket par compte , par avatar et vignette.
+
+- un plugin de chargement de js et css particulier (uniquement nc-ent cssjsLoader)
+
+- les fichiers par défauts (uniquement nc-ent):
+suppression modification du repertoire skeleton
+
+
 # LDAP Importer
 
 Plugin pour nextcloud LDAP Importer
