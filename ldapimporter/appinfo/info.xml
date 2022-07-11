@@ -5,7 +5,7 @@
     <name>Ldap Importer</name>
     <summary>LDAP importer</summary>
     <description><![CDATA[Synchronize users and group from ldap to nextcloud databases]]></description>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
     <licence>agpl</licence>
     <author>RECIA</author>
     <namespace>LdapImporter</namespace>
@@ -16,7 +16,7 @@
         <authentication/>
     </types>
     <dependencies>
-        <nextcloud min-version="15" max-version="18"/>
+        <nextcloud min-version="15" max-version="24"/>
     </dependencies>
     <category>security</category>
 
