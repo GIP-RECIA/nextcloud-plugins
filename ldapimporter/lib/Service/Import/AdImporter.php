@@ -105,7 +105,7 @@ class AdImporter implements ImporterInterface
      */
     public function getUsers()
     {
-		$date = date('Y-m-d');
+        $date = date('Y-m-d');
         $uidAttribute = $this->config->getAppValue($this->appName, 'cas_import_map_uid');
 
         $displayNameAttribute1 = $this->config->getAppValue($this->appName, 'cas_import_map_displayname');
@@ -171,7 +171,7 @@ class AdImporter implements ImporterInterface
         }
         
         if (!$this->db->tableExists("recia_user_history")) {
-			$this->logger->error("Creation de la table :" );
+            $this->logger->error("Creation de la table :" );
             $sql =
                 'CREATE TABLE `*PREFIX*recia_user_history`' .
                 '(' .
@@ -232,7 +232,7 @@ class AdImporter implements ImporterInterface
 
 
                 $enable = 1;
-				
+                
 
                 $groupsArray = [];
 
@@ -303,36 +303,31 @@ class AdImporter implements ImporterInterface
 
                             foreach ($groupsFilterAttribute as $groupFilter) {
                                 if (array_key_exists('filter', $groupFilter)) {
-                                    if (preg_match_all("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
-                                        $addUser = TRUE; # Only add user if the group has a MAP_GROUPS  attribute matching
-
+                                    if (preg_match("/" . $groupFilter['filter'] . "/si", $resultGroupsAttribute, $groupFilterMatches)) {
+                                        $addUser = TRUE;
                                         if (!isset($quota) || intval($quota) < intval($groupFilter['quota'])) {
                                             $quota = $groupFilter['quota'];
                                         }
+                                        
                                         if (array_key_exists('naming', $groupFilter)) {
-
                                             $newName = $groupFilter['naming'];
-                                            $regexGabarits = '/\$\{(.*?)\}/i';
-
-                                            preg_match_all($regexGabarits, $newName, $matches, PREG_SET_ORDER, 0);
-                                            $sprintfArray = [];
-                                            foreach ($matches as $match) {
-                                                $newName = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $newName, 1);
-                                                $sprintfArray[] = $groupFilterMatches[$match[1]][0];
+                                            if (!is_null($groupFilterMatches) && $groupFilterMatches.lengths > 1) {
+                                                $groupFilterMatches = array_shift($groupFilterMatches);
+                                                $groupName = sprintf($newName, ...$groupFilterMatches);
+                                            } else {
+                                                $groupName = $newName;
                                             }
-                                            $groupName = $this->normalizedGroupeName(sprintf($newName, ...$sprintfArray));
-                                       
-                                            if (!is_null($groupFilterMatches) && !is_null($groupFilter["uaiNumber"]) && count($assoEtablissementUaiOrNameAndId) > 0) {
-                                                $nameOrUaiFromUaiNumber = $groupFilterMatches[intval($groupFilter["uaiNumber"])];
-                                                $idEtablissement = $assoEtablissementUaiOrNameAndId[$nameOrUaiFromUaiNumber[0]];
-                                                $this->addEtablissementAsso($idEtablissement, $groupName);
-                                                $this->addEtablissementAsso($idEtablissement, $employeeID);
-                                                $idsEtabUser[] = $idEtablissement;
-                                            }
-                                            elseif (!is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
-                                                $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
-                                            }
-                                            break;
+                                            $groupName = $this->normalizedGroupeName($groupeName);
+                                        }
+                                        if (!is_null($groupFilterMatches) && !is_null($groupFilter["uaiNumber"]) && count($assoEtablissementUaiOrNameAndId) > 0) {
+                                            $nameOrUaiFromUaiNumber = $groupFilterMatches[intval($groupFilter["uaiNumber"])];
+                                            $idEtablissement = $assoEtablissementUaiOrNameAndId[$nameOrUaiFromUaiNumber[0]];
+                                            $this->addEtablissementAsso($idEtablissement, $groupName);
+                                            $this->addEtablissementAsso($idEtablissement, $employeeID);
+                                            $idsEtabUser[] = $idEtablissement;
+                                        }
+                                        elseif (!is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
+                                            $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
                                         }
                                     }
                                     else {
@@ -349,78 +344,78 @@ class AdImporter implements ImporterInterface
                     }
                 }
                 
-				if ($addUser) {
-					foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
-						if (array_key_exists("field", $groupsAttrPedagogic) && isset($m[strtolower($groupsAttrPedagogic["field"])][0]) && strlen($groupsAttrPedagogic["field"]) > 0 &&
-							array_key_exists("filter", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["filter"]) > 0 &&
-							array_key_exists("naming", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["naming"]) > 0
-						) {
-							$pedagogicField = $groupsAttrPedagogic["field"];
+                if ($addUser) {
+                    foreach ($arrayGroupsAttrPedagogic as $groupsAttrPedagogic) {
+                        if (array_key_exists("field", $groupsAttrPedagogic) && isset($m[strtolower($groupsAttrPedagogic["field"])][0]) && strlen($groupsAttrPedagogic["field"]) > 0 &&
+                            array_key_exists("filter", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["filter"]) > 0 &&
+                            array_key_exists("naming", $groupsAttrPedagogic) && strlen($groupsAttrPedagogic["naming"]) > 0
+                        ) {
+                            $pedagogicField = $groupsAttrPedagogic["field"];
 
-							# Cycle all groups of the user
-							for ($j = 0; $j < $m[strtolower($pedagogicField)]["count"]; $j++) {
-								$attrPedagogicStr = $m[strtolower($pedagogicField)][$j];
-								$pedagogicFilter = $groupsAttrPedagogic["filter"];
-								$pedagogicNaming = $groupsAttrPedagogic["naming"];
+                            # Cycle all groups of the user
+                            for ($j = 0; $j < $m[strtolower($pedagogicField)]["count"]; $j++) {
+                                $attrPedagogicStr = $m[strtolower($pedagogicField)][$j];
+                                $pedagogicFilter = $groupsAttrPedagogic["filter"];
+                                $pedagogicNaming = $groupsAttrPedagogic["naming"];
 
-								if (preg_match_all("/" . $pedagogicFilter . "/si", $attrPedagogicStr, $groupPedagogicMatches)) {
-									# Check if user has MAP_GROUPS attribute
-									if (isset($attrPedagogicStr) && strpos($attrPedagogicStr, "$")) {
-										$addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
-										$arrayGroupNamePedagogic = explode('$', $attrPedagogicStr);
+                                if (preg_match_all("/" . $pedagogicFilter . "/si", $attrPedagogicStr, $groupPedagogicMatches)) {
+                                    # Check if user has MAP_GROUPS attribute
+                                    if (isset($attrPedagogicStr) && strpos($attrPedagogicStr, "$")) {
+                                        $addUser = TRUE; # Only add user if the group has a MAP_GROUPS attribute
+                                        $arrayGroupNamePedagogic = explode('$', $attrPedagogicStr);
 
-										$groupCn = array_shift($arrayGroupNamePedagogic);
+                                        $groupCn = array_shift($arrayGroupNamePedagogic);
 
-										# Retrieve the MAP_GROUPS_FIELD attribute of the group
-										$groupAttr = $this->getLdapSearch($groupCn);
-										$groupName = '';
+                                        # Retrieve the MAP_GROUPS_FIELD attribute of the group
+                                        $groupAttr = $this->getLdapSearch($groupCn);
+                                        $groupName = '';
 
-										$regexGabarits = '/\$\{(.*?)\}/i';
+                                        $regexGabarits = '/\$\{(.*?)\}/i';
 
-										preg_match_all($regexGabarits, $pedagogicNaming, $matches, PREG_SET_ORDER, 0);
-										$sprintfArray = [];
-										foreach ($matches as $match) {
+                                        preg_match_all($regexGabarits, $pedagogicNaming, $matches, PREG_SET_ORDER, 0);
+                                        $sprintfArray = [];
+                                        foreach ($matches as $match) {
 
-											$pedagogicNaming = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $pedagogicNaming, 1);
-											if (is_numeric($match[1])) {
-												$sprintfArray[] = $groupPedagogicMatches[$match[1]][0];
-											}
-											else {
-												if (strtolower($match[1]) === 'nometablissement') {
-													$sprintfArray[] = $this->getEstablishmentNameFromUAI($groupAttr['entstructureuai'][0]);
-												}
-												elseif (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
-													$sprintfArray[] = $groupAttr[strtolower($match[1])][0];
-												}
-												else {
-													$this->logger->debug("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
-												}
-											}
-										}
-										$groupName = sprintf($pedagogicNaming, ...$sprintfArray);
+                                            $pedagogicNaming = preg_replace('/\$\{' . $match[1] . '\}/i', '%s', $pedagogicNaming, 1);
+                                            if (is_numeric($match[1])) {
+                                                $sprintfArray[] = $groupPedagogicMatches[$match[1]][0];
+                                            }
+                                            else {
+                                                if (strtolower($match[1]) === 'nometablissement') {
+                                                    $sprintfArray[] = $this->getEstablishmentNameFromUAI($groupAttr['entstructureuai'][0]);
+                                                }
+                                                elseif (array_key_exists(strtolower($match[1]), $groupAttr) && $groupAttr[strtolower($match[1])]["count"] > 0) {
+                                                    $sprintfArray[] = $groupAttr[strtolower($match[1])][0];
+                                                }
+                                                else {
+                                                    $this->logger->debug("Groupes pédagogique : l'attibut : " . strtolower($match[1]) . " n'existe pas dans les groupe édagogique");
+                                                }
+                                            }
+                                        }
+                                        $groupName = sprintf($pedagogicNaming, ...$sprintfArray);
                                         if (array_key_exists('entstructureuai', $groupAttr) && $groupAttr['entstructureuai']['count'] > 0) {
                                             $idEtablishement = $this->getIdEtablissementFromUai($groupAttr['entstructureuai'][0]);
                                             if ($groupName && strlen($groupName) > 0) {
-												$groupName = $this->normalizedGroupeName($groupName);
+                                                $groupName = $this->normalizedGroupeName($groupName);
                                                 $this->addEtablissementAsso($idEtablishement, $groupName);
                                             }
                                             $this->addEtablissementAsso($idEtablishement, $employeeID);
                                             $idsEtabUser[] = $idEtablissement;
                                         }
 
-										if ($groupName && strlen($groupName) > 0) {
-											$this->logger->debug("Groupes pédagogique : " . $groupName);
-											$groupsArray[] = $groupName;
-										}
-									}
-								}
-								else {
-									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
-								}
-							}
-						}
-					}
-				}
+                                        if ($groupName && strlen($groupName) > 0) {
+                                            $this->logger->debug("Groupes pédagogique : " . $groupName);
+                                            $groupsArray[] = $groupName;
+                                        }
+                                    }
+                                }
+                                else {
+                                    $this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
+                                }
+                            }
+                        }
+                    }
+                }
                 # Fill the users array only if we have an employeeId and addUser is true
                 if (isset($employeeID) && $addUser) {
                     $this->logger->info("Groupes pédagogique : Ajout de l'utilisateur avec id  : " . $employeeID);
@@ -438,29 +433,29 @@ class AdImporter implements ImporterInterface
                     }
                     $this->merger->mergeUsers($users, ['uid' => $employeeID, 'displayName' => $displayName, 'email' => $mail, 'quota' => $quota, 'groups' => $groupsArray, 'enable' => $enable, 'dn' => $dn, 'uai_courant' => $uaiCourant], $mergeAttribute, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith);
                 }
-				
-				/* pl mettre l'historique a jours. */
-				$etat = false;
-				$alreadyExist= false;
-				
+                
+                /* pl mettre l'historique a jours. */
+                $etat = false;
+                $alreadyExist= false;
+                
                 
                 if (isset($m[$enableAttribute][0]) && $employeeID) {
-					$etat = $m[$enableAttribute][0];
-					$etabRatach = $m['entpersonstructrattach'][0];
-					if ($etat && $etabRatach ) {
-						$alreadyExists =$this->userHistoryExists($employeeID);
-						if ($alreadyExists || $addUser) {
-							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
-								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etat, $date, $grp[1]);
-							} else {
-								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
-							}
-						}
-					} else {
-						if ($adduser) {
-							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
-						}
-					}
+                    $etat = $m[$enableAttribute][0];
+                    $etabRatach = $m['entpersonstructrattach'][0];
+                    if ($etat && $etabRatach ) {
+                        $alreadyExists =$this->userHistoryExists($employeeID);
+                        if ($alreadyExists || $addUser) {
+                            if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
+                                $this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+                            } else {
+                                $this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
+                            }
+                        }
+                    } else {
+                        if ($adduser) {
+                            $this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
+                        }
+                    }
                 }
             }
         }
@@ -470,22 +465,22 @@ class AdImporter implements ImporterInterface
         return $users;
     }
 
-	protected function normalizedGroupeName($groupName) {
-	/*	$name = str_replace(aray('é','è','ê','ë'),'e', $groupName);
-		$name = str_replace(aray('É','È','Ê','Ë'),'E', $name);
-		$name = str_replace(aray('à', 'â', 'ä'), 'a', $name);
-		$name = str_replace(aray('À', 'Â', 'Ä'), 'A', $name);
-		* $name = strtr($groupName,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ','aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
-	*/	
-		    $accents = array("à","á","â","ã","ä","ç","è","é","ê","ë","ì","í","î","ï","ñ","ò","ó","ô","õ","ö","ù","ú","û","ü","ý","ÿ","À","Á","Â","Ã","Ä","Ç","È","É","Ê","Ë","Ì","Í","Î","Ï","Ñ","Ò","Ó","Ô","Õ","Ö","Ù","Ú","Û","Ü","Ý");
-		$sansAccents = array("a","a","a","a","a","c","e","e","e","e","i","i","i","i","n","o","o","o","o","o","u","u","u","u","y","y","A","A","A","A","A","C","E","E","E","E","I","I","I","I","N","O","O","O","O","O","U","U","U","U","Y");
-		$name = str_replace($accents, $sansAccents, $groupName);
-		return preg_replace("/[^a-zA-Z0-9\.\-_ @]+/", "", $name);
-		
-	}
-	
-	protected function userHistoryExists( $uid) {
-		$qbHist = $this->db->getQueryBuilder();
+    protected function normalizedGroupeName($groupName) {
+    /*  $name = str_replace(aray('é','è','ê','ë'),'e', $groupName);
+        $name = str_replace(aray('É','È','Ê','Ë'),'E', $name);
+        $name = str_replace(aray('à', 'â', 'ä'), 'a', $name);
+        $name = str_replace(aray('À', 'Â', 'Ä'), 'A', $name);
+        * $name = strtr($groupName,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ','aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+    */  
+            $accents = array("à","á","â","ã","ä","ç","è","é","ê","ë","ì","í","î","ï","ñ","ò","ó","ô","õ","ö","ù","ú","û","ü","ý","ÿ","À","Á","Â","Ã","Ä","Ç","È","É","Ê","Ë","Ì","Í","Î","Ï","Ñ","Ò","Ó","Ô","Õ","Ö","Ù","Ú","Û","Ü","Ý");
+        $sansAccents = array("a","a","a","a","a","c","e","e","e","e","i","i","i","i","n","o","o","o","o","o","u","u","u","u","y","y","A","A","A","A","A","C","E","E","E","E","I","I","I","I","N","O","O","O","O","O","U","U","U","U","Y");
+        $name = str_replace($accents, $sansAccents, $groupName);
+        return preg_replace("/[^a-zA-Z0-9\.\-_ @]+/", "", $name);
+        
+    }
+    
+    protected function userHistoryExists( $uid) {
+        $qbHist = $this->db->getQueryBuilder();
         $qbHist->select('uid')
             ->from('recia_user_history')
             ->where($qbHist->expr()->eq('uid', $qbHist->createNamedParameter($uid)))
@@ -493,38 +488,38 @@ class AdImporter implements ImporterInterface
         $result = $qbHist->execute();
         $uids = $result->fetchAll();
         return count($uids) > 0;
-	}
-	
-	protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
-		$qbHist = $this->db->getQueryBuilder();
-		
-		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
-		
-		if ($isExists) {
-			$qbHist->update('recia_user_history')
-				->set('eta', $qbHist->createNamedParameter($etat))
-				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
-				->set('dat', $qbHist->createNamedParameter($date))
-				->set('siren', $qbHist->createNamedParameter($siren))
-				->set('isdel', $qbHist->createNamedParameter($del))
-				->set('name', $qbHist->createNamedParameter($name))
-				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
-			$qbHist->execute();
-				
-		} else {
-			$qbHist->insert('recia_user_history')
-				->values([
-					'uid' => $qbHist->createNamedParameter($uid),
-					'eta' => $qbHist->createNamedParameter($etat),
-					'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
-					'dat' => $qbHist->createNamedParameter($date),
-					'siren' => $qbHist->createNamedParameter($siren),
-					'isdel' => $qbHist->createNamedParameter($del),
-					'name' => $qbHist->createNamedParameter($name),
-				]);
-			$qbHist->execute();
-		}
-	}
+    }
+    
+    protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
+        $qbHist = $this->db->getQueryBuilder();
+        
+        $del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+        
+        if ($isExists) {
+            $qbHist->update('recia_user_history')
+                ->set('eta', $qbHist->createNamedParameter($etat))
+                ->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
+                ->set('dat', $qbHist->createNamedParameter($date))
+                ->set('siren', $qbHist->createNamedParameter($siren))
+                ->set('isdel', $qbHist->createNamedParameter($del))
+                ->set('name', $qbHist->createNamedParameter($name))
+                ->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
+            $qbHist->execute();
+                
+        } else {
+            $qbHist->insert('recia_user_history')
+                ->values([
+                    'uid' => $qbHist->createNamedParameter($uid),
+                    'eta' => $qbHist->createNamedParameter($etat),
+                    'isadd' => $qbHist->createNamedParameter($isAdded ? 1: 0),
+                    'dat' => $qbHist->createNamedParameter($date),
+                    'siren' => $qbHist->createNamedParameter($siren),
+                    'isdel' => $qbHist->createNamedParameter($del),
+                    'name' => $qbHist->createNamedParameter($name),
+                ]);
+            $qbHist->execute();
+        }
+    }
     /**
      *
      * @param $currentEtablishementIds
@@ -688,17 +683,17 @@ class AdImporter implements ImporterInterface
     {
         if (!is_null($siren)) {
             try {
-				$qb = $this->db->getQueryBuilder();
-				$qb->select('id')
-					->from('etablissements')
-					->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
-				$result = $qb->execute();
+                $qb = $this->db->getQueryBuilder();
+                $qb->select('id')
+                    ->from('etablissements')
+                    ->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
+                $result = $qb->execute();
             
-				$idEtabs = $result->fetchAll()[0];
-				return $idEtabs["id"];
-			} catch (\Exception $e) {
-				$this->logger->error(print_r($e, TRUE) . "  [Siren = $siren] ");
-			}
+                $idEtabs = $result->fetchAll()[0];
+                return $idEtabs["id"];
+            } catch (\Exception $e) {
+                $this->logger->error(print_r($e, TRUE) . "  [Siren = $siren] ");
+            }
         }
         return null;
     }
@@ -711,7 +706,7 @@ class AdImporter implements ImporterInterface
      */
     protected function addEtablissementAsso($idEtablissement, $groupUserId)
     {
-		
+        
         if (!is_null($groupUserId) && !empty($groupUserId) && !is_null($idEtablissement)) {
             $qb = $this->db->getQueryBuilder();
             $qb->select('*')
@@ -746,9 +741,9 @@ class AdImporter implements ImporterInterface
     protected function getLdapList($object_dn, $filter, $keepAtributes, $pageSize)
     {
         if (!is_null($this->ldapFilter)) {
-			  $filter = "(&" . $this->ldapFilter . $filter . ")";
+              $filter = "(&" . $this->ldapFilter . $filter . ")";
         }
-		$this->logger->info('ldap filter = ' . $filter);
+        $this->logger->info('ldap filter = ' . $filter);
 
         $cookie = '';
         $members = [];
