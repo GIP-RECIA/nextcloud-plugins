@@ -23,7 +23,7 @@
  * @author Individual IT Services <info@individual-it.net>
  * @author Jakob Sack <mail@jakobsack.de>
  * @author Joas Schilling <coding@schilljs.com>
- * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Jörn Friedrich Dreyer <jfd@butonic.de>
  * @author Julius Härtl <jus@bitgrid.net>
  * @author Kawohl <john@owncloud.com>
@@ -43,6 +43,7 @@
  * @author Stefan Weil <sw@weilnetz.de>
  * @author Thomas Müller <thomas.mueller@tmit.eu>
  * @author Thomas Tanghus <thomas@tanghus.net>
+ * @author Valdnet <47037905+Valdnet@users.noreply.github.com>
  * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  * @author Vincent Petry <vincent@nextcloud.com>
  * @author Volkan Gezer <volkangezer@gmail.com>
@@ -62,7 +63,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 use bantu\IniGetWrapper\IniGetWrapper;
 use OC\AppFramework\Http\Request;
 use OC\Files\Storage\LocalRootStorage;
@@ -72,6 +72,7 @@ use OCP\IGroupManager;
 use OCP\ILogger;
 use OCP\IUser;
 use OCP\IUserSession;
+use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 class OC_Util {
@@ -79,6 +80,7 @@ class OC_Util {
 	public static $styles = [];
 	public static $headers = [];
 	private static $rootMounted = false;
+	private static $rootFsSetup = false;
 	private static $fsSetup = false;
 
 	/** @var array Local cache of version.php */
@@ -184,30 +186,18 @@ class OC_Util {
 	 * @suppress PhanDeprecatedFunction
 	 * @suppress PhanAccessMethodInternal
 	 */
-	public static function setupFS($user = '') {
+	public static function setupRootFS(string $user = '') {
 		//setting up the filesystem twice can only lead to trouble
-		if (self::$fsSetup) {
+		if (self::$rootFsSetup) {
 			return false;
 		}
 
-		\OC::$server->getEventLogger()->start('setup_fs', 'Setup filesystem');
-
-		// If we are not forced to load a specific user we load the one that is logged in
-		if ($user === null) {
-			$user = '';
-		} elseif ($user == "" && \OC::$server->getUserSession()->isLoggedIn()) {
-			$user = OC_User::getUser();
-		}
+		\OC::$server->getEventLogger()->start('setup_root_fs', 'Setup root filesystem');
 
 		// load all filesystem apps before, so no setup-hook gets lost
 		OC_App::loadApps(['filesystem']);
 
-		// the filesystem will finish when $user is not empty,
-		// mark fs setup here to avoid doing the setup from loading
-		// OC_Filesystem
-		if ($user != '') {
-			self::$fsSetup = true;
-		}
+		self::$rootFsSetup = true;
 
 		\OC\Files\Filesystem::initMountManager();
 
@@ -275,10 +265,10 @@ class OC_Util {
 				return new \OC\Files\Storage\Wrapper\PermissionsMask([
 					'storage' => $storage,
 					'mask' => \OCP\Constants::PERMISSION_ALL & ~(
-						\OCP\Constants::PERMISSION_UPDATE |
-						\OCP\Constants::PERMISSION_CREATE |
-						\OCP\Constants::PERMISSION_DELETE
-					),
+							\OCP\Constants::PERMISSION_UPDATE |
+							\OCP\Constants::PERMISSION_CREATE |
+							\OCP\Constants::PERMISSION_DELETE
+						),
 				]);
 			}
 			return $storage;
@@ -311,19 +301,46 @@ class OC_Util {
 			$mountManager->addMount($rootMountProvider);
 		}
 
-		if ($user != '' && !\OC::$server->getUserManager()->userExists($user)) {
-			\OC::$server->getEventLogger()->end('setup_fs');
+		\OC::$server->getEventLogger()->end('setup_root_fs');
+
+		return true;
+	}
+
+	/**
+	 * Setup the file system
+	 *
+	 * @param string|null $user
+	 * @return boolean
+	 * @description configure the initial filesystem based on the configuration
+	 * @suppress PhanDeprecatedFunction
+	 * @suppress PhanAccessMethodInternal
+	 */
+	public static function setupFS(?string $user = '') {
+		self::setupRootFS($user ?? '');
+
+		if (self::$fsSetup) {
 			return false;
 		}
 
-		//if we aren't logged in, there is no use to set up the filesystem
-		if ($user != "") {
-			$userDir = '/' . $user . '/files';
+		\OC::$server->getEventLogger()->start('setup_fs', 'Setup filesystem');
+
+		// If we are not forced to load a specific user we load the one that is logged in
+		if ($user === '') {
+			$userObject = \OC::$server->get(\OCP\IUserSession::class)->getUser();
+		} else {
+			$userObject = \OC::$server->get(\OCP\IUserManager::class)->get($user);
+		}
+
+		//if we aren't logged in, or the user doesn't exist, there is no use to set up the filesystem
+		if ($userObject) {
+			self::$fsSetup = true;
+
+			$userDir = '/' . $userObject->getUID() . '/files';
 
 			//jail the user into his "home" directory
-			\OC\Files\Filesystem::init($user, $userDir);
+			\OC\Files\Filesystem::init($userObject, $userDir);
 
-			OC_Hook::emit('OC_Filesystem', 'setup', ['user' => $user, 'user_dir' => $userDir]);
+			OC_Hook::emit('OC_Filesystem', 'setup', ['user' => $userObject->getUID(), 'user_dir' => $userDir]);
 		}
 		\OC::$server->getEventLogger()->end('setup_fs');
 		return true;
@@ -336,8 +353,9 @@ class OC_Util {
 	 * @suppress PhanDeprecatedFunction
 	 */
 	public static function isPublicLinkPasswordRequired() {
-		$enforcePassword = \OC::$server->getConfig()->getAppValue('core', 'shareapi_enforce_links_password', 'no');
-		return $enforcePassword === 'yes';
+		/** @var IManager $shareManager */
+		$shareManager = \OC::$server->get(IManager::class);
+		return $shareManager->shareApiLinkEnforcePassword();
 	}
 
 	/**
@@ -348,25 +366,10 @@ class OC_Util {
 	 * @return bool
 	 */
 	public static function isSharingDisabledForUser(IConfig $config, IGroupManager $groupManager, $user) {
-		if ($config->getAppValue('core', 'shareapi_exclude_groups', 'no') === 'yes') {
-			$groupsList = $config->getAppValue('core', 'shareapi_exclude_groups_list', '');
-			$excludedGroups = json_decode($groupsList);
-			if (is_null($excludedGroups)) {
-				$excludedGroups = explode(',', $groupsList);
-				$newValue = json_encode($excludedGroups);
-				$config->setAppValue('core', 'shareapi_exclude_groups_list', $newValue);
-			}
-			$usersGroups = $groupManager->getUserGroupIds($user);
-			if (!empty($usersGroups)) {
-				$remainingGroups = array_diff($usersGroups, $excludedGroups);
-				// if the user is only in groups which are disabled for sharing then
-				// sharing is also disabled for the user
-				if (empty($remainingGroups)) {
-					return true;
-				}
-			}
-		}
-		return false;
+		/** @var IManager $shareManager */
+		$shareManager = \OC::$server->get(IManager::class);
+		$userId = $user ? $user->getUID() : null;
+		return $shareManager->sharingDisabledForUser($userId);
 	}
 
 	/**
@@ -376,14 +379,9 @@ class OC_Util {
 	 * @suppress PhanDeprecatedFunction
 	 */
 	public static function isDefaultExpireDateEnforced() {
-		$isDefaultExpireDateEnabled = \OC::$server->getConfig()->getAppValue('core', 'shareapi_default_expire_date', 'no');
-		$enforceDefaultExpireDate = false;
-		if ($isDefaultExpireDateEnabled === 'yes') {
-			$value = \OC::$server->getConfig()->getAppValue('core', 'shareapi_enforce_expire_date', 'no');
-			$enforceDefaultExpireDate = $value === 'yes';
-		}
-
-		return $enforceDefaultExpireDate;
+		/** @var IManager $shareManager */
+		$shareManager = \OC::$server->get(IManager::class);
+		return $shareManager->shareApiLinkDefaultExpireDateEnforced();
 	}
 
 	/**
@@ -501,6 +499,7 @@ class OC_Util {
 		\OC\Files\Filesystem::tearDown();
 		\OC::$server->getRootFolder()->clearCache();
 		self::$fsSetup = false;
+		self::$rootFsSetup = false;
 		self::$rootMounted = false;
 	}
 
@@ -747,10 +746,10 @@ class OC_Util {
 			$config,
 			\OC::$server->get(IniGetWrapper::class),
 			\OC::$server->getL10N('lib'),
-			\OC::$server->query(\OCP\Defaults::class),
-			\OC::$server->getLogger(),
+			\OC::$server->get(\OCP\Defaults::class),
+			\OC::$server->get(LoggerInterface::class),
 			\OC::$server->getSecureRandom(),
-			\OC::$server->query(\OC\Installer::class)
+			\OC::$server->get(\OC\Installer::class)
 		);
 
 		$urlGenerator = \OC::$server->getURLGenerator();
@@ -786,7 +785,7 @@ class OC_Util {
 				$errors[] = [
 					'error' => $l->t('Cannot write into "apps" directory'),
 					'hint' => $l->t('This can usually be fixed by giving the webserver write access to the apps directory'
-						. ' or disabling the appstore in the config file.')
+						. ' or disabling the App Store in the config file.')
 				];
 			}
 		}
@@ -866,6 +865,7 @@ class OC_Util {
 				'default_charset' => 'UTF-8',
 			],
 		];
+		/** @var array<array-key, bool|string|int> $missingDependencies */
 		$missingDependencies = [];
 		$invalidIniSettings = [];
 
@@ -912,7 +912,7 @@ class OC_Util {
 		}
 		foreach ($invalidIniSettings as $setting) {
 			if (is_bool($setting[1])) {
-				$setting[1] = $setting[1] ? 'on' : 'off';
+				$setting[1] = $setting[1] === true ? 'on' : 'off';
 			}
 			$errors[] = [
 				'error' => $l->t('PHP setting "%s" is not set to "%s".', [$setting[0], var_export($setting[1], true)]),
