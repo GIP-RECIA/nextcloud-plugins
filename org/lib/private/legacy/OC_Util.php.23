@@ -127,7 +127,7 @@ class OC_Util {
 		}
 		$config['arguments']['objectstore'] = new $config['class']($config['arguments']);
 		// mount with plain / root object store implementation
-		$config['class'] = '\OC\Files\ObjectStore\ReciaObjectStoreStorage';
+		$config['class'] = '\OC\Files\ObjectStore\ObjectStoreStorage';
 
 		// mount object storage as root
 		\OC\Files\Filesystem::initMountManager();
@@ -168,7 +168,7 @@ class OC_Util {
 
 		$config['arguments']['objectstore'] = new $config['class']($config['arguments']);
 		// mount with plain / root object store implementation
-		$config['class'] = '\OC\Files\ObjectStore\ReciaObjectStoreStorage';
+		$config['class'] = '\OC\Files\ObjectStore\ObjectStoreStorage';
 
 		// mount object storage as root
 		\OC\Files\Filesystem::initMountManager();
@@ -348,16 +348,15 @@ class OC_Util {
 	}
 
 	/**
-	 * Check if a password is required for each public link
+	 * check if a password is required for each public link
 	 *
-	 * @param bool $checkGroupMembership Check group membership exclusion
 	 * @return boolean
 	 * @suppress PhanDeprecatedFunction
 	 */
-	public static function isPublicLinkPasswordRequired(bool $checkGroupMembership = true) {
+	public static function isPublicLinkPasswordRequired() {
 		/** @var IManager $shareManager */
 		$shareManager = \OC::$server->get(IManager::class);
-		return $shareManager->shareApiLinkEnforcePassword($checkGroupMembership);
+		return $shareManager->shareApiLinkEnforcePassword();
 	}
 
 	/**

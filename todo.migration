@@ -1,0 +1,20 @@
+
+
+pour les migrations :
+
+remplacer dans OC_Util.php a faire pour chaque version
+\OC\Files\ObjectStore\ObjectStoreStorage par
+\OC\Files\ObjectStore\ReciaObjectStoreStorage
+
+les fichiers a verifie :
+
+\OC\Files\ObjectStore\ObjectStoreStorage
+Mapper.php l(le mapper n'a pas changer entre le V21.0.9 et V24.0.2)
+ObjectStoreStorage.php (a changé entre la V21.0.9 et  V22.2.9  pas apres jusqu'a la 24.0.2)
+REciaObjectore (n'a pas a etre changé) 
+S3Recia.php
+les S3.php (ont changé qu'entre la 21 et 22)
+
+
+pour :
+apps/dav/lib/CardDAV/CardDavBackend.php (a changer pour v22 et pas change jusqu'a la V24)
