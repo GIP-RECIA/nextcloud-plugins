@@ -1,9 +1,10 @@
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
+ * @author Joas Schilling <coding@schilljs.com>
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,14 +21,10 @@
  *
  */
 
-/**
- * Get the shared with me title
- *
- * @param {Share} share current share
- * @returns {string} the title
- */
+import { Type as ShareTypes } from '@nextcloud/sharing'
+
 const shareWithTitle = function(share) {
-	if (share.type === OC.Share.SHARE_TYPE_GROUP) {
+	if (share.type === ShareTypes.SHARE_TYPE_GROUP) {
 		return t(
 			'files_sharing',
 			'Shared with you and the group {group} by {owner}',
@@ -38,7 +35,7 @@ const shareWithTitle = function(share) {
 			undefined,
 			{ escape: false }
 		)
-	} else if (share.type === OC.Share.SHARE_TYPE_CIRCLE) {
+	} else if (share.type === ShareTypes.SHARE_TYPE_CIRCLE) {
 		return t(
 			'files_sharing',
 			'Shared with you and {circle} by {owner}',
@@ -49,7 +46,7 @@ const shareWithTitle = function(share) {
 			undefined,
 			{ escape: false }
 		)
-	} else if (share.type === OC.Share.SHARE_TYPE_ROOM) {
+	} else if (share.type === ShareTypes.SHARE_TYPE_ROOM) {
 		if (share.shareWithDisplayName) {
 			return t(
 				'files_sharing',

@@ -148,7 +148,7 @@ export default {
 
 			let request = null
 			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1', 2) + 'recia_list_etabs', {
+				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/recia_list_etabs'), {
 					params: {
 						format: 'json',
 					},
@@ -225,6 +225,13 @@ export default {
 </script>
 
 <style lang="scss">
+/** Fix icons issue */
+body{
+	--icon-checkmark-fff : var(--icon-checkmark-white);
+	--icon-checkmark-000 : var(--icon-checkmark-dark);
+	--icon-add-fff : var(--icon-add-white);
+	--icon-add-000 : var(--icon-add-dark);
+}
 .sharing-input-etab {
 	width: 100%;
 	margin: 10px 0;

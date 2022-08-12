@@ -1,9 +1,11 @@
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
+ * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
  * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +13,7 @@
  * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
@@ -25,7 +27,7 @@ export default class Config {
 	/**
 	 * Is public upload allowed on link shares ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -37,7 +39,7 @@ export default class Config {
 	/**
 	 * Are link share allowed ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -49,7 +51,7 @@ export default class Config {
 	/**
 	 * Get the federated sharing documentation link
 	 *
-	 * @returns {string}
+	 * @return {string}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -60,7 +62,7 @@ export default class Config {
 	/**
 	 * Get the default link share expiration date as string
 	 *
-	 * @returns {string}
+	 * @return {string}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -78,7 +80,7 @@ export default class Config {
 	/**
 	 * Get the default internal expiration date as string
 	 *
-	 * @returns {string}
+	 * @return {string}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -94,9 +96,27 @@ export default class Config {
 	}
 
 	/**
+	 * Get the default remote expiration date as string
+	 *
+	 * @return {string}
+	 * @readonly
+	 * @memberof Config
+	 */
+	get defaultRemoteExpirationDateString() {
+		let expireDateString = ''
+		if (this.isDefaultRemoteExpireDateEnabled) {
+			const date = window.moment.utc()
+			const expireAfterDays = this.defaultRemoteExpireDate
+			date.add(expireAfterDays, 'days')
+			expireDateString = date.format('YYYY-MM-DD')
+		}
+		return expireDateString
+	}
+
+	/**
 	 * Are link shares password-enforced ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -107,7 +127,7 @@ export default class Config {
 	/**
 	 * Is password asked by default on link shares ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -118,7 +138,7 @@ export default class Config {
 	/**
 	 * Is link shares expiration enforced ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -129,7 +149,7 @@ export default class Config {
 	/**
 	 * Is there a default expiration date for new link shares ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -140,7 +160,7 @@ export default class Config {
 	/**
 	 * Is internal shares expiration enforced ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -149,9 +169,20 @@ export default class Config {
 	}
 
 	/**
+	 * Is remote shares expiration enforced ?
+	 *
+	 * @return {boolean}
+	 * @readonly
+	 * @memberof Config
+	 */
+	get isDefaultRemoteExpireDateEnforced() {
+		return OC.appConfig.core.defaultRemoteExpireDateEnforced === true
+	}
+
+	/**
 	 * Is there a default expiration date for new internal shares ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -162,7 +193,7 @@ export default class Config {
 	/**
 	 * Are users on this server allowed to send shares to other servers ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -173,7 +204,7 @@ export default class Config {
 	/**
 	 * Is sharing my mail (link share) enabled ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -188,7 +219,7 @@ export default class Config {
 	/**
 	 * Get the default days to link shares expiration
 	 *
-	 * @returns {int}
+	 * @return {number}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -199,7 +230,7 @@ export default class Config {
 	/**
 	 * Get the default days to internal shares expiration
 	 *
-	 * @returns {int}
+	 * @return {number}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -208,9 +239,20 @@ export default class Config {
 	}
 
 	/**
+	 * Get the default days to remote shares expiration
+	 *
+	 * @return {number}
+	 * @readonly
+	 * @memberof Config
+	 */
+	get defaultRemoteExpireDate() {
+		return OC.appConfig.core.defaultRemoteExpireDate
+	}
+
+	/**
 	 * Is resharing allowed ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -221,7 +263,7 @@ export default class Config {
 	/**
 	 * Is password enforced for mail shares ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -230,7 +272,7 @@ export default class Config {
 	}
 
 	/**
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -241,7 +283,7 @@ export default class Config {
 	/**
 	 * Is sharing with groups allowed ?
 	 *
-	 * @returns {boolean}
+	 * @return {boolean}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -252,7 +294,7 @@ export default class Config {
 	/**
 	 * Get the maximum results of a share search
 	 *
-	 * @returns {int}
+	 * @return {number}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -264,7 +306,7 @@ export default class Config {
 	 * Get the minimal string length
 	 * to initiate a share search
 	 *
-	 * @returns {int}
+	 * @return {number}
 	 * @readonly
 	 * @memberof Config
 	 */
@@ -275,7 +317,7 @@ export default class Config {
 	/**
 	 * Get the password policy config
 	 *
-	 * @returns {Object}
+	 * @return {object}
 	 * @readonly
 	 * @memberof Config
 	 */

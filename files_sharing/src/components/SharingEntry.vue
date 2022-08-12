@@ -30,8 +30,8 @@
 			:menu-position="'left'"
 			:url="share.shareWithAvatar" />
 		<component :is="share.shareWithLink ? 'a' : 'div'"
-			:href="share.shareWithLink"
 			v-tooltip.auto="tooltip"
+			:href="share.shareWithLink"
 			class="sharing-entry__desc">
 			<h5>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></h5>
 			<p v-if="hasStatus">
@@ -39,14 +39,12 @@
 				<span>{{ share.status.message || '' }}</span>
 			</p>
 		</component>
-		<Actions
-			menu-align="right"
+		<Actions menu-align="right"
 			class="sharing-entry__actions"
 			@close="onMenuClose">
 			<template v-if="share.canEdit">
 				<!-- edit permission -->
-				<ActionCheckbox
-					ref="canEdit"
+				<ActionCheckbox ref="canEdit"
 					:checked.sync="canEdit"
 					:value="permissionsEdit"
 					:disabled="saving || !canSetEdit">
@@ -54,8 +52,7 @@
 				</ActionCheckbox>
 
 				<!-- create permission -->
-				<ActionCheckbox
-					v-if="isFolder"
+				<ActionCheckbox v-if="isFolder"
 					ref="canCreate"
 					:checked.sync="canCreate"
 					:value="permissionsCreate"
@@ -64,8 +61,7 @@
 				</ActionCheckbox>
 
 				<!-- delete permission -->
-				<ActionCheckbox
-					v-if="isFolder"
+				<ActionCheckbox v-if="isFolder"
 					ref="canDelete"
 					:checked.sync="canDelete"
 					:value="permissionsDelete"
@@ -74,8 +70,7 @@
 				</ActionCheckbox>
 
 				<!-- reshare permission -->
-				<ActionCheckbox
-					v-if="config.isResharingAllowed"
+				<ActionCheckbox v-if="config.isResharingAllowed"
 					ref="canReshare"
 					:checked.sync="canReshare"
 					:value="permissionsShare"
@@ -84,16 +79,14 @@
 				</ActionCheckbox>
 
 				<!-- expiration date -->
-				<ActionCheckbox
-					v-if="canHaveExpirationDate"
-					:checked.sync="hasExpirationDate"
+				<ActionCheckbox :checked.sync="hasExpirationDate"
 					:disabled="config.isDefaultInternalExpireDateEnforced || saving"
 					@uncheck="onExpirationDisable">
 					{{ config.isDefaultInternalExpireDateEnforced
 						? t('files_sharing', 'Expiration date enforced')
 						: t('files_sharing', 'Set expiration date') }}
 				</ActionCheckbox>
-				<ActionInput v-if="canHaveExpirationDate && hasExpirationDate"
+				<ActionInput v-if="hasExpirationDate"
 					ref="expireDate"
 					v-tooltip.auto="{
 						content: errors.expireDate,
@@ -114,8 +107,7 @@
 
 				<!-- note -->
 				<template v-if="canHaveNote">
-					<ActionCheckbox
-						:checked.sync="hasNote"
+					<ActionCheckbox :checked.sync="hasNote"
 						:disabled="saving"
 						@uncheck="queueUpdate('note')">
 						{{ t('files_sharing', 'Note to recipient') }}
@@ -223,14 +215,10 @@ export default {
 		},
 
 		canHaveNote() {
-			return !this.isRemoteShare
+			return !this.isRemote
 		},
 
-		canHaveExpirationDate() {
-			return !this.isRemoteShare
-		},
-
-		isRemoteShare() {
+		isRemote() {
 			return this.share.type === this.SHARE_TYPES.SHARE_TYPE_REMOTE
 				|| this.share.type === this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP
 		},
@@ -238,7 +226,7 @@ export default {
 		/**
 		 * Can the sharer set whether the sharee can edit the file ?
 		 *
-		 * @returns {boolean}
+		 * @return {boolean}
 		 */
 		canSetEdit() {
 			// If the owner revoked the permission after the resharer granted it
@@ -250,7 +238,7 @@ export default {
 		/**
 		 * Can the sharer set whether the sharee can create the file ?
 		 *
-		 * @returns {boolean}
+		 * @return {boolean}
 		 */
 		canSetCreate() {
 			// If the owner revoked the permission after the resharer granted it
@@ -262,7 +250,7 @@ export default {
 		/**
 		 * Can the sharer set whether the sharee can delete the file ?
 		 *
-		 * @returns {boolean}
+		 * @return {boolean}
 		 */
 		canSetDelete() {
 			// If the owner revoked the permission after the resharer granted it
@@ -274,7 +262,7 @@ export default {
 		/**
 		 * Can the sharer set whether the sharee can reshare the file ?
 		 *
-		 * @returns {boolean}
+		 * @return {boolean}
 		 */
 		canSetReshare() {
 			// If the owner revoked the permission after the resharer granted it
@@ -332,8 +320,19 @@ export default {
 		},
 
 		/**
+		 * Is this share readable
+		 * Needed for some federated shares that might have been added from file drop links
+		 */
+		hasRead: {
+			get() {
+				return this.share.hasReadPermission
+			},
+		},
+
+		/**
 		 * Is the current share a folder ?
-		 * @returns {boolean}
+		 *
+		 * @return {boolean}
 		 */
 		isFolder() {
 			return this.fileInfo.type === 'dir'
@@ -341,7 +340,8 @@ export default {
 
 		/**
 		 * Does the current share have an expiration date
-		 * @returns {boolean}
+		 *
+		 * @return {boolean}
 		 */
 		hasExpirationDate: {
 			get() {
@@ -357,12 +357,17 @@ export default {
 		},
 
 		dateMaxEnforced() {
-			return this.config.isDefaultInternalExpireDateEnforced
-				&& moment().add(1 + this.config.defaultInternalExpireDate, 'days')
+			if (!this.isRemote) {
+				return this.config.isDefaultInternalExpireDateEnforced
+					&& moment().add(1 + this.config.defaultInternalExpireDate, 'days')
+			} else {
+				return this.config.isDefaultRemoteExpireDateEnforced
+					&& moment().add(1 + this.config.defaultRemoteExpireDate, 'days')
+			}
 		},
 
 		/**
-		 * @returns {bool}
+		 * @return {boolean}
 		 */
 		hasStatus() {
 			if (this.share.type !== this.SHARE_TYPES.SHARE_TYPE_USER) {
@@ -377,7 +382,8 @@ export default {
 	methods: {
 		updatePermissions({ isEditChecked = this.canEdit, isCreateChecked = this.canCreate, isDeleteChecked = this.canDelete, isReshareChecked = this.canReshare } = {}) {
 			// calc permissions if checked
-			const permissions = this.permissionsRead
+			const permissions = 0
+				| (this.hasRead ? this.permissionsRead : 0)
 				| (isCreateChecked ? this.permissionsCreate : 0)
 				| (isDeleteChecked ? this.permissionsDelete : 0)
 				| (isEditChecked ? this.permissionsEdit : 0)

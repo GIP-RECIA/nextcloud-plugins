@@ -1,15 +1,42 @@
-/* eslint-disable */
-/*
+/**
  * Copyright (c) 2014
  *
- * This file is licensed under the Affero General Public License version 3
- * or later.
+ * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
+ * @author Joas Schilling <coding@schilljs.com>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ * @author Maxence Lange <maxence@nextcloud.com>
+ * @author Michael Jobst <mjobst+github@tecratech.de>
+ * @author Michael Jobst <mjobst@necls.com>
+ * @author Morris Jobke <hey@morrisjobke.de>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ * @author Samuel <faust64@gmail.com>
+ * @author Vincent Petry <vincent@nextcloud.com>
  *
- * See the COPYING-README file.
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+/* eslint-disable */
 import escapeHTML from 'escape-html'
+
+import { Type as ShareTypes } from '@nextcloud/sharing'
+import { getCapabilities } from '@nextcloud/capabilities'
 
 (function() {
 
@@ -46,7 +73,7 @@ import escapeHTML from 'escape-html'
 		 */
 		attach: function(fileList) {
 			// core sharing is disabled/not loaded
-			if (!OC.Share) {
+			if (!getCapabilities().files_sharing?.api_enabled) {
 				return
 			}
 			if (fileList.id === 'trashbin' || fileList.id === 'files.public') {
@@ -140,28 +167,30 @@ import escapeHTML from 'escape-html'
 
 				_.each($files, function(file) {
 					var $tr = $(file)
-					var shareTypes = $tr.attr('data-share-types') || ''
+					var shareTypesStr = $tr.attr('data-share-types') || ''
 					var shareOwner = $tr.attr('data-share-owner')
-					if (shareTypes || shareOwner) {
+					if (shareTypesStr || shareOwner) {
 						var hasLink = false
 						var hasShares = false
-						_.each(shareTypes.split(',') || [], function(shareType) {
-							shareType = parseInt(shareType, 10)
-							if (shareType === OC.Share.SHARE_TYPE_LINK) {
+						_.each(shareTypesStr.split(',') || [], function(shareTypeStr) {
+							let shareType = parseInt(shareTypeStr, 10)
+							if (shareType === ShareTypes.SHARE_TYPE_LINK) {
 								hasLink = true
-							} else if (shareType === OC.Share.SHARE_TYPE_EMAIL) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_EMAIL) {
 								hasLink = true
-							} else if (shareType === OC.Share.SHARE_TYPE_USER) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_USER) {
 								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_GROUP) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_GROUP) {
 								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_REMOTE) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_REMOTE) {
 								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_CIRCLE) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_REMOTE_GROUP) {
 								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_ROOM) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_CIRCLE) {
 								hasShares = true
-							} else if (shareType === OC.Share.SHARE_TYPE_DECK) {
+							} else if (shareType === ShareTypes.SHARE_TYPE_ROOM) {
+								hasShares = true
+							} else if (shareType === ShareTypes.SHARE_TYPE_DECK) {
 								hasShares = true
 							}
 						})
@@ -192,8 +221,8 @@ import escapeHTML from 'escape-html'
 				permissions: OC.PERMISSION_ALL,
 				iconClass: function(fileName, context) {
 					var shareType = parseInt(context.$file.data('share-types'), 10)
-					if (shareType === OC.Share.SHARE_TYPE_EMAIL
-						|| shareType === OC.Share.SHARE_TYPE_LINK) {
+					if (shareType === ShareTypes.SHARE_TYPE_EMAIL
+						|| shareType === ShareTypes.SHARE_TYPE_LINK) {
 						return 'icon-public'
 					}
 					return 'icon-shared'
@@ -206,6 +235,10 @@ import escapeHTML from 'escape-html'
 				},
 				type: OCA.Files.FileActions.TYPE_INLINE,
 				actionHandler: function(fileName, context) {
+					// details view disabled in some share lists
+					if (!fileList._detailsView) {
+						return
+					}
 					// do not open sidebar if permission is set and equal to 0
 					var permissions = parseInt(context.$file.data('share-permissions'), 10)
 					if (isNaN(permissions) || permissions > 0) {
@@ -348,14 +381,13 @@ import escapeHTML from 'escape-html'
 		/**
 		 * Format a remote address
 		 *
-		* @param {String} shareWith userid, full remote share, or whatever
-		* @param {String} shareWithDisplayName
-		* @param {String} message
-		* @returns {String} HTML code to display
-		*/
+		 * @param {String} shareWith userid, full remote share, or whatever
+		 * @param {String} shareWithDisplayName
+		 * @param {String} message
+		 * @returns {String} HTML code to display
+		 */
 		_formatRemoteShare: function(shareWith, shareWithDisplayName, message) {
 			var parts = OCA.Sharing.Util._REMOTE_OWNER_REGEXP.exec(shareWith)
-			console.error(parts);
 			if (!parts || !parts[7]) {
 				// display avatar of the user
 				var avatar = '<span class="avatar" data-username="' + escapeHTML(shareWith) + '" title="' + message + ' ' + escapeHTML(shareWithDisplayName) + '"></span>'

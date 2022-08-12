@@ -26,14 +26,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing;
 
 use OC\Files\Cache\FailedCache;
 use OC\Files\Cache\Wrapper\CacheJail;
+use OC\Files\Search\SearchBinaryOperator;
+use OC\Files\Search\SearchComparison;
 use OC\Files\Storage\Wrapper\Jail;
+use OC\User\DisplayNameCache;
 use OCP\Files\Cache\ICacheEntry;
+use OCP\Files\Search\ISearchBinaryOperator;
+use OCP\Files\Search\ISearchComparison;
+use OCP\Files\Search\ISearchOperator;
 use OCP\Files\StorageNotAvailableException;
+use OCP\ICacheFactory;
+use OCP\IUserManager;
 
 /**
  * Metadata cache for shared files
@@ -41,30 +48,22 @@ use OCP\Files\StorageNotAvailableException;
  * don't use this class directly if you need to get metadata, use \OC\Files\Filesystem::getFileInfo instead
  */
 class Cache extends CacheJail {
-	/**
-	 * @var \OCA\Files_Sharing\SharedStorage
-	 */
+	/** @var SharedStorage */
 	private $storage;
-
-	/**
-	 * @var ICacheEntry
-	 */
-	private $sourceRootInfo;
-
-	private $rootUnchanged = true;
-
-	private $ownerDisplayName;
-
+	private ICacheEntry $sourceRootInfo;
+	private bool $rootUnchanged = true;
+	private ?string $ownerDisplayName = null;
 	private $numericId;
+	private DisplayNameCache $displayNameCache;
 
 	/**
-	 * @param \OCA\Files_Sharing\SharedStorage $storage
-	 * @param ICacheEntry $sourceRootInfo
+	 * @param SharedStorage $storage
 	 */
-	public function __construct($storage, ICacheEntry $sourceRootInfo) {
+	public function __construct($storage, ICacheEntry $sourceRootInfo, DisplayNameCache $displayNameCache) {
 		$this->storage = $storage;
 		$this->sourceRootInfo = $sourceRootInfo;
 		$this->numericId = $sourceRootInfo->getStorageId();
+		$this->displayNameCache = $displayNameCache;
 
 		parent::__construct(
 			null,
@@ -170,7 +169,8 @@ class Cache extends CacheJail {
 
 	private function getOwnerDisplayName() {
 		if (!$this->ownerDisplayName) {
-			$this->ownerDisplayName = \OC_User::getDisplayName($this->storage->getOwner(''));
+			$uid = $this->storage->getOwner('');
+			$this->ownerDisplayName = $this->displayNameCache->getDisplayName($uid);
 		}
 		return $this->ownerDisplayName;
 	}
@@ -182,19 +182,19 @@ class Cache extends CacheJail {
 		// Not a valid action for Shared Cache
 	}
 
-	public function search($pattern) {
-		// Do the normal search on the whole storage for non files
+	public function getQueryFilterForStorage(): ISearchOperator {
+		// Do the normal jail behavior for non files
 		if ($this->storage->getItemType() !== 'file') {
-			return parent::search($pattern);
+			return parent::getQueryFilterForStorage();
 		}
 
-		$regex = '/' . str_replace('%', '.*', $pattern) . '/i';
-
-		$data = $this->get('');
-		if (preg_match($regex, $data->getName()) === 1) {
-			return [$data];
-		}
-
-		return [];
+		// for single file shares we don't need to do the LIKE
+		return new SearchBinaryOperator(
+			ISearchBinaryOperator::OPERATOR_AND,
+			[
+				\OC\Files\Cache\Cache::getQueryFilterForStorage(),
+				new SearchComparison(ISearchComparison::COMPARE_EQUAL, 'path', $this->getGetUnjailedRoot()),
+			]
+		);
 	}
 }

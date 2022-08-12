@@ -26,13 +26,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing;
 
 use OC\Cache\CappedMemoryCache;
 use OC\Files\View;
+use OCA\Files_Sharing\Event\ShareMountedEvent;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Config\IMountProvider;
 use OCP\Files\Storage\IStorageFactory;
+use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\ILogger;
 use OCP\IUser;
@@ -55,15 +57,29 @@ class MountProvider implements IMountProvider {
 	 */
 	protected $logger;
 
+	/** @var IEventDispatcher */
+	protected $eventDispatcher;
+
+	/** @var ICacheFactory */
+	protected $cacheFactory;
+
 	/**
 	 * @param \OCP\IConfig $config
 	 * @param IManager $shareManager
 	 * @param ILogger $logger
 	 */
-	public function __construct(IConfig $config, IManager $shareManager, ILogger $logger) {
+	public function __construct(
+		IConfig $config,
+		IManager $shareManager,
+		ILogger $logger,
+		IEventDispatcher $eventDispatcher,
+		ICacheFactory $cacheFactory
+	) {
 		$this->config = $config;
 		$this->shareManager = $shareManager;
 		$this->logger = $logger;
+		$this->eventDispatcher = $eventDispatcher;
+		$this->cacheFactory = $cacheFactory;
 	}
 
 
@@ -93,6 +109,7 @@ class MountProvider implements IMountProvider {
 		$view = new View('/' . $user->getUID() . '/files');
 		$ownerViews = [];
 		$sharingDisabledForUser = $this->shareManager->sharingDisabledForUser($user->getUID());
+		/** @var CappedMemoryCache<bool> $folderExistCache */
 		$foldersExistCache = new CappedMemoryCache();
 		foreach ($superShares as $share) {
 			try {
@@ -124,9 +141,19 @@ class MountProvider implements IMountProvider {
 					],
 					$loader,
 					$view,
-					$foldersExistCache
+					$foldersExistCache,
+					$this->eventDispatcher,
+					$user,
+					$this->cacheFactory->createLocal('share-valid-mountpoint')
 				);
+
+				$event = new ShareMountedEvent($mount);
+				$this->eventDispatcher->dispatchTyped($event);
+
 				$mounts[$mount->getMountPoint()] = $mount;
+				foreach ($event->getAdditionalMounts() as $additionalMount) {
+					$mounts[$additionalMount->getMountPoint()] = $additionalMount;
+				}
 			} catch (\Exception $e) {
 				$this->logger->logException($e);
 				$this->logger->error('Error while trying to create shared mount');

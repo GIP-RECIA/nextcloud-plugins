@@ -2,7 +2,8 @@
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
- * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
  * @author Vincent Petry <vincent@nextcloud.com>
@@ -25,26 +26,25 @@
 use OCA\Files\Event\LoadAdditionalScriptsEvent;
 use OCA\Files\Event\LoadSidebar;
 use OCA\Viewer\Event\LoadViewer;
-use OCP\EventDispatcher\GenericEvent;
+use OCP\Collaboration\Resources\LoadAdditionalScriptsEvent as ResourcesLoadAdditionalScriptsEvent;
+use OCP\EventDispatcher\IEventDispatcher;
+use OCP\IConfig;
+use OCP\IUserSession;
+use OCP\Server;
 
-// Check if we are a user
-OCP\User::checkLoggedIn();
-$config = \OC::$server->getConfig();
-$userSession = \OC::$server->getUserSession();
-$legacyEventDispatcher = \OC::$server->getEventDispatcher();
-/** @var \OCP\EventDispatcher\IEventDispatcher $eventDispatcher */
-$eventDispatcher = \OC::$server->get(OCP\EventDispatcher\IEventDispatcher::class);
+$config = Server::get(IConfig::class);
+$userSession = Server::get(IUserSession::class);
+$eventDispatcher = Server::get(IEventDispatcher::class);
 
 $showgridview = $config->getUserValue($userSession->getUser()->getUID(), 'files', 'show_grid', false);
-$isIE = \OCP\Util::isIE();
 
 $tmpl = new OCP\Template('files_sharing', 'list', '');
 
 // gridview not available for ie
-$tmpl->assign('showgridview', $showgridview && !$isIE);
+$tmpl->assign('showgridview', $showgridview);
 
 // fire script events
-$legacyEventDispatcher->dispatch('\OCP\Collaboration\Resources::loadAdditionalScripts', new GenericEvent());
+$eventDispatcher->dispatchTyped(new ResourcesLoadAdditionalScriptsEvent());
 $eventDispatcher->dispatchTyped(new LoadAdditionalScriptsEvent());
 $eventDispatcher->dispatchTyped(new LoadSidebar());
 

@@ -52,7 +52,7 @@ $maxUploadFilesize = min($upload_max_filesize, $post_max_size);
 		<input type="checkbox" class="hidden-visually" id="showgridview"
 			<?php if ($_['showgridview']) { ?>checked="checked" <?php } ?>/>
 		<label id="view-toggle" for="showgridview" class="button <?php p($_['showgridview'] ? 'icon-toggle-filelist' : 'icon-toggle-pictures') ?>"
-			title="<?php p($l->t('Toggle grid view'))?>"></label>
+			title="<?php p($_['showgridview'] ? $l->t('Show list view') : $l->t('Show grid view'))?>"></label>
 	<?php } ?>
 
 	<!-- files listing -->
@@ -72,12 +72,28 @@ $maxUploadFilesize = min($upload_max_filesize, $post_max_size);
 				<?php else: ?>
 					<!-- Preview frame is filled via JS to support SVG images for modern browsers -->
 					<div id="imgframe"></div>
+						<?php if (isset($_['mimetype']) && strpos($_['mimetype'], 'image') === 0) { ?>
+							<div class="directDownload">
+								<div>
+									<?php p($_['filename'])?> (<?php p($_['fileSize']) ?>)
+								</div>
+								<?php if (!$_['hideDownload']) { ?>
+									<a href="<?php p($_['downloadURL']); ?>" id="downloadFile" class="button">
+										<span class="icon icon-download"></span>
+										<?php p($l->t('Download'))?>
+									</a>
+								<?php } ?>
+							</div>
+						<?php } ?>
 				<?php endif; ?>
 				<?php if ($_['previewURL'] === $_['downloadURL'] && !$_['hideDownload']): ?>
 					<div class="directDownload">
+						<div>
+							<?php p($_['filename'])?>&nbsp;(<?php p($_['fileSize']) ?>)
+						</div>
 						<a href="<?php p($_['downloadURL']); ?>" id="downloadFile" class="button">
 							<span class="icon icon-download"></span>
-							<?php p($l->t('Download %s', [$_['filename']]))?> (<?php p($_['fileSize']) ?>)
+							<?php p($l->t('Download'))?>
 						</a>
 					</div>
 				<?php endif; ?>

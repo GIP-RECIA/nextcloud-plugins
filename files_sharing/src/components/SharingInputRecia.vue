@@ -21,7 +21,6 @@
   -->
 
 <template>
-	<div>
 		<Multiselect ref="multiselect"
 			class="sharing-input"
 			:clear-on-select="true"
@@ -36,6 +35,8 @@
 			:searchable="true"
 			:user-select="true"
 			open-direction="below"
+			label="displayName"
+			track-by="id"
 			@search-change="asyncFind"
 			@select="addShare">
 			<template slot="beforeList" v-if="!this.isValidQuery">
@@ -52,7 +53,6 @@
 				{{ noResultText }}
 			</template>
 		</Multiselect>
-	</div>
 </template>
 
 <script>
@@ -64,6 +64,7 @@ import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import MultiselectMixin from '../mixins/MultiselectMixin'
 
 import Config from '../services/ConfigService'
+import GeneratePassword from '../utils/GeneratePassword'
 import Share from '../models/Share'
 import ShareRequests from '../mixins/ShareRequests'
 import ShareTypes from '../mixins/ShareTypes'
@@ -134,7 +135,7 @@ export default {
 		 * results into the autocomplete dropdown
 		 * Used for the guests app
 		 *
-		 * @returns {Array}
+		 * @return {Array}
 		 */
 		externalResults() {
 			return this.ShareSearch.results
@@ -237,7 +238,7 @@ export default {
 
 			let request = null
 			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1', 2) + 'sharees', {
+				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/sharees'), {
 					cancelToken: searchCancelSource.token,
 					params: {
 						format: 'json',
@@ -281,6 +282,7 @@ export default {
 
 			if (data.lookupEnabled && !lookup) {
 				lookupEntry.push({
+					id: 'global-lookup',
 					isNoUser: true,
 					displayName: t('files_sharing', 'Search globally'),
 					lookup: true,
@@ -340,7 +342,7 @@ export default {
 
 			let request = null
 			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1', 2) + 'recia_search', {
+				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/recia_search'), {
 					cancelToken: searchCancelSource.token,
 					params: {
 						format: 'json',
@@ -421,7 +423,7 @@ export default {
 
 			let request = null
 			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1', 2) + 'sharees_recommended', {
+				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/sharees_recommended'), {
 					params: {
 						format: 'json',
 						itemType: this.fileInfo.type,
@@ -451,8 +453,8 @@ export default {
 		 * Filter out existing shares from
 		 * the provided shares search results
 		 *
-		 * @param {Object[]} shares the array of shares object
-		 * @returns {Object[]}
+		 * @param {object[]} shares the array of shares object
+		 * @return {object[]}
 		 */
 		filterOutExistingShares(shares) {
 			return shares.reduce((arr, share) => {
@@ -506,8 +508,9 @@ export default {
 
 		/**
 		 * Get the icon based on the share type
+		 *
 		 * @param {number} type the share type
-		 * @returns {string} the icon class
+		 * @return {string} the icon class
 		 */
 		shareTypeToIcon(type) {
 			switch (type) {
@@ -536,30 +539,32 @@ export default {
 
 		/**
 		 * Format shares for the multiselect options
-		 * @param {Object} result select entry item
-		 * @returns {Object}
+		 *
+		 * @param {object} result select entry item
+		 * @return {object}
 		 */
 		formatForMultiselect(result) {
-			let desc
+			let subtitle
 			if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_USER && this.config.shouldAlwaysShowUnique) {
-				desc = result.shareWithDisplayNameUnique ?? ''
+				subtitle = result.shareWithDisplayNameUnique ?? ''
 			} else if ((result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE
 					|| result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP
 			) && result.value.server) {
-				desc = t('files_sharing', 'on {server}', { server: result.value.server })
+				subtitle = t('files_sharing', 'on {server}', { server: result.value.server })
 			} else if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
-				desc = result.value.shareWith
+				subtitle = result.value.shareWith
 			} else {
-				desc = result.shareWithDescription ?? ''
+				subtitle = result.shareWithDescription ?? ''
 			}
 
 			return {
+				id: `${result.value.shareType}-${result.value.shareWith}`,
 				shareWith: result.value.shareWith,
 				shareType: result.value.shareType,
 				user: result.uuid || result.value.shareWith,
 				isNoUser: result.value.shareType !== this.SHARE_TYPES.SHARE_TYPE_USER,
 				displayName: result.name || result.label,
-				desc,
+				subtitle,
 				shareWithDisplayNameUnique: result.shareWithDisplayNameUnique || '',
 				icon: this.shareTypeToIcon(result.value.shareType),
 			}
@@ -567,7 +572,8 @@ export default {
 
 		/**
 		 * Process the new share request
-		 * @param {Object} value the multiselect option
+		 *
+		 * @param {object} value the multiselect option
 		 */
 		async addShare(value) {
 			if (value.lookup) {
@@ -580,9 +586,6 @@ export default {
 				return true
 			}
 
-			// TODO: reset the search string when done
-			// https://github.com/shentao/vue-multiselect/issues/633
-
 			// handle externalResults from OCA.Sharing.ShareSearch
 			if (value.handler) {
 				const share = await value.handler(this)
@@ -591,25 +594,55 @@ export default {
 			}
 
 			this.loading = true
+			console.debug('Adding a new share from the input for', value)
 			try {
+				let password = null
+
+				if (this.config.enforcePasswordForPublicLink
+					&& value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
+					password = await GeneratePassword()
+				}
+
 				const path = (this.fileInfo.path + '/' + this.fileInfo.name).replace('//', '/')
 				const share = await this.createShare({
 					path,
 					shareType: value.shareType,
 					shareWith: value.shareWith,
+					password,
 					permissions: this.fileInfo.sharePermissions & OC.getCapabilities().files_sharing.default_permissions,
 				})
-				this.$emit('add:share', share)
 
-				this.getRecommendations()
+				// If we had a password, we need to show it to the user as it was generated
+				if (password) {
+					share.newPassword = password
+					// Wait for the newly added share
+					const component = await new Promise(resolve => {
+						this.$emit('add:share', share, resolve)
+					})
 
-			} catch (response) {
+					// open the menu on the
+					// freshly created share component
+					component.open = true
+				} else {
+					// Else we just add it normally
+					this.$emit('add:share', share)
+				}
+
+				// reset the search string when done
+				// FIXME: https://github.com/shentao/vue-multiselect/issues/633
+				if (this.$refs.multiselect?.$refs?.VueMultiselect?.search) {
+					this.$refs.multiselect.$refs.VueMultiselect.search = ''
+				}
+
+				await this.getRecommendations()
+			} catch (error) {
 				// focus back if any error
 				const input = this.$refs.multiselect.$el.querySelector('input')
 				if (input) {
 					input.focus()
 				}
 				this.query = value.shareWith
+				console.error('Error while adding new share', error)
 			} finally {
 				this.loading = false
 			}
@@ -633,7 +666,7 @@ export default {
 	.multiselect__option {
 		span[lookup] {
 			.avatardiv {
-				background-image: var(--icon-search-fff);
+				background-image: var(--icon-search-white);
 				background-repeat: no-repeat;
 				background-position: center;
 				background-color: var(--color-text-maxcontrast) !important;
