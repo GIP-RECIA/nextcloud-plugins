@@ -23,8 +23,7 @@
 <template>
 	<ul id="sharing-inherited-shares">
 		<!-- Main collapsible entry -->
-		<SharingEntrySimple
-			class="sharing-entry__inherited"
+		<SharingEntrySimple class="sharing-entry__inherited"
 			:title="mainTitle"
 			:subtitle="subTitle">
 			<template #avatar>
@@ -128,8 +127,8 @@ export default {
 		async fetchInheritedShares() {
 			this.loading = true
 			try {
-				const url = generateOcsUrl(`apps/files_sharing/api/v1/shares/inherited?format=json&path=${encodeURIComponent(this.fullPath)}`, 2)
-				const shares = await axios.get(url.replace(/\/$/, ''))
+				const url = generateOcsUrl('apps/files_sharing/api/v1/shares/inherited?format=json&path={path}', { path: this.fullPath })
+				const shares = await axios.get(url)
 				this.shares = shares.data.ocs.data
 					.map(share => new Share(share))
 					.sort((a, b) => b.createdTime - a.createdTime)

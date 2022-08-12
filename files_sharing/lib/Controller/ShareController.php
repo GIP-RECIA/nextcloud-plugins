@@ -10,7 +10,7 @@
  * @author Georg Ehrke <oc.list@georgehrke.com>
  * @author j3l11234 <297259024@qq.com>
  * @author Joas Schilling <coding@schilljs.com>
- * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Jonas Sulzer <jonas@violoncello.ch>
  * @author Julius Härtl <jus@bitgrid.net>
  * @author Lukas Reschke <lukas@statuscode.ch>
@@ -40,15 +40,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing\Controller;
 
+use OC\Security\CSP\ContentSecurityPolicy;
 use OC_Files;
 use OC_Util;
-use OC\Security\CSP\ContentSecurityPolicy;
 use OCA\FederatedFileSharing\FederatedShareProvider;
 use OCA\Files_Sharing\Activity\Providers\Downloads;
 use OCA\Files_Sharing\Event\BeforeTemplateRenderedEvent;
+use OCA\Files_Sharing\Event\ShareLinkAccessedEvent;
 use OCA\Viewer\Event\LoadViewer;
 use OCP\Accounts\IAccountManager;
 use OCP\AppFramework\AuthPublicShareController;
@@ -72,6 +72,7 @@ use OCP\ISession;
 use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\Security\ISecureRandom;
 use OCP\Share;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Share\IManager as ShareManager;
@@ -84,53 +85,21 @@ use OCP\Template;
  * @package OCA\Files_Sharing\Controllers
  */
 class ShareController extends AuthPublicShareController {
+	protected IConfig $config;
+	protected IUserManager $userManager;
+	protected ILogger $logger;
+	protected \OCP\Activity\IManager $activityManager;
+	protected IPreview $previewManager;
+	protected IRootFolder $rootFolder;
+	protected FederatedShareProvider $federatedShareProvider;
+	protected IAccountManager $accountManager;
+	protected IEventDispatcher $eventDispatcher;
+	protected IL10N $l10n;
+	protected Defaults $defaults;
+	protected ShareManager $shareManager;
+	protected ISecureRandom $secureRandom;
+	protected ?Share\IShare $share = null;
 
-	/** @var IConfig */
-	protected $config;
-	/** @var IUserManager */
-	protected $userManager;
-	/** @var ILogger */
-	protected $logger;
-	/** @var \OCP\Activity\IManager */
-	protected $activityManager;
-	/** @var IPreview */
-	protected $previewManager;
-	/** @var IRootFolder */
-	protected $rootFolder;
-	/** @var FederatedShareProvider */
-	protected $federatedShareProvider;
-	/** @var IAccountManager */
-	protected $accountManager;
-	/** @var IEventDispatcher */
-	protected $eventDispatcher;
-	/** @var IL10N */
-	protected $l10n;
-	/** @var Defaults */
-	protected $defaults;
-	/** @var ShareManager */
-	protected $shareManager;
-
-	/** @var Share\IShare */
-	protected $share;
-
-	/**
-	 * @param string $appName
-	 * @param IRequest $request
-	 * @param IConfig $config
-	 * @param IURLGenerator $urlGenerator
-	 * @param IUserManager $userManager
-	 * @param ILogger $logger
-	 * @param \OCP\Activity\IManager $activityManager
-	 * @param \OCP\Share\IManager $shareManager
-	 * @param ISession $session
-	 * @param IPreview $previewManager
-	 * @param IRootFolder $rootFolder
-	 * @param FederatedShareProvider $federatedShareProvider
-	 * @param IAccountManager $accountManager
-	 * @param IEventDispatcher $eventDispatcher
-	 * @param IL10N $l10n
-	 * @param Defaults $defaults
-	 */
 	public function __construct(string $appName,
 								IRequest $request,
 								IConfig $config,
@@ -146,6 +115,7 @@ class ShareController extends AuthPublicShareController {
 								IAccountManager $accountManager,
 								IEventDispatcher $eventDispatcher,
 								IL10N $l10n,
+								ISecureRandom $secureRandom,
 								Defaults $defaults) {
 		parent::__construct($appName, $request, $session, $urlGenerator);
 
@@ -159,9 +129,14 @@ class ShareController extends AuthPublicShareController {
 		$this->accountManager = $accountManager;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->l10n = $l10n;
+		$this->secureRandom = $secureRandom;
 		$this->defaults = $defaults;
 		$this->shareManager = $shareManager;
 	}
+
+	public const SHARE_ACCESS = 'access';
+	public const SHARE_AUTH = 'auth';
+	public const SHARE_DOWNLOAD = 'download';
 
 	/**
 	 * @PublicPage
@@ -205,6 +180,56 @@ class ShareController extends AuthPublicShareController {
 		return $response;
 	}
 
+	/**
+	 * The template to show after user identification
+	 */
+	protected function showIdentificationResult(bool $success = false): TemplateResponse {
+		$templateParameters = ['share' => $this->share, 'identityOk' => $success];
+
+		$this->eventDispatcher->dispatchTyped(new BeforeTemplateRenderedEvent($this->share, BeforeTemplateRenderedEvent::SCOPE_PUBLIC_SHARE_AUTH));
+
+		$response = new TemplateResponse('core', 'publicshareauth', $templateParameters, 'guest');
+		if ($this->share->getSendPasswordByTalk()) {
+			$csp = new ContentSecurityPolicy();
+			$csp->addAllowedConnectDomain('*');
+			$csp->addAllowedMediaDomain('blob:');
+			$response->setContentSecurityPolicy($csp);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Validate the identity token of a public share
+	 *
+	 * @param ?string $identityToken
+	 * @return bool
+	 */
+	protected function validateIdentity(?string $identityToken = null): bool {
+
+		if ($this->share->getShareType() !== IShare::TYPE_EMAIL) {
+			return false;
+		}
+
+		if ($identityToken === null || $this->share->getSharedWith() === null) {
+			return false;
+		}
+
+		return $identityToken === $this->share->getSharedWith();
+	}
+
+	/**
+	 * Generates a password for the share, respecting any password policy defined
+	 */
+	protected function generatePassword(): void {
+		$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
+		$this->eventDispatcher->dispatchTyped($event);
+		$password = $event->getPassword() ?? $this->secureRandom->generate(20);
+
+		$this->share->setPassword($password);
+		$this->shareManager->updateShare($this->share);
+	}
+
 	protected function verifyPassword(string $password): bool {
 		return $this->shareManager->checkPassword($this->share, $password);
 	}
@@ -234,6 +259,7 @@ class ShareController extends AuthPublicShareController {
 
 	protected function authFailed() {
 		$this->emitAccessShareHook($this->share, 403, 'Wrong password');
+		$this->emitShareAccessEvent($this->share, self::SHARE_AUTH, 403, 'Wrong password');
 	}
 
 	/**
@@ -243,10 +269,13 @@ class ShareController extends AuthPublicShareController {
 	 * otherwise token
 	 * @param int $errorCode
 	 * @param string $errorMessage
-	 * @throws \OC\HintException
+	 *
+	 * @throws \OCP\HintException
 	 * @throws \OC\ServerNotAvailableException
+	 *
+	 * @deprecated use OCP\Files_Sharing\Event\ShareLinkAccessedEvent
 	 */
-	protected function emitAccessShareHook($share, $errorCode = 200, $errorMessage = '') {
+	protected function emitAccessShareHook($share, int $errorCode = 200, string $errorMessage = '') {
 		$itemType = $itemSource = $uidOwner = '';
 		$token = $share;
 		$exception = null;
@@ -261,17 +290,31 @@ class ShareController extends AuthPublicShareController {
 				$exception = $e;
 			}
 		}
+
 		\OC_Hook::emit(Share::class, 'share_link_access', [
 			'itemType' => $itemType,
 			'itemSource' => $itemSource,
 			'uidOwner' => $uidOwner,
 			'token' => $token,
 			'errorCode' => $errorCode,
-			'errorMessage' => $errorMessage,
+			'errorMessage' => $errorMessage
 		]);
+
 		if (!is_null($exception)) {
 			throw $exception;
 		}
+	}
+
+	/**
+	 * Emit a ShareLinkAccessedEvent event when a share is accessed, downloaded, auth...
+	 */
+	protected function emitShareAccessEvent(IShare $share, string $step = '', int $errorCode = 200, string $errorMessage = ''): void {
+		if ($step !== self::SHARE_ACCESS &&
+			$step !== self::SHARE_AUTH &&
+			$step !== self::SHARE_DOWNLOAD) {
+			return;
+		}
+		$this->eventDispatcher->dispatchTyped(new ShareLinkAccessedEvent($share, $step, $errorCode, $errorMessage));
 	}
 
 	/**
@@ -313,6 +356,7 @@ class ShareController extends AuthPublicShareController {
 		try {
 			$share = $this->shareManager->getShareByToken($this->getToken());
 		} catch (ShareNotFound $e) {
+			// The share does not exists, we do not emit an ShareLinkAccessedEvent
 			$this->emitAccessShareHook($this->getToken(), 404, 'Share not found');
 			throw new NotFoundException();
 		}
@@ -327,10 +371,12 @@ class ShareController extends AuthPublicShareController {
 		try {
 			if ($shareNode instanceof \OCP\Files\File && $path !== '') {
 				$this->emitAccessShareHook($share, 404, 'Share not found');
+				$this->emitShareAccessEvent($share, self::SHARE_ACCESS, 404, 'Share not found');
 				throw new NotFoundException();
 			}
 		} catch (\Exception $e) {
 			$this->emitAccessShareHook($share, 404, 'Share not found');
+			$this->emitShareAccessEvent($share, self::SHARE_ACCESS, 404, 'Share not found');
 			throw $e;
 		}
 
@@ -372,6 +418,7 @@ class ShareController extends AuthPublicShareController {
 				$folderNode = $shareNode->get($path);
 			} catch (\OCP\Files\NotFoundException $e) {
 				$this->emitAccessShareHook($share, 404, 'Share not found');
+				$this->emitShareAccessEvent($share, self::SHARE_ACCESS, 404, 'Share not found');
 				throw new NotFoundException();
 			}
 
@@ -512,7 +559,8 @@ class ShareController extends AuthPublicShareController {
 			$download = new SimpleMenuAction('download', $this->l10n->t('Download'), 'icon-download', $shareTmpl['downloadURL'], 10, $shareTmpl['fileSize']);
 			$downloadAll = new SimpleMenuAction('download', $this->l10n->t('Download all files'), 'icon-download', $shareTmpl['downloadURL'], 10, $shareTmpl['fileSize']);
 			$directLink = new LinkMenuAction($this->l10n->t('Direct link'), 'icon-public', $shareTmpl['previewURL']);
-			$externalShare = new ExternalShareMenuAction($this->l10n->t('Add to your Nextcloud'), 'icon-external', $shareTmpl['owner'], $shareTmpl['shareOwner'], $shareTmpl['filename']);
+			// TRANSLATORS The placeholder refers to the software product name as in 'Add to your Nextcloud'
+			$externalShare = new ExternalShareMenuAction($this->l10n->t('Add to your %s', [$this->defaults->getProductName()]), 'icon-external', $shareTmpl['owner'], $shareTmpl['shareOwner'], $shareTmpl['filename']);
 
 			$responseComposer = [];
 
@@ -534,6 +582,7 @@ class ShareController extends AuthPublicShareController {
 		$response->setContentSecurityPolicy($csp);
 
 		$this->emitAccessShareHook($share);
+		$this->emitShareAccessEvent($share, self::SHARE_ACCESS);
 
 		return $response;
 	}
@@ -596,6 +645,7 @@ class ShareController extends AuthPublicShareController {
 					$node = $node->get($path);
 				} catch (NotFoundException $e) {
 					$this->emitAccessShareHook($share, 404, 'Share not found');
+					$this->emitShareAccessEvent($share, self::SHARE_DOWNLOAD, 404, 'Share not found');
 					return new NotFoundResponse();
 				}
 			}
@@ -637,6 +687,7 @@ class ShareController extends AuthPublicShareController {
 		}
 
 		$this->emitAccessShareHook($share);
+		$this->emitShareAccessEvent($share, self::SHARE_DOWNLOAD);
 
 		$server_params = [ 'head' => $this->request->getMethod() === 'HEAD' ];
 
@@ -699,6 +750,10 @@ class ShareController extends AuthPublicShareController {
 		$ownerFolder = $this->rootFolder->getUserFolder($share->getShareOwner());
 		$userPath = $userFolder->getRelativePath($userNode->getPath());
 		$ownerPath = $ownerFolder->getRelativePath($node->getPath());
+		$remoteAddress = $this->request->getRemoteAddress();
+		$dateTime = new \DateTime();
+		$dateTime = $dateTime->format('Y-m-d H');
+		$remoteAddressHash = md5($dateTime . '-' . $remoteAddress);
 
 		$parameters = [$userPath];
 
@@ -712,8 +767,10 @@ class ShareController extends AuthPublicShareController {
 		} else {
 			if ($node instanceof \OCP\Files\File) {
 				$subject = Downloads::SUBJECT_PUBLIC_SHARED_FILE_DOWNLOADED;
+				$parameters[] = $remoteAddressHash;
 			} else {
 				$subject = Downloads::SUBJECT_PUBLIC_SHARED_FOLDER_DOWNLOADED;
+				$parameters[] = $remoteAddressHash;
 			}
 		}
 

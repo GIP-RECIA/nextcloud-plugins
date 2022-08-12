@@ -8,7 +8,7 @@
  * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
  * @author Georg Ehrke <oc.list@georgehrke.com>
  * @author Joas Schilling <coding@schilljs.com>
- * @author John Molakvoæ (skjnldsv) <skjnldsv@protonmail.com>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Julius Härtl <jus@bitgrid.net>
  * @author Lukas Reschke <lukas@statuscode.ch>
  * @author Michael Weimann <mail@michael-weimann.eu>
@@ -16,6 +16,7 @@
  * @author Robin Appelman <robin@icewind.nl>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
  * @author Thomas Müller <thomas.mueller@tmit.eu>
+ * @author Vincent Petry <vincent@nextcloud.com>
  *
  * @license AGPL-3.0
  *
@@ -32,7 +33,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing\Tests\Controllers;
 
 use OC\Files\Filesystem;
@@ -106,6 +106,10 @@ class ShareControllerTest extends \Test\TestCase {
 	private $eventDispatcher;
 	/** @var IL10N */
 	private $l10n;
+	/** @var ISecureRandom */
+	private $secureRandom;
+	/** @var Defaults|MockObject */
+	private $defaults;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -125,6 +129,8 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->accountManager = $this->createMock(IAccountManager::class);
 		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
 		$this->l10n = $this->createMock(IL10N::class);
+		$this->secureRandom = $this->createMock(ISecureRandom::class);
+		$this->defaults = $this->createMock(Defaults::class);
 
 		$this->shareController = new \OCA\Files_Sharing\Controller\ShareController(
 			$this->appName,
@@ -142,7 +148,8 @@ class ShareControllerTest extends \Test\TestCase {
 			$this->accountManager,
 			$this->eventDispatcher,
 			$this->l10n,
-			$this->createMock(Defaults::class)
+			$this->secureRandom,
+			$this->defaults
 		);
 
 
@@ -256,10 +263,17 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->session->method('exists')->with('public_link_authenticated')->willReturn(true);
 		$this->session->method('get')->with('public_link_authenticated')->willReturn('42');
 
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -296,7 +310,7 @@ class ShareControllerTest extends \Test\TestCase {
 			return null;
 		});
 
-		$this->eventDispatcher->expects($this->once())
+		$this->eventDispatcher->expects($this->exactly(2))
 			->method('dispatchTyped')
 			->with(
 				$this->callback(function ($event) use ($share) {
@@ -309,6 +323,10 @@ class ShareControllerTest extends \Test\TestCase {
 			->willReturnCallback(function ($text, $parameters) {
 				return vsprintf($text, $parameters);
 			});
+
+		$this->defaults->expects(self::any())
+			->method('getProductName')
+			->willReturn('Nextcloud');
 
 		$response = $this->shareController->showShare();
 		$sharedTmplParams = [
@@ -332,8 +350,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => 'ownerDisplay',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => false,
@@ -403,10 +421,17 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->session->method('exists')->with('public_link_authenticated')->willReturn(true);
 		$this->session->method('get')->with('public_link_authenticated')->willReturn('42');
 
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -443,7 +468,7 @@ class ShareControllerTest extends \Test\TestCase {
 			return null;
 		});
 
-		$this->eventDispatcher->expects($this->once())
+		$this->eventDispatcher->expects($this->exactly(2))
 			->method('dispatchTyped')
 			->with(
 				$this->callback(function ($event) use ($share) {
@@ -456,6 +481,10 @@ class ShareControllerTest extends \Test\TestCase {
 			->will($this->returnCallback(function ($text, $parameters) {
 				return vsprintf($text, $parameters);
 			}));
+
+		$this->defaults->expects(self::any())
+			->method('getProductName')
+			->willReturn('Nextcloud');
 
 		$response = $this->shareController->showShare();
 		$sharedTmplParams = [
@@ -479,8 +508,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => '',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => false,
@@ -554,10 +583,17 @@ class ShareControllerTest extends \Test\TestCase {
 		// Even if downloads are disabled the "downloadURL" parameter is
 		// provided to the template, as it is needed to preview audio and GIF
 		// files.
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -594,7 +630,7 @@ class ShareControllerTest extends \Test\TestCase {
 			return null;
 		});
 
-		$this->eventDispatcher->expects($this->once())
+		$this->eventDispatcher->expects($this->exactly(2))
 			->method('dispatchTyped')
 			->with(
 				$this->callback(function ($event) use ($share) {
@@ -630,8 +666,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => 'ownerDisplay',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => true,
