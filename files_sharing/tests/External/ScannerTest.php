@@ -21,7 +21,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing\Tests\External;
 
 use OCA\Files_Sharing\External\Scanner;
@@ -49,6 +48,18 @@ class ScannerTest extends TestCase {
 			->willReturn($this->cache);
 
 		$this->scanner = new Scanner($this->storage);
+	}
+
+	public function testScanAll() {
+		$this->storage->expects($this->any())
+			->method('getShareInfo')
+			->willReturn(['status' => 'success', 'data' => []]);
+
+		// FIXME add real tests, we are currently only checking for
+		// Declaration of OCA\Files_Sharing\External\Scanner::*() should be
+		// compatible with OC\Files\Cache\Scanner::*()
+		$this->scanner->scanAll();
+		$this->addToAssertionCount(1);
 	}
 
 	public function testScan() {

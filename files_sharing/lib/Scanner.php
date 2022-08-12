@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  *
  * @author Joas Schilling <coding@schilljs.com>
- * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
  * @author Vincent Petry <vincent@nextcloud.com>
@@ -63,7 +62,7 @@ class Scanner extends \OC\Files\Cache\Scanner {
 		}
 		if ($this->storage->instanceOfStorage('\OCA\Files_Sharing\SharedStorage')) {
 			/** @var \OC\Files\Storage\Storage $storage */
-			list($storage) = $this->storage->resolvePath('');
+			[$storage] = $this->storage->resolvePath('');
 			$this->sourceScanner = $storage->getScanner();
 			return $this->sourceScanner;
 		} else {

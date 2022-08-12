@@ -4,7 +4,6 @@
  *
  * @author Christoph Wurst <christoph@winzerhof-wurst.at>
  * @author Lukas Reschke <lukas@statuscode.ch>
- * @author Morris Jobke <hey@morrisjobke.de>
  * @author Olivier Paroz <github@oparoz.com>
  * @author Robin Appelman <robin@icewind.nl>
  * @author Vincent Petry <vincent@nextcloud.com>
@@ -24,17 +23,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing\External;
 
 use OC\ForbiddenException;
 use OCP\Files\NotFoundException;
 use OCP\Files\StorageInvalidException;
 use OCP\Files\StorageNotAvailableException;
+use OCP\Http\Client\LocalServerException;
+use Psr\Log\LoggerInterface;
 
 class Scanner extends \OC\Files\Cache\Scanner {
 	/** @var \OCA\Files_Sharing\External\Storage */
 	protected $storage;
+
+	/** {@inheritDoc} */
+	public function scan($path, $recursive = self::SCAN_RECURSIVE, $reuse = -1, $lock = true) {
+		try {
+			if (!$this->storage->remoteIsOwnCloud()) {
+				return parent::scan($path, $recursive, $reuse, $lock);
+			}
+		} catch (LocalServerException $e) {
+			// Scanner doesn't have dependency injection
+			\OC::$server->get(LoggerInterface::class)
+				->warning('Trying to scan files inside invalid external storage: ' . $this->storage->getRemote() . ' for mountpoint ' . $this->storage->getMountPoint() . ' and id ' . $this->storage->getId());
+			return;
+		}
+
+		$this->scanAll();
+	}
 
 	/**
 	 * Scan a single file and store it in the cache.
@@ -63,6 +79,58 @@ class Scanner extends \OC\Files\Cache\Scanner {
 			$this->storage->checkStorageAvailability();
 		} catch (StorageNotAvailableException $e) {
 			$this->storage->checkStorageAvailability();
+		}
+	}
+
+	/**
+	 * Checks the remote share for changes.
+	 * If changes are available, scan them and update
+	 * the cache.
+	 * @throws NotFoundException
+	 * @throws StorageInvalidException
+	 * @throws \Exception
+	 */
+	public function scanAll() {
+		try {
+			$data = $this->storage->getShareInfo();
+		} catch (\Exception $e) {
+			$this->storage->checkStorageAvailability();
+			throw new \Exception(
+				'Error while scanning remote share: "' .
+				$this->storage->getRemote() . '" ' .
+				$e->getMessage()
+			);
+		}
+		if ($data['status'] === 'success') {
+			$this->addResult($data['data'], '');
+		} else {
+			throw new \Exception(
+				'Error while scanning remote share: "' .
+				$this->storage->getRemote() . '"'
+			);
+		}
+	}
+
+	/**
+	 * @param array $data
+	 * @param string $path
+	 */
+	private function addResult($data, $path) {
+		$id = $this->cache->put($path, $data);
+		if (isset($data['children'])) {
+			$children = [];
+			foreach ($data['children'] as $child) {
+				$children[$child['name']] = true;
+				$this->addResult($child, ltrim($path . '/' . $child['name'], '/'));
+			}
+
+			$existingCache = $this->cache->getFolderContentsById($id);
+			foreach ($existingCache as $existingChild) {
+				// if an existing child is not in the new data, remove it
+				if (!isset($children[$existingChild['name']])) {
+					$this->cache->remove(ltrim($path . '/' . $existingChild['name'], '/'));
+				}
+			}
 		}
 	}
 }

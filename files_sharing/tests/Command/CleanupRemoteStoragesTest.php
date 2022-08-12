@@ -2,6 +2,7 @@
 /**
  * @copyright Copyright (c) 2016, ownCloud GmbH.
  *
+ * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
  * @author Joas Schilling <coding@schilljs.com>
  * @author Jörn Friedrich Dreyer <jfd@butonic.de>
  * @author Morris Jobke <hey@morrisjobke.de>
@@ -22,7 +23,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
 namespace OCA\Files_Sharing\Tests\Command;
 
 use OCA\Files_Sharing\Command\CleanupRemoteStorages;
@@ -186,19 +186,15 @@ class CleanupRemoteStoragesTest extends TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 
-		//
-
 		// parent folder, `files`, ´test` and `welcome.txt` => 4 elements
 
-		$at = 0;
 		$output
-			->expects($this->at($at++))
+			->expects($this->any())
 			->method('writeln')
-			->with('5 remote storage(s) need(s) to be checked');
-		$output
-			->expects($this->at($at++))
-			->method('writeln')
-			->with('5 remote share(s) exist');
+			->withConsecutive(
+				['5 remote storage(s) need(s) to be checked'],
+				['5 remote share(s) exist'],
+			);
 
 		$this->cloudIdManager
 			->expects($this->any())
