@@ -126,7 +126,7 @@ class OC_Util {
 		}
 		$config['arguments']['objectstore'] = new $config['class']($config['arguments']);
 		// mount with plain / root object store implementation
-		$config['class'] = '\OC\Files\ObjectStore\ReciaObjectStoreStorage';
+		$config['class'] = '\OC\Files\ObjectStore\ObjectStoreStorage';
 
 		// mount object storage as root
 		\OC\Files\Filesystem::initMountManager();
@@ -167,7 +167,7 @@ class OC_Util {
 
 		$config['arguments']['objectstore'] = new $config['class']($config['arguments']);
 		// mount with plain / root object store implementation
-		$config['class'] = '\OC\Files\ObjectStore\ReciaObjectStoreStorage';
+		$config['class'] = '\OC\Files\ObjectStore\ObjectStoreStorage';
 
 		// mount object storage as root
 		\OC\Files\Filesystem::initMountManager();
