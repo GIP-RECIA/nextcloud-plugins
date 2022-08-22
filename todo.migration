@@ -30,3 +30,18 @@ ca semble etre dans:
 	83:		$config['class'] = ObjectStoreStorage::class;
 	99:		$config['class'] = ObjectStoreStorage::class;
 il faut changer ObjectStoreStorage par ReciaObjectStoreStorage
+
+------
+Ce qu'il faut installer sur la machine:
+
+
+Prévoir sur le HA la page de mise ne maintenance de NC
+
+il faudrat aussi passer en php 8.4 
+avec les lib suivantes voir ticket a aquaray:
+
+
+pour la migration
+faire sur recette avec la branch DEV et  les tags  v22 , v23 puis v24
+
+pour passer en prod avec la branche master
