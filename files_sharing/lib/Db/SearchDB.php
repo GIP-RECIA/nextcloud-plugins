@@ -93,8 +93,6 @@ class SearchDB {
 			array_pop($usersFetched);
 		}
 
-
-
 		$formattedUsers = array_map(function($user){
 			$formattedUser = [
 				'label' => $user['displayname']??$user['uid'],

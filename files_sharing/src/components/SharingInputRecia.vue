@@ -21,38 +21,38 @@
   -->
 
 <template>
-		<Multiselect ref="multiselect"
-			class="sharing-input"
-			:clear-on-select="true"
-			:disabled="!canReshare"
-			:hide-selected="true"
-			:internal-search="false"
-			:loading="loading"
-			:options="options"
-			:placeholder="inputPlaceholder"
-			:preselect-first="true"
-			:preserve-search="true"
-			:searchable="true"
-			:user-select="true"
-			open-direction="below"
-			label="displayName"
-			track-by="id"
-			@search-change="asyncFind"
-			@select="addShare">
-			<template slot="beforeList" v-if="!this.isValidQuery">
-				<li>
-					<span>
-						{{ t('files_sharing', 'Recommendations :') }}
-					</span>
-				</li>
-			</template>
-			<template #noOptions>
-				{{ t('files_sharing', 'No recommendations. Start typing.') }}
-			</template>
-			<template #noResult>
-				{{ noResultText }}
-			</template>
-		</Multiselect>
+	<Multiselect ref="multiselect"
+		class="sharing-input"
+		:clear-on-select="true"
+		:disabled="!canReshare"
+		:hide-selected="true"
+		:internal-search="false"
+		:loading="loading"
+		:options="options"
+		:placeholder="inputPlaceholder"
+		:preselect-first="true"
+		:preserve-search="true"
+		:searchable="true"
+		:user-select="true"
+		open-direction="below"
+		label="displayName"
+		track-by="id"
+		@search-change="asyncFind"
+		@select="addShare">
+		<template slot="beforeList" v-if="!this.isValidQuery">
+			<li>
+				<span>
+					{{ t('files_sharing', 'Recommendations :') }}
+				</span>
+			</li>
+		</template>
+		<template #noOptions>
+			{{ t('files_sharing', 'No recommendations. Start typing.') }}
+		</template>
+		<template #noResult>
+			{{ noResultText }}
+		</template>
+	</Multiselect>
 </template>
 
 <script>
@@ -279,7 +279,7 @@ export default {
 			// lookup clickable entry
 			// show if enabled and not already requested
 			const lookupEntry = []
-
+			/*
 			if (data.lookupEnabled && !lookup) {
 				lookupEntry.push({
 					id: 'global-lookup',
@@ -288,6 +288,7 @@ export default {
 					lookup: true,
 				})
 			}
+			*/
 
 			// if there is a condition specified, filter it
 			const externalResults = this.externalResults.filter(result => !result.condition || result.condition(this))
@@ -315,6 +316,7 @@ export default {
 			})
 
 			this.loading = false
+			console.info('suggestions', this.suggestions)
 		},
 
 		/**
@@ -447,6 +449,7 @@ export default {
 				.concat(externalResults)
 
 			this.loading = false
+			console.info('recommendations', this.recommendations)
 		},
 
 		/**
@@ -586,6 +589,9 @@ export default {
 				return true
 			}
 
+			// TODO: reset the search string when done
+			// https://github.com/shentao/vue-multiselect/issues/633
+
 			// handle externalResults from OCA.Sharing.ShareSearch
 			if (value.handler) {
 				const share = await value.handler(this)
@@ -610,6 +616,7 @@ export default {
 					shareWith: value.shareWith,
 					password,
 					permissions: this.fileInfo.sharePermissions & OC.getCapabilities().files_sharing.default_permissions,
+					attributes: JSON.stringify(this.fileInfo.shareAttributes),
 				})
 
 				// If we had a password, we need to show it to the user as it was generated
@@ -666,7 +673,7 @@ export default {
 	.multiselect__option {
 		span[lookup] {
 			.avatardiv {
-				background-image: var(--icon-search-white);
+				background-image: var(--icon-search-fff);
 				background-repeat: no-repeat;
 				background-position: center;
 				background-color: var(--color-text-maxcontrast) !important;

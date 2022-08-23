@@ -138,7 +138,7 @@ export default {
 		SharingEntryInternal,
 		SharingEntrySimple,
 		SharingInherited,
-		/*SharingInput,*/
+		/* SharingInput, */
 		SharingInputRecia,
 		SharingInputEtab,
 		SharingInputChoice,
@@ -386,8 +386,9 @@ export default {
 				}
 			})
 		},
+
 		updateSearchType(type) {
-		this.searchType = type
+			this.searchType = type
 		},
 
 		updateSelectedEtabs(etabs) {
