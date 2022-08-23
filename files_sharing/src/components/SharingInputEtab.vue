@@ -225,13 +225,6 @@ export default {
 </script>
 
 <style lang="scss">
-/** Fix icons issue */
-body{
-	--icon-checkmark-fff : var(--icon-checkmark-white);
-	--icon-checkmark-000 : var(--icon-checkmark-dark);
-	--icon-add-fff : var(--icon-add-white);
-	--icon-add-000 : var(--icon-add-dark);
-}
 .sharing-input-etab {
 	width: 100%;
 	margin: 10px 0;

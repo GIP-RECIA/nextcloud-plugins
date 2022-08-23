@@ -26,15 +26,13 @@
 use OCA\Files\Event\LoadAdditionalScriptsEvent;
 use OCA\Files\Event\LoadSidebar;
 use OCA\Viewer\Event\LoadViewer;
-use OCP\Collaboration\Resources\LoadAdditionalScriptsEvent as ResourcesLoadAdditionalScriptsEvent;
-use OCP\EventDispatcher\IEventDispatcher;
-use OCP\IConfig;
-use OCP\IUserSession;
-use OCP\Server;
+use OCP\EventDispatcher\GenericEvent;
 
-$config = Server::get(IConfig::class);
-$userSession = Server::get(IUserSession::class);
-$eventDispatcher = Server::get(IEventDispatcher::class);
+$config = \OC::$server->getConfig();
+$userSession = \OC::$server->getUserSession();
+$legacyEventDispatcher = \OC::$server->getEventDispatcher();
+/** @var \OCP\EventDispatcher\IEventDispatcher $eventDispatcher */
+$eventDispatcher = \OC::$server->get(OCP\EventDispatcher\IEventDispatcher::class);
 
 $showgridview = $config->getUserValue($userSession->getUser()->getUID(), 'files', 'show_grid', false);
 
@@ -44,7 +42,7 @@ $tmpl = new OCP\Template('files_sharing', 'list', '');
 $tmpl->assign('showgridview', $showgridview);
 
 // fire script events
-$eventDispatcher->dispatchTyped(new ResourcesLoadAdditionalScriptsEvent());
+$legacyEventDispatcher->dispatch('\OCP\Collaboration\Resources::loadAdditionalScripts', new GenericEvent());
 $eventDispatcher->dispatchTyped(new LoadAdditionalScriptsEvent());
 $eventDispatcher->dispatchTyped(new LoadSidebar());
 
