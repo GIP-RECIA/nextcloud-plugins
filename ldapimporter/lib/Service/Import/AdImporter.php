@@ -329,7 +329,7 @@ class AdImporter implements ImporterInterface
                                                 $this->addEtablissementAsso($idEtablissement, $employeeID);
                                                 $idsEtabUser[] = $idEtablissement;
                                             }
-                                            elseif (!is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
+                                            elseif (!is_null($groupFilter["uaiNumber"]) && !is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
                                                 $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
                                             }
                                             break;
