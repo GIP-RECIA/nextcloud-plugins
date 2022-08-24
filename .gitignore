@@ -208,5 +208,8 @@ yarn-error.log
 ###< backups ###
 backups/**
 
+###< vscode ###
+.vscode
+
 ###< perso gbrousse ###
 util.sh
