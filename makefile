@@ -19,6 +19,7 @@ ifeq ($(NEXTCLOUD_GROUP), )
 	NEXTCLOUD_GROUP := ${USER}
 endif
 
+DIST = $(NEXTCLOUD_PATH)/dist
 APPS = $(NEXTCLOUD_PATH)/apps
 
 LOADER=cssjsloader
@@ -54,9 +55,12 @@ CSSJSLOADER:
 
 FILES_SHARING:
 	mkdir -p ./backups
-	mkdir -p ./backups/files_sharing_last
-	rsync -v -a --delete $(APPS)/files_sharing/ ./backups/files_sharing_last/
-	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/ $(APPS)/files_sharing/
+	mkdir -p ./backups/files_sharing_app_last
+	mkdir -p ./backups/files_sharing_dist_last
+	rsync -v -a --delete $(APPS)/files_sharing/ ./backups/files_sharing_app_last/
+	rsync -v -a --delete --include='files_sharing-files_sharing_tab*' --exclude='*' $(DIST)/ ./backups/files_sharing_dist_last/
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/app/ $(APPS)/files_sharing/
+	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/dist/ $(DIST)/
 
 RESTORE_FILES_SHARING:
 	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_last/ $(APPS)/files_sharing/

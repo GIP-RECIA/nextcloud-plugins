@@ -1,4 +1,4 @@
-# Mmodifications du plugin files_sharing
+# Modifications du plugin files_sharing
 ## Fichiers à ajouter :
 ``` files
 +-- .
