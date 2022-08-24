@@ -756,14 +756,23 @@ class AdImporter implements ImporterInterface
         do {
 
             // Query Group members
-            ldap_control_paged_result($this->ldapConnection, $pageSize, false, $cookie);
-//supprimer ldap_control_paged_result remplacer  par param array $controls dans ldap_search  https://www.php.net/manual/en/function.ldap-search.php
-            $results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes/*, array("member;range=$range_start-$range_end")*/) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
+            // déprécié : ldap_control_paged_result($this->ldapConnection, $pageSize, false, $cookie);
+			$ldap_controls = [['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => $pageSize, 'cookie' => $cookie]]];
+
+            $results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes, 0, 0, 0 ,LDAP_DEREF_NEVER, $ldap_controls) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
+
+			ldap_parse_result($this->ldapConnection, $results, $errcode , $matcheddn , $errmsg , $referrals, $ldap_controls);
+
             $members[] = ldap_get_entries($this->ldapConnection, $results);
+			// déprécié : ldap_control_paged_result_response($this->ldapConnection, $results, $cookie);
 
-            ldap_control_paged_result_response($this->ldapConnection, $results, $cookie);
+            if (isset($ldap_controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'])) {
+				$cookie = $ldap_controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+			} else {
+				$cookie = '';
+			}
 
-        } while ($cookie !== null && $cookie != '');
+        } while (!empty($cookie));
 
         // Return sorted member list
         sort($members);
@@ -783,7 +792,7 @@ class AdImporter implements ImporterInterface
         if (empty($user_dn)) die('Error, no LDAP user specified');
 
         // Disable pagination setting, not needed for individual attribute queries
-        ldap_control_paged_result($this->ldapConnection, 1);
+        // déprécié : ldap_control_paged_result($this->ldapConnection, 1);
 
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $user_dn, 'cn=*', $keep) : ldap_search($this->ldapConnection, $user_dn, 'cn=*'));
@@ -815,7 +824,7 @@ class AdImporter implements ImporterInterface
         if (empty($groupCn)) die('Error, no LDAP user specified');
 
         // Disable pagination setting, not needed for individual attribute queries
-        ldap_control_paged_result($this->ldapConnection, 1);
+        // déprécié: ldap_control_paged_result($this->ldapConnection, 1);
 
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, $filter, $keep) : ldap_search($this->ldapConnection, $groupCn, $filter));
