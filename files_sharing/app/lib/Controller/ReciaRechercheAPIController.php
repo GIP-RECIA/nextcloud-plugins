@@ -229,10 +229,12 @@ class ReciaRechercheAPIController extends OCSController {
                 }
 
                 // Disable pagination setting, not needed for individual attribute queries
-                ldap_control_paged_result($ldapConnection, 1);
+                //ldap_control_paged_result($ldapConnection, 1);
+				// php 8 fix for ldap_control_paged_result deprecation
+				$ldap_controls = [['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => 1, 'cookie' => '']]];
 
                 // Query user attributes
-                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
+                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"],0,-1,-1,LDAP_DEREF_NEVER,$ldap_controls);
                 if (ldap_error($ldapConnection) == "No such object") {
                     return [];
                 }
