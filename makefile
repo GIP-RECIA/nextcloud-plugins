@@ -63,9 +63,8 @@ FILES_SHARING:
 	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/dist/ $(DIST)/
 
 RESTORE_FILES_SHARING:
-	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_last/ $(APPS)/files_sharing/
-
-
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_app_last/ $(APPS)/files_sharing/
+	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_dist_last/ $(DIST)/
 
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
