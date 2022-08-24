@@ -757,7 +757,7 @@ class AdImporter implements ImporterInterface
 
             // Query Group members
             ldap_control_paged_result($this->ldapConnection, $pageSize, false, $cookie);
-
+//supprimer ldap_control_paged_result remplacer  par param array $controls dans ldap_search  https://www.php.net/manual/en/function.ldap-search.php
             $results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes/*, array("member;range=$range_start-$range_end")*/) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
             $members[] = ldap_get_entries($this->ldapConnection, $results);
 
