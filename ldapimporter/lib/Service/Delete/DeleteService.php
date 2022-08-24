@@ -443,15 +443,25 @@ class DeleteService
 
             // Query Group members
             if (!is_null($pageSize)) {
-                ldap_control_paged_result($this->ldapConnection, $pageSize, false, $cookie);
-            }
+                $ldap_controls = [['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => $pageSize, 'cookie' => $cookie]]];
+                $results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes, 0, 0, 0 ,LDAP_DEREF_NEVER, $ldap_controls) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
+				ldap_parse_result($this->ldapConnection, $results, $errcode , $matcheddn , $errmsg , $referrals, $ldap_controls);
 
-            $results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes/*, array("member;range=$range_start-$range_end")*/) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
+				 if (isset($ldap_controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'])) {
+					$cookie = $ldap_controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+				} else {
+					$cookie = '';
+				}
+            } else {
+				$results = ldap_search($this->ldapConnection, $object_dn, $filter, $keepAtributes) or die('Error searching LDAP: ' . ldap_error($this->ldapConnection));
+
+			}
+
             $members[] = ldap_get_entries($this->ldapConnection, $results);
 
-            ldap_control_paged_result_response($this->ldapConnection, $results, $cookie);
+            
 
-        } while ($cookie !== null && $cookie != '');
+        } while (!empty($cookie));
 
         // Return sorted member list
         sort($members);
@@ -471,7 +481,7 @@ class DeleteService
         if (empty($user_dn)) die('Error, no LDAP user specified');
 
         // Disable pagination setting, not needed for individual attribute queries
-        ldap_control_paged_result($this->ldapConnection, 1);
+        //déprécié: ldap_control_paged_result($this->ldapConnection, 1);
 
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $user_dn, 'cn=*', $keep) : ldap_search($this->ldapConnection, $user_dn, 'cn=*'));
@@ -503,7 +513,7 @@ class DeleteService
         if (empty($groupCn)) die('Error, no LDAP user specified');
 
         // Disable pagination setting, not needed for individual attribute queries
-        ldap_control_paged_result($this->ldapConnection, 1);
+        // déprécié: ldap_control_paged_result($this->ldapConnection, 1);
 
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, $filter, $keep) : ldap_search($this->ldapConnection, $groupCn, $filter));
