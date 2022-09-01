@@ -20,6 +20,8 @@ body {
     display: none; }
   body div#content.app-settings div#app-content div.personal-settings-section {
     display: none; }
+  body div#content.app-settings div#app-content div#personal-settings div.profile-settings-container div.personal-settings-setting-box {
+    display: none; }
   body .personal-settings-container .personal-settings-setting-box:nth-child(n+3) {
     display: none; }
   body .personal-settings-container .personal-settings-setting-box form#displaynameform div.federation-menu, body .personal-settings-container .personal-settings-setting-box form#emailform div.federation-menu {
