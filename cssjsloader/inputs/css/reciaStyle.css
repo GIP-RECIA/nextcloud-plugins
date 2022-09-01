@@ -1,5 +1,16 @@
 body {
   /* les suppresions d'affichage */
+  /* suppression du menu Nouveau modele de formulaire pour OO */
+  /*
+  div#content.app-settings  div.personal-settings-section section#profile-visibility
+  html.ng-csp body#body-settings.theme--light.esco.not_embedded div#content.app-settings div#app-content div#personal-settings div.profile-settings-container div.personal-settings-setting-box
+  html.ng-csp body#body-settings.theme--light.esco.not_embedded div#content.app-settings div#app-content div#personal-settings div.personal-settings-container div.personal-settings-setting-box
+  */
+  /*supression du profile 
+  div#content.app-settings div#app-content div#personal-settings div.profile-settings-container {
+  	display: none;
+  }
+  div.personal-settings-section, */
   /* le dimentionnement */
   /* les couleurs */ }
   body#body-public.not_embedded footer {
@@ -8,6 +19,8 @@ body {
   body div.section.development-notice {
     display: none; }
   body div#contactsmenu {
+    display: none; }
+  body div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
     display: none; }
   body li[data-id="firstrunwizard-about"], body li[data-id="help"] {
     display: none; }
