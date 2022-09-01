@@ -33,7 +33,7 @@ body {
 	}
 
 	.personal-settings-container {
-		personal-settings-setting-box:nth-child(n+3) {
+		.personal-settings-setting-box:nth-child(n+3) {
 			display: none;
 		}
 
