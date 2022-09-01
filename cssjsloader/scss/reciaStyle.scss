@@ -13,6 +13,14 @@ body {
 	div#contactsmenu {
 		display: none;
 	}
+
+	/* suppression du menu Nouveau modele de formulaire pour OO */
+	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
+		display: none;
+	}
+
+
+	
 	li[data-id="firstrunwizard-about"],  li[data-id="help"],{
 	display: none;
 	}
@@ -22,6 +30,8 @@ body {
 	div#security-password ,div#two-factor-auth {
 		display:none;
 	}
+
+
 	div.personal-settings-setting-box form {
 		&#displaynameform , &#emailform {
 			div.federation-menu {
