@@ -20,6 +20,7 @@ body {
 	}
 
 
+
 	
 	li[data-id="firstrunwizard-about"],  li[data-id="help"],{
 	display: none;
@@ -31,13 +32,17 @@ body {
 		display:none;
 	}
 
-
-	div.personal-settings-setting-box form {
-		&#displaynameform , &#emailform {
-			div.federation-menu {
-				display :none;
-			}
+	.personal-settings-container {
+		personal-settings-setting-box:nth-child(n+3) {
+			display: none;
 		}
+
+		.personal-settings-setting-box form {
+			&#displaynameform , &#emailform {
+				div.federation-menu {
+					display :none;
+				}
+			}
 		&#phoneform, &#addressform, &#websiteform, &#twitterform {
 			display :none;
 		}
@@ -45,6 +50,7 @@ body {
 			display : none;
 		}
 	
+		}
 	}
 	
 	div#accessibility > p {
