@@ -1,16 +1,6 @@
 body {
   /* les suppresions d'affichage */
   /* suppression du menu Nouveau modele de formulaire pour OO */
-  /*
-  div#content.app-settings  div.personal-settings-section section#profile-visibility
-  html.ng-csp body#body-settings.theme--light.esco.not_embedded div#content.app-settings div#app-content div#personal-settings div.profile-settings-container div.personal-settings-setting-box
-  html.ng-csp body#body-settings.theme--light.esco.not_embedded div#content.app-settings div#app-content div#personal-settings div.personal-settings-container div.personal-settings-setting-box
-  */
-  /*supression du profile 
-  div#content.app-settings div#app-content div#personal-settings div.profile-settings-container {
-  	display: none;
-  }
-  div.personal-settings-section, */
   /* le dimentionnement */
   /* les couleurs */ }
   body#body-public.not_embedded footer {
@@ -28,11 +18,13 @@ body {
     display: none; }
   body div#security-password, body div#two-factor-auth {
     display: none; }
-  body div.personal-settings-setting-box form#displaynameform div.federation-menu, body div.personal-settings-setting-box form#emailform div.federation-menu {
+  body .personal-settings-container personal-settings-setting-box:nth-child(n+3) {
     display: none; }
-  body div.personal-settings-setting-box form#phoneform, body div.personal-settings-setting-box form#addressform, body div.personal-settings-setting-box form#websiteform, body div.personal-settings-setting-box form#twitterform {
+  body .personal-settings-container .personal-settings-setting-box form#displaynameform div.federation-menu, body .personal-settings-container .personal-settings-setting-box form#emailform div.federation-menu {
     display: none; }
-  body div.personal-settings-setting-box form#emailform > em {
+  body .personal-settings-container .personal-settings-setting-box form#phoneform, body .personal-settings-container .personal-settings-setting-box form#addressform, body .personal-settings-container .personal-settings-setting-box form#websiteform, body .personal-settings-container .personal-settings-setting-box form#twitterform {
+    display: none; }
+  body .personal-settings-container .personal-settings-setting-box form#emailform > em {
     display: none; }
   body div#accessibility > p {
     display: none; }
