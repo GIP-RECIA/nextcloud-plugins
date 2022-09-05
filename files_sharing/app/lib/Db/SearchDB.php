@@ -136,7 +136,7 @@ class SearchDB {
 		$groupsFetched = $qb->execute()->fetchAll();
 		if(count($groupsFetched)>$limit){
 			$hasMore = true;
-			array_pop($usersFetched);
+			array_pop($groupsFetched);
 		}
 
 		$formattedGroups = array_map(function($group){
