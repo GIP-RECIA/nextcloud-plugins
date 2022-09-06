@@ -34,9 +34,14 @@ $PARAM{'NC_WWW'} = $wwwRep;
 					$PARAM{$1} = $2;
 			}
 	}
-	
+
+
+# ex: 'nc-recette-'
 my $defautBucket = $PARAM{'bucket'};
+
+# ex: s3://nc-recette-
 my $prefixBucket = "s3://$defautBucket";
+
 my $s3command = "/usr/bin/s3cmd ";
 
 my $sqlHost = $PARAM{'dbhost'};
@@ -64,6 +69,9 @@ sub connectSql {
 	return $SQL_CONNEXION ;
 }
 
+
+# si $name == nc-recette-name/... => s3://nc-recette-name 
+# sinon  => s3://nc-recette-0
 sub getBucketName(){
 	my $name = shift;
 	unless ($name) {
@@ -78,9 +86,11 @@ sub getBucketName(){
 	return $prefixBucket . $name;
 }
 
+# 
 sub fileUrn (){
 	return "/urn:oid:" . shift;
 }
+
 
 sub s3path() {
 	my $bucket =  &getBucketName(shift);
