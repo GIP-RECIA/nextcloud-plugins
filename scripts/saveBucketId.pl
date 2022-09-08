@@ -44,6 +44,9 @@ my %history;
 my $sql = connectSql();
 
 
+# donne les doublons dans l'historique (pour correction)
+my $sqlDoublon = "select uid, min(creation) creation, max(coalesce(suppression, 0)) suppression from recia_bucket_history group by uid having count(bucket) > 1";
+
 # insertion d'un bucket dans l'historique. 
 my $sqlInsert = "insert into recia_bucket_history (bucket, uid, creation) values (?, ?, ?)";
 
@@ -56,7 +59,31 @@ my $sqlQueryExist = "select userid uid, configvalue bucket  from oc_preferences 
 # Donne le nombre de compte déclarés.
 my $sqlQueryUidNumber = "select count(uid) from oc_users";
 
-my $sqlStatement = $sql->prepare($sqlQueryOld) or die $sql->errstr;
+# suppression des doublons de l'historique
+
+my $sqlStatement = $sql->prepare($sqlDoublon) or die $sql->errstr;
+$sqlStatement->execute() or die $sqlStatement->errstr;
+
+while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
+	my $uid = $tuple->{'uid'};
+	my $creat = $tuple->{'creation'};
+	my $sup = $tuple->{'suppression'};
+	
+	my $rows = $sql->do(q{delete from recia_bucket_history where uid = ? and bucket = 'nc-prod-0'}, undef, $uid) or die $sql->errstr, " delete bucket_history $uid ";
+	if ($rows) {
+		if ($sup) {
+			$sql->do(q{update recia_bucket_history set creation = ?, suppression = ? where uid = ? }, undef, $creat, $sup, $uid) or die $sql->errstr, " update bucket_history $uid 1";
+		} else {
+			$sql->do(q{update recia_bucket_history set creation = ? where uid = ? }, undef, $creat, $uid) or die $sql->errstr, " update bucket_history $uid 2";
+		}
+	}
+
+}
+
+
+
+
+$sqlStatement = $sql->prepare($sqlQueryOld) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 
 my $nbUid = 0;
@@ -104,4 +131,3 @@ sub insert {
 	$sth->execute($bucket, $uid, $date) or die $DBI::errstr . $DBI::error;
 	$sth->finish();
 }
-
