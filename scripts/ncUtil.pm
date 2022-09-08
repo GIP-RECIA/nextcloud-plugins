@@ -70,7 +70,8 @@ sub connectSql {
 }
 
 
-# si $name == nc-recette-name/... => s3://nc-recette-name 
+# si $name == nc-recette-name/... => s3://nc-recette-name
+# si $name != null =>  s3://nc-recette-name
 # sinon  => s3://nc-recette-0
 sub getBucketName(){
 	my $name = shift;
