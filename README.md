@@ -1,7 +1,7 @@
 #### Adaptation a nextcloud pour le gip recia
 
 Le recia à deux déploiements de NC sur la même architecture une pour les
-ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip)
+ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip, gip.nextcloud.recia.aquaray.com) 
 
 
 Les modifications portent principalement sur :
@@ -74,5 +74,5 @@ Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
 
 
 # s3 gestion des buckets:
-remplacer  ./lib/private/Files/objectStore/mapper.php
+remplacer  ./lib/private/Files/objectStore/Mapper.php
 par notre version
