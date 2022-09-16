@@ -28,8 +28,8 @@ my $bucketOnly = 0;
 my $bucketLess = 0;
 
 unless (@ARGV) {
-	print "usage :\t$0 [-b|+b] (uid|bucket|file)\n";
-	print "\t prend en entré un uid , un bucket ou un nom de fichier\n";
+	print "usage :\t$0 [-b|+b] (uid|bucket|idFile|displayName)\n";
+	print "\t prend en entré un uid , un bucket ou un num de fichier ou encore le display name fournie par NC\n";
 	print "\t et donne la liste des fichiers correspondant au compte et d'autres infos utiles\n";
 	print "\t si -b ne donne que les infos complémentaire (sans les fichiers/bucket).\n";
 	print "\t si +b ne donne que les fichiers dans ou hors bucket.\n";
@@ -45,15 +45,19 @@ if ($ARGV[$noarg] =~ /([+-])b/){
 	}
 }
 
-if ($ARGV[$noarg] =~ /^$defautBucket/){
+my $arg1 = $ARGV[$noarg];
+
+if ($arg1 =~ /^$defautBucket/){
 	# on passe un bucket il faut trouver a qui il est 
-	$bucket = $ARGV[$noarg];
+	$bucket = $arg1;
 	$uid = getUidByBucket($bucket);
-} elsif ($ARGV[$noarg] =~ /^\d+$/) {
+} elsif ($arg1 =~ /^\d+$/) {
 	# si on a un fichier on chercher a qui il appartient.
-	$uid = getOwnerUid($ARGV[$noarg]);
+	$uid = getOwnerUid($arg1);
+} elsif ($arg1 =~/^F\d{2}\w{5}$/) {
+    $uid = $arg1;
 } else {
-    $uid = $ARGV[$noarg];
+	$uid = getUidByName($arg1);
 }
 
 if ($uid) {
@@ -80,6 +84,18 @@ sub getOwnerUid{
 		}
 	}	
 	return  $uid;
+}
+sub getUidByName {
+	my $name = shift;
+	my $sql = connectSql();
+	my $sqlQuery= "select uid from oc_users where displayname = ?";
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	$sqlStatement->execute($name)  or die $sqlStatement->errstr;
+	my $ary_ref =  $sqlStatement->fetch;
+	unless ($ary_ref) {
+		return 0;
+	}
+	return $$ary_ref[0];
 }
 
 sub getUidByBucket{
