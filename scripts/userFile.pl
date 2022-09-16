@@ -88,11 +88,17 @@ sub getOwnerUid{
 sub getUidByName {
 	my $name = shift;
 	my $sql = connectSql();
-	my $sqlQuery= "select uid from oc_users where displayname = ?";
+	my $sqlQuery= "select uid from oc_users where lower(displayname) = lower(?)";
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	$sqlStatement->execute($name)  or die $sqlStatement->errstr;
 	my $ary_ref =  $sqlStatement->fetch;
 	unless ($ary_ref) {
+		return 0;
+	}
+	if (@$ary_ref > 1) {
+		foreach my $uid (@$ary_ref) {
+			print "uid trouvé $uid\n";
+		}
 		return 0;
 	}
 	return $$ary_ref[0];
