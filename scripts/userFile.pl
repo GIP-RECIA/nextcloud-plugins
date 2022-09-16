@@ -29,7 +29,7 @@ my $bucketLess = 0;
 
 unless (@ARGV) {
 	print "usage :\t$0 [-b|+b] (uid|bucket|idFile|displayName)\n";
-	print "\t prend en entré un uid , un bucket ou un num de fichier ou encore le display name fournie par NC\n";
+	print "\t prend en entré un uid , un bucket ou un num de fichier ou encore le display name (% autorisé) \n";
 	print "\t et donne la liste des fichiers correspondant au compte et d'autres infos utiles\n";
 	print "\t si -b ne donne que les infos complémentaire (sans les fichiers/bucket).\n";
 	print "\t si +b ne donne que les fichiers dans ou hors bucket.\n";
@@ -88,20 +88,21 @@ sub getOwnerUid{
 sub getUidByName {
 	my $name = shift;
 	my $sql = connectSql();
-	my $sqlQuery= "select uid from oc_users where lower(displayname) = lower(?)";
+	my $sqlQuery= "select uid, displayname from oc_users where lower(displayname) like lower(?)";
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-	$sqlStatement->execute($name)  or die $sqlStatement->errstr;
-	my $ary_ref =  $sqlStatement->fetch;
-	unless ($ary_ref) {
-		return 0;
-	}
-	if (@$ary_ref > 1) {
-		foreach my $uid (@$ary_ref) {
-			print "uid trouvé $uid\n";
+	my $nbUid = $sqlStatement->execute($name)  or die $sqlStatement->errstr;
+	my $ary_ref;
+	if ($nbUid != 1) {
+		while ($ary_ref =  $sqlStatement->fetch) {
+			print "uid trouvé $$ary_ref[0] $$ary_ref[1]\n";
 		}
 		return 0;
+	} 
+	my $ary_ref =  $sqlStatement->fetch;
+	if ($ary_ref) {
+		return $$ary_ref[0];
 	}
-	return $$ary_ref[0];
+	return 0;
 }
 
 sub getUidByBucket{
