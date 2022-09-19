@@ -90,4 +90,13 @@ et  ajouter dans ./lib/private/Files/ObjectStore:
 	ReciaObjectStoreStorage.php  S3Recia.php
 
 Mapper.php distribut un bucket par user (c'est un hash donc quasiment un bucket par user).
-ReciaObjectStoreStorage.php  S3Recia.php permetent de na pas stocker tous les avatars et bréview dans le même bucket system (bucket 0).
+ReciaObjectStoreStorage.php  S3Recia.php permetent de na pas stocker tous les avatars et préview dans le même bucket system (bucket 0).
+
+# Scripts
+Ensemble des scripts utiles à l'exploitation:
+
+- loadEtabs.pl: creation des comptes et groupes à partir de LDAP.
+
+- userFile.pl donne les fichiers et info d'un compte.
+
+- groupFinder.pl donne les membres d'un groupe.
