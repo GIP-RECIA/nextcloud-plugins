@@ -22,10 +22,18 @@ suppression modification du repertoire skeleton
 
 # LDAP Importer
 
-Plugin pour nextcloud LDAP Importer
+Plugin LDAP Importer
 Permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP.
-On en déduit leurs groupes NC et leurs quota. 
+On en déduit leurs groupes NC et leurs quota.
+Les filtres sont paramètrés avec des regexs dans "Paramètres -> sécurité -> Import Users -> Filtre & nomage de groupe"
 
+- Une première serie de regex permet de deduire les nom des établissement (pour NC) à partir des groupes LDAP.
+- La deuxième définit les groupes NC à partir des groupes LDAP (fixe le quota minimum),
+sans groupe de cette serie un user LDAP ne sera pas importer dans NC.
+
+- La troisièmes définit les groupes NC à partir des groupes pédagogiques de l'utilisateur, ce ne sont pas des groupes fonctionnels, ils  ne sont pas dans le isMemberOf du LDAP.
+Il faut donc définir l'attribut LDAP approprié. 
+  
 Tester sous nextcloud version 24
 Tester avec le plugin "CAS Authentication backend" version : 1.10
 
