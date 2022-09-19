@@ -23,9 +23,11 @@ suppression modification du repertoire skeleton
 # LDAP Importer
 
 Plugin pour nextcloud LDAP Importer
+Permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP.
+On en déduit leurs groupes NC et leurs quota. 
 
-Tester sous nextcloud version 18
-Tester avec le plugin "CAS Authentication backend" version : 1.8.1
+Tester sous nextcloud version 24
+Tester avec le plugin "CAS Authentication backend" version : 1.10
 
 ## Installation
 
@@ -39,23 +41,22 @@ La commande pour importer les utilisateurs du LDAP à la BDD :
 sudo -u www-data php occ ldap:import-users-ad
 ```
 
-# School Sharing
+# File Sharing
 
-Plugin pour nextcloud School Sharing
+Remplacement du plugin nextcloud File Sharing
 
-Tester sous nextcloud version 18
+Tester sous nextcloud version 24
 
 ## Installation
 
 Remplacer TOTALEMENT le dossier files_sharing dans le dossier apps/ à la racine du projet.
 
-Aller dans la configuration des plugins nextcloud via l'interface et activer le plugin 'School Sharing' si il n'est pas déjà activé.
 
 # CSS JS Loader
 
 Plugin pour nextcloud CSSJSLoader qui surcharge le css et le js de toutes les pages
 
-Tester sous nextcloud version 18
+Tester sous nextcloud version 24
 
 ## Installation
 
@@ -74,5 +75,11 @@ Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
 
 
 # s3 gestion des buckets:
-remplacer  ./lib/private/Files/objectStore/Mapper.php
-par notre version
+remplacer  	./lib/private/Files/objectStore/Mapper.php
+			./lib/private/Files/Mount/RootMountProvider.php
+par nos versions
+et  ajouter dans ./lib/private/Files/ObjectStore:
+	ReciaObjectStoreStorage.php  S3Recia.php
+
+Mapper.php distribut un bucket par user (c'est un hash donc quasiment un bucket par user).
+ReciaObjectStoreStorage.php  S3Recia.php permetent de na pas stocker tous les avatars et bréview dans le même bucket system (bucket 0).
