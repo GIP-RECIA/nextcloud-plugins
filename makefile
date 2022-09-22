@@ -30,7 +30,7 @@ ifeq (${USER}, ncgip)
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER
+	@echo SCRIPTS LDAPIMPORTER COLLABORA
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 else
 ALLETAB=allEtab.txt
@@ -47,6 +47,8 @@ SCRIPTS:
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
+COLLABORA:
+	find apps/richdocuments -type f -exec cp {} $(NEXTCLOUD_PATH)/{} +
 
 ifneq (${USER}, ncgip)
 CSSJSLOADER:
@@ -70,8 +72,10 @@ SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 LIB: 
-	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
+	cp -rvT  $(NEXTCLOUD_PATH)/lib
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
+
+
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
