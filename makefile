@@ -48,8 +48,8 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 COLLABORA:
-	find apps/richdocuments -type f -exec cp {} $(NEXTCLOUD_PATH)/{} +
-	find apps/onlyoffice -type f -exec cp {} $(NEXTCLOUD_PATH)/{} +
+	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
+	find apps/onlyoffice -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 
 ifneq (${USER}, ncgip)
 CSSJSLOADER:
