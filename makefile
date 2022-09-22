@@ -45,6 +45,42 @@ LDAPIMPORTER:
 OOPATCH: 
 	cp onlyoffice/js/main.js $(NEXTCLOUD_PATH)/apps/onlyoffice/js/main.js
 
+COLLABORA:
+	find apps/richdocuments -type f -exec cp {} $(NEXTCLOUD_PATH)/{} +
+	find apps/onlyoffice -type f -exec cp {} $(NEXTCLOUD_PATH)/{} +
+
+ifneq (${USER}, ncgip)
+CSSJSLOADER:
+	cp -rvT cssjsloader  $(APPS)/cssjsloader 
+
+
+FILES_SHARING:
+	mkdir -p ./backups
+	mkdir -p ./backups/files_sharing_app_last
+	mkdir -p ./backups/files_sharing_dist_last
+	rsync -v -a --delete $(APPS)/files_sharing/ ./backups/files_sharing_app_last/
+	rsync -v -a --delete --include='files_sharing-files_sharing_tab*' --exclude='*' $(DIST)/ ./backups/files_sharing_dist_last/
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/app/ $(APPS)/files_sharing/
+	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/dist/ $(DIST)/
+
+RESTORE_FILES_SHARING:
+	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_app_last/ $(APPS)/files_sharing/
+	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_dist_last/ $(DIST)/
+
+SKELETON:
+	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
+
+LIB: 
+	cp -rvT  $(NEXTCLOUD_PATH)/lib
+	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
+
+
+
+CSS: 
+	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
+
+endif
+
 sass: $(CSS)/reciaStyle.css
 
 $(CSS)/%.css: $(SCSS)/*.scss

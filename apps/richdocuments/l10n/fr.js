@@ -1,10 +1,10 @@
 OC.L10N.register(
     "richdocuments",
     {
-    "New document" : "Nouveau document",
-    "New spreadsheet" : "Nouvelle feuille de calcul",
-    "New presentation" : "Nouvelle présentation",
-    "New diagram" : "Nouveau diagramme",
+    "New document" : "Nouveau document .odt",
+    "New spreadsheet" : "Nouvelle feuille de calcul .ods",
+    "New presentation" : "Nouvelle présentation .odp",
+    "New diagram" : "Nouveau diagramme .odg",
     "Nextcloud Office" : "Nextcloud Office",
     "Cannot create document" : "Impossible de créer un document",
     "New Document.odt" : "Nouveau Document.odt",
