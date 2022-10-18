@@ -77,6 +77,20 @@ body {
 	&.embedded .viewcontainer div#rich-workspace #editor {
 		max-height : 15em;
 	}
+
+	/* les redim des previews dans la colonne des partages pour plus de lisibilité */
+	.app-sidebar-header__figure {
+		&:hover {
+			height: 35vh !important;
+			max-height: 350px;
+		}
+		height: 10vh !important;
+		background-size: cover !important;
+		-webkit-transition: height 0.5s 0s ease;
+		-moz-transition: height 0.5s 0s ease;
+		-o-transition: height 0.5s 0s ease;
+		transition: height 0.5s 0s ease;
+	}
 /* les couleurs */
 	
 	

@@ -1,7 +1,9 @@
+@charset "UTF-8";
 body {
   /* les suppresions d'affichage */
   /* suppression du menu Nouveau modele de formulaire pour OO */
   /* le dimentionnement */
+  /* les redim des previews dans la colonne des partages pour plus de lisibilité */
   /* les couleurs */ }
   body#body-public.not_embedded footer {
     /* on supprime dans les liens transmis public les liens de pub nextcloud */
@@ -38,6 +40,16 @@ body {
     display: none; }
   body.embedded .viewcontainer div#rich-workspace #editor {
     max-height: 15em; }
+  body .app-sidebar-header__figure {
+    height: 10vh !important;
+    background-size: cover !important;
+    -webkit-transition: height 0.5s 0s ease;
+    -moz-transition: height 0.5s 0s ease;
+    -o-transition: height 0.5s 0s ease;
+    transition: height 0.5s 0s ease; }
+    body .app-sidebar-header__figure:hover {
+      height: 35vh !important;
+      max-height: 350px; }
   body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown {
     display: none; }
     body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown + div#expandDisplayName {
