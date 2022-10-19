@@ -40,14 +40,14 @@ body {
     display: none; }
   body.embedded .viewcontainer div#rich-workspace #editor {
     max-height: 15em; }
-  body .app-sidebar-header__figure {
+  body .app-sidebar-header:not(.app-sidebar-header--compact) .app-sidebar-header__figure {
     height: 10vh !important;
     background-size: cover !important;
     -webkit-transition: height 0.5s 0s ease;
     -moz-transition: height 0.5s 0s ease;
     -o-transition: height 0.5s 0s ease;
     transition: height 0.5s 0s ease; }
-    body .app-sidebar-header__figure:hover {
+    body .app-sidebar-header:not(.app-sidebar-header--compact) .app-sidebar-header__figure:hover {
       height: 35vh !important;
       max-height: 350px; }
   body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown {
