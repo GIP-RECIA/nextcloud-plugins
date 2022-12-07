@@ -7,6 +7,7 @@ BEGIN {
 		@EXPORT_OK   = qw(%PARAM);
     }
 use vars      @EXPORT_OK;
+use Cwd;
 
 my $logRep = $ENV{'NC_LOG'};
 my  $dataRep = $ENV{'NC_DATA'};
@@ -18,9 +19,11 @@ $dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
 
 my $configFile = "$wwwRep/config/config.php";
 
+my $dir = getcwd;
 chdir;
 our %PARAM;
 
+$PARAM{'REP_ORG'} = $dir;
 $PARAM{'NC_LOG'} = $logRep;
 $PARAM{'NC_DATA'} = $dataRep;
 $PARAM{'NC_WWW'} = $wwwRep;
