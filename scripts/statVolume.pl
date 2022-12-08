@@ -20,6 +20,9 @@ my $statEleve;
 my $statPersonnel;
 my $calculStat;
 my $abrege;
+
+my $debut = time();
+
 GetOptions( "p|personnel" => \$statPersonnel,
 			"e|eleve" => \$statEleve,
 			"c|calcul"=> \$calculStat,
@@ -91,23 +94,40 @@ my $sql = connectSql();
 my $unM = 1024 * 1024;
 my $unG = $unM * 1024;
 
+my $temps;
+sub minutes {
+	my $t = shift;
+	$t = time() unless $t;
+	my $sec = $t - $temps;
+	$temps = $t;
+	my $min = int($sec / 60);
+	my $sec = $sec % 60;
+	return $min . "min " . $sec . "s";
+}
+
 my $sqlStatement ;
 if ($calculStat) {
 	if ($statEleve) {
-		print "Init des éleves en base: \n";
+		&minutes;
+		print "Init des éleves en base: ";
 		$sql->do($eleveQuery) or die $sql->errstr;
-
-		print "Calcul des volumes Eleves:\n";
+		
+		print &minutes . "\nCalcul des volumes Eleves: ";
+		
 		$sqlStatement = $sql->prepare($volumeQuery) or die $sql->errstr;
 		$sqlStatement->execute('E') or die $sqlStatement->errstr;
+		print &minutes . "\n";
 	}
+	
 	if ($statPersonnel) {
-		print "Init des personnels en base: \n";
+		&minutes;
+		print "Init des personnels en base: ";
 		$sql->do($personnelQuery) or die $sql->errstr;
 
-		print "Calcul des volumes Personnel:\n";
+		print &minutes . "\nCalcul des volumes Personnel: ";
 		$sqlStatement = $sql->prepare($volumeQuery) or die $sql->errstr;
 		$sqlStatement->execute('P') or die $sqlStatement->errstr;
+		print &minutes . "\n";
 	}
 }
 
@@ -162,6 +182,7 @@ sub printStats {
 	}
 }
 
+print "Temps d'éxecution : " . &minutes($debut) . "\n";
 
 __END__
 
