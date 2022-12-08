@@ -19,10 +19,11 @@ use Pod::Usage;
 my $statEleve;
 my $statPersonnel;
 my $calculStat;
-
+my $abrege;
 GetOptions( "p|personnel" => \$statPersonnel,
 			"e|eleve" => \$statEleve,
-			"c|calcul"=> \$calculStat
+			"c|calcul"=> \$calculStat,
+			"a|abrege" => \$abrege
 		);
 
 unless ($statEleve || $statPersonnel) {
@@ -75,7 +76,8 @@ my $volumeQuery= qq[
             where mimetype != 4 and storage != 1 group by storage
         ) st
     set rs.volume = st.vol
-    where rs.storage = st.storage;
+    where rs.storage = st.storage
+    and rs.categorie = ?;
 ];
 
 my $resultatQuery = qq[select storage, volume size from recia_storage where volume is not null and categorie = ?];
@@ -89,21 +91,27 @@ my $sql = connectSql();
 my $unM = 1024 * 1024;
 my $unG = $unM * 1024;
 
+my $sqlStatement ;
 if ($calculStat) {
 	if ($statEleve) {
 		print "Init des éleves en base: \n";
 		$sql->do($eleveQuery) or die $sql->errstr;
+
+		print "Calcul des volumes Eleves:\n";
+		$sqlStatement = $sql->prepare($volumeQuery) or die $sql->errstr;
+		$sqlStatement->execute('E') or die $sqlStatement->errstr;
 	}
 	if ($statPersonnel) {
 		print "Init des personnels en base: \n";
 		$sql->do($personnelQuery) or die $sql->errstr;
-	}
 
-	print "Calcul des volumes:\n";
-	$sql->do($volumeQuery) or die $sql->errstr;
+		print "Calcul des volumes Personnel:\n";
+		$sqlStatement = $sql->prepare($volumeQuery) or die $sql->errstr;
+		$sqlStatement->execute('P') or die $sqlStatement->errstr;
+	}
 }
 
-my $sqlStatement = $sql->prepare($resultatQuery) or die $sql->errstr;
+$sqlStatement = $sql->prepare($resultatQuery) or die $sql->errstr;
 
 if ($statEleve) {
 	print "\nStatistique Elèves :\n";
@@ -126,20 +134,44 @@ sub printStats {
 		my $nbG = int($ary[1] / $unit);
 		$NbComptes[$nbG]++;
 	}
-	my $cpt=0;
-	for (@NbComptes) {
-		print $cpt++, "\t", $_, "\n";
+	if ($abrege) {
+		my $vide=0;
+		for (my $cpt = 0 ; $cpt < @NbComptes; $cpt++) {
+			my $nb = $NbComptes[$cpt];
+			if ($nb) {
+				if ($vide) {
+					print $cpt - $vide , "\n";
+					if ($vide > 2) {
+						print "...\n";
+					}
+					if ($vide > 1) {
+						print $cpt - 1, "\n";
+					}
+					$vide = 0;
+				}
+				print $cpt, "\t", $nb, "\n";
+			} else {
+				$vide++;
+			}
+		}
+	} else {
+		my $cpt=0;
+		for (@NbComptes) {
+			print $cpt++, "\t", $_, "\n";
+		}
 	}
 }
+
 
 __END__
 
 =head1 SYNOPSIS
 
-statVolume (-p | -e) [-c] 
+statVolume (-p | -e) [-c] [-a] 
 
  Options:
    -p            stat pour le personnel
    -e            stat pour les eleves
    -c            recalcul les stats en base, sinon ne fait que les afficher
+   -a            présentation abrégée (sans toutes les colonnes vides)
 =cut
