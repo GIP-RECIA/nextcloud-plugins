@@ -109,7 +109,7 @@ if ($ARGV[0] eq 'all' ) {
 		my @ALLGRP ;
 		if ($groupe =~ /\%UAI\%/) {
 			
-			foreach my $uai (keys $etabATraiter) {
+			foreach my $uai (keys %etabATraiter) {
 				if ($uai =~ /^\d{7}\w$/) {
 					my $newGroup = $groupe;
 					$newGroup =~ s/\%UAI\%/$uai/g;
