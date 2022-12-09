@@ -133,6 +133,7 @@ body.embedded {
 
 // les couleurs spécifiques:
 @mixin colorTheme($couleur) {
+	& > div#escoDiv,
 	&#body-user #header, &#body-settings #header, &#body-public #header {	
 			a#nextcloud , ul#appmenu, div.header-right {
 			background-color: $couleur;
