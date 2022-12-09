@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+		if (parent != window) {
+			location.replace("index.php");
+			//window.location.reload();
+		}
+		window.body.onload(function(){
+			address = window.location.search;
+			parameterList = new URLSearchParams(address);
+			domaine = parameterList.get("portal_domain");
+			let header = document.querySelector('extended-uportal-header');
+			header.attr('domain', domaine);
+			let footer = document.querySelector('extended-uportal-footer');
+			footer.attr('domain', domaine);
+		});
+	</script>
+	<script src="/commun/extended-uportal-header.min.js"></script>
+	<script src="/commun/extended-uportal-footer.min.js"></script>
+<!--        <meta http-equiv="refresh" content="0; URL=index.php">
+-->
+	<style>
+		body#bodyrecia {
+			margin: 0;
+			overflow: hidden;
+			height: 100%;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+		}
+		body#bodyrecia>* {
+			flex:0 1 auto;
+		}
+		body#bodyrecia>#iframe-wrapper {
+			flex:1 1 auto;
+			flex-direction: column;
+			display:flex;
+			min-height:0;
+			overflow:hidden;
+		}
+		body#bodyrecia>#iframe-wrapper>iframe{
+			flex:1 1 auto;
+			border:0;
+		} 
+		body#bodyrecia>#iframe-wrapper>iframe:hover{
+			flex: 1 1 500vh;
+			border 0;
+			}
+		footer#footerrecia {
+			min-height: 10px;
+		}
+	</style>
+</head>
+<body id="bodyrecia" >
+	<header id="headerrecia" >
+		<extended-uportal-header
+				service-name="nextcloud"
+				context-api-url="/portail"
+				sign-out-url="/portail/Logout"
+				default-org-logo-path="/annuaire_images/default_banner_v1.jpg"
+				default-avatar-path="/images/icones/noPictureUser.svg"
+				default-org-icon-path="/images/partners/netocentre-simple.svg"
+				favorite-api-url="/portail/api/layout"
+				layout-api-url="/portail/api/v4-3/dlm/layout.json"
+				organization-api-url="/change-etablissement/rest/v2/structures/structs/"
+				portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
+				user-info-api-url="/portail/api/v5-1/userinfo"
+				user-info-portlet-url="/portail/p/ESCO-MCE"
+				template-api-path="/commun/portal_template_api.tpl.json"
+				switch-org-portlet-url="/portail/p/etablissement-swapper"
+				favorites-portlet-card-size="small"
+				grid-portlet-card-size="auto"
+				hide-action-mode="never"
+				show-favorites-in-slider="true"
+				return-home-title="Aller à l\'accueil"
+				return-home-target="_self"
+				icon-type="nine-square" />
+	</header>
+	<div id="iframe-wrapper">
+		<iframe id="framenc" src="index.php/apps/user_cas/login"> </iframe>
+	</div>
+	<footer id="footerrecia" >
+		<extended-uportal-footer
+				template-api-path="/commun/portal_template_api.tpl.json" />
+		
+	</footer>
+</body>
+</html>
