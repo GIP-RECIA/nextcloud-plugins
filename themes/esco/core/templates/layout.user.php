@@ -14,24 +14,6 @@ $getUserAvatar = static function (int $size) use ($_): string {
 
 
 
-//$portal_domain = $params['portal_domain'];
-
-/*if ($portal_domain) {
-
-}
-*/
-/*
-if(isset($_GET['portal_domain'])){
-	$portal_domain = $params['portal_domain'];
-    setcookie('extended_uportal_header_portal_domain',$portal_domain,[
-      'secure'=>true,
-      'httponly'=>true
-    ]);  
-}
-*/
-
-
-
 ?><!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
 
@@ -62,20 +44,6 @@ if(isset($_GET['portal_domain'])){
 		<?php emit_css_loading_tags($_); ?>
 		<?php emit_script_loading_tags($_); ?>
 		<?php print_unescaped($_['headers']); ?>
-
-		<!--?php emit_script_tag("", "
-			window.onload= function(){
-				address = window.location.search;
-				parameterList = new URLSearchParams(address);
-				domaine = parameterList.get('portal_domain');
-				let header = document.querySelector('extended-uportal-header');
-				console.log('header = ', header);
-				if (domaine) {
-				header.setAttribute('domain', domaine);
-				}
-				console.log('domaine = ' + domaine);
-			};");
-		?-->
 
 		<style>
 		body > div#escoDiv >#escoHeader {
@@ -163,7 +131,6 @@ if(isset($_GET['portal_domain'])){
 				user-info-portlet-url="/portail/p/ESCO-MCE"
 				template-api-path="/commun/portal_template_api.tpl.json"
 				switch-org-portlet-url="/portail/p/etablissement-swapper"
-				sign-in-url="/nextcloud/apps/user_cas/login"
 				favorites-portlet-card-size="small"
 				grid-portlet-card-size="auto"
 				hide-action-mode="never"
@@ -171,21 +138,23 @@ if(isset($_GET['portal_domain'])){
 				return-home-title="Aller à l\'accueil"
 				return-home-target="_self"
 				icon-type="nine-square"
+				height="38px"
+				session-api-url="/portail/api/session.json";
+				sign-in-url="/portail/Login" 
 <?php
 	
 	$request = \OC::$server->getRequest();
 	$portal_domain = $request->getCookie('extended_uportal_header_portal_domain');
 
 	if ($portal_domain) {
-		print_unescaped('				portal_domain="' . $portal_domain . '"'  . "\n" );
-	} else {
-		print_unescaped('				portal_domain=""' . "\n");
+		print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
 	}
 ?>
-		/>
-
-<!--?php $_COOKIE['extended_uportal_header_portal_domain'] ? echo 'domain='.$portal_domain :'' ?-->
-
+		>
+		<div slot="not-loaded">
+			<a href="/portail/Login">Connection ENT</a> 
+		</div>
+		</extended-uportal-header>
 		
 	</header>
 		<footer>
