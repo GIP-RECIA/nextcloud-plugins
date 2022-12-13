@@ -141,6 +141,9 @@ body.embedded {
 		background-color: $couleur;
 		background-image: none;
 	}
+	& > div#escoDiv > header#escoHeader > extended-uportal-header {
+		--ext-header-tpl-primary-color: $couleur !important;
+	}
 }
 
 

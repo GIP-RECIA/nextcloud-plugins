@@ -2,7 +2,9 @@
 /**
  * @var \OC_Defaults $theme
  * @var array $_
+ * @var  \OC_Theme $escoTheme
  */
+
 
 $getUserAvatar = static function (int $size) use ($_): string {
 	return \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
@@ -13,14 +15,16 @@ $getUserAvatar = static function (int $size) use ($_): string {
 }
 
 
-
 ?><!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
 
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
-		<?php emit_script_tag("/commun/extended-uportal-header.min.js"); ?>
-		<?php emit_script_tag("/commun/extended-uportal-footer.min.js"); ?>
+		<?php //mise en place du bandeau ENT
+			emit_script_tag("/commun/extended-uportal-header.min.js"); 
+			emit_script_tag("/commun/extended-uportal-footer.min.js"); 
+			$request = \OC::$server->getRequest();
+		?>
 		<title>
 			<?php
 				p(!empty($_['application'])?$_['application'].' - ':'');
@@ -46,6 +50,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		<?php print_unescaped($_['headers']); ?>
 
 		<style>
+			/* Style du bandeau ENT */
 		body > div#escoDiv >#escoHeader {
 			position: fixed;
 			width: 100%;
@@ -53,6 +58,12 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		}
 		body > div#escoDiv {
 			height: 38px;
+		}
+		body > div#escoDiv div[slot=not-loaded] {
+			padding: 6px;
+			height:26px;
+			width: 100%;
+			background-color: #cccccc;
 		}
 		body > div#escoDiv > header#header.escoDivWrapper {
 			top : 38px !important;
@@ -114,53 +125,55 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		}
 	</style>
 	</head>
-	<body id="<?php p($_['bodyid']);?>">
-<div id="escoDiv" >	<header id="escoHeader" >
+	<body id="<?php p($_['bodyid']);?>" class="<?php p(\OC_Theme::getCssClass($request));?>">
+<div id="escoDiv" >
+	<header id="escoHeader" >
 		<extended-uportal-header
-				service-name="nextcloud"
-				context-api-url="/portail"
-				sign-out-url="/portail/Logout"
-				default-org-logo-path="/annuaire_images/default_banner_v1.jpg"
-				default-avatar-path="/images/icones/noPictureUser.svg"
-				default-org-icon-path="/images/partners/netocentre-simple.svg"
-				favorite-api-url="/portail/api/layout"
-				layout-api-url="/portail/api/v4-3/dlm/layout.json"
-				organization-api-url="/change-etablissement/rest/v2/structures/structs/"
-				portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
-				user-info-api-url="/portail/api/v5-1/userinfo?claims=private,picture,name,ESCOSIRENCourant,ESCOSIREN&groups="
-				user-info-portlet-url="/portail/p/ESCO-MCE"
-				template-api-path="/commun/portal_template_api.tpl.json"
-				switch-org-portlet-url="/portail/p/etablissement-swapper"
-				favorites-portlet-card-size="small"
-				grid-portlet-card-size="auto"
-				hide-action-mode="never"
-				show-favorites-in-slider="true"
-				return-home-title="Aller à l\'accueil"
-				return-home-target="_self"
-				icon-type="nine-square"
-				height="38px"
-				session-api-url="/portail/api/session.json";
-				sign-in-url="/portail/Login" 
+			service-name="nextcloud"
+			context-api-url="/portail"
+			sign-out-url="/portail/Logout"
+			default-org-logo-path="/annuaire_images/default_banner_v1.jpg"
+			default-avatar-path="/images/icones/noPictureUser.svg"
+			default-org-icon-path="/images/partners/netocentre-simple.svg"
+			favorite-api-url="/portail/api/layout"
+			layout-api-url="/portail/api/v4-3/dlm/layout.json"
+			organization-api-url="/change-etablissement/rest/v2/structures/structs/"
+			portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
+			user-info-api-url="/portail/api/v5-1/userinfo?claims=private,picture,name,ESCOSIRENCourant,ESCOSIREN&groups="
+			user-info-portlet-url="/portail/p/ESCO-MCE"
+			template-api-path="/commun/portal_template_api.tpl.json"
+			switch-org-portlet-url="/portail/p/etablissement-swapper"
+			favorites-portlet-card-size="small"
+			grid-portlet-card-size="auto"
+			hide-action-mode="never"
+			show-favorites-in-slider="true"
+			return-home-title="Aller à l'accueil"
+			return-home-target="_self"
+			icon-type="nine-square"
+			height="38px"
+			session-api-url="/portail/api/session.json"
 <?php
-	
-	$request = \OC::$server->getRequest();
-	$portal_domain = $request->getCookie('extended_uportal_header_portal_domain');
-
+	$portal_domain = \OC_Theme::getDomain($request);
+	error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
 	if ($portal_domain) {
+		$portal_login_url = \OC_Theme::getPortailLoginUrl($request);
 		print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
+		if ($portal_login_url) {
+			print_unescaped('			sign-in-url="'. $portal_login_url . '"' ."\n");
+		}
 	}
 ?>
 		>
-		<div slot="not-loaded">
-			<a href="/portail/Login">Connection ENT</a> 
-		</div>
+			<div slot="not-loaded">
+				<a href="https://netocentre.fr/">Connection à votre ENT</a> 
+			</div>
 		</extended-uportal-header>
 		
 	</header>
-		<footer>
-			<extended-uportal-footer id="reciaFooter" template-api-path="/commun/portal_template_api.tpl.json" >
-			</extended-uportal-footer> 
-		</footer>
+	<footer>
+		<extended-uportal-footer id="reciaFooter" template-api-path="/commun/portal_template_api.tpl.json" >
+		</extended-uportal-footer> 
+	</footer>
 
 	<?php include 'layout.noscript.warning.php'; ?>
 

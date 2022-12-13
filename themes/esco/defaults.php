@@ -20,8 +20,7 @@
 
 class OC_Theme {
 
-	public $dom = array (
-		'test-clg37.giprecia.net' => 'test-clg37.giprecia.net',
+	public static $dom = array (
 		'test-clg37.giprecia.net' => 'test-clg37.giprecia.net',
 		'test-lycee.giprecia.net' => 'test-lycee.giprecia.net',
 	//      'recette-pub.nextcloud.recia.aquaray.com' => 'esco',
@@ -36,7 +35,20 @@ class OC_Theme {
 		'nc-ent.recia.fr' => 'ent.recia.fr',
 		'nc.colleges-eureliens.fr' => 'www.colleges-eureliens.fr',
 	);
-
+	public static $cssClass = array (
+		'test-clg37.giprecia.net' => 'clg37',
+		'test-lycee.giprecia.net' => 'esco',
+		'nc-lycees.netocentre.fr' => 'esco',
+		'nc-agri.netocentre.fr' =>  'agri',
+		'nc.touraine-eschool.fr' =>  'clg37',
+		'nc.chercan.fr' =>  'clg18',
+		'nc.colleges41.fr' =>  'clg41',
+		'nc.mon-e-college.loiret.fr' =>  'clg45',
+		'nc.e-college.indre.fr' =>  'clg36',
+		'nc-ent.recia.fr' =>  'esco',
+		'nc.colleges-eureliens.fr' =>  'clg28',
+	);
+/*
 	public function __construct() {
 		$request = \OC::$server->getRequest();
 		$portal_domain = $request->getParam('portal_domain');
@@ -44,14 +56,43 @@ class OC_Theme {
 //error_log("host= $host\n", 3, "/home/esco/logs/themes.esco.log" );
 		if (!isset($portal_domain) ) {
 			$host = $request->getServerHost();
-			$portal_domain = $this->dom[$host];
+			$portal_domain = self::$dom[$host];
 		}
 //error_log("domain  =  $portal_domain\n", 3, "/home/esco/logs/themes.esco.log" );
 		if ($portal_domain) {
 				\OC\Http\CookieHelper::setcookie('extended_uportal_header_portal_domain', $portal_domain ,0,'/','', true, true);
 		}
 	}
+*/
 
+	public static function getTable() {
+		error_log("get table \n", 3, "/home/esco/logs/themes.esco.log" );
+		return self::$dom;
+	}
+	private static function domain($host) {
+		error_log("domain for $host \n", 3, "/home/esco/logs/themes.esco.log" );
+		return self::$dom[$host];
+	}
+	public static function getDomain($request) {
+		error_log("get domain \n", 3, "/home/esco/logs/themes.esco.log" );
+		return self::domain($request->getServerHost());
+	}
+	public static function getCssClass($request) {
+		error_log("get cssClass \n", 3, "/home/esco/logs/themes.esco.log" );
+		$host = $request->getServerHost();
+		$css =  self::$cssClass[$request->getServerHost()] ;
+		return $css ? " embedded " . $css : " not_embedded " ;
+	}
 	
-
+	public static function getPortailLoginUrl($request) {
+		$host = $request->getServerHost();
+		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
+		$domain = self::domain($host);
+		if ($domain) {
+			$cas = (strpos($host, 'test') === false) ? "ent.netocentre.fr" : "secure.giprecia.net";
+			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
+		}
+		error_log("return  '$portail_login'\n", 3, "/home/esco/logs/themes.esco.log" );
+		return $portail_login;
+	}
 }
