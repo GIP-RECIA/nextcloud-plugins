@@ -90,12 +90,24 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		body > div#escoDiv.content {
 			padding-top: 88px; // pour Applications
 		}
-
-		body  div#content > div > iframe {
-			top: 0px;
-			height: calc(100vh - 98px);
+/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
+		body  div#content > div#app-content > iframe {
+			top: -36px;
+			height: calc(100vh - 90px);
 		}
-
+		body.onlyoffice-inline  div#content > div#app-content > iframe#onlyofficeFrame {
+			top: 0px;
+			height: calc(100vh - 90px);
+		}
+		body  div#content > div#app-content > iframe#onlyofficeFrame {
+			top: 0px;
+			height: calc(100vh - 90px);
+		}
+		body  div#content.app-onlyoffice > div > iframe {
+			top: 50px;
+			height: calc(100vh - 90px);
+		}
+/* fin OO */
 		@media only screen and (min-width: 1024px) {
 			body > div#escoDiv > footer  {
 				position: fixed;
