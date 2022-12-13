@@ -68,20 +68,16 @@ class OC_Theme {
 	}
 */
 
-	public static function getTable() {
-		error_log("get table \n", 3, "/home/esco/logs/themes.esco.log" );
-		return self::$dom;
-	}
 	private static function domain($host) {
-		error_log("domain for $host \n", 3, "/home/esco/logs/themes.esco.log" );
+//		error_log("domain for $host \n", 3, "/home/esco/logs/themes.esco.log" );
 		return self::$dom[$host];
 	}
 	public static function getDomain($request) {
-		error_log("get domain \n", 3, "/home/esco/logs/themes.esco.log" );
+//		error_log("get domain \n", 3, "/home/esco/logs/themes.esco.log" );
 		return self::domain($request->getServerHost());
 	}
 	public static function getCssClass($request) {
-		error_log("get cssClass \n", 3, "/home/esco/logs/themes.esco.log" );
+//		error_log("get cssClass \n", 3, "/home/esco/logs/themes.esco.log" );
 		$host = $request->getServerHost();
 		$css =  self::$cssClass[$request->getServerHost()] ;
 		return $css ? " embedded " . $css : " not_embedded " ;
@@ -89,7 +85,7 @@ class OC_Theme {
 	
 	public static function getPortailLoginUrl($request) {
 		$host = $request->getServerHost();
-		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
+//		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
 		$domain = self::domain($host);
 		if ($domain) {
 			$cas = (strpos($host, 'nc' ) === 0) ? "ent.netocentre.fr" : "secure.giprecia.net";
@@ -97,7 +93,7 @@ class OC_Theme {
 			//https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
 			//$portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
 		}
-		error_log("return  '$portail_login'\n", 3, "/home/esco/logs/themes.esco.log" );
+//		error_log("return  '$portail_login'\n", 3, "/home/esco/logs/themes.esco.log" );
 		return $portail_login;
 	}
 }
