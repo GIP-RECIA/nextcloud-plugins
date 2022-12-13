@@ -21,9 +21,10 @@
 class OC_Theme {
 
 	public static $dom = array (
+		'maquette-lycees.netocentre.fr' => 'maquette-lycees.netocentre.fr',
+		'recette-pub.nextcloud.recia.aquaray.com' =>  'maquette-lycees.netocentre.fr',
 		'test-clg37.giprecia.net' => 'test-clg37.giprecia.net',
 		'test-lycee.giprecia.net' => 'test-lycee.giprecia.net',
-	//      'recette-pub.nextcloud.recia.aquaray.com' => 'esco',
 	//              'prod.nextcloud.recia.aquaray.com' => 'esco',
 		'nc-lycees.netocentre.fr' => 'lycees.netocentre.fr',
 		'nc-agri.netocentre.fr' => 'lycees.netocentre.fr',
@@ -36,6 +37,8 @@ class OC_Theme {
 		'nc.colleges-eureliens.fr' => 'www.colleges-eureliens.fr',
 	);
 	public static $cssClass = array (
+		'maquette-lycees.netocentre.fr' => 'esco',
+		'recette-pub.nextcloud.recia.aquaray.com' =>  'agri',
 		'test-clg37.giprecia.net' => 'clg37',
 		'test-lycee.giprecia.net' => 'esco',
 		'nc-lycees.netocentre.fr' => 'esco',
@@ -89,7 +92,7 @@ class OC_Theme {
 		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
 		$domain = self::domain($host);
 		if ($domain) {
-			$cas = (strpos($host, 'test') === false) ? "ent.netocentre.fr" : "secure.giprecia.net";
+			$cas = (strpos($host, 'nc' ) === 0) ? "ent.netocentre.fr" : "secure.giprecia.net";
 			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
 			//https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
 			//$portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
