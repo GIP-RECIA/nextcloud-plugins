@@ -150,6 +150,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			return-home-title="Aller à l'accueil"
 			return-home-target="_self"
 			icon-type="nine-square"
+			messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "Connexion ENT" } }}}]'
 			height="38px"
 			session-api-url="/portail/api/session.json"
 <?php

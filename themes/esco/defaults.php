@@ -91,6 +91,8 @@ class OC_Theme {
 		if ($domain) {
 			$cas = (strpos($host, 'test') === false) ? "ent.netocentre.fr" : "secure.giprecia.net";
 			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
+			//https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
+			//$portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
 		}
 		error_log("return  '$portail_login'\n", 3, "/home/esco/logs/themes.esco.log" );
 		return $portail_login;
