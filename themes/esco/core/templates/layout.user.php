@@ -167,7 +167,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			session-api-url="/portail/api/session.json"
 <?php
 	$portal_domain = \OC_Theme::getDomain($request);
-	error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
+//	error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
 	if ($portal_domain) {
 		$portal_login_url = \OC_Theme::getPortailLoginUrl($request);
 		print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
