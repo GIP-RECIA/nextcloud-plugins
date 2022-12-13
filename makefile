@@ -70,11 +70,14 @@ SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 LIB: 
-	cp -riuTbv lib $(NEXTCLOUD_PATH)/lib
+	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
+
+THEME:
+	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
 
 endif
 
