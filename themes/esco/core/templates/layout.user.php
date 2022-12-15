@@ -96,7 +96,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			height: calc(100vh - 90px);
 		}
 		body.onlyoffice-inline  div#content > div#app-content > iframe#onlyofficeFrame {
-			top: 0px;
+			top: 38px;
 			height: calc(100vh - 90px);
 		}
 		body  div#content > div#app-content > iframe#onlyofficeFrame {
@@ -351,7 +351,14 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		</div>
 		
 <footer class="escoDiv">
-			<extended-uportal-footer id="reciaFooter" template-api-path="/commun/portal_template_api.tpl.json" >
+			<extended-uportal-footer id="reciaFooter"
+				template-api-path="/commun/portal_template_api.tpl.json"
+			<?php
+				if ($portal_domain) {
+					print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
+				}
+			?>
+			>
 			</extended-uportal-footer> 
 		</footer>
 	</body>
