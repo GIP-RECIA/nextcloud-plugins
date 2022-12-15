@@ -96,10 +96,11 @@ my $unG = $unM * 1024;
 
 my $temps;
 sub minutes {
-	my $t = shift;
-	$t = time() unless $t;
-	my $sec = $t - $temps;
-	$temps = $t;
+	my $start = shift;
+	$start = $temps unless $start;
+	$temps = time();
+	my $sec = $temps - $start;
+	
 	my $min = int($sec / 60);
 	my $sec = $sec % 60;
 	return $min . "min " . $sec . "s";
