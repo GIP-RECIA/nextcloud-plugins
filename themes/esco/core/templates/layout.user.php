@@ -152,7 +152,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			organization-api-url="/change-etablissement/rest/v2/structures/structs/"
 			portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
 			user-info-api-url="/portail/api/v5-1/userinfo?claims=private,picture,name,ESCOSIRENCourant,ESCOSIREN&groups="
-			user-info-portlet-url="/portail/p/ESCO-MCE"
+			user-info-portlet-url="/portail/api/ExternalURLStats?fname=ESCO-MCE&amp;service=/MCE"
 			template-api-path="/commun/portal_template_api.tpl.json"
 			switch-org-portlet-url="/portail/p/etablissement-swapper"
 			favorites-portlet-card-size="small"
