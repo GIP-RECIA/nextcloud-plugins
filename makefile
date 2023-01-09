@@ -78,6 +78,7 @@ CSS:
 
 THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
+	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
 
 endif
 
