@@ -92,20 +92,24 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		}
 /* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
 		body  div#content > div#app-content > iframe {
-			top: -36px;
+			top: 88px;
 			height: calc(100vh - 90px);
+			position: fixed;
 		}
 		body.onlyoffice-inline  div#content > div#app-content > iframe#onlyofficeFrame {
-			top: 38px;
+			top: 88px;
 			height: calc(100vh - 90px);
+			position: fixed;
 		}
 		body  div#content > div#app-content > iframe#onlyofficeFrame {
-			top: 0px;
+			top: 88px;
 			height: calc(100vh - 90px);
+			position: fixed;
 		}
 		body  div#content.app-onlyoffice > div > iframe {
-			top: 50px;
+			top: 88px;
 			height: calc(100vh - 90px);
+			position: fixed;
 		}
 /* fin OO */
 		@media only screen and (min-width: 1024px) {
