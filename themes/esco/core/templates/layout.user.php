@@ -193,7 +193,14 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		
 	</header>
 	<footer>
-		<extended-uportal-footer id="reciaFooter" template-api-path="/commun/portal_template_api.tpl.json" >
+		<extended-uportal-footer id="reciaFooter"
+			template-api-path="/commun/portal_template_api.tpl.json" 
+<?php
+				if ($portal_domain) {
+					print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
+				}
+?>
+		>
 		</extended-uportal-footer> 
 	</footer>
 
