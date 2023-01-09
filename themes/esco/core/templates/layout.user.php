@@ -50,6 +50,11 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		<?php print_unescaped($_['headers']); ?>
 
 		<style>
+
+			/* on recale le header du tableau des fichier */
+		body #app-content-files thead, body #app-content-trashbin thead {
+			top: 120px;
+		}
 			/* Style du bandeau ENT */
 		body > div#escoDiv >#escoHeader {
 			position: fixed;
