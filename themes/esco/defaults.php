@@ -28,7 +28,7 @@ class OC_Theme {
 	//              'prod.nextcloud.recia.aquaray.com' => 'esco',
 		'nc-lycees.netocentre.fr' => 'lycees.netocentre.fr',
 		'nc-agri.netocentre.fr' => 'lycees.netocentre.fr',
-		'nc.touraine-eschool.fr' => 'touraine-eschool.fr',
+		'nc.touraine-eschool.fr' => 'www.touraine-eschool.fr',
 		'nc.chercan.fr' => 'www.chercan.fr',
 		'nc.colleges41.fr' => 'ent.colleges41.fr',
 		'nc.mon-e-college.loiret.fr' => 'mon-e-college.loiret.fr',

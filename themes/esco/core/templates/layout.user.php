@@ -190,7 +190,6 @@ $getUserAvatar = static function (int $size) use ($_): string {
 				<a href="https://netocentre.fr/">Connection à votre ENT</a> 
 			</div>
 		</extended-uportal-header>
-		
 	</header>
 	<footer>
 		<extended-uportal-footer id="reciaFooter"
