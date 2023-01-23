@@ -137,7 +137,7 @@ $sqlStatement = $sql->prepare($resultatQuery) or die $sql->errstr;
 if ($statEleve) {
 	print "\nStatistique Elèves :\n";
 	print "Mo \tComptes\n";
-	printStats('E', $unM);
+	printStats('E', $unM, 10);
 }
 if ($statPersonnel) {
 	print "\nStatistique Personnels :\n";
@@ -148,12 +148,17 @@ if ($statPersonnel) {
 sub printStats {
 	my $cat = shift;
 	my $unit = shift;
+	my $pas = shift; # le regroupeemnt d'affichage ex: si unit = 1Mo et pas=10 on compte par paquet de 10Mo
+
+	unless ($pas) {
+		$pas = 1;
+	}
 	my @NbComptes;
 	$sqlStatement->execute($cat) or die $sqlStatement->errstr;
 	
 	while (my @ary = $sqlStatement->fetchrow_array) {
-		my $nbG = int($ary[1] / $unit);
-		$NbComptes[$nbG]++;
+		my $nbUnitPas = int($ary[1] / ($unit * $pas));
+		$NbComptes[$nbUnitPas]++;
 	}
 	if ($abrege) {
 		my $vide=0;
@@ -161,16 +166,16 @@ sub printStats {
 			my $nb = $NbComptes[$cpt];
 			if ($nb) {
 				if ($vide) {
-					print $cpt - $vide , "\n";
-					if ($vide > 2) {
+					print $pas * ($cpt - $vide) , "\n";
+					if ($vide > 1) {
 						print "...\n";
 					}
-					if ($vide > 1) {
-						print $cpt - 1, "\n";
-					}
+				#	if ($vide > 1) {
+				#		print $pas * ($cpt - 1), "\n";
+				#	}
 					$vide = 0;
 				}
-				print $cpt, "\t", $nb, "\n";
+				print $pas * $cpt, "\t", $nb, "\n";
 			} else {
 				$vide++;
 			}
@@ -178,7 +183,7 @@ sub printStats {
 	} else {
 		my $cpt=0;
 		for (@NbComptes) {
-			print $cpt++, "\t", $_, "\n";
+			print $pas * $cpt++, "\t", $_, "\n";
 		}
 	}
 }
