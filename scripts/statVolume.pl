@@ -1,6 +1,21 @@
 #!/usr/bin/perl
-# script qui fait des states de volumes utilisé par le utilisateurs
-# 
+
+=encoding utf8
+
+=head1 NAME
+
+ statistiques des volumes utilisés par les utilisateurs
+
+=head1 SYNOPSIS
+
+ statVolume (-p | -e) [-c] [-a] 
+
+ Options:
+   -p    stat pour le personnel
+   -e    stat pour les eleves
+   -c    recalcul les stats en base, sinon ne fait que les afficher
+   -a    présentation abrégée (sans toutes les lignes vides)
+=cut
 
 use strict;
 use utf8;
@@ -83,7 +98,12 @@ my $volumeQuery= qq[
     and rs.categorie = ?;
 ];
 
-my $resultatQuery = qq[select storage, volume size from recia_storage where volume is not null and categorie = ?];
+my $resultatQuery = qq[
+    select storage, volume size
+    from recia_storage
+    where volume is not null
+    and categorie = ?
+];
 
 #my $sqlQuery = qq(select storage , sum(size) from oc_filecache where mimetype != 4 and storage != 1 group by storage);
 
@@ -191,14 +211,3 @@ sub printStats {
 print "Temps d'éxecution : " . &minutes($debut) . "\n";
 
 __END__
-
-=head1 SYNOPSIS
-
-statVolume (-p | -e) [-c] [-a] 
-
- Options:
-   -p            stat pour le personnel
-   -e            stat pour les eleves
-   -c            recalcul les stats en base, sinon ne fait que les afficher
-   -a            présentation abrégée (sans toutes les colonnes vides)
-=cut
