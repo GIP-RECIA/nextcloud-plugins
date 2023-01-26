@@ -138,7 +138,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			body:hover > div#escoDiv:hover > footer {
 				bottom: 0px;
 			}
-			body > footer.escoDiv {
+			body  footer.escoDiv {
 				display: none;
 			}
 		}
