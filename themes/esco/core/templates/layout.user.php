@@ -117,6 +117,16 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			position: fixed;
 		}
 /* fin OO */
+/* pour MD , md couvre le bandeau nextcloud mais ne doit pas couvrir celui de l'ent */
+                div#viewer {
+                        margin-top: 38px;
+                }
+                aside#app-sidebar-vue.app-sidebar--full {
+                        top: 38px !important;
+                        height: calc(100vh - 38px);
+                }
+/* fin LD */
+
 		@media only screen and (min-width: 1024px) {
 			body > div#escoDiv > footer  {
 				position: fixed;
@@ -193,10 +203,10 @@ $getUserAvatar = static function (int $size) use ($_): string {
 	</header>
 	<footer>
 		<extended-uportal-footer id="reciaFooter"
-			template-api-path="/commun/portal_template_api.tpl.json" 
+			template-api-path="/commun/portal_template_api.tpl.json"
 <?php
 				if ($portal_domain) {
-					print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
+					print_unescaped('			domain="' . $portal_domain . '"'  . "\n" );
 				}
 ?>
 		>
