@@ -117,15 +117,12 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			position: fixed;
 		}
 /* fin OO */
-/* pour MD , md couvre le bandeau nextcloud mais ne doit pas couvrir celui de l'ent */
-                div#viewer {
-                        margin-top: 38px;
-                }
-                aside#app-sidebar-vue.app-sidebar--full {
-                        top: 38px !important;
-                        height: calc(100vh - 38px);
+/* pour MD */
+              div#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
+                        z-index: 3000 !important;
                 }
 /* fin LD */
+
 
 		@media only screen and (min-width: 1024px) {
 			body > div#escoDiv > footer  {
