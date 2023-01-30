@@ -1,4 +1,5 @@
-
+url de recupe de NC:
+https://download.nextcloud.com/server/releases/
 
 pour les migrations :
 
@@ -9,7 +10,7 @@ remplacer dans OC_Util.php a faire pour chaque version
 les fichiers a verifie :
 
 \OC\Files\ObjectStore\ObjectStoreStorage
-Mapper.php l(le mapper n'a pas changer entre le V21.0.9 et V24.0.2)
+Mapper.php (le mapper n'a pas changer entre le V21.0.9 et V24.0.2)
 ObjectStoreStorage.php (a changé entre la V21.0.9 et  V22.2.9  pas apres jusqu'a la 24.0.2)
 REciaObjectore (n'a pas a etre changé) 
 S3Recia.php
@@ -30,3 +31,22 @@ ca semble etre dans:
 	83:		$config['class'] = ObjectStoreStorage::class;
 	99:		$config['class'] = ObjectStoreStorage::class;
 il faut changer ObjectStoreStorage par ReciaObjectStoreStorage
+
+---------------------
+migration 24.0.4 vers 24.0.9
+\OC\Files\ObjectStore\ObjectStoreStorage n'a pas changer.
+.../ObjectStore/Mapper.php n'a pas changer.
+.../S3.php n'a pas changer
+
+.../CardDavBackend.php à changer => ! fait
+
+.../RootMountProvider.php n'à pas changer
+
+recherche de ObjectStoreStorage:
+cd ./nextcloud.24.0.4/
+grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.4
+cd ../nextcloud.24.0.9
+grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.9
+cd ../
+meld grep.ObjectStoreStorage.*
+=> pas de difference d'utilisation de objectStorage
