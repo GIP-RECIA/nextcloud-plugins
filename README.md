@@ -27,7 +27,7 @@ Permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP.
 On en déduit leurs groupes NC et leurs quota.
 Les filtres sont paramètrés avec des regexs dans "Paramètres -> sécurité -> Import Users -> Filtre & nomage de groupe"
 
-- Une première serie de regex permet de deduire les nom des établissement (pour NC) à partir des groupes LDAP.
+- Une première serie de regex permet de deduire les noms des établissement (pour NC) à partir des groupes LDAP.
 - La deuxième définit les groupes NC à partir des groupes LDAP (fixe le quota minimum),
 sans groupe de cette serie un user LDAP ne sera pas importer dans NC.
 
