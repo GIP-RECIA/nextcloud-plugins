@@ -210,7 +210,7 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-    	//return '19450042700035';
+    	return '19450042700035';
 		try {
             $currentSchool = null;
 
@@ -229,12 +229,10 @@ class ReciaRechercheAPIController extends OCSController {
                 }
 
                 // Disable pagination setting, not needed for individual attribute queries
-                //ldap_control_paged_result($ldapConnection, 1);
-				// php 8 fix for ldap_control_paged_result deprecation
-				$ldap_controls = [['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => 1, 'cookie' => '']]];
+                ldap_control_paged_result($ldapConnection, 1);
 
                 // Query user attributes
-                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"],0,-1,-1,LDAP_DEREF_NEVER,$ldap_controls);
+                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
                 if (ldap_error($ldapConnection) == "No such object") {
                     return [];
                 }
