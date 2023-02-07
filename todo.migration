@@ -34,6 +34,7 @@ il faut changer ObjectStoreStorage par ReciaObjectStoreStorage
 
 ---------------------
 migration 24.0.4 vers 24.0.9
+
 \OC\Files\ObjectStore\ObjectStoreStorage n'a pas changer.
 .../ObjectStore/Mapper.php n'a pas changer.
 .../S3.php n'a pas changer
@@ -50,3 +51,10 @@ grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.9
 cd ../
 meld grep.ObjectStoreStorage.*
 => pas de difference d'utilisation de objectStorage
+
+
+verification pour les templates:
+core/css/variables.scss => n'a pas changé
+core/templates/layout.user.php => n'a pas changé
+core/templates/layout.noscript.warning.php => n'a pas changer
+	mais doit etre celui dans themes/esco/core//templates/layout.noscript.warning.php
