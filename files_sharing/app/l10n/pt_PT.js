@@ -87,7 +87,6 @@ OC.L10N.register(
     "Not a directory" : "Não é uma diretoria",
     "Could not lock path" : "Não foi possível bloquear o caminho",
     "Wrong or no update parameter given" : "Parâmetro indicado errado ou desatualizado",
-    "Cannot increase permissions" : "Não é possível incrementar as permissões",
     "shared by %s" : "partilhado por %s",
     "Download all files" : "Transferir todos os ficheiros",
     "Direct link" : "Hiperligação direta",
@@ -116,10 +115,9 @@ OC.L10N.register(
     "remote" : "remoto",
     "remote group" : "grupo remoto",
     "guest" : "convidado",
-    "Link copied" : "Link copiado",
     "Cannot copy, please copy the link manually" : "Não foi possível copiar, copie a ligação manualmente",
-    "Copy to clipboard" : "Copiar para área de transferência",
     "Only works for users with access to this folder" : "Apenas funciona para utilizadores com acesso a esta pasta",
+    "Link copied" : "Link copiado",
     "Password protection" : "Protegido por palavra-passe",
     "Enter a password" : "Insira uma palavra-passe",
     "Cancel" : "Cancelar",
@@ -156,7 +154,7 @@ OC.L10N.register(
     "Uploaded files:" : "Ficheiros enviados:",
     "Add to your Nextcloud" : "Adicionar à sua Nextcloud",
     "Wrong share ID, share doesn't exist" : "Id. de partilha errada, a partilha não existe",
-    "Wrong path, file/folder doesn't exist" : "Caminho errado, o arquivo ou pasta não existe",
+    "Copy to clipboard" : "Copiar para área de transferência",
     "Sorry, this link doesn’t seem to work anymore." : "Desculpe, mas esta hiperligação parece já não estar a funcionar."
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
