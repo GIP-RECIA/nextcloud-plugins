@@ -134,7 +134,7 @@ class AdImporter implements ImporterInterface
 
         $keep = [$uidAttribute, $displayNameAttribute1, $displayNameAttribute2, $emailAttribute, $groupsAttribute, $quotaAttribute, $enableAttribute, $dnAttribute];
 
-        //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupe
+        //On ajoute des nouveaux éléments qu'on récupère du ldap pour les groupes
         $keep[] = 'ESCOUAICourant';
         $keep[] = 'ESCOSIREN';
         $keep[] = 'ENTPersonStructRattach';
@@ -281,7 +281,7 @@ class AdImporter implements ImporterInterface
                                         }
 
                                         $idEtab = $this->addEtablissement($uaiEtab, $nameEtablissement, $sirenEtab);
-                                        $assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
+										$assoEtablissementUaiOrNameAndId[$assoEtab] = $idEtab;
                                     }
                                 }
                             }
@@ -325,9 +325,11 @@ class AdImporter implements ImporterInterface
                                             if (!is_null($groupFilterMatches) && !is_null($groupFilter["uaiNumber"]) && count($assoEtablissementUaiOrNameAndId) > 0) {
                                                 $nameOrUaiFromUaiNumber = $groupFilterMatches[intval($groupFilter["uaiNumber"])];
                                                 $idEtablissement = $assoEtablissementUaiOrNameAndId[$nameOrUaiFromUaiNumber[0]];
-                                                $this->addEtablissementAsso($idEtablissement, $groupName);
-                                                $this->addEtablissementAsso($idEtablissement, $employeeID);
-                                                $idsEtabUser[] = $idEtablissement;
+                                                if (!is_null($idEtablissement)) {
+													$this->addEtablissementAsso($idEtablissement, $groupName);
+													$this->addEtablissementAsso($idEtablissement, $employeeID);
+													$idsEtabUser[] = $idEtablissement;
+												}
                                             }
                                             elseif (!is_null($groupFilter["uaiNumber"]) && !is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
                                                 $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
@@ -628,7 +630,8 @@ class AdImporter implements ImporterInterface
      */
     protected function addEtablissement($uai, $name, $siren)
     {
-        if (!is_null($name)) {
+		#on ne veux pas enregistré des etablissements sans nom ou sans UAI ni SIREN (j'espere que ca ira, n'ont-ils pas besoin de 2 passe pour etre complet ??)
+        if (!(is_null($name) || (is_null($siren) && is_null($uai)))) {
             $qbEtablissement = $this->db->getQueryBuilder();
             $qbEtablissement->select('*')
                 ->from('etablissements')
