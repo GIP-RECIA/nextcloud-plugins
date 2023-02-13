@@ -5,6 +5,7 @@
  * @var  \OC_Theme $escoTheme
  */
 
+$cacheBuster = date("Ymd");
 
 $getUserAvatar = static function (int $size) use ($_): string {
 	return \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
@@ -15,14 +16,16 @@ $getUserAvatar = static function (int $size) use ($_): string {
 }
 
 
+
+
 ?><!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
 
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
 		<?php //mise en place du bandeau ENT
-			emit_script_tag("/commun/extended-uportal-header.min.js"); 
-			emit_script_tag("/commun/extended-uportal-footer.min.js"); 
+			emit_script_tag("/commun/extended-uportal-header.min.js?$cacheBuster"); 
+			emit_script_tag("/commun/extended-uportal-footer.min.js?$cacheBuster"); 
 			$request = \OC::$server->getRequest();
 		?>
 		<title>
