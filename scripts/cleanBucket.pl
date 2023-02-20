@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # script qui prend en entré un bucket s3 et propose la suppressions ou le deplacement  des ses  fichiers qui ne sont pas réferencés dans la base de nextcloud (oc_filecache)
 # pour le deplacement il faut parametré un bucket corbeille. les fichiers d'1 octet seront effacer et pas deplacé.
-# une deuxieme entre sera le nombre de jours passé a partir duquel on delete ou deplace si pas de valeuril y a une valeur par defaut dans le script 
+# une deuxieme entre sera le nombre de jours passé a partir duquel on delete ou deplace si pas de valeur il y a une valeur par defaut dans le script 
 
 
 use strict;
@@ -31,7 +31,7 @@ my $isNotRedirect = (-t STDOUT);
 
 unless (@ARGV) {
 	print STDERR  "manque d'argument\n" ;
-	print STDERR  "$0 bucket [nbJour] [all|none]"; 
+	print STDERR  "$0 bucket [nbJour] [all|none]\n"; 
 	print STDERR  "bucket est  le bucket dont on veut supprimer les fichiers non référencés dans Nexcloud\n";
 	print STDERR   "nbJour : les fichier plus récents que ce nombre de jour ne seront pas proposés au retrait ; defaut=$nbJour.\n";
 	print STDERR  " la liste des buckets peut être obtenue par la commande suivante :\n";
