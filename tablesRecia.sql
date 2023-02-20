@@ -1,12 +1,35 @@
 
+CREATE TABLE oc_etablissements (
+	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	name VARCHAR(255),
+	uai VARCHAR(255),
+	siren VARCHAR(255)
+)
+
+CREATE TABLE oc_asso_uai_user_group (
+	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	id_etablissement VARCHAR(255),
+	user_group VARCHAR(255)
+);
+
+CREATE TABLE oc_recia_user_history (
+	uid char(8) PRIMARY KEY,
+	siren varchar(15), 
+	dat date, 
+	eta varchar(32),
+	isadd tinyint(1),
+	isdel tinyint(1),
+	name varchar(100),
+	UNIQUE (siren, isdel, uid)
+);
 
 create table recia_bucket_history (
-		bucket varchar(128) ,
-		uid varchar(64),
-		creation date,
-		suppression date,
-		primary key (bucket, uid)
-	)
+	bucket varchar(128) ,
+	uid varchar(64),
+	creation date,
+	suppression date,
+	primary key (bucket, uid)
+);
 
 create or replace view recia_share as 
 (select s.*, f.path from oc_share s, oc_filecache f
