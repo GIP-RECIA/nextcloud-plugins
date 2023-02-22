@@ -71,6 +71,9 @@ sub connectSql {
 	return $SQL_CONNEXION ;
 }
 
+sub isObjectStore {
+	return exists $PARAM{'objectstore_multibucket'} ;
+}
 
 # si $name == nc-recette-name/... => s3://nc-recette-name
 # si $name != null =>  s3://nc-recette-name
