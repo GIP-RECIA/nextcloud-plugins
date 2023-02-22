@@ -148,44 +148,6 @@ class AdImporter implements ImporterInterface
             }
         }
 
-        if (!$this->db->tableExists("etablissements")) {
-            $sql =
-                'CREATE TABLE `*PREFIX*etablissements`' .
-                '(' .
-                'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
-                'name VARCHAR(255),' .
-                'uai VARCHAR(255),' .
-                'siren VARCHAR(255)' .
-                ')';
-            $this->db->executeQuery($sql);
-        }
-        if (!$this->db->tableExists("asso_uai_user_group")) {
-            $sql =
-                'CREATE TABLE `*PREFIX*asso_uai_user_group`' .
-                '(' .
-                'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,' .
-                'id_etablissement VARCHAR(255),' .
-                'user_group VARCHAR(255)' .
-                ')';
-            $this->db->executeQuery($sql);
-        }
-        
-        if (!$this->db->tableExists("recia_user_history")) {
-			$this->logger->error("Creation de la table :" );
-            $sql =
-                'CREATE TABLE `*PREFIX*recia_user_history`' .
-                '(' .
-                'uid char(8) PRIMARY KEY,' .
-                'siren varchar(15), ' .
-                'dat date, '.
-                'eta varchar(32),' .
-                'isadd tinyint(1),' .
-                'isdel tinyint(1),' .
-                'name varchar(100),' .
-                'UNIQUE (siren, isdel, uid)' .
-                ')';
-            $this->db->executeQuery($sql);
-        }
 
         $pageSize = $this->config->getAppValue($this->appName, 'cas_import_ad_sync_pagesize');
 
