@@ -30,7 +30,7 @@ CSS=$(LOADER)/inputs/css
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER
+	@echo SCRIPTS LDAPIMPORTER OOPATCH
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
 
@@ -42,8 +42,8 @@ SCRIPTS:
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
-
-
+OOPATCH: 
+	cp onlyoffice/js/main.js $(NEXTCLOUD_PATH)/apps/onlyoffice/js/main.js
 
 sass: $(CSS)/reciaStyle.css
 
