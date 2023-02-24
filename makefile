@@ -30,7 +30,7 @@ CSS=$(LOADER)/inputs/css
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH
+	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON
 	@echo ${USER} $(NEXTCLOUD_PATH)
 
 
@@ -50,6 +50,10 @@ COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 	find apps/onlyoffice -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 
+SKELETON:
+	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
+
+
 ifneq (${USER}, ncgip)
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
@@ -68,14 +72,10 @@ RESTORE_FILES_SHARING:
 	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_app_last/ $(APPS)/files_sharing/
 	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_dist_last/ $(DIST)/
 
-SKELETON:
-	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 LIB: 
 	cp -rvT  $(NEXTCLOUD_PATH)/lib
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
-
-
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
