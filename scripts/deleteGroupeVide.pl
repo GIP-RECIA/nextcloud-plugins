@@ -55,7 +55,7 @@ my $cpt = 0;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $gid = $tuple->{'gid'};
 
-	next if ($groupSuffix and ! rindex($gid, $groupSuffix) );
+	next if ($groupSuffix and rindex($gid, $groupSuffix) < 0 );
 	unless ($gid eq 'admin') { 
 #		print "$commande '$gid' \n";
 		system ("$commande '$gid'") == 0 or die "$!\n";
