@@ -74,6 +74,11 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			top : 38px !important;
 			height: 50px !important;
 		}
+
+		body > div#escoDiv > header#header.escoDivWrapper div.header-left {
+			overflow: hidden;
+		}
+		
 		body > div#escoDiv > header#header.escoDivWrapper div.header-left ul li a {
 			height: 50px;
 			width: 50px;
