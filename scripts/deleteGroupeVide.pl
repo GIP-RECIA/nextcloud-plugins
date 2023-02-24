@@ -24,9 +24,16 @@ unless (@ARGV) {
 	exit 1;
 }
 
+my $groupSuffix;
+
 unless (@ARGV[0] eq 'all') {
-	print STDERR  "argument illégal\n";
-	exit 1;
+	if  (@ARGV[0] eq 'LDAP' ) {
+		$groupSuffix = ':LDAP';
+	} else {
+		print STDERR  "argument illégal\n";
+		exit 1;
+	}
+	
 }
 
 ##################
@@ -48,6 +55,7 @@ my $cpt = 0;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $gid = $tuple->{'gid'};
 
+	next if ($groupSuffix and ! rindex($gid, $groupSuffix) );
 	unless ($gid eq 'admin') { 
 #		print "$commande '$gid' \n";
 		system ("$commande '$gid'") == 0 or die "$!\n";
@@ -56,7 +64,3 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 }
 
 print " Nombre de groupe supprimés = $cpt\n";
-
- 
-
-

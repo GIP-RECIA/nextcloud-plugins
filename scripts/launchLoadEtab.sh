@@ -14,29 +14,12 @@ find $rlog \( -name '*.log' -o -name '*.log.*gz' \) -a -ctime +7 -delete
 
 $rcode/diffEtab.pl
 
-date
-
-$rcode/saveBucketId.pl
-
-/bin/gzip $rlog/cleanBucket.*.log 
-
-logClean=$rlog/cleanBucket.`date +'%d'`.log
-
-echo nettoyage de nc-prod-0
-/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
-
-tail -1 $logClean
-
-echo nettoyage de nc-prod-corbeille
-/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
-
-tail -1 $logClean
 
 date
 
 echo suppression des groupes vides
 logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
-/usr/bin/nice $rcode/deleteGroupeVide.pl all >  $logClean 
+/usr/bin/nice $rcode/deleteGroupeVide.pl LDAP >  $logClean 
 
 grep -v 'was removed' $logClean
 
