@@ -364,7 +364,7 @@ class UserService
      */
     public function updateGroups($user, $groups, $protectedGroups = '', $justCreated = false)
     {
-
+		$groupSuffix = ':LDAP';
         if (is_string($groups)) $groups = explode(",", $groups);
         if (is_string($protectedGroups)) $protectedGroups = explode(",", $protectedGroups);
 
@@ -379,14 +379,18 @@ class UserService
                 if ($group instanceof \OCP\IGroup) {
 
                     $groupId = $group->getGID();
+                    $pos = strpos($groupId, $groupSuffix);
+                    
+					if ($pos) {
+						$groupId = substr($groupId, 0, $pos) ; 
+						if (!in_array($groupId, $protectedGroups) && !in_array($groupId, $groups)) {
 
-                    if (!in_array($groupId, $protectedGroups) && !in_array($groupId, $groups)) {
+							$group->removeUser($user);
 
-                        $group->removeUser($user);
-
-                        $this->loggingService->write(LoggingService::DEBUG, "Removed '" . $uid . "' from the group '" . $groupId . "'");
-                        #\OCP\Util::writeLog('cas', 'Removed "' . $uid . '" from the group "' . $groupId . '"', \OCA\LdapImporter\Service\LoggingService::DEBUG);
-                    }
+							$this->loggingService->write(LoggingService::DEBUG, "Removed '" . $uid . "' from the group '" . $groupId . "'");
+							#\OCP\Util::writeLog('cas', 'Removed "' . $uid . '" from the group "' . $groupId . '"', \OCA\LdapImporter\Service\LoggingService::DEBUG);
+						}
+					}
                 }
             }
         }
@@ -423,17 +427,19 @@ class UserService
 
                 $group = substr($group, 0, 63) . "…";
             }
+			$groupId = $group . $groupSuffix;
+			
+            if (!$this->groupManager->isInGroup($uid, $groupId)) {
 
-            if (!$this->groupManager->isInGroup($uid, $group)) {
-
-                if (!$this->groupManager->groupExists($group)) {
-					$this->loggingService->write(LoggingService::DEBUG, 'New group to created: ' . $group);
-                    $groupObject = $this->groupManager->createGroup($group);
+                if (!$this->groupManager->groupExists($groupId)) {
+					$this->loggingService->write(LoggingService::DEBUG, 'New group to created: ' . $groupId);
+                    $groupObject = $this->groupManager->createGroup($groupId);
+                    $groupObject->setDisplayName($group);
  
                     #\OCP\Util::writeLog('cas', 'New group created: ' . $group, \OCA\LdapImporter\Service\LoggingService::DEBUG);
                 } else {
 
-                    $groupObject = $this->groupManager->get($group);
+                    $groupObject = $this->groupManager->get($groupId);
                 }
 
                 $groupObject->addUser($user);
