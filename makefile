@@ -30,8 +30,9 @@ CSS=$(LOADER)/inputs/css
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER OOPATCH
-	@echo ${USER} $(NEXTCLOUD_PATH) 
+	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH
+	@echo ${USER} $(NEXTCLOUD_PATH)
+
 
 
 SCRIPTS: 
