@@ -43,7 +43,7 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 OOPATCH: 
-	cp onlyoffice/js/main.js $(NEXTCLOUD_PATH)/apps/onlyoffice/js/main.js
+	cp apps/onlyoffice/js/main.js $(NEXTCLOUD_PATH)/apps/onlyoffice/js/main.js
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
