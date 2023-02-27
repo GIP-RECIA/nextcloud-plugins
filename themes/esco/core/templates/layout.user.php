@@ -106,23 +106,31 @@ $getUserAvatar = static function (int $size) use ($_): string {
 /* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
 		body  div#content > div#app-content > iframe {
 			top: 88px;
-			height: calc(100vh - 90px);
+			height: calc(100vh - 88px);
 			position: fixed;
+			padding-bottom: 4px;
+			background-color: #f1f1f1;
 		}
 		body.onlyoffice-inline  div#content > div#app-content > iframe#onlyofficeFrame {
 			top: 88px;
-			height: calc(100vh - 90px);
+			height: calc(100vh - 88px);
 			position: fixed;
+			padding-bottom: 4px;
+			background-color: #f1f1f1;
 		}
 		body  div#content > div#app-content > iframe#onlyofficeFrame {
 			top: 88px;
-			height: calc(100vh - 90px);
+			height: calc(100vh - 88px);
 			position: fixed;
+			padding-bottom: 4px;
+			background-color: #f1f1f1;
 		}
 		body  div#content.app-onlyoffice > div > iframe {
 			top: 88px;
-			height: calc(100vh - 90px);
+			height: calc(100vh - 88px);
 			position: fixed;
+			padding-bottom: 4px;
+			background-color: #f1f1f1;
 		}
 /* fin OO */
 /* pour MD */
