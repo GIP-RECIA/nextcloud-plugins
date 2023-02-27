@@ -26,18 +26,12 @@ LOADER=cssjsloader
 SCSS=$(LOADER)/scss
 CSS=$(LOADER)/inputs/css
 
-ifeq (${USER}, ncgip)
-ALLETAB=allEtab_ncgip.txt
 
-defaut:
-	@echo SCRIPTS LDAPIMPORTER
-	@echo ${USER} $(NEXTCLOUD_PATH) 
-else
 ALLETAB=allEtab.txt
 defaut:
 	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME
 	@echo ${USER} $(NEXTCLOUD_PATH) 
-endif
+
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -48,7 +42,6 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 
-ifneq (${USER}, ncgip)
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
@@ -80,7 +73,6 @@ THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
 	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
 
-endif
 
 sass: $(CSS)/reciaStyle.css
 
