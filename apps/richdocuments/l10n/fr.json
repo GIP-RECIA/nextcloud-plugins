@@ -1,8 +1,8 @@
 { "translations": {
-    "New document" : "Nouveau document odt",
-    "New spreadsheet" : "Nouvelle feuille de calcul ods",
-    "New presentation" : "Nouvelle présentation odp",
-    "New diagram" : "Nouveau diagramme odg",
+    "New document" : "Nouveau document LO Wrire",
+    "New spreadsheet" : "Nouvelle feuille LO Calc",
+    "New presentation" : "Nouvelle présentation LO Impress",
+    "New diagram" : "Nouveau diagramme LO Draw",
     "Nextcloud Office" : "Nextcloud Office",
     "Cannot create document" : "Impossible de créer un document",
     "New Document.odt" : "Nouveau Document.odt",
