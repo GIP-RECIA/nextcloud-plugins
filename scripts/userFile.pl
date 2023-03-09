@@ -26,9 +26,10 @@ my $uid;
 my $noarg = 0; 
 my $bucketOnly = 0;
 my $bucketLess = 0;
+my $withFile = 0;
 
 unless (@ARGV) {
-	print "usage :\t$0 [-b|+b] (uid|bucket|idFile|displayName)\n";
+	print "usage :\t$0 [-b|+b|-f] (uid|bucket|idFile|displayName)\n";
 	print "\t prend en entré un uid , un bucket ou un num de fichier ou encore le display name (% autorisé) \n";
 	print "\t et donne la liste des fichiers correspondant au compte et d'autres infos utiles\n";
 	print "\t si -b ne donne que les infos complémentaire (sans les fichiers/bucket).\n";
@@ -43,11 +44,19 @@ if ($ARGV[$noarg] =~ /([+-])b/){
 	} else {
 		$bucketLess = 1;
 	}
+} elsif ($ARGV[$noarg] eq '-f') {
+	$noarg=1;
+	$bucketLess = 1;
+	$withFile = 1;
 }
 
 my $arg1 = $ARGV[$noarg];
 
-if ($arg1 =~ /^$defautBucket/){
+unless ($defautBucket) {
+	$bucketLess = 1;
+}
+
+if ($defautBucket && $arg1 =~ /^$defautBucket/){
 	# on passe un bucket il faut trouver a qui il est 
 	$bucket = $arg1;
 	$uid = getUidByBucket($bucket);
@@ -343,7 +352,13 @@ unless ($bucketLess) {
 		print;
 	}
 	close S3;
-}
+} elsif ($withFile) {
+	getNextcloudFiles($uid);
+	print "les fichiers :\n";
+	while (my ($id, $path) = each (%allFiles)) {
+		print "\t$id\t$path\n";
+	} 
+} 
 
 unless ($bucketOnly) {
 	&printPartage($uid);
