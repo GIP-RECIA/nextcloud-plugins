@@ -1,0 +1,18 @@
+---
+    - nom: GIP-RECIA
+      siren: 18450311800020
+      ldap: '(|(coll:Collectivites:GIP-RECIA:*)(coll:admin:*:GIP-RECIA:*))'
+      groups:
+        - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:([^:]+)$'
+          group: '%2$s.%1$s'
+          quotaG: 2
+          folder: '%1$s/%2$s'
+          quotaF: 10
+        - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:([^:]+)$'
+          group: '%2$s.%1$s'
+          folder: '%1$s/%2$s'
+          quotaG: 1
+        - regex: '^coll:admin:Nextcloud:(GIP-RECIA):([^:]+)$'
+          group: '%2$s.admin.%1$s'
+          admin: '%1$s/%2$s'
+...
