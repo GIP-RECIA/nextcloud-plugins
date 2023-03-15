@@ -4,6 +4,7 @@ BEGIN {
     }
 use vars      @EXPORT_OK;
 use Cwd;
+use MyLogger;
 
 my $logRep = $ENV{'NC_LOG'};
 my $wwwRep = $ENV{'NC_WWW'};
@@ -39,6 +40,11 @@ my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
 
+my $ldapHost;
+my $ldapUsr;
+my $ldapPass;
+my $ldapBaseDn;
+
 sub newConnectSql {
 	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
 	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
@@ -57,8 +63,35 @@ sub connectSql {
 }
 
 sub connectLdap {
-	
-	main::info ('Ldap connexion: ', $ldapHost);
+	unless ($ldapHost && $ldpaUsr && $ldapPass) {
+		my $sql = connectSql();
+		my $sqlQuery = q(select configkey, configvalue from oc_appconfig where configkey like 'cas_import_ad%' and appid = 'ldapimporter');
+		INFO! "$sqlQuery\n";
+		my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+		$sqlStatement->execute() or die $sqlStatement->errstr;
+
+		my $host = 'localhost';
+		my $port = ':389';
+		my $proto = 'ldap//';
+		
+		while (my @tuple =  $sqlStatement->fetchrow_array()) {
+			if ($tuple[0] eq 'cas_import_ad_base_dn') {
+				$ldapBaseDn = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_host') {
+				$host = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_password') {
+				$ldapPass = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_port') {
+				$port = ':' . $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_user') {
+				$ldapUser = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_protocol') {
+				$proto = $tuple[1];
+			}
+		}
+		$ldapHost = $proto . $host . $port;
+	}
+	INFO! 'Ldap connexion: ', $ldapHost, $ldapUser;
 		# le parametre raw est un regex qui filtre  les attributs binaires. 
 		# Les attributs qui ne verifie pas la regex seront en utf-8.
 		# si on ne met rien les attribut utf-8 seront considérés comme binaire
@@ -76,6 +109,8 @@ sub connectLdap {
 	
 	$mesg->code && die $mesg->error;
 	
-	main::info ("Ldap bind: ", $ldapUsr);
+	INFO! "Ldap bind: ", $ldapUsr;
 	return $ldap;
 }
+
+1;
