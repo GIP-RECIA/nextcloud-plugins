@@ -1,10 +1,14 @@
+package util;
 BEGIN {
         use Exporter   ();
 		@EXPORT_OK   = qw(%PARAM);
     }
 use vars      @EXPORT_OK;
+use strict;
+use utf8;
 use Cwd;
 use MyLogger;
+
 
 my $logRep = $ENV{'NC_LOG'};
 my $wwwRep = $ENV{'NC_WWW'};
@@ -32,6 +36,7 @@ $PARAM{'NC_WWW'} = $wwwRep;
 		}
 	}
 $PARAM{'NC_DATA'} = $PARAM{'datadirectory'};
+#package util;
 
 my $sqlHost = $PARAM{'dbhost'};
 my $sqlDatabase = $PARAM{'dbname'};
@@ -40,8 +45,9 @@ my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
 
+# les infos ldap seront récupérées dans la base nextcloud.
 my $ldapHost;
-my $ldapUsr;
+my $ldapUser;
 my $ldapPass;
 my $ldapBaseDn;
 
@@ -63,7 +69,7 @@ sub connectSql {
 }
 
 sub connectLdap {
-	unless ($ldapHost && $ldpaUsr && $ldapPass) {
+	unless ($ldapHost && $ldapUser && $ldapPass) {
 		my $sql = connectSql();
 		my $sqlQuery = q(select configkey, configvalue from oc_appconfig where configkey like 'cas_import_ad%' and appid = 'ldapimporter');
 		INFO! "$sqlQuery\n";
@@ -89,28 +95,59 @@ sub connectLdap {
 				$proto = $tuple[1];
 			}
 		}
+		$ldapBaseDn =~ s/^ou=[^,]+,//;
 		$ldapHost = $proto . $host . $port;
+#		$ldapHost= 'chene.srv-ent.brgm.recia.net';
 	}
-	INFO! 'Ldap connexion: ', $ldapHost, $ldapUser;
+	INFO! "Ldap connexion: $ldapHost";
 		# le parametre raw est un regex qui filtre  les attributs binaires. 
 		# Les attributs qui ne verifie pas la regex seront en utf-8.
 		# si on ne met rien les attribut utf-8 seront considérés comme binaire
 		# et l'encodage sera incorecte.
 		# Nous n'avons pas d'attribut binaire d'ou la valeur choisie qui ne doit matcher aucun attribut
-	my $ldap = Net::LDAP->new($ldapHost,  async => 1,
-						raw => '^UTF-8$' ) or die "$@";
-	
+	my $ldap = Net::LDAP->new($ldapHost,  async => 1, raw => '^UTF-8$' ) or FATAL! "$@";
+	my $mesg ;
 	$ldap->debug(0);
 	
-	
-	my $mesg = $ldap->bind( $ldapUsr,
+	INFO! "Ldap user: $ldapUser";
+	$mesg = $ldap->bind( $ldapUser,
 	                      password => $ldapPass
 	                    );
 	
-	$mesg->code && die $mesg->error;
+	$mesg->code && FATAL! $mesg->error;
 	
-	INFO! "Ldap bind: ", $ldapUsr;
+	INFO! "Ldap bind: ", $ldapUser;
 	return $ldap;
 }
 
+
+
+sub executeSql {
+	my $class = shift;
+	my $sqlQuery = shift;
+	my $sql = connectSql();
+	DEBUG! $sqlQuery;
+	my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL! $sql->errstr;
+	DEBUG! 'execute ', @_;
+	$sqlStatment->execute(@_) or FATAL! $sqlStatment->errstr;
+	return $sqlStatment;
+}
+
+sub searchLDAP {
+	my $class = shift;
+	my $branch = shift;
+	my $filter = shift;
+	my $attrs ; #shift;
+	 
+	my $ldap = connectLdap();
+	$branch .= ",".$ldapBaseDn;
+	if (@_) {
+		$attrs = [@_];
+	}else {
+		$attrs = ['1.1'];
+	}
+	my $srch = $ldap->search( base => $branch, filter => $filter , attrs => $attrs);
+	$srch->code  and  FATAL! "ldap  $branch"," $filter :", $srch->error;
+	return $srch->entries;
+}
 1;

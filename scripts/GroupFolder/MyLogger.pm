@@ -3,7 +3,7 @@ use IO::Select;
 use Symbol 'gensym';
 
 # 
-my $version="1.1";
+my $version="2.0";
 
 package MyLogger;
 use Filter::Simple;
@@ -15,7 +15,8 @@ FILTER {
 	s/INFO!/MyLogger::is(3) and MyLogger::info __FILE__,' (', __LINE__,'): ',/g;
 	s/DEBUG!/MyLogger::is(4) and MyLogger::debug __FILE__,' (', __LINE__,'): ',/g;
 	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
-	s/SYSTEM!/MyLogger::traceSystem/g;   
+	s/SYSTEM!/MyLogger::traceSystem/g;
+	s/PARAM!\s*(\w+)/sub \1 {return MyLogger::param(shift, uc('\1'), shift);}/g; 
 };
 
 my $level;
@@ -155,5 +156,15 @@ sub traceSystem {
 	waitpid $pid, 0;
 	close $ERR;
 	close $COM;
+}
+sub param {
+	my $self = shift;
+	my $param = shift;
+	my $value = shift;
+	
+ 	if ($value) {
+		$self->{$param} = $value;
+	}
+	return $self->{$param};
 }
 1;
