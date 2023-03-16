@@ -9,11 +9,11 @@
       quotaG: 2
       folder: '%1$s/%2$s'
       quotaF: 10
-    - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:([^:]+)$'
+    - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
       group: '%2$s.%1$s'
       folder: '%1$s/%2$s'
       quotaG: 1
-    - regex: '^coll:admin:Nextcloud:(GIP-RECIA):([^:]+)$'
+    - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
       group: '%2$s.admin.%1$s'
       admin: '%1$s/%2$s'
 ...

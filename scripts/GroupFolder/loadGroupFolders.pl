@@ -46,31 +46,35 @@ foreach my $etab (@$config) {
 	Group->readNC(Etab->readNC($etab->{siren}));
 	#faire la requete ldap
 	my @entries = util->searchLDAP('ou=groups', $etab->{ldap}, 'cn');
-	
-	foreach my $entry (@entries) {
-		my $cn = $entry->get_value ( 'cn' );
-		foreach my $regexGroup (@{$etab->{groups}}) {
-			my $regex = $regexGroup->{regex};
-			if (my @res = $cn =~ /$regex/) {
-				DEBUG! "$cn ", $regex;
-				TRACE! Dumper(@res);
-				my $groupFormat = $regexGroup->{group};
-				if ($groupFormat) {
-					my $group = sprintf($groupFormat, @res);
-					DEBUG! $group;
-				}
-				my $folderFormat = $regexGroup->{folder};
-				if ($folderFormat) {
-					my $folder = sprintf($folderFormat, @res);
-					DEBUG! "group folder", $folder;
-				}
-				my $adminFormat = $regexGroup->{admin};
-				if ($adminFormat) {
-					my $folderAdmin = sprintf($adminFormat, @res);
-					DEBUG! "Admin " , $folderAdmin;
+
+	foreach my $regexGroup (@{$etab->{groups}}) {
+		my $regex = $regexGroup->{regex};
+		my $groupFormat = $regexGroup->{group};
+		my $folderFormat = $regexGroup->{folder};
+		my $adminFormat = $regexGroup->{admin};
+
+		foreach my $entry (@entries) {
+			my $cn = $entry->get_value ( 'cn' );
+				if (my @res = $cn =~ /$regex/) {
+					DEBUG! "$cn ", $regex;
+					TRACE! Dumper(@res);
+					
+					if ($groupFormat) {
+						my $group = sprintf($groupFormat, @res);
+						DEBUG! $group;
+						
+						if ($folderFormat) {
+							my $folder = sprintf($folderFormat, @res);
+							DEBUG! "group folder", $folder;
+						}
+						
+						if ($adminFormat) {
+							my $folderAdmin = sprintf($adminFormat, @res);
+							DEBUG! "Admin " , $folderAdmin;
+						}
+					}
 				}
 			}
-		}
 		#DEBUG! $cn;
 	} 
 #	TRACE! Dumper(@entries);
