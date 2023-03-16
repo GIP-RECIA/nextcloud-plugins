@@ -2,9 +2,9 @@
 #ETABS:
 - nom: GIP-RECIA
   siren: 18450311800020
-  ldap: '(|(coll:Collectivites:GIP-RECIA:*)(coll:admin:*:GIP-RECIA:*))'
+  ldap: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*))'
   groups:
-    - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:([^:]+)$'
+    - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
       group: '%2$s.%1$s'
       quotaG: 2
       folder: '%1$s/%2$s'
