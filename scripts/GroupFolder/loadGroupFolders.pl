@@ -55,26 +55,26 @@ foreach my $etab (@$config) {
 
 		foreach my $entry (@entries) {
 			my $cn = $entry->get_value ( 'cn' );
-				if (my @res = $cn =~ /$regex/) {
-					DEBUG! "$cn ", $regex;
-					TRACE! Dumper(@res);
+			if (my @res = $cn =~ /$regex/) {
+				DEBUG! "$cn ", $regex;
+				TRACE! Dumper(@res);
+				
+				if ($groupFormat) {
+					my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res));
+					DEBUG! Dumper($group);
 					
-					if ($groupFormat) {
-						my $group = sprintf($groupFormat, @res);
-						DEBUG! $group;
-						
-						if ($folderFormat) {
-							my $folder = sprintf($folderFormat, @res);
-							DEBUG! "group folder", $folder;
-						}
-						
-						if ($adminFormat) {
-							my $folderAdmin = sprintf($adminFormat, @res);
-							DEBUG! "Admin " , $folderAdmin;
-						}
+					if ($folderFormat) {
+						my $folder = sprintf($folderFormat, @res);
+						DEBUG! "group folder", $folder;
+					}
+					
+					if ($adminFormat) {
+						my $folderAdmin = sprintf($adminFormat, @res);
+						DEBUG! "Admin " , $folderAdmin;
 					}
 				}
 			}
+		}
 		#DEBUG! $cn;
 	} 
 #	TRACE! Dumper(@entries);

@@ -41,4 +41,24 @@ sub readNC {
 	TRACE! Dumper($res);
 }
 
+sub getOrCreateGroup {
+	my ($class, $name) = @_;
+	my $group = $groupInBase{$name};
+	if  ($group) {
+		return $group;
+	}
+	my $displayname = $name;
+	my $gid = $name . ':LDAP';
+	
+	$group = $groupInBase{$gid};
+	if ($group) {
+		return $group;
+	}
+	$group = Group->new($gid, $displayname);
+	#TODO faire la creation en base?
+	$groupInBase{$gid} = $group;
+	DEBUG! "new group " , Dumper($group);
+	return $group;
+}
+
 1;
