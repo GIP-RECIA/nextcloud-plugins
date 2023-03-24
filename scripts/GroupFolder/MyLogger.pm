@@ -24,6 +24,7 @@ my $file;
 my $mod;
 
 sub file {
+	my $class = shift;
 	if ($file) {
 		close MyLoggerFile;
 	}
@@ -113,6 +114,7 @@ sub lastname {
 }
 sub traceSystem {
 	my $commande = shift;
+	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un tableau des lignes de sortie
 	my $COM;
 	my $ERR = Symbol::gensym();
 	my $select = new IO::Select;
@@ -134,8 +136,10 @@ sub traceSystem {
 			if ($len == 0){
 				$select->remove($fh);
 			} else {
+				my $out = $line;
 				$line =~ s/\n(.)/\n\t$1/mg;
 				if ($fh == $COM) {
+					push(@$OUT, $out) if $OUT;
 					if ($flagC) {
 						if ( $level >= 4) { debug (' system ', $commande); }
 						$flagC = 0;

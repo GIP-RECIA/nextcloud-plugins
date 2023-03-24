@@ -15,7 +15,7 @@ my $wwwRep = $ENV{'NC_WWW'};
 
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
-
+my $occ = "php $wwwRep/occ ";
 
 my $configFile = "$wwwRep/config/config.php";
 
@@ -128,8 +128,8 @@ sub executeSql {
 	my $sql = connectSql();
 	DEBUG! $sqlQuery;
 	my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL! $sql->errstr;
-	DEBUG! 'execute ', @_;
-	$sqlStatment->execute(@_) or FATAL! $sqlStatment->errstr;
+	DEBUG! 'execute ', join(", ", @_);
+	$sqlStatment->execute(@_) or FATAL!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
 	return $sqlStatment;
 }
 
@@ -149,5 +149,17 @@ sub searchLDAP {
 	my $srch = $ldap->search( base => $branch, filter => $filter , attrs => $attrs);
 	$srch->code  and  FATAL! "ldap  $branch"," $filter :", $srch->error;
 	return $srch->entries;
+}
+
+sub occ {
+	my $class = shift;
+	my $com = shift;
+	my $out = shift;
+	DEBUG! "occ $com";
+	if ($out) {
+		SYSTEM! "$occ $com", $out;
+	} else {
+		SYSTEM! "$occ $com" ;
+	}
 }
 1;

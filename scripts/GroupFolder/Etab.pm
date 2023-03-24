@@ -25,7 +25,32 @@ PARAM! groupsNC;
 
 my %etabInBase;
 
+sub addEtab {
+	my $class = shift;
+	my $siren = shift;
+	my $name = shift;
 
+	DEBUG! "addEtab, siren : $siren  , name : $name";
+	my $etab;
+		# avec le ignore il n'y a pas d'erreur en cas de préexistance
+	my $sth = util->executeSql(q/INSERT IGNORE INTO oc_etablissements (siren, name) values (?, ?)/, $siren, $name);
+	my $id = $sth->last_insert_id();
+	if ($id) {
+		$etab = Etab->new($id, $name, undef, $siren);
+	} else {
+		$sth = util->executeSql(q/select id, name  from  oc_etablissements where siren = ?/, $siren);
+		
+		($id, my $nameInBase)   =  $sth->fetchrow_array();
+
+		if ($name ne $nameInBase) {
+			WARN! "Etab avec 2 noms $siren, $name, $nameInBase.";
+		}
+		$etab = Etab->new($id, $name, undef, $siren);
+	}
+	
+	$etabInBase{$siren} = $etab;
+	return $etab;
+}
 sub readNC {
 	my $class = shift;
 	my $siren = shift;
@@ -40,5 +65,6 @@ sub readNC {
 	TRACE! Dumper(%etabInBase);
 	return $etab;
 }
+
 
 1;

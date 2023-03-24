@@ -18,6 +18,7 @@ use util;
 use MyLogger;
 
 MyLogger::level(5, 2);
+MyLogger->file('/home/esco/scripts/loadGroupFolder.log');
 
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
@@ -38,36 +39,46 @@ my $config = LoadFile($FindBin::Bin."/$fileYml"); #$yaml->[0];
 
 
 
-
-
 GroupFolder->readNC;
 
 foreach my $etab (@$config) {
-	Group->readNC(Etab->readNC($etab->{siren}));
+	my $etabNC = Etab->readNC($etab->{siren});
+	unless ($etabNC) {
+		$etabNC = Etab->addEtab($etab->{siren}, $etab->{nom})
+	}
+	Group->readNC($etabNC);
 	#faire la requete ldap
-	my @entries = util->searchLDAP('ou=groups', $etab->{ldap}, 'cn');
+	my @ldapGroups = util->searchLDAP('ou=groups', $etab->{ldap}, 'cn');
 
 	foreach my $regexGroup (@{$etab->{groups}}) {
 		my $regex = $regexGroup->{regex};
 		my $groupFormat = $regexGroup->{group};
 		my $folderFormat = $regexGroup->{folder};
 		my $adminFormat = $regexGroup->{admin};
+		my $quotaF = $regexGroup->{quotaF};
+		my $permF = $regexGroup->{permF};
 
-		foreach my $entry (@entries) {
-			my $cn = $entry->get_value ( 'cn' );
+		DEBUG! "permF=" , Dumper($permF);
+
+		foreach my $entryGrp (@ldapGroups) {
+			my $cn = $entryGrp->get_value ( 'cn' );
 			if (my @res = $cn =~ /$regex/) {
 				DEBUG! "$cn ", $regex;
 				TRACE! Dumper(@res);
-				
+
 				if ($groupFormat) {
-					my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res));
+					my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
+
 					DEBUG! Dumper($group);
-					
+
 					if ($folderFormat) {
-						my $folder = sprintf($folderFormat, @res);
-						DEBUG! "group folder", $folder;
+						my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
+						if ($folder) {
+							$folder->addGroup($group, @$permF);
+							DEBUG! "group folder", $folder;
+						}
 					}
-					
+
 					if ($adminFormat) {
 						my $folderAdmin = sprintf($adminFormat, @res);
 						DEBUG! "Admin " , $folderAdmin;
@@ -76,8 +87,10 @@ foreach my $etab (@$config) {
 			}
 		}
 		#DEBUG! $cn;
-	} 
-#	TRACE! Dumper(@entries);
+	}
+#	TRACE! Dumper(@ldapGroups);
 #my	$RegexGroup = $etab->{groups};
 #	TRACE! Dumper($RegexGroup);
 }
+
+#util->occ("user:list");
