@@ -1,6 +1,10 @@
 body {
 
 /* les suppresions d'affichage */
+	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
+	&#body-settings div#content div#app-content div.section div.warning {
+		display: none;
+	}
 	&#body-public.not_embedded footer {
 		/* on supprime dans les liens transmis public les liens de pub nextcloud */
 		display: none;
