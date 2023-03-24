@@ -81,5 +81,21 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
 #	}
 		return $stat;
 	}
-
+	
+ /**
+  * Override this method if you need a different unique resource identifier for your object storage implementation.
+  * The default implementations just appends the fileId to 'urn:oid:'. Make sure the URN is unique over all users.
+  * You may need a mapping table to store your URN if it cannot be generated from the fileid.
+  *
+  * @param int $fileId the fileid
+  * @return null|string the unified resource name used to identify the object
+  
+ public function getURN($fileId) {
+         if (is_numeric($fileId)) {
+                 return $this->objectPrefix . $fileId;
+         }
+    #     error_log(" bucket name = $bucketName \n " , 3, '/var/www/ncrecette.recia/logs-esco/object.log'); 
+         return null;
+ }
+*/
 }

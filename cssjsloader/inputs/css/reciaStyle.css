@@ -55,6 +55,10 @@ body {
     body div#settings div#expand.menutoggle div.avatardiv.avatardiv-shown + div#expandDisplayName {
       display: block; }
 
+/* pour onlyoffice avec notre nabdeau large */
+div#content > div#app-content > iframe#onlyofficeFrame {
+  height: calc(100vh - 90px); }
+
 /*
 @media only screen and (min-width: 1025px) {
 body {
