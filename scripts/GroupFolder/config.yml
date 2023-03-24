@@ -1,17 +1,34 @@
+#les regex  sont testées dans l'ordre
+#un même groupe (ldap) peut matcher  plusieurs regex
+#une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui matche.
+#a chaque 'group' on peut associer:
+#un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
+#un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera cree/modifier sinon le groupe sera associé au groupfolder ssi il existe.
+#permF defint les droit du groupe sur le groupefolder  
+
+
 ---
 #ETABS:
 - nom: GIP-RECIA
   siren: 18450311800020
   ldap: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*))'
   groups:
+    - regex: '^coll:Collectivites:GIP-RECIA:Tous_GIP-RECIA$'
+      group: 'GIP-RECIA'
+      folder: 'GIP-RECIA'
+      permF: []
+      quotaF: 1
     - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
       group: '%2$s.%1$s'
       quotaG: 2
       folder: '%1$s/%2$s'
+      permF:
+        - write
+        - share
+        - delete
       quotaF: 10
     - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
       group: '%2$s.%1$s'
-      folder: '%1$s/%2$s'
       quotaG: 1
     - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
       group: '%2$s.admin.%1$s'

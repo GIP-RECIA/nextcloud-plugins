@@ -3,7 +3,9 @@ CREATE TABLE oc_etablissements (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255),
 	uai VARCHAR(255),
-	siren VARCHAR(255)
+	siren VARCHAR(255),
+	unique (siren),
+	unique (uai)
 )
 
 CREATE TABLE oc_asso_uai_user_group (
@@ -11,6 +13,10 @@ CREATE TABLE oc_asso_uai_user_group (
 	id_etablissement VARCHAR(255),
 	user_group VARCHAR(255)
 );
+
+-- attention sur ncprod cette requete ne donne pas un resultat vide et donc on ne peut pas passer le alter table suivant
+select id_etablissement, user_group, count(id) from oc_asso_uai_user_group group by id_etablissement, user_group having count(id) > 1;
+alter table oc_asso_uai_user_group add constraint uk_etabGroup unique (id_etablissement, user_group);
 
 CREATE TABLE oc_recia_user_history (
 	uid char(8) PRIMARY KEY,
