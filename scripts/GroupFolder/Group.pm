@@ -41,21 +41,27 @@ sub readNC {
 	TRACE! Dumper($res);
 }
 
+
+
 sub getOrCreateGroup {
-	my ($class, $name) = @_;
+	my ($class, $name, $etab) = @_;
 	my $group = $groupInBase{$name};
 	if  ($group) {
 		return $group;
 	}
-	my $displayname = $name;
+	
 	my $gid = $name . ':LDAP';
 	
 	$group = $groupInBase{$gid};
 	if ($group) {
 		return $group;
 	}
-	$group = Group->new($gid, $displayname);
-	#TODO faire la creation en base?
+	$group = Group->new($gid, $name);
+	util->occ("group:add --display-name '$name' '$gid'");
+	if ($etab) {
+		# le ignore dans le cas ou le group prexistait (occ termine alors normalement).
+		util->executeSql(q/insert IGNORE into oc_asso_uai_user_group (id_etablissement, user_group) values (?, ?)/, $etab->idBase, $gid);
+	}
 	$groupInBase{$gid} = $group;
 	DEBUG! "new group " , Dumper($group);
 	return $group;
