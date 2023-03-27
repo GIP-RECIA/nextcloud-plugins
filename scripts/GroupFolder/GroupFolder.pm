@@ -17,6 +17,7 @@ sub new {
 		MOUNT => $mount,
 		QUOTA => $quota,
 		ACL => $acl,
+		MANAGE => {}
 	};
 	bless $self, $class;
 }
@@ -24,15 +25,27 @@ PARAM! idBase
 PARAM! mount
 PARAM! quota
 PARAM! acl
+PARAM! manage
 
 sub readNC {
 	my $class = shift;
 	DEBUG! '->readNC';
 
+	my %folderById;
 	my $sqlRes = util->executeSql(q/select * from oc_group_folders/);
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
 		my $folder = GroupFolder->new(@tuple);
 		$folderInBase{$folder->mount()} = $folder;
+		$folderById{$folder->idBase} = $folder;
+	}
+	$sqlRes = util->executeSql(q/select folder_id, mapping_id from oc_group_folders_manage where mapping_type ='group'/);
+	while (my @tuple =  $sqlRes->fetchrow_array()) {
+		my $folder = $folderById{$tuple[0]};
+		if ($folder) {
+			$folder->manage->{$tuple[1]} = 1;
+		} else {
+			WARN! 'Dans oc_group_folders_manage folder_id (' . $tuple[0] . ') sans folder associé ';
+		}
 	}
 }
 
@@ -91,7 +104,9 @@ sub addAdminGroup {
 		util->occ('groupfolders:permissions ' . $folder->idBase . ' --enable');
 	}
 
-	util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'"); 
+	unless ($folder->manage->{$group->gid}) {
+		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'");
+	}
 }
 1;
 

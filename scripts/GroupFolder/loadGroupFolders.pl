@@ -48,52 +48,65 @@ foreach my $etab (@$config) {
 	}
 	Group->readNC($etabNC);
 	#faire la requete ldap
-	my @ldapGroups = util->searchLDAP('ou=groups', $etab->{ldap}, 'cn');
+	my $lastTimeStampLdap = $etabNC->timestamp;
 
-	foreach my $regexGroup (@{$etab->{groups}}) {
-		my $regex = $regexGroup->{regex};
-		my $groupFormat = $regexGroup->{group};
-		my $folderFormat = $regexGroup->{folder};
-		my $adminFormat = $regexGroup->{admin};
-		my $quotaF = $regexGroup->{quotaF};
-		my $permF = $regexGroup->{permF};
+	my $filtreLdap =  $etab->{ldap};
+	
+	if ($lastTimeStampLdap) {
+		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
+	}
+	
+	my $newTimeStampLdap = util->timestampLdap(time);
+	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
-		DEBUG! "REGEX= ", $regex , "; permF=" , Dumper($permF);
+	if (@ldapGroups) {
+		foreach my $regexGroup (@{$etab->{groups}}) {
+			my $regex = $regexGroup->{regex};
+			my $groupFormat = $regexGroup->{group};
+			my $folderFormat = $regexGroup->{folder};
+			my $adminFormat = $regexGroup->{admin};
+			my $quotaF = $regexGroup->{quotaF};
+			my $permF = $regexGroup->{permF};
 
-		foreach my $entryGrp (@ldapGroups) {
-			my $cn = $entryGrp->get_value ( 'cn' );
-			if (my @res = $cn =~ /$regex/) {
-				DEBUG! "\tGroup= $cn ";
- #				TRACE! Dumper(@res);
+			DEBUG! "REGEX= ", $regex , "; permF=" , Dumper($permF);
 
-				if ($groupFormat) {
-					my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
+			foreach my $entryGrp (@ldapGroups) {
+				my $cn = $entryGrp->get_value ( 'cn' );
+				if (my @res = $cn =~ /$regex/) {
+					DEBUG! "\tGroup= $cn ";
+	 #				TRACE! Dumper(@res);
 
-					DEBUG! "\t\t" , Dumper($group);
+					if ($groupFormat) {
+						my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
 
-					if ($folderFormat) {
-						my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
-						if ($folder) {
-							$folder->addGroup($group, @$permF);
-							DEBUG! "\t\t\tgroup folder ", Dumper($folder);
+						DEBUG! "\t\t" , Dumper($group);
+
+						if ($folderFormat) {
+							my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
+							if ($folder) {
+								$folder->addGroup($group, @$permF);
+								DEBUG! "\t\t\tgroup folder ", Dumper($folder);
+							}
+						}
+
+						if ($adminFormat) {
+							my $folderAdmin = sprintf($adminFormat, @res);
+							DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
+							my $folder = GroupFolder->getFolder($folderAdmin);
+							if ($folder) {
+								DEBUG! "\t\t\t\tgroup folder admin add group";
+								$folder->addAdminGroup($group);
+							}
 						}
 					}
-
-					if ($adminFormat) {
-						my $folderAdmin = sprintf($adminFormat, @res);
-						DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
-						my $folder = GroupFolder->getFolder($folderAdmin);
-						if ($folder) {
-							DEBUG! "\t\t\t\tgroup folder admin add group";
-							$folder->addAdminGroup($group);
-						}
-					}
+				} else {
+	#				TRACE! "$cn no match\n";
 				}
-			} else {
-#				TRACE! "$cn no match\n";
 			}
+			#DEBUG! $cn;
 		}
-		#DEBUG! $cn;
+		
+		$etabNC->timestamp($newTimeStampLdap);
 	}
 #	TRACE! Dumper(@ldapGroups);
 #my	$RegexGroup = $etab->{groups};
