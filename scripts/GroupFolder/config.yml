@@ -11,7 +11,7 @@
 #ETABS:
 - nom: GIP-RECIA
   siren: 18450311800020
-  ldap: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*))'
+  ldap: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_*))'
   groups:
     - regex: '^coll:Collectivites:GIP-RECIA:Tous_GIP-RECIA$'
       group: 'GIP-RECIA'
@@ -33,4 +33,7 @@
     - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
       group: '%2$s.admin.%1$s'
       admin: '%1$s/%2$s'
+    - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
+      group: 'admin.%1$s'
+      admin: '%1$s'
 ...
