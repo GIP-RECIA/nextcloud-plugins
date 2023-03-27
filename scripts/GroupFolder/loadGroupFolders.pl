@@ -58,32 +58,39 @@ foreach my $etab (@$config) {
 		my $quotaF = $regexGroup->{quotaF};
 		my $permF = $regexGroup->{permF};
 
-		DEBUG! "permF=" , Dumper($permF);
+		DEBUG! "REGEX= ", $regex , "; permF=" , Dumper($permF);
 
 		foreach my $entryGrp (@ldapGroups) {
 			my $cn = $entryGrp->get_value ( 'cn' );
 			if (my @res = $cn =~ /$regex/) {
-				DEBUG! "$cn ", $regex;
-				TRACE! Dumper(@res);
+				DEBUG! "\tGroup= $cn ";
+ #				TRACE! Dumper(@res);
 
 				if ($groupFormat) {
 					my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
 
-					DEBUG! Dumper($group);
+					DEBUG! "\t\t" , Dumper($group);
 
 					if ($folderFormat) {
 						my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
 						if ($folder) {
 							$folder->addGroup($group, @$permF);
-							DEBUG! "group folder", $folder;
+							DEBUG! "\t\t\tgroup folder ", Dumper($folder);
 						}
 					}
 
 					if ($adminFormat) {
 						my $folderAdmin = sprintf($adminFormat, @res);
-						DEBUG! "Admin " , $folderAdmin;
+						DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
+						my $folder = GroupFolder->getFolder($folderAdmin);
+						if ($folder) {
+							DEBUG! "\t\t\t\tgroup folder admin add group";
+							$folder->addAdminGroup($group);
+						}
 					}
 				}
+			} else {
+#				TRACE! "$cn no match\n";
 			}
 		}
 		#DEBUG! $cn;

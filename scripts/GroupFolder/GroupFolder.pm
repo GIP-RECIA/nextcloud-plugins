@@ -43,6 +43,17 @@ sub addGroup{
 	util->occ('groupfolders:group ' .  $this->idBase . " '" . $group->gid . "' " . join(" ", @_));
 }
 
+
+sub getFolder {
+	my ($class, $mountPoint) = @_;
+	my $folder = $folderInBase{$mountPoint};
+
+	if ($folder) {
+		return $folder;
+	}
+	WARN! "folder $mountPoint n'existe pas";
+	return 0;
+}
 sub updateOrCreateFolder {
 	my ($class, $mountPoint, $quota) = @_;
 	my $folder = $folderInBase{$mountPoint};
@@ -73,5 +84,21 @@ sub updateOrCreateFolder {
 	}
 	return $folder;
 }
+sub addAdminGroup {
+	my ($folder, $group) = @_;
 
+	unless ($folder->acl > 0) {
+		util->occ('groupfolders:permissions ' . $folder->idBase . ' --enable');
+	}
+
+	util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'"); 
+}
 1;
+
+__END__
+
+groupfolders:group [-d|--delete] [--output [OUTPUT]] [--] <folder_id> <group> [<permissions>...]
+
+occ groupfolders:permissions <folder_id> --enable
+groupfolders:permissions [-e|--enable] [-d|--disable] [-m|--manage-add] [-r|--manage-remove] [-u|--user USER] [-g|--group GROUP] [-t|--test] [--output [OUTPUT]] [--] <folder_id> [<path> [<permissions>...]]
+<folder_id> [[-m|--manage-add] | [-r|--manage-remove]] [[-u|--user <user_id>] | [-g|--group <group_id>]].
