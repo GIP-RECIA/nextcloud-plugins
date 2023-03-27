@@ -28,15 +28,22 @@ sub readNC {
 	my $res;
 	if ($etab) {
 		$res = $etab->groupsNC;
-		$sqlRes = util->executeSql(q/select * from oc_groups where gid in (select user_group from oc_asso_uai_user_group where id_etablissement = ?)/, $etab->idBase);
+		unless (%$res) {
+			$sqlRes = util->executeSql(q/select * from oc_groups where gid in (select user_group from oc_asso_uai_user_group where id_etablissement = ?)/, $etab->idBase);
+		}
 	} else {
-		$res = \%groupInBase;
-		$sqlRes = util->executeSql(q/select * from oc_groups/);
+		unless (%$res) {
+			$sqlRes = util->executeSql(q/select * from oc_groups/);
+		}
 	}
-	
-	while (my @tuple =  $sqlRes->fetchrow_array()) {
-		my $group = Group->new(@tuple);
-		$res->{$group->gid} = $group;
+	if ($sqlRes) {
+		while (my @tuple =  $sqlRes->fetchrow_array()) {
+			my $group = Group->new(@tuple);
+			$groupInBase{$group->gid} = $group;
+			if ($res) {
+				$res->{$group->gid} = $group;
+			}
+		}
 	}
 	TRACE! Dumper($res);
 }
@@ -45,25 +52,38 @@ sub readNC {
 
 sub getOrCreateGroup {
 	my ($class, $name, $etab) = @_;
-	my $group = $groupInBase{$name};
+
+	my $gid = $name . ':LDAP';
+	
+	my $group = $etab->groupsNC->{$gid};
 	if  ($group) {
 		return $group;
 	}
-	
-	my $gid = $name . ':LDAP';
-	
-	$group = $groupInBase{$gid};
-	if ($group) {
+
+	$group = $etab->groupsNC->{$name};
+	if  ($group) {
 		return $group;
 	}
-	$group = Group->new($gid, $name);
-	util->occ("group:add --display-name '$name' '$gid'");
-	if ($etab) {
-		# le ignore dans le cas ou le group prexistait (occ termine alors normalement).
-		util->executeSql(q/insert IGNORE into oc_asso_uai_user_group (id_etablissement, user_group) values (?, ?)/, $etab->idBase, $gid);
+
+	$group = $groupInBase{$gid};
+	
+	unless ($group) { 
+		$group = $groupInBase{$name};
 	}
-	$groupInBase{$gid} = $group;
-	DEBUG! "new group " , Dumper($group);
+
+	unless ($group) {
+		$group = Group->new($gid, $name);
+		util->occ("group:add --display-name '$name' '$gid'");
+		$groupInBase{$gid} = $group;
+
+			# les groups ne sont ajouté a l'etab qu'a leurs creations du coup il ne peuvent pas être partager entre etab 
+		if ($etab) {
+			# le ignore dans le cas ou le group prexistait (occ termine alors normalement).
+			util->executeSql(q/insert IGNORE into oc_asso_uai_user_group (id_etablissement, user_group) values (?, ?)/, $etab->idBase, $gid);
+			$etab->groupsNC->{$gid} = $group;
+		}
+		DEBUG! "new group " , Dumper($group);
+	}
 	return $group;
 }
 
