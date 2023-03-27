@@ -162,4 +162,12 @@ sub occ {
 		SYSTEM! "$occ $com" ;
 	}
 }
+
+sub timestampLdap() {
+	my $class = shift;
+		# calcul du timestamp courant donné a la minute
+	my @local = gmtime (shift);
+	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
+}	
+
 1;
