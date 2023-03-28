@@ -53,6 +53,59 @@ while ($cpt--) {
 #	sleep 60 if  $cpt;
 }
 
+sub traitementRegexGroup {
+	my $etabNC = shift;
+	my $regex = shift;
+	my $entryGrp =shift;
+	my $regexGroupList = shift;
+
+	foreach my $regexGroup (@{$regexGroupList}) {
+		my $groupFormat = $regexGroup->{group};
+		my $folderFormat = $regexGroup->{folder};
+		my $adminFormat = $regexGroup->{admin};
+		my $quotaF = $regexGroup->{quotaF};
+		my $permF = $regexGroup->{permF};
+		my $cn = $entryGrp->get_value ( 'cn' );
+		if (my @res = $cn =~ /$regex/) {
+			DEBUG! "\tGroup= $cn ";
+#				TRACE! Dumper(@res);
+			if ($groupFormat) {
+				my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
+
+				DEBUG! "\t\t" , Dumper($group);
+
+				if ($folderFormat) {
+					my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
+					if ($folder) {
+						$folder->addGroup($group, @$permF);
+						DEBUG! "\t\t\tgroup folder ", Dumper($folder);
+					}
+				}
+
+				if ($adminFormat) {
+					my $folderAdmin = sprintf($adminFormat, @res);
+					DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
+					my $folder = GroupFolder->getFolder($folderAdmin);
+					if ($folder) {
+						DEBUG! "\t\t\t\tgroup folder admin add group";
+						$folder->addAdminGroup($group);
+					} else {
+						if (index($folderAdmin, '^') == 0 ) {
+							my @folderList = GroupFolder->findFolders($folderAdmin);
+							foreach my $f (@folderList) {
+								$f->addAdminGroup($group);
+							}
+						} 
+					}
+				}
+			}
+		} else {
+#				TRACE! "$cn no match\n";
+		}
+	}
+}
+
+
 sub traitementEtab {
 	my $etab = shift;
 	my $etabNC = Etab->readNC($etab->{siren});
@@ -75,46 +128,14 @@ sub traitementEtab {
 	if (@ldapGroups) {
 		foreach my $regexGroup (@{$etab->{regexs}}) {
 			my $regex = $regexGroup->{regex};
-			my $groupFormat = $regexGroup->{group};
-			my $folderFormat = $regexGroup->{folder};
-			my $adminFormat = $regexGroup->{admin};
-			my $quotaF = $regexGroup->{quotaF};
-			my $permF = $regexGroup->{permF};
-
-			DEBUG! "REGEX= ", $regex , "; permF=" , Dumper($permF);
+			my $groups = $regexGroup->{groups};
+			
+			unless ($groups) {
+				$groups = [$regexGroup];
+			}
 
 			foreach my $entryGrp (@ldapGroups) {
-				my $cn = $entryGrp->get_value ( 'cn' );
-				if (my @res = $cn =~ /$regex/) {
-					DEBUG! "\tGroup= $cn ";
-	 #				TRACE! Dumper(@res);
-
-					if ($groupFormat) {
-						my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
-
-						DEBUG! "\t\t" , Dumper($group);
-
-						if ($folderFormat) {
-							my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
-							if ($folder) {
-								$folder->addGroup($group, @$permF);
-								DEBUG! "\t\t\tgroup folder ", Dumper($folder);
-							}
-						}
-
-						if ($adminFormat) {
-							my $folderAdmin = sprintf($adminFormat, @res);
-							DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
-							my $folder = GroupFolder->getFolder($folderAdmin);
-							if ($folder) {
-								DEBUG! "\t\t\t\tgroup folder admin add group";
-								$folder->addAdminGroup($group);
-							}
-						}
-					}
-				} else {
-	#				TRACE! "$cn no match\n";
-				}
+				&traitementRegexGroup($etabNC, $regex, $entryGrp, $groups);
 			}
 			#DEBUG! $cn;
 		}
