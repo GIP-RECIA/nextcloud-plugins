@@ -68,7 +68,12 @@ sub connectSql {
 	return $SQL_CONNEXION ;
 }
 
+my $LDAP_CONNEXION;
+
 sub connectLdap {
+	if ($LDAP_CONNEXION) {
+		return $LDAP_CONNEXION;
+	} 
 	unless ($ldapHost && $ldapUser && $ldapPass) {
 		my $sql = connectSql();
 		my $sqlQuery = q(select configkey, configvalue from oc_appconfig where configkey like 'cas_import_ad%' and appid = 'ldapimporter');
@@ -117,6 +122,7 @@ sub connectLdap {
 	$mesg->code && FATAL! $mesg->error;
 	
 	INFO! "Ldap bind: ", $ldapUser;
+	$LDAP_CONNEXION = $ldap;
 	return $ldap;
 }
 
@@ -167,7 +173,7 @@ sub timestampLdap() {
 	my $class = shift;
 		# calcul du timestamp courant donné a la minute
 	my @local = gmtime (shift);
-	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
+	return sprintf "%d%02d%02d%02d%02d00" , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
 }	
 
 1;

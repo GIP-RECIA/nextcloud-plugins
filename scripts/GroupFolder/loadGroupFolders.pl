@@ -17,7 +17,7 @@ use Data::Dumper;
 use util;
 use MyLogger;
 
-MyLogger::level(5, 2);
+MyLogger::level(5, 1);
 MyLogger->file('/home/esco/scripts/loadGroupFolder.log');
 
 use Getopt::Long;
@@ -41,7 +41,20 @@ my $config = LoadFile($FindBin::Bin."/$fileYml"); #$yaml->[0];
 
 GroupFolder->readNC;
 
-foreach my $etab (@$config) {
+
+my $cptBoucle = 1;
+while ($cptBoucle--) {
+	
+	INFO! "------------------- new BOUCLE  ------------------"; 
+	foreach my $etab (@$config) {
+		$cpt += &traitementEtab($etab);
+	}
+	INFO! "-------------------- $cptBoucle ------------------";
+	sleep 60 unless $cpt;
+}
+
+sub traitementEtab {
+	my $etab = shift;
 	my $etabNC = Etab->readNC($etab->{siren});
 	unless ($etabNC) {
 		$etabNC = Etab->addEtab($etab->{siren}, $etab->{nom})
@@ -51,12 +64,12 @@ foreach my $etab (@$config) {
 	my $lastTimeStampLdap = $etabNC->timestamp;
 
 	my $filtreLdap =  $etab->{ldap};
-	
+	chomp $filtreLdap ;
 	if ($lastTimeStampLdap) {
 		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
 	}
-	
 	my $newTimeStampLdap = util->timestampLdap(time);
+	INFO! "filtre ldap =", $filtreLdap;
 	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
 	if (@ldapGroups) {
@@ -107,10 +120,10 @@ foreach my $etab (@$config) {
 		}
 		
 		$etabNC->timestamp($newTimeStampLdap);
+	} else {
+		INFO! "pas de groupe LDAP";
 	}
-#	TRACE! Dumper(@ldapGroups);
-#my	$RegexGroup = $etab->{groups};
-#	TRACE! Dumper($RegexGroup);
+	return scalar @ldapGroups;
 }
 
 #util->occ("user:list");
