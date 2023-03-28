@@ -102,13 +102,17 @@ sub addAdminGroup {
 
 	unless ($folder->acl > 0) {
 		util->occ('groupfolders:permissions ' . $folder->idBase . ' --enable');
+		$folder->acl(1);
 	}
 
 	unless ($folder->manage->{$group->gid}) {
 		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'");
+		$folder->manage->{$group->gid} = 1;
 	}
 }
 1;
+
+
 
 __END__
 

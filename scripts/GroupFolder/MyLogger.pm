@@ -22,6 +22,9 @@ FILTER {
 my $level;
 my $file;
 my $mod;
+# si mod = 0 : si on a un fichier  on ne sort sur STDIN que les WARN ERROR et FATAL si pas de fichier on sort aussi INFO
+# si mod = 1 : et on a un fichier on sort sur STDIN les INFO aussi 
+# si mod = 2 : on sort tout sur STDIN 
 
 sub file {
 	my $class = shift;
