@@ -42,15 +42,15 @@ my $config = LoadFile($FindBin::Bin."/$fileYml"); #$yaml->[0];
 GroupFolder->readNC;
 
 
-my $cptBoucle = 1;
-while ($cptBoucle--) {
+my $cpt = 2;
+while ($cpt--) {
 	
 	INFO! "------------------- new BOUCLE  ------------------"; 
 	foreach my $etab (@$config) {
-		$cpt += &traitementEtab($etab);
+		&traitementEtab($etab) ;
 	}
-	INFO! "-------------------- $cptBoucle ------------------";
-	sleep 60 unless $cpt;
+	INFO! "-------------------- $cpt ------------------";
+#	sleep 60 if  $cpt;
 }
 
 sub traitementEtab {
@@ -73,7 +73,7 @@ sub traitementEtab {
 	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
 	if (@ldapGroups) {
-		foreach my $regexGroup (@{$etab->{groups}}) {
+		foreach my $regexGroup (@{$etab->{regexs}}) {
 			my $regex = $regexGroup->{regex};
 			my $groupFormat = $regexGroup->{group};
 			my $folderFormat = $regexGroup->{folder};
