@@ -67,6 +67,17 @@ sub getFolder {
 	WARN! "folder $mountPoint n'existe pas";
 	return 0;
 }
+sub findFolders {
+	my ($class, $pattern) =@_;
+	my @folders;
+	while (my ($mountpoint, $folder) = each %folderInBase ) {
+		if ($mountpoint =~ /$pattern/) {
+			push @folders, $folder;
+		}
+	}
+	return @folders;
+}
+
 sub updateOrCreateFolder {
 	my ($class, $mountPoint, $quota) = @_;
 	my $folder = $folderInBase{$mountPoint};
