@@ -18,6 +18,10 @@ CREATE TABLE oc_asso_uai_user_group (
 select id_etablissement, user_group, count(id) from oc_asso_uai_user_group group by id_etablissement, user_group having count(id) > 1;
 alter table oc_asso_uai_user_group add constraint uk_etabGroup unique (id_etablissement, user_group);
 
+
+-- create table recia_user_history as (select * from oc_recia_user_history);
+-- drop table oc_recia_user_history; 
+
 CREATE TABLE oc_recia_user_history (
 	uid char(8) PRIMARY KEY,
 	siren varchar(15), 
@@ -29,6 +33,9 @@ CREATE TABLE oc_recia_user_history (
 	name varchar(100),
 	UNIQUE (siren, isdel, uid)
 );
+
+insert into oc_recia_user_history select uid, siren, dat, eta, isadd, isdel, 1, name from recia_user_history;
+
 
 create table recia_bucket_history (
 	bucket varchar(128) ,
