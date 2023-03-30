@@ -54,12 +54,19 @@ sub addEtab {
 	return $etab;
 }
 
+sub getEtab{
+	my $class = shift;
+	my $siren = shift;
+	return $etabInBase{$siren};
+}
+
 sub readNC {
 	my $class = shift;
 	my $siren = shift;
 	DEBUG! '->readNC $siren';
-
+	
 	my $etab = $etabInBase{$siren};
+
 	unless ($etab) {
 		my $sqlRes = util->executeSql(q/select * from oc_etablissements where siren=?/, $siren);
 		while (my @tuple =  $sqlRes->fetchrow_array()) {
@@ -69,6 +76,15 @@ sub readNC {
 		}
 	}
 	TRACE! Dumper(%etabInBase);
+	return $etab;
+}
+
+sub release{
+	my $etab = shift;
+	delete $etabInBase{$etab->siren};
+}
+sub next{
+	my ($siren, $etab) = each %etabInBase;
 	return $etab;
 }
 
