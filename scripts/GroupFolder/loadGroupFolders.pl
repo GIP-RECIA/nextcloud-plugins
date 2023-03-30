@@ -58,7 +58,7 @@ unless ($timestampFile) {
 	$timestampFile = ${util::PARAM}{'NC_LOG'}. '/groupeFolderTime.csv'
 }
 
-INFO! "timestaampFile= ", $timestampFile;
+INFO! "timestampFile= ", $timestampFile;
 
 my %etabTimestamp;
 if (-f $timestampFile) {
@@ -92,7 +92,7 @@ while ($cpt--) {
 
 END {
 	if (-f $timestampFile) {
-		INFO! "écriture des timestamp";
+		INFO! "écriture des timestamps";
 		my $oldFile = $timestampFile . "old";
 		rename $timestampFile, $oldFile;
 		open OLD, $oldFile or FATAL!  $!, " $oldFile" ;
@@ -103,19 +103,17 @@ END {
 				my  $etab = Etab->getEtab($siren);
 				if ($etab && $etab->timestamp) {
 					printf NEW "%s; %s; %s\n", $siren, $etab->timestamp, $etab->name;
-					$etab->release;
+					$etab->releaseEtab;
 					next;
 				}
 			}
 			print NEW;
 		}
-		while (my $etab = Etab->next) {
+		while (my $etab = Etab->nextEtab) {
 			printf NEW "%s; %s; %s\n", $etab->siren, $etab->timestamp, $etab->name;
 		}
 	}
 }
-
-#on termine en ecrivant le timestanm
 
 
 
