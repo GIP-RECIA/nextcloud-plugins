@@ -3,8 +3,8 @@
 #une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui matche.
 #a chaque 'group' on peut associer:
 #un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
-#un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera cree/modifier sinon le groupe sera associé au groupfolder ssi il existe.
-#permF defint les droit du groupe sur le groupefolder  
+#un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
+#permF definit les droits du groupe sur le groupefolder  
 
 
 ---
@@ -23,9 +23,9 @@ etabs:
         quotaG: 2
         folder: '%1$s/%2$s'
         permF:
-        - write
-        - share
-        - delete
+          - write
+          - share
+          - delete
         quotaF: 10
         
     - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
@@ -38,8 +38,13 @@ etabs:
     - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
       group: '%2$s.admin.%1$s'
       admin: '%1$s/%2$s'
+     
     - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
       group: 'admin.%1$s'
+      folder: 'GIP-RECIA'
+      permF:
+        - write
+        - delete
       admin: '^%1$s(/.+)?'
       
   # les regles pour l'asc:
