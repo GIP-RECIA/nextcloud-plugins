@@ -79,11 +79,11 @@ sub readNC {
 	return $etab;
 }
 
-sub release{
+sub releaseEtab{
 	my $etab = shift;
 	delete $etabInBase{$etab->siren};
 }
-sub next{
+sub nextEtab{
 	my ($siren, $etab) = each %etabInBase;
 	return $etab;
 }
