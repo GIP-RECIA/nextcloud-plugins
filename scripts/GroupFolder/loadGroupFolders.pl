@@ -43,7 +43,7 @@ if ($test) {
 	exit;
 }
 
-my $loadUserCommande = ${util::PARAM}{'NC_SCRIPT'}. '/loadEtabs.pl ';
+my $loadUserCommande = ${util::PARAM}{'NC_SCRIPTS'}. '/loadEtabs.pl ';
 #print "l'entrée: ", Dumper($config);
 
 my $logsFile = $config->{logsFile};

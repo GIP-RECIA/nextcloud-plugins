@@ -20,8 +20,9 @@ $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
 
 my $scriptRep = $ENV{'NC_SCRIPTS'};
 unless ($scriptRep) {
-	$scriptRep = $ENV{'HOME'}. "/scrips";
+	$scriptRep = $ENV{'HOME'}. "/scripts";
 }
+
 
 my $occ = "php $wwwRep/occ ";
 
