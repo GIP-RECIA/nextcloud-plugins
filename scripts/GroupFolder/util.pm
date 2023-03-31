@@ -18,8 +18,10 @@ my $wwwRep = $ENV{'NC_WWW'};
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
 
-my $scriptRep = $ENV{'NC_SCRIPT'};
-$scriptRep = $ENV{'HOME'}. "/scrips";
+my $scriptRep = $ENV{'NC_SCRIPTS'};
+unless ($scriptRep) {
+	$scriptRep = $ENV{'HOME'}. "/scrips";
+}
 
 my $occ = "php $wwwRep/occ ";
 
@@ -31,7 +33,7 @@ our %PARAM;
 
 $PARAM{'NC_LOG'} = $logRep;
 $PARAM{'NC_WWW'} = $wwwRep;
-$PARAM{'NC_SCRIPT'} = $scriptRep;
+$PARAM{'NC_SCRIPTS'} = $scriptRep;
 	
 	# lecture des paramatres de conf
 
