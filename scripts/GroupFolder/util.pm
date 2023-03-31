@@ -13,8 +13,14 @@ use MyLogger;
 my $logRep = $ENV{'NC_LOG'};
 my $wwwRep = $ENV{'NC_WWW'};
 
+
+
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
+
+my $scriptRep = $ENV{'NC_SCRIPT'};
+$scriptRep = $ENV{'HOME'}. "/scrips";
+
 my $occ = "php $wwwRep/occ ";
 
 my $configFile = "$wwwRep/config/config.php";
@@ -25,6 +31,7 @@ our %PARAM;
 
 $PARAM{'NC_LOG'} = $logRep;
 $PARAM{'NC_WWW'} = $wwwRep;
+$PARAM{'NC_SCRIPT'} = $scriptRep;
 	
 	# lecture des paramatres de conf
 

@@ -3,7 +3,7 @@
 =encoding utf8
 
 =head1 NAME loadGroupFolder.pl
-charge les groupes ldap pour créer les groupes NC avec le groupFolders associés.
+charge les groupes ldap pour créer les groupes NC avec leurs groupFolders associés.
 
 =cut
 
@@ -28,7 +28,7 @@ my $fileYml = "config.yml";
 my $test = 0;
 use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 
-unless (@ARGV || 1 and GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
+unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself);
 }
@@ -42,6 +42,8 @@ if ($test) {
 	INFO! Dumper($config);
 	exit;
 }
+
+my $loadUserCommande = ${util::PARAM}{'NC_SCRIPT'}. '/loadEtabs.pl ';
 #print "l'entrée: ", Dumper($config);
 
 my $logsFile = $config->{logsFile};
@@ -78,18 +80,26 @@ if (-f $timestampFile) {
 
 GroupFolder->readNC;
 
+my %etabForLoad;
 
+
+my $isChange;
 my $cpt = 1;
 while ($cpt--) {
-	
 	INFO! "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $etab (@{$config->{etabs}}) {
-		$cpt |= &traitementEtab($etab);
+		if (&traitementEtab($etab)) {
+			$etabForLoad{$etab->{siren}} = 1;
+			$cpt = 1;
+			$isChange = 1;
+		}
 	}
 	INFO! "-------------------- fin Itération $cpt ------------------";
-#	sleep 60 if  $cpt;
 }
 
+if ($isChange) {
+	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
+}
 END {
 	if (-f $timestampFile) {
 		INFO! "écriture des timestamps";
