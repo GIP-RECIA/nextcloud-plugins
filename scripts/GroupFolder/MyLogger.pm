@@ -15,7 +15,7 @@ FILTER {
 	s/INFO!/MyLogger::is(3) and MyLogger::info __FILE__,' (', __LINE__,'): ',/g;
 	s/DEBUG!/MyLogger::is(4) and MyLogger::debug __FILE__,' (', __LINE__,'): ',/g;
 	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
-	s/SYSTEM!/MyLogger::traceSystem/g;
+	s/SYSTEM!/MyLogger::traceSystem __FILE__, __LINE__,/g;
 	s/PARAM!\s*(\w+)/sub \1 {return MyLogger::param(shift, uc('\1'), shift);}/g; 
 };
 
@@ -70,7 +70,7 @@ sub debug {
 	}
 	
 	if ($mod > 1) {
-		print 'DEBUG: ', @_;
+		print ' DEBUG: ', @_;
 	}
 	
 }
@@ -81,10 +81,10 @@ sub info {
 	if ($file) {
 		print MyLoggerFile dateHeure(), 'INFO: ', @_;
 		if ($mod > 0) {
-			print 'INFO ', @_;
+			print '  INFO: ', @_;
 		}
 	} else {
-		print 'INFO ', @_;
+		print '  INFO: ', @_;
 	}
 }
 
@@ -96,7 +96,7 @@ sub erreur {
 	if ($file) {
 		print MyLoggerFile dateHeure(), $type, $file, @_; 
 	}
-	print STDERR  $type, $file, @_; 
+	print STDERR  '> ', $type, $file, @_; 
 }
 
 sub fatal {
@@ -116,6 +116,8 @@ sub lastname {
 	return $file ;
 }
 sub traceSystem {
+	my $file = shift;
+	my $line = shift; 
 	my $commande = shift;
 	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un tableau des lignes de sortie
 	my $COM;
@@ -126,7 +128,7 @@ sub traceSystem {
 	eval {
 	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande);
 	};
-	die $@ if $@;
+	fatal ('> FATAL: SYSTEM! die at ', $file,' (', $line,'): ', $@ ) if $@;
 	
 	$select->add($COM, $ERR);
 
@@ -151,7 +153,7 @@ sub traceSystem {
 					if ($level >=  4) { trace($line); }
 				} elsif ($fh == $ERR) {
 					if ($flagE) {
-						if ($level >= 1) { erreur ( 'ERROR',  ' system ', $commande); }
+						if ($level >= 1) { erreur ( '> ERROR',  ' system ', $commande); }
 						$flagC = 1;
 						$flagE = 0;
 					}
