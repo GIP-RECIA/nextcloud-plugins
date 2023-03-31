@@ -128,7 +128,7 @@ sub traceSystem {
 	eval {
 	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande);
 	};
-	fatal ('> FATAL: SYSTEM! die at ', $file,' (', $line,'): ', $@ ) if $@;
+	fatal ('FATAL: SYSTEM! die at ', $file,' (', $line,'): ', $@ ) if $@;
 	
 	$select->add($COM, $ERR);
 
