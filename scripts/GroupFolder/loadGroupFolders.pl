@@ -2,8 +2,15 @@
 
 =encoding utf8
 
-=head1 NAME loadGroupFolder.pl
-charge les groupes ldap pour créer les groupes NC avec leurs groupFolders associés.
+=head1 NAME: loadGroupFolder.pl
+	charge les groupes ldap pour créer les groupes NC avec leurs groupFolders associés.
+
+
+=head1 SYNOPSIS:  loadGroupFolder.pl [-t] [-f filename.yml] [all | siren+]
+	- -t test la conf uniquement
+	- -f donne le fichier de conf avce les regexs
+	- all traite tous les étabs ayant un timestamp dans le fichier des timstamps
+	- siren des fichiers à traiter.
 
 =cut
 
@@ -30,18 +37,15 @@ use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 
 unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
-	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself);
+
+	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself, -output => \*STDOUT );
 }
 
 my $configFile = $FindBin::Bin."/$fileYml";
 
 my $config = LoadFile($configFile); #$yaml->[0];
 
-if ($test) {
-	INFO! "En Mode Test du fichier de conf";
-	INFO! Dumper($config);
-	exit;
-}
+
 
 my $loadUserCommande = ${util::PARAM}{'NC_SCRIPTS'}. '/loadEtabs.pl ';
 #print "l'entrée: ", Dumper($config);
@@ -64,7 +68,7 @@ INFO! "timestampFile= ", $timestampFile;
 
 my %etabTimestamp;
 if (-f $timestampFile) {
-	INFO! "Lecture des timestamp";
+	INFO! "Lecture des timestamps";
 	open TS, $timestampFile or FATAL!  $!, " $timestampFile" ;
 	while (<TS>) {
 		chomp ;
@@ -76,7 +80,17 @@ if (-f $timestampFile) {
 	}
 	close TS;
 }
-#INFO! Dumper(\%etabTimestamp);
+
+if ($test) {
+	INFO! "Mode Test : Affichage des timestamps : ";
+	INFO! Dumper(\%etabTimestamp);
+	INFO! "Mode Test : Dump du fichier de conf";
+	INFO! Dumper($config);
+	
+	exit;
+}
+
+##### debut du travail ######
 
 GroupFolder->readNC;
 
@@ -101,7 +115,7 @@ if ($isChange) {
 	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
 }
 END {
-	if (-f $timestampFile) {
+	if (! $test && -f $timestampFile) {
 		INFO! "écriture des timestamps";
 		my $oldFile = $timestampFile . "old";
 		rename $timestampFile, $oldFile;
@@ -234,3 +248,4 @@ sub traitementEtab {
 }
 
 #util->occ("user:list");
+__END__
