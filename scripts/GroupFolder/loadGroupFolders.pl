@@ -207,7 +207,7 @@ sub traitementEtab {
 	Group->readNC($etabNC);
 	#faire la requete ldap
 
-	my $filtreLdap =  $etab->{ldap};
+	my $filtreLdap =  $etab->{ldapFilter};
 	chomp $filtreLdap ;
 	if ($lastTimeStampLdap) {
 		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
