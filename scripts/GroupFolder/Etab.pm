@@ -27,6 +27,8 @@ PARAM! timestamp;
 
 my %etabInBase;
 
+my $pseudoIdEtab = 1;
+
 sub addEtab {
 	my $class = shift;
 	my $siren = shift;
@@ -36,7 +38,12 @@ sub addEtab {
 	my $etab;
 		# avec le ignore il n'y a pas d'erreur en cas de préexistance
 	my $sth = util->executeSql(q/INSERT IGNORE INTO oc_etablissements (siren, name) values (?, ?)/, $siren, $name);
-	my $id = $sth->last_insert_id();
+	my $id;
+	if (util->isModTest) {
+		$id = $pseudoIdEtab ++;
+	} else {
+		$id = $sth->last_insert_id();
+	}
 	if ($id) {
 		$etab = Etab->new($id, $name, undef, $siren);
 	} else {

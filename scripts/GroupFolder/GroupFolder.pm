@@ -78,6 +78,7 @@ sub findFolders {
 	return @folders;
 }
 
+my $pseudoIdFolder = 1;
 sub updateOrCreateFolder {
 	my ($class, $mountPoint, $quota) = @_;
 	my $folder = $folderInBase{$mountPoint};
@@ -95,10 +96,13 @@ sub updateOrCreateFolder {
 	my @RES;
 	if ($quota) {
 		util->occ("groupfolders:create '$mountPoint'", \@RES);
-		if (@RES && $RES[0] =~ /^(\d+)\s*$/) {
-				$folder = GroupFolder->new($1, $mountPoint, $quotaG);
-				$folderInBase{$mountPoint} = $folder;
-				util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quota .'G');
+		if (util->isTestMode) {
+			unshift @RES, '000' . $pseudoIdFolder++;
+		}
+		if (@RES && $RES[0] =~ /^(\d+)\s*$/ ) {
+			$folder = GroupFolder->new($1, $mountPoint, $quotaG);
+			$folderInBase{$mountPoint} = $folder;
+			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quota .'G');
 		} else {
 			FATAL! "erreur de creation du folder : $mountPoint";
 		}
