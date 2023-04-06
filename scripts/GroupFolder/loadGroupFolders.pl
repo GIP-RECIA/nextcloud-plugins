@@ -86,8 +86,9 @@ if ($test) {
 	INFO! Dumper(\%etabTimestamp);
 	INFO! "Mode Test : Dump du fichier de conf";
 	INFO! Dumper($config);
-	
-	exit;
+
+	INFO! "Mode Test : on fait les calculs sans executer les commandes occ ";
+	util->testMode();
 }
 
 ##### debut du travail ######
@@ -139,58 +140,51 @@ END {
 	}
 }
 
-
-
 sub traitementRegexGroup {
 	my $etabNC = shift;
-	my $regex = shift;
-	my $entryGrp =shift;
 	my $regexGroupList = shift;
-
+	my @res = @_;
+	
+	# TRACE! Dumper(@res);
 	foreach my $regexGroup (@{$regexGroupList}) {
 		my $groupFormat = $regexGroup->{group};
 		my $folderFormat = $regexGroup->{folder};
 		my $adminFormat = $regexGroup->{admin};
 		my $quotaF = $regexGroup->{quotaF};
 		my $permF = $regexGroup->{permF};
-		my $cn = $entryGrp->get_value ( 'cn' );
-		if (my @res = $cn =~ /$regex/) {
-			DEBUG! "\tGroup= $cn ";
-#				TRACE! Dumper(@res);
-			if ($groupFormat) {
-				my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
+		
+		if ($groupFormat) {
+			my $group = Group->getOrCreateGroup(sprintf($groupFormat, @res), $etabNC);
 
-				DEBUG! "\t\t" , Dumper($group);
+			DEBUG! "\t\t" , Dumper($group);
 
-				if ($folderFormat) {
-					my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
-					if ($folder) {
-						$folder->addGroup($group, @$permF);
-						DEBUG! "\t\t\tgroup folder ", Dumper($folder);
-					}
-				}
-
-				if ($adminFormat) {
-					my $folderAdmin = sprintf($adminFormat, @res);
-					DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
-					my $folder = GroupFolder->getFolder($folderAdmin);
-					if ($folder) {
-						DEBUG! "\t\t\t\tgroup folder admin add group";
-						$folder->addAdminGroup($group);
-					} else {
-						if (index($folderAdmin, '^') == 0 ) {
-							my @folderList = GroupFolder->findFolders($folderAdmin);
-							foreach my $f (@folderList) {
-								$f->addAdminGroup($group);
-							}
-						} 
-					}
+			if ($folderFormat) {
+				my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
+				if ($folder) {
+					$folder->addGroup($group, @$permF);
+					DEBUG! "\t\t\tgroup folder ", Dumper($folder);
 				}
 			}
-		} else {
-#				TRACE! "$cn no match\n";
+
+			if ($adminFormat) {
+				my $folderAdmin = sprintf($adminFormat, @res);
+				DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
+				my $folder = GroupFolder->getFolder($folderAdmin);
+				if ($folder) {
+					DEBUG! "\t\t\t\tgroup folder admin add group";
+					$folder->addAdminGroup($group);
+				} else {
+					if (index($folderAdmin, '^') == 0 ) {
+						my @folderList = GroupFolder->findFolders($folderAdmin);
+						foreach my $f (@folderList) {
+							$f->addAdminGroup($group);
+						}
+					} 
+				}
+			}
 		}
 	}
+
 }
 
 #return 1 si ldap ramene des groups 0 sinon
@@ -224,17 +218,41 @@ sub traitementEtab {
 	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
 	if (@ldapGroups) {
-		INFO! $siren, " a des groupes";
+		INFO! $siren, " a des groupes: " ;
 		foreach my $regexGroup (@{$etab->{regexs}}) {
 			my $regex = $regexGroup->{regex};
 			my $groups = $regexGroup->{groups};
+			my $last = $regexGroup->{last};
+			my $lastIfMatch;
+			INFO! "REGEX = $regex";
 			
 			unless ($groups) {
 				$groups = [$regexGroup];
 			}
-
+			if ($last) {
+				 # dans last seulement deux terms autorisés les autres sont ignorés
+				if  ($last =~ /^ifMatch$/) {
+					$lastIfMatch = 1;
+				} elsif ($last =~ /^ifNoMatch$/) {
+					$lastIfMatch = 0;
+				} else {
+					WARN! "Ingnore last: $last";
+					$last = 0; 
+				}
+			}
 			foreach my $entryGrp (@ldapGroups) {
-				&traitementRegexGroup($etabNC, $regex, $entryGrp, $groups);
+				my $cnGroup = $entryGrp->get_value ( 'cn' );
+				my $delete=0;
+				if (my @res = ($cnGroup =~ /$regex/)) {
+					INFO! "\tGrouper Group= $cnGroup ";
+					&traitementRegexGroup($etabNC,$groups, @res);
+					$delete = $last && $lastIfMatch;
+				} else {
+					$delete = $last && ! $lastIfMatch;
+				}
+				if ($delete) {
+					INFO! "DELETE $cnGroup";
+				}
 			}
 			#DEBUG! $cn;
 		}
