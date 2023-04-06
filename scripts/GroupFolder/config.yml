@@ -6,64 +6,67 @@
 #un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
 #permF definit les droits du groupe sur le groupefolder  
 
-
+ 
 ---
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800020
     ldap: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_GIP-RECIA))'
     regexs:
-    - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
-      groups:
-      - group: 'GIP-RECIA'
+      - regex: '^coll:Collectivites:GIP-RECIA:PERSONNEL:GEOMATIQUE$'
+        last: ifMatch
+        
+      - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
+        groups:
+          - group: 'GIP-RECIA'
+            folder: 'GIP-RECIA'
+            permF: []
+            quotaF: 1
+          - group: '%2$s.%1$s'
+            quotaG: 2
+            folder: '%1$s/%2$s'
+            permF:
+              - write
+              - share
+              - delete
+            quotaF: 10
+              
+      - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
+        groups:
+          - group: 'GIP-RECIA'
+            folder: 'GIP-RECIA'
+          - group: '%2$s.%1$s'
+            quotaG: 1
+              
+      - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
+        group: '%2$s.admin.%1$s'
+        admin: '%1$s/%2$s'
+       
+      - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
+        group: 'admin.%1$s'
         folder: 'GIP-RECIA'
-        permF: []
-        quotaF: 1
-      - group: '%2$s.%1$s'
-        quotaG: 2
-        folder: '%1$s/%2$s'
         permF:
           - write
-          - share
           - delete
-        quotaF: 10
-        
-    - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
-      groups:
-      - group: 'GIP-RECIA'
-        folder: 'GIP-RECIA'
-      - group: '%2$s.%1$s'
-        quotaG: 1
-        
-    - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
-      group: '%2$s.admin.%1$s'
-      admin: '%1$s/%2$s'
-     
-    - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
-      group: 'admin.%1$s'
-      folder: 'GIP-RECIA'
-      permF:
-        - write
-        - delete
-      admin: '^%1$s(/.+)?'
-      
-  # les regles pour l'asc:
-    - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
-      groups:
-      - group: '%2$s.%1$s'
-        folder: 'ASC'
-        permF: []
-        quotaF: 1
-      - group: '%3$s.%1$s'
-        folder: 'ASC/%3$s'
-        permF:
-        - write
-        - share
-        - delete
-        quotaF: 10
-        
-    - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
-      groups:
-      - group: '%3$s.%1$s'
-        admin: '^ASC(/.*)$'
+        admin: '^%1$s(/.+)?'
+            
+    # les regles pour l'asc:
+      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
+        groups:
+          - group: '%2$s.%1$s'
+            folder: 'ASC'
+            permF: []
+            quotaF: 1
+          - group: '%3$s.%1$s'
+            folder: 'ASC/%3$s'
+            permF:
+              - write
+              - share
+              - delete
+            quotaF: 10
+              
+      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
+        groups:
+          - group: '%3$s.%1$s'
+            admin: '^ASC(/.*)$'
 ...

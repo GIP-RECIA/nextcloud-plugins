@@ -12,7 +12,7 @@ FILTER {
 	s/FATAL!/MyLogger::fatal 'FATAL: die at ', __FILE__,' (', __LINE__,'): ',/g;
 	s/ERROR!/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', __FILE__,' (', __LINE__,'): ',/g;
 	s/WARN!/MyLogger::is(2) and MyLogger::erreur 'WARN: ',  __FILE__,' (', __LINE__,'): ',/g;
-	s/INFO!/MyLogger::is(3) and MyLogger::info __FILE__,' (', __LINE__,'): ',/g;
+	s/INFO!/MyLogger::is(3) and MyLogger::info __FILE__, __LINE__ ,/g;
 	s/DEBUG!/MyLogger::is(4) and MyLogger::debug __FILE__,' (', __LINE__,'): ',/g;
 	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
 	s/SYSTEM!/MyLogger::traceSystem __FILE__, __LINE__,/g;
@@ -22,9 +22,9 @@ FILTER {
 my $level;
 my $file;
 my $mod;
-# si mod = 0 : si on a un fichier  on ne sort sur STDIN que les WARN ERROR et FATAL si pas de fichier on sort aussi INFO
-# si mod = 1 : et on a un fichier on sort sur STDIN les INFO aussi 
-# si mod = 2 : on sort tout sur STDIN 
+# si mod = 0 : si on a un fichier  on ne sort sur STDOUT que les WARN ERROR et FATAL si pas de fichier on sort aussi INFO
+# si mod = 1 : et on a un fichier on sort sur STDOUT les INFO aussi 
+# si mod = 2 : on sort tout sur STDOUT 
 
 sub file {
 	my $class = shift;
@@ -76,27 +76,27 @@ sub debug {
 }
 
 sub info {
-	unshift (@_, lastname (shift));
+	my $fileName = lastname (shift) . '(' . shift . '): ';
 	push @_, "\n";
 	if ($file) {
-		print MyLoggerFile dateHeure(), 'INFO: ', @_;
+		print MyLoggerFile dateHeure(), 'INFO: ', $fileName, @_;
 		if ($mod > 0) {
 			print '  INFO: ', @_;
 		}
 	} else {
-		print '  INFO: ', @_;
+		print '  INFO: ', $fileName, @_;
 	}
 }
 
 sub erreur {
 	my $type = shift;
-	my $file = lastname(shift);
+	my $fileName = lastname(shift);
 	
 	push @_, "\n";
 	if ($file) {
-		print MyLoggerFile dateHeure(), $type, $file, @_; 
+		print MyLoggerFile dateHeure(), $type, $fileName, @_; 
 	}
-	print STDERR  '> ', $type, $file, @_; 
+	print STDERR  '> ', $type, $fileName, @_; 
 }
 
 sub fatal {
@@ -116,7 +116,7 @@ sub lastname {
 	return $file ;
 }
 sub traceSystem {
-	my $file = shift;
+	my $fileName = shift;
 	my $line = shift; 
 	my $commande = shift;
 	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un tableau des lignes de sortie
@@ -128,7 +128,7 @@ sub traceSystem {
 	eval {
 	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande);
 	};
-	fatal ('FATAL: SYSTEM! die at ', $file,' (', $line,'): ', $@ ) if $@;
+	fatal ('FATAL: SYSTEM! die at ', $fileName,' (', $line,'): ', $@ ) if $@;
 	
 	$select->add($COM, $ERR);
 

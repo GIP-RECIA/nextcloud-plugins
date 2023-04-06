@@ -24,7 +24,7 @@ use Data::Dumper;
 use util;
 use MyLogger;
 
-MyLogger::level(5, 1);
+MyLogger::level(5, 0);
 
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
@@ -82,6 +82,7 @@ if (-f $timestampFile) {
 }
 
 if ($test) {
+	MyLogger::level(5, 1);
 	INFO! "Mode Test : Affichage des timestamps : ";
 	INFO! Dumper(\%etabTimestamp);
 	INFO! "Mode Test : Dump du fichier de conf";
@@ -99,9 +100,9 @@ my %etabForLoad;
 
 
 my $isChange;
-my $cpt = 1;
-while ($cpt--) {
-	INFO! "------------------- nouvelle Itération $cpt ------------------"; 
+my $cpt = 2;
+while (--$cpt) {
+	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $etab (@{$config->{etabs}}) {
 		if (&traitementEtab($etab)) {
 			$etabForLoad{$etab->{siren}} = 1;
@@ -109,7 +110,7 @@ while ($cpt--) {
 			$isChange = 1;
 		}
 	}
-	INFO! "-------------------- fin Itération $cpt ------------------";
+	DEBUG! "-------------------- fin Itération $cpt ------------------";
 }
 
 if ($isChange) {
@@ -184,7 +185,6 @@ sub traitementRegexGroup {
 			}
 		}
 	}
-
 }
 
 #return 1 si ldap ramene des groups 0 sinon
@@ -224,6 +224,8 @@ sub traitementEtab {
 			my $groups = $regexGroup->{groups};
 			my $last = $regexGroup->{last};
 			my $lastIfMatch;
+			my $lastIfNotMatch;
+			
 			INFO! "REGEX = $regex";
 			
 			unless ($groups) {
@@ -234,24 +236,21 @@ sub traitementEtab {
 				if  ($last =~ /^ifMatch$/) {
 					$lastIfMatch = 1;
 				} elsif ($last =~ /^ifNoMatch$/) {
-					$lastIfMatch = 0;
+					$lastIfNotMatch = 1;
 				} else {
 					WARN! "Ingnore last: $last";
-					$last = 0; 
 				}
 			}
 			foreach my $entryGrp (@ldapGroups) {
+				next unless $entryGrp;
 				my $cnGroup = $entryGrp->get_value ( 'cn' );
-				my $delete=0;
+
 				if (my @res = ($cnGroup =~ /$regex/)) {
 					INFO! "\tGrouper Group= $cnGroup ";
 					&traitementRegexGroup($etabNC,$groups, @res);
-					$delete = $last && $lastIfMatch;
+					$entryGrp = '' if $lastIfMatch;
 				} else {
-					$delete = $last && ! $lastIfMatch;
-				}
-				if ($delete) {
-					INFO! "DELETE $cnGroup";
+					$entryGrp = '' if $lastIfNotMatch;
 				}
 			}
 			#DEBUG! $cn;
