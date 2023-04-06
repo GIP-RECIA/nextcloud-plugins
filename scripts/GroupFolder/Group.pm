@@ -76,9 +76,9 @@ sub getOrCreateGroup {
 		util->occ("group:add --display-name '$name' '$gid'");
 		$groupInBase{$gid} = $group;
 
-			# les groups ne sont ajouté a l'etab qu'a leurs creations du coup il ne peuvent pas être partager entre etab 
+			# les groupes ne sont ajoutés à l'etab qu'a leurs creations du coup il ne peuvent pas être partager entre etab 
 		if ($etab) {
-			# le ignore dans le cas ou le group prexistait (occ termine alors normalement).
+			# le ignore dans le cas ou le group prexistait (l'insert termine alors normalement).
 			util->executeSql(q/insert IGNORE into oc_asso_uai_user_group (id_etablissement, user_group) values (?, ?)/, $etab->idBase, $gid);
 			$etab->groupsNC->{$gid} = $group;
 		}

@@ -61,10 +61,22 @@ my $ldapUser;
 my $ldapPass;
 my $ldapBaseDn;
 
+my $readOnly = 0;
+ 
+# permet de ne pas jouer la commande occ
+sub testMode {
+	$readOnly = 1;
+	$occ = "echo $occ ";
+}
+
+sub isTestMode {
+	return $occ =~ /^echo/; 
+}
+
 sub newConnectSql {
-	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
+	INFO! "connexion sql: $sqlDataSource, $sqlUsr\n";
 	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
-	print " OK \n";
+	INFO! " OK \n";
 	$sql_connexion->{'mysql_auto_reconnect'} = 1;
 	$sql_connexion->{'mysql_enable_utf8'} = 1;
 	$sql_connexion->do('SET NAMES utf8');
@@ -143,10 +155,15 @@ sub executeSql {
 	my $sqlQuery = shift;
 	my $sql = connectSql();
 	DEBUG! $sqlQuery;
-	my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL! $sql->errstr;
+	if (!isTestMode() || ( $sqlQuery =~ /^\s*select/i &&  ! ($sqlQuery =~ /into/i))) {
+		my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL! $sql->errstr;
+		DEBUG! 'execute ', join(", ", @_);
+		$sqlStatment->execute(@_) or FATAL!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
+		return $sqlStatment;
+	} 
+	DEBUG! "TestMode => pas de modif de base la requête aurait été executé avec :";
 	DEBUG! 'execute ', join(", ", @_);
-	$sqlStatment->execute(@_) or FATAL!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
-	return $sqlStatment;
+	return 0;
 }
 
 sub searchLDAP {
@@ -167,11 +184,12 @@ sub searchLDAP {
 	return $srch->entries;
 }
 
+
 sub occ {
 	my $class = shift;
 	my $com = shift;
 	my $out = shift;
-	DEBUG! "occ $com";
+	INFO! "occ $com";
 	if ($out) {
 		SYSTEM! "$occ $com", $out;
 	} else {
