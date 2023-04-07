@@ -1,16 +1,23 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
+
 
 =encoding utf8
 
-=head1 NAME: loadGroupFolder.pl
+=head1 NAME
+
+	loadGroupFolder.pl
+
 	charge les groupes ldap pour créer les groupes NC avec leurs groupFolders associés.
 
+=head1 SYNOPSIS
 
-=head1 SYNOPSIS:  loadGroupFolder.pl [-t] [-f filename.yml] [all | siren+]
-	- -t test la conf uniquement
-	- -f donne le fichier de conf avce les regexs
-	- all traite tous les étabs ayant un timestamp dans le fichier des timstamps
-	- siren des fichiers à traiter.
+ loadGroupFolder.pl [-t] [-f filename.yml] [all | siren+]
+
+ Options:
+	-t test la conf uniquement
+	-f donne le fichier de conf avec les regexs
+	all traite tous les étabs ayant un timestamp dans le fichier des timstamps
+	siren des fichiers à traiter.
 
 =cut
 
@@ -19,26 +26,27 @@ use FindBin;
 use lib $FindBin::Bin;
 use DBI();
 use Net::LDAP; #libnet-ldap-perl
+use Pod::Usage qw(pod2usage);
 use YAML::XS 'LoadFile'; #libyaml-libyaml-perl
 use Data::Dumper;
+use Getopt::Long;
+use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
+
 use util;
 use MyLogger;
-
-MyLogger::level(5, 0);
-
-use Getopt::Long;
-use Pod::Usage qw(pod2usage);
 use GroupFolder;
 use Group;
 use Etab;
+
+MyLogger::level(5, 0);
+
 my $fileYml = "config.yml";
 my $test = 0;
-use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 
 unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
-
-	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself, -output => \*STDOUT );
+	#$ENV{'MANPAGER'}='cat';
+	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
 }
 
 my $configFile = $FindBin::Bin."/$fileYml";
@@ -51,6 +59,7 @@ my $loadUserCommande = ${util::PARAM}{'NC_SCRIPTS'}. '/loadEtabs.pl ';
 #print "l'entrée: ", Dumper($config);
 
 my $logsFile = $config->{logsFile};
+
 unless ($logsFile) {
 	$logsFile = ${util::PARAM}{'NC_LOG'}. '/groupFolders.log'
 }
@@ -113,7 +122,7 @@ while (--$cpt) {
 	DEBUG! "-------------------- fin Itération $cpt ------------------";
 }
 
-if ($isChange) {
+if ($isChange && !$test) {
 	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
 }
 END {
@@ -207,7 +216,7 @@ sub traitementEtab {
 	Group->readNC($etabNC);
 	#faire la requete ldap
 
-	my $filtreLdap =  $etab->{ldapFilter};
+	my $filtreLdap =  $etab->{ldapFilterGroups};
 	chomp $filtreLdap ;
 	if ($lastTimeStampLdap) {
 		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
