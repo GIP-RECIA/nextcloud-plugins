@@ -42,7 +42,6 @@ sub createGroupAndFolder {
 			} 
 		}
 	}
-		
 }
 
 1;
