@@ -51,7 +51,8 @@ my $all;
 
 unless (@ARGV and GetOptions ( "a" => \$all, "b" =>  \$bucket, "f" => \$file, "p" => \$partage)) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
-	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself);
+	$ENV{'MANPAGER'} = 'cat';
+	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself, -noperldoc => 0);
 }
 
 if ($all) {
