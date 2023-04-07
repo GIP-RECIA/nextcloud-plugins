@@ -126,9 +126,6 @@ sub addAdminGroup {
 	}
 }
 1;
-
-
-
 __END__
 
 groupfolders:group [-d|--delete] [--output [OUTPUT]] [--] <folder_id> <group> [<permissions>...]

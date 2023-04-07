@@ -3,7 +3,7 @@ use IO::Select;
 use Symbol 'gensym';
 
 # 
-my $version="2.0";
+my $version="3.0";
 
 package MyLogger;
 use Filter::Simple;

@@ -11,7 +11,7 @@
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800020
-    ldapFilter: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_GIP-RECIA))'
+    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_GIP-RECIA))'
     regexs:
       - regex: '^coll:Collectivites:GIP-RECIA:PERSONNEL:GEOMATIQUE$'
         last: ifMatch
