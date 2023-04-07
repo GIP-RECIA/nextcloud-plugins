@@ -1,5 +1,5 @@
 
-package GroupFolder;
+package Folder;
 use strict;
 use utf8;
 use Symbol 'gensym';
@@ -34,7 +34,7 @@ sub readNC {
 	my %folderById;
 	my $sqlRes = util->executeSql(q/select * from oc_group_folders/);
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
-		my $folder = GroupFolder->new(@tuple);
+		my $folder = $class->new(@tuple);
 		$folderInBase{$folder->mount()} = $folder;
 		$folderById{$folder->idBase} = $folder;
 	}
@@ -100,7 +100,7 @@ sub updateOrCreateFolder {
 			unshift @RES, '000' . $pseudoIdFolder++;
 		}
 		if (@RES && $RES[0] =~ /^(\d+)\s*$/ ) {
-			$folder = GroupFolder->new($1, $mountPoint, $quotaG);
+			$folder = $class->new($1, $mountPoint, $quotaG);
 			$folderInBase{$mountPoint} = $folder;
 			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quota .'G');
 		} else {
