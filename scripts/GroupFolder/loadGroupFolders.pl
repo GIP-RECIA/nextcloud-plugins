@@ -34,11 +34,11 @@ use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 
 use util;
 use MyLogger;
-use GroupFolder;
+use Folder;
 use Group;
 use Etab;
 
-MyLogger::level(5, 0);
+MyLogger::level(5, 1);
 
 my $fileYml = "config.yml";
 my $test = 0;
@@ -51,7 +51,7 @@ unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
 
 my $configFile = $FindBin::Bin."/$fileYml";
 
-my $config = LoadFile($configFile); #$yaml->[0];
+my $config = LoadFile($configFile);
 
 
 
@@ -99,11 +99,13 @@ if ($test) {
 
 	INFO! "Mode Test : on fait les calculs sans executer les commandes occ ";
 	util->testMode();
+} else {
+	MyLogger::level(5, 0);
 }
 
 ##### debut du travail ######
 
-GroupFolder->readNC;
+Folder->readNC;
 
 my %etabForLoad;
 
@@ -169,7 +171,7 @@ sub traitementRegexGroup {
 			DEBUG! "\t\t" , Dumper($group);
 
 			if ($folderFormat) {
-				my $folder = GroupFolder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
+				my $folder = Folder->updateOrCreateFolder(sprintf($folderFormat, @res), $quotaF);
 				if ($folder) {
 					$folder->addGroup($group, @$permF);
 					DEBUG! "\t\t\tgroup folder ", Dumper($folder);
@@ -179,13 +181,13 @@ sub traitementRegexGroup {
 			if ($adminFormat) {
 				my $folderAdmin = sprintf($adminFormat, @res);
 				DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
-				my $folder = GroupFolder->getFolder($folderAdmin);
+				my $folder = Folder->getFolder($folderAdmin);
 				if ($folder) {
 					DEBUG! "\t\t\t\tgroup folder admin add group";
 					$folder->addAdminGroup($group);
 				} else {
 					if (index($folderAdmin, '^') == 0 ) {
-						my @folderList = GroupFolder->findFolders($folderAdmin);
+						my @folderList = Folder->findFolders($folderAdmin);
 						foreach my $f (@folderList) {
 							$f->addAdminGroup($group);
 						}
