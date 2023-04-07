@@ -29,7 +29,7 @@ my $occ = "php $wwwRep/occ ";
 my $configFile = "$wwwRep/config/config.php";
 
 my $dir = getcwd;
-chdir;
+#chdir;
 our %PARAM;
 
 $PARAM{'NC_LOG'} = $logRep;
