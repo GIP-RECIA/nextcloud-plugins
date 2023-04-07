@@ -176,6 +176,49 @@ sub traitementRegexGroup {
 	}
 }
 
+
+sub traitementEtabGroup {
+	my $etab = shift;
+	my $etabNC = shift;
+	my $allLdapGroups = shift;
+	
+	foreach my $regexGroup (@{$etab->{regexs}}) {
+		my $regex = $regexGroup->{regex};
+		my $groups = $regexGroup->{groups};
+		my $last = $regexGroup->{last};
+		my $lastIfMatch;
+		my $lastIfNotMatch;
+		
+		INFO! "REGEX = $regex";
+		
+		unless ($groups) {
+			$groups = [$regexGroup];
+		}
+		if ($last) {
+			 # dans last seulement deux terms autorisés les autres sont ignorés
+			if  ($last =~ /^ifMatch$/) {
+				$lastIfMatch = 1;
+			} elsif ($last =~ /^ifNoMatch$/) {
+				$lastIfNotMatch = 1;
+			} else {
+				WARN! "Ingnore last: $last";
+			}
+		}
+		foreach my $entryGrp (@{$allLdapGroups}) {
+			next unless $entryGrp;
+			my $cnGroup = $entryGrp->get_value ( 'cn' );
+
+			if (my @res = ($cnGroup =~ /$regex/)) {
+				INFO! "\tGrouper Group= $cnGroup ";
+				&traitementRegexGroup($etabNC,$groups, @res);
+				$entryGrp = '' if $lastIfMatch;
+			} else {
+				$entryGrp = '' if $lastIfNotMatch;
+			}
+		}
+			#DEBUG! $cn;
+	}
+}
 #return 1 si ldap ramene des groups 0 sinon
 sub traitementEtab {
 	my $etab = shift;
@@ -207,43 +250,10 @@ sub traitementEtab {
 
 	if (@ldapGroups) {
 		INFO! $siren, " a des groupes: " ;
-		foreach my $regexGroup (@{$etab->{regexs}}) {
-			my $regex = $regexGroup->{regex};
-			my $groups = $regexGroup->{groups};
-			my $last = $regexGroup->{last};
-			my $lastIfMatch;
-			my $lastIfNotMatch;
-			
-			INFO! "REGEX = $regex";
-			
-			unless ($groups) {
-				$groups = [$regexGroup];
-			}
-			if ($last) {
-				 # dans last seulement deux terms autorisés les autres sont ignorés
-				if  ($last =~ /^ifMatch$/) {
-					$lastIfMatch = 1;
-				} elsif ($last =~ /^ifNoMatch$/) {
-					$lastIfNotMatch = 1;
-				} else {
-					WARN! "Ingnore last: $last";
-				}
-			}
-			foreach my $entryGrp (@ldapGroups) {
-				next unless $entryGrp;
-				my $cnGroup = $entryGrp->get_value ( 'cn' );
-
-				if (my @res = ($cnGroup =~ /$regex/)) {
-					INFO! "\tGrouper Group= $cnGroup ";
-					&traitementRegexGroup($etabNC,$groups, @res);
-					$entryGrp = '' if $lastIfMatch;
-				} else {
-					$entryGrp = '' if $lastIfNotMatch;
-				}
-			}
-			#DEBUG! $cn;
-		}
+		&traitementEtabGroup($etab, $etabNC, \@ldapGroups);
 		# si tout est ok on met a jour le  timestamp
+
+		#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
 		$etabNC->timestamp($newTimeStampLdap);
 		return 1;
 	} 
