@@ -12,7 +12,7 @@
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800020
-    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):*))'
+    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*))'
     regexs:  
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):(?:Tous_)(\2)$'
         last: ifMatch
@@ -30,9 +30,9 @@ etabs:
               - delete
             quotaF: 10
 
-       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
-         last: ifMatch
-         groups:
+      - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
+        last: ifMatch
+        groups:
           - group: 'GIP-RECIA'
           - group: '%2$s.%1$s'
           - group: '%3$s.%1$s'
@@ -45,12 +45,12 @@ etabs:
             quotaF: 10
 
       - regex: '^coll:admin:central$'
-        group: 'admin.%1$s'
+        group: 'admin.central'
         folder: 'GIP-RECIA'
         permF:
           - write
           - delete
-        admin: '^%1$s((/.+)(/.+)?)?'
+        admin: '^GIP-RECIA((/.+)(/.+)?)?'
 
     # les regles pour l'asc:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
