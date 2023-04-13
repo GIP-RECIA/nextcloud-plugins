@@ -29,18 +29,19 @@ sub createGroupAndFolder {
 	if ($adminFormat) {
 		my $folderAdmin = sprintf($adminFormat, @grpMatched);
 		DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
-		my $folder = Folder->getFolder($folderAdmin);
-		if ($folder) {
-			DEBUG! "\t\t\t\tgroup folder admin add group";
-			$folder->addAdminGroup($group);
-		} else {
-			if (index($folderAdmin, '^') == 0 ) {
-				my @folderList = Folder->findFolders($folderAdmin);
+		if (index($folderAdmin, '^') == 0 ) {
+			my @folderList = Folder->findFolders($folderAdmin);
 				foreach my $f (@folderList) {
 					$f->addAdminGroup($group);
 				}
-			} 
-		}
+			}
+		} else {
+			my $folder = Folder->getFolder($folderAdmin);
+			if ($folder) {
+				DEBUG! "\t\t\t\tgroup folder admin add group";
+				$folder->addAdminGroup($group);
+			}
+		} 
 	}
 }
 
