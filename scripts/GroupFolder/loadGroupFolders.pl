@@ -31,6 +31,7 @@ use YAML::XS 'LoadFile'; #libyaml-libyaml-perl
 use Data::Dumper;
 use Getopt::Long;
 use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
+binmode STDOUT, ':encoding(UTF-8)';
 
 use util;
 use MyLogger;
