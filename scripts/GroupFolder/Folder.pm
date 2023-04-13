@@ -2,7 +2,7 @@
 package Folder;
 use strict;
 use utf8;
-use Symbol 'gensym';
+#use Symbol 'gensym';
 
 use MyLogger;
 use util;
