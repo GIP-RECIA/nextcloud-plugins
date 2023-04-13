@@ -34,7 +34,6 @@ sub createGroupAndFolder {
 				foreach my $f (@folderList) {
 					$f->addAdminGroup($group);
 				}
-			}
 		} else {
 			my $folder = Folder->getFolder($folderAdmin);
 			if ($folder) {
