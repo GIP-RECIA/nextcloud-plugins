@@ -53,22 +53,22 @@ etabs:
         admin: '^GIP-RECIA((/.+)(/.+)?)?'
 
     # les regles pour l'asc:
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
         groups:
           - group: '%2$s.%1$s'
-            folder: 'ASC'
+            folder: 'GIP-RECIA/ASC'
             permF: []
             quotaF: 1
           - group: '%3$s.%1$s'
-            folder: 'ASC/%3$s'
+            folder: 'GIP-RECIA/ASC/%3$s'
             permF:
               - write
               - share
               - delete
             quotaF: 10
-              
+             
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
         groups:
           - group: '%3$s.%1$s'
-            admin: '^ASC(/.*)$'
+            admin: '^GIP-RECIA/ASC(/.*)$'
 ...

@@ -4,6 +4,7 @@ use utf8;
 use MyLogger;
 use util;
 use Data::Dumper;
+use Unicode::Normalize;
 
 sub new {
 	my ($class, $gid, $displayname) = @_;
@@ -52,8 +53,9 @@ sub readNC {
 
 sub getOrCreateGroup {
 	my ($class, $name, $etab) = @_;
-
-	my $gid = $name . ':LDAP';
+	
+	my $gid = NFKD($name . ':LDAP');
+	$gid =~ s/\p{NonspacingMark}//g; #suppresion des accents
 	
 	my $group = $etab->groupsNC->{$gid};
 	if  ($group) {
