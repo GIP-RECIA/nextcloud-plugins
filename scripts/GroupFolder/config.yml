@@ -28,7 +28,6 @@ etabs:
               - write
               - share
               - delete
-            quotaF: 10
 
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
         last: ifMatch
