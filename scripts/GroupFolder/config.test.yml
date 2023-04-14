@@ -40,7 +40,7 @@ etabs:
               
       - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
         group: '%2$s.admin.%1$s'
-        admin: '%1$s/%2$s'
+        
        
       - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
         group: 'admin.%1$s'
@@ -48,7 +48,6 @@ etabs:
         permF:
           - write
           - delete
-        admin: '^%1$s(/.+)?'
             
     # les regles pour l'asc:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
@@ -64,9 +63,14 @@ etabs:
               - share
               - delete
             quotaF: 10
-              
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
-        groups:
-          - group: '%3$s.%1$s'
-            admin: '^ASC(/.*)$'
+
+    groupAdminFolder:
+      - groupAdmin: 'admin.GIP-RECIA'
+        adminFolder: '^GIP-RECIA((/.+)(/.+)?)?'
+
+      - groupAdmin: '^([^.]+).admin.GIP-RECIA'
+        adminFolder: 'ĜIP-RECIA/%1$s'
+
+      - groupAdmin: 'Bureau_ASC.GIP-RECIA'
+        adminFolder: '^ASC(/.*)$'
 ...

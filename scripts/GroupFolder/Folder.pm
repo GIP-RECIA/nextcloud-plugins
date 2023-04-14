@@ -45,6 +45,7 @@ sub readNC {
 			$folder->manage->{$tuple[1]} = 1;
 		} else {
 			WARN! 'Dans oc_group_folders_manage folder_id (' . $tuple[0] . ') sans folder associé ';
+			INFO! "delete from oc_group_folders_manage where mapping_type ='group' and folder_id = $tuple[0];";
 		}
 	}
 }

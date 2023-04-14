@@ -170,7 +170,7 @@ sub traitementRegexGroup {
 					$etabNC,
 					$groupFormat,
 					$regexGroup->{folder},
-					$regexGroup->{admin},
+#					$regexGroup->{admin},
 					$regexGroup->{quotaF},
 					$regexGroup->{permF},
 					@grpRegexMatches
@@ -221,7 +221,29 @@ sub traitementEtabGroup {
 		}
 			#DEBUG! $cn;
 	}
+	# traitement des groupAdmins
+	foreach my $groupAdminFolder (@{$etab->{groupAdminFolder}}) {
+		my $regexGroup =  $groupAdminFolder->{groupAdmin};
+		my $formatRegexFolder = $groupAdminFolder->{adminFolder};
+
+		if ($regexGroup && $formatRegexFolder) {
+			if (index($regexGroup, '^') == 0) {
+				#on a bien une regex il faut filtré sur tous les groupes de l'étab
+				foreach my $group (keys %{$etabNC->groupsNC}) {
+					if (my @grpMatch = ($group =~ /$regexGroup/)){
+						GroupFolder->addGroupAdminFolders($etabNC, $group,$formatRegexFolder, @grpMatch);
+					}
+				}
+			} else {
+				my $group = $etabNC->groupsNC->{$regexGroup};
+				if ($group) {
+					GroupFolder->addGroupAdminFolders($etabNC, $group,$formatRegexFolder);
+				}
+			}
+		}
+	}
 }
+ 
 #return 1 si ldap ramene des groups 0 sinon
 sub traitementEtab {
 	my $etab = shift;
