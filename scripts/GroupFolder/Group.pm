@@ -55,7 +55,7 @@ sub getOrCreateGroup {
 	my ($class, $name, $etab) = @_;
 	
 	my $gid = NFKD($name . ':LDAP');
-	$gid =~ s/\p{NonspacingMark}//g; #suppresion des accents
+	$gid =~ s/\p{NonspacingMark}//g; #suppression des accents
 	
 	my $group = $etab->groupsNC->{$gid};
 	if  ($group) {
