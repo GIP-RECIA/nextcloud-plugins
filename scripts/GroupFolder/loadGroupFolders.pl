@@ -32,6 +32,8 @@ use Data::Dumper;
 use Getopt::Long;
 use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
+
 
 use util;
 use MyLogger;
