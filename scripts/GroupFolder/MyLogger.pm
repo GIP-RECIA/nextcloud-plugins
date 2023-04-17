@@ -16,7 +16,7 @@ FILTER {
 	s/DEBUG!/MyLogger::is(4) and MyLogger::debug __FILE__,' (', __LINE__,'): ',/g;
 	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
 	s/SYSTEM!/MyLogger::traceSystem __FILE__, __LINE__,/g;
-	s/PARAM!\s*(\w+)/sub \1 {return MyLogger::param(shift, uc('\1'), shift);}/g; 
+	s/PARAM!\s*(\w+)/sub \1 {return MyLogger::param(shift, uc('\1'), shift);}/g;
 };
 
 my $level;
