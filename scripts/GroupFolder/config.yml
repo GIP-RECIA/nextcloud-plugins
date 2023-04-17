@@ -41,7 +41,6 @@ etabs:
               - write
               - share
               - delete
-            quotaF: 10
 
       - regex: '^coll:admin:central$'
         group: 'admin.central'
@@ -64,7 +63,7 @@ etabs:
               - write
               - share
               - delete
-            quotaF: 10
+            quotaF: 100
              
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
         groups:
