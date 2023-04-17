@@ -72,7 +72,7 @@ INFO! "logsFile= ", $logsFile;
 
 my $timestampFile = $config->{timestampFile};
 unless ($timestampFile) {
-	$timestampFile = ${util::PARAM}{'NC_LOG'}. '/groupeFolderTime.csv'
+	$timestampFile = ${util::PARAM}{'NC_LOG'}. '/groupFoldersTime.csv'
 }
 
 INFO! "timestampFile= ", $timestampFile;
@@ -132,7 +132,7 @@ if ($isChange && !$test) {
 END {
 	if (! $test && -f $timestampFile) {
 		INFO! "écriture des timestamps";
-		my $oldFile = $timestampFile . "old";
+		my $oldFile = $timestampFile . ".old";
 		rename $timestampFile, $oldFile;
 		open OLD, $oldFile or FATAL!  $!, " $oldFile" ;
 		open NEW, ">$timestampFile" or FATAL! $!, " " , $timestampFile;
