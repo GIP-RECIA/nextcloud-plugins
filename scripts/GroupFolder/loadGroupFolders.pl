@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 =encoding utf8
 
 =head1 NAME
@@ -11,13 +10,14 @@
 
 =head1 SYNOPSIS
 
- loadGroupFolder.pl [-t] [-f filename.yml] [all | siren+]
+ loadGroupFolder.pl [-t] [-f filename.yml] [-l loglevel] [all | siren+]
 
  Options:
 	-t test la conf uniquement
 	-f donne le fichier de conf avec les regexs
+	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2
 	all traite tous les étabs ayant un timestamp dans le fichier des timstamps
-	siren des fichiers à traiter.
+	siren des étabs à traiter.
 
 =cut
 
@@ -42,12 +42,15 @@ use Group;
 use Etab;
 use GroupFolder;
 
-MyLogger::level(5, 1);
+
 
 my $fileYml = "config.yml";
 my $test = 0;
+my $loglevel;
 
-unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test) ) {
+MyLogger::level(2, 1);
+
+unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
@@ -72,6 +75,14 @@ $logsFile =~ s/\.log/\.$jour\.log/;
 
 MyLogger->file('>>' . $logsFile);
 
+if ($test) {
+	MyLogger::level(5, 1);
+} else {
+	if ($loglevel) {
+		MyLogger::level($loglevel, 1);
+	}
+}
+
 LOG! "-------- Start $0 " , join(" ", @ARGV), ' --------';
 INFO! "configFile= ", $configFile;
 INFO! "logsFile= ", $logsFile;
@@ -85,7 +96,7 @@ INFO! "timestampFile= ", $timestampFile;
 
 my %etabTimestamp;
 if (-f $timestampFile) {
-	INFO! "Lecture des timestamps";
+
 	open TS, $timestampFile or FATAL!  $!, " $timestampFile" ;
 	while (<TS>) {
 		chomp ;
@@ -96,10 +107,13 @@ if (-f $timestampFile) {
 		}
 	}
 	close TS;
+} else {
+	WARN! "timestampFile inexistant !\n";
 }
 
+
+
 if ($test) {
-	MyLogger::level(5, 1);
 	INFO! "Mode Test : Affichage des timestamps : ";
 	INFO! Dumper(\%etabTimestamp);
 	INFO! "Mode Test : Dump du fichier de conf";
@@ -107,9 +121,7 @@ if ($test) {
 
 	INFO! "Mode Test : on fait les calculs sans executer les commandes occ ";
 	util->testMode();
-} else {
-	MyLogger::level(5, 0);
-}
+} 
 
 ##### debut du travail ######
 
