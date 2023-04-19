@@ -154,11 +154,11 @@ sub executeSql {
 	my $class = shift;
 	my $sqlQuery = shift;
 	my $sql = connectSql();
-	DEBUG! $sqlQuery;
+	DEBUG1! $sqlQuery;
 	if (!isTestMode() || ( $sqlQuery =~ /^\s*select/i &&  ! ($sqlQuery =~ /into/i))) {
-		my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL! $sql->errstr;
+		my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL1! $sql->errstr;
 		DEBUG! 'execute ', join(", ", @_);
-		$sqlStatment->execute(@_) or FATAL!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
+		$sqlStatment->execute(@_) or FATAL1!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
 		return $sqlStatment;
 	} 
 	DEBUG! "TestMode => pas de modif de base la requête aurait été executé avec :";
@@ -189,11 +189,11 @@ sub occ {
 	my $class = shift;
 	my $com = shift;
 	my $out = shift;
-	INFO! "occ $com";
+
 	if ($out) {
-		SYSTEM! "$occ $com", $out;
+		SYSTEM1! "$occ $com", $out;
 	} else {
-		SYSTEM! "$occ $com" ;
+		SYSTEM1! "$occ $com" ;
 	}
 }
 
@@ -201,7 +201,17 @@ sub timestampLdap() {
 	my $class = shift;
 		# calcul du timestamp courant donné a la minute
 	my @local = gmtime (shift);
-	return sprintf "%d%02d%02d%02d%02d00" , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
-}	
+	return sprintf '%d%02d%02d%02d%02d00' , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
+}
+
+sub localDate {
+	my @tab = localtime shift;
+	$tab[5] += 1900;
+	$tab[4]++;
+	return @tab;
+}
+sub jour {
+	return sprintf '%6$d%5$02d%4$02d', &localDate (time); 
+}
 
 1;

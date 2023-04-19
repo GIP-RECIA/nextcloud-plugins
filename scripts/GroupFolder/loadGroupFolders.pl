@@ -22,6 +22,7 @@
 =cut
 
 use strict;
+use utf8;
 use FindBin;
 use lib $FindBin::Bin;
 use DBI();
@@ -32,6 +33,7 @@ use Data::Dumper;
 use Getopt::Long;
 use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
 binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
 
 use util;
 use MyLogger;
@@ -65,8 +67,12 @@ my $logsFile = $config->{logsFile};
 unless ($logsFile) {
 	$logsFile = ${util::PARAM}{'NC_LOG'}. '/groupFolders.log'
 }
-MyLogger->file($logsFile);
+my $jour = util->jour();
+$logsFile =~ s/\.log/\.$jour\.log/;
 
+MyLogger->file('>>' . $logsFile);
+
+LOG! "-------- Start $0 " , join(" ", @ARGV), ' --------';
 INFO! "configFile= ", $configFile;
 INFO! "logsFile= ", $logsFile;
 
@@ -152,6 +158,7 @@ END {
 			printf NEW "%s; %s; %s\n", $etab->siren, $etab->timestamp, $etab->name;
 		}
 	}
+	LOG! "-------- Stop $0 ---------\n";
 }
 
 sub traitementRegexGroup {
