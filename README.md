@@ -1,7 +1,9 @@
-#### Adaptation a nextcloud pour le gip recia
+#### Adaptation a nextcloud pour le gip recia (Projet Neto centre)
 
 Le recia à deux déploiements de NC sur la même architecture une pour les
 ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip, gip.nextcloud.recia.aquaray.com) 
+
+
 
 
 Les modifications portent principalement sur :
