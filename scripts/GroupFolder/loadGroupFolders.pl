@@ -68,7 +68,7 @@ my $loadUserCommande = ${util::PARAM}{'NC_SCRIPTS'}. '/loadEtabs.pl ';
 my $logsFile = $config->{logsFile};
 
 unless ($logsFile) {
-	$logsFile = ${util::PARAM}{'NC_LOG'}. '/groupFolders.log'
+	$logsFile = ${util::PARAM}{'NC_LOG'}. 'Loader/groupFolders.log'
 }
 my $jour = util->jour();
 $logsFile =~ s/\.log/\.$jour\.log/;
