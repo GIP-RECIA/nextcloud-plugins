@@ -219,6 +219,12 @@ OC.L10N.register(
     "Searching …" : "Suche …",
     "No elements found." : "Keine Elemente gefunden.",
     "Search globally" : "Global suchen",
+    "Guest" : "Gast",
+    "Group" : "Gruppe",
+    "Email" : "E-Mail",
+    "Circle" : "Kreis",
+    "Talk conversation" : "Talk-Unterhaltung",
+    "Deck board" : "Deck-Board",
     "on {server}" : "auf {server}",
     "Others with access" : "Andere mit Zugriff",
     "No other users with access found" : "Keine anderen Benutzer mit Zugriff gefunden",
@@ -269,9 +275,8 @@ OC.L10N.register(
     "Copy to clipboard" : "In die Zwischenablage kopieren",
     "Sorry, this link doesn’t seem to work anymore." : "Entschuldigung, dieser Link scheint nicht mehr zu funktionieren.",
     "Toggle grid view" : "Rasteransicht umschalten",
-    "Copy public link to clipboard" : "Öffentlichen Link in die Zwischenablage kopieren",
-    "Share label saved" : "Freigabe-Label gespeichert",
-    "Share password saved" : "Freigabe-Passwort gespeichert",
-    "Share note saved" : "Freigabe-Notiz gespeichert"
+    "Sharing %s failed because the back end does not support sciencemesh shares" : "Freigabe von %s fehlgeschlagen, da das Backend keine ScienceMesh-Freigaben unterstützt",
+    "Science Mesh" : "ScienceMesh",
+    "Error generating password from password_policy" : "Fehler beim Erzeugen des Passworts basierend auf der Kennwortrichtlinie"
 },
 "nplurals=2; plural=(n != 1);");
