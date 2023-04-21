@@ -386,7 +386,6 @@ export default {
 				}
 			})
 		},
-
 		updateSearchType(type) {
 			this.searchType = type
 		},
