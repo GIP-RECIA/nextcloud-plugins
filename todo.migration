@@ -50,3 +50,32 @@ grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.9
 cd ../
 meld grep.ObjectStoreStorage.*
 => pas de difference d'utilisation de objectStorage
+
+---------------------
+migration 24.0.9 => 24.0.12
+diff nextcloud.24.0.9/core/css/variables.scss nextcloud.24.0.12/core/css/variables.scss
+	variables.scss n'a pas changé
+
+diff nextcloud.24.0.9/core/templates/layout.user.php nextcloud.24.0.12/core/templates/layout.user.php
+	layout.user.php n'a pas changé
+
+find nextcloud.24.0.9 nextcloud.24.0.12 -name ObjectStoreStorage.php
+nextcloud.24.0.9/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+nextcloud.24.0.12/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+	... ils n'ont pas changé
+
+diff nextcloud.24.0.9/lib/private/Files/ObjectStore/Mapper.php nextcloud.24.0.12/lib/private/Files/ObjectStore/Mapper.php
+	Mapper n'a pas changé
+	.../S3.php n'a pas changé
+	
+.../CardDavBackend.php à changer => FAIT
+.../RootMountProvider.php n'à pas changer
+
+recherche de ObjectStoreStorage:
+cd ./nextcloud.24.0.9/
+grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.9
+cd ../nextcloud.24.0.12
+grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.12
+cd ../
+meld grep.ObjectStoreStorage.*
+=> pas de difference d'utilisation de objectStorage
