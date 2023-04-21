@@ -671,7 +671,6 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 		$count = (bool)$result->fetchOne();
 		$result->closeCursor();
 		if ($count) {
-			return null;
 			throw new \Sabre\DAV\Exception\BadRequest('VCard object with uid already exists in this addressbook collection.');
 		}
 
