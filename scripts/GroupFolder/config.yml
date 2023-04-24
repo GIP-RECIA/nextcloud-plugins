@@ -65,7 +65,7 @@ etabs:
               - delete
             quotaF: 100
              
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
         groups:
           - group: '%3$s.%1$s'
             admin: '^ASC(/.*)$'

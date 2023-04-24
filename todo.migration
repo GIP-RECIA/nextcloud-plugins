@@ -3,50 +3,15 @@ https://download.nextcloud.com/server/releases/
 
 pour les migrations :
 
-remplacer dans OC_Util.php a faire pour chaque version
-\OC\Files\ObjectStore\ObjectStoreStorage par
-\OC\Files\ObjectStore\ReciaObjectStoreStorage
-
-les fichiers a verifie :
-
-\OC\Files\ObjectStore\ObjectStoreStorage
-Mapper.php (le mapper n'a pas changer entre le V21.0.9 et V24.0.2)
-ObjectStoreStorage.php (a changé entre la V21.0.9 et  V22.2.9  pas apres jusqu'a la 24.0.2)
-REciaObjectore (n'a pas a etre changé) 
-S3Recia.php
-les S3.php (ont changé qu'entre la 21 et 22)
-
 
 pour :
 apps/dav/lib/CardDAV/CardDavBackend.php (a changer pour v22 et pas change jusqu'a la V24)
 
 
----------------------
-!! a partir de la 24
-ObjectStoreStorage n'apparait plus dans OC_Util.php
 
-ca semble etre dans:
-	lib/private/Files/Mount/RootMountProvider.php
-	27:		use OC\Files\ObjectStore\ObjectStoreStorage;
-	83:		$config['class'] = ObjectStoreStorage::class;
-	99:		$config['class'] = ObjectStoreStorage::class;
-il faut changer ObjectStoreStorage par ReciaObjectStoreStorage
 
 ---------------------
-migration 24.0.4 vers 24.0.9
-\OC\Files\ObjectStore\ObjectStoreStorage n'a pas changer.
-.../ObjectStore/Mapper.php n'a pas changer.
-.../S3.php n'a pas changer
+migration 25.0.3 vers 25.0.6
+
 
 .../CardDavBackend.php à changer => ! fait
-
-.../RootMountProvider.php n'à pas changer
-
-recherche de ObjectStoreStorage:
-cd ./nextcloud.24.0.4/
-grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.4
-cd ../nextcloud.24.0.9
-grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.9
-cd ../
-meld grep.ObjectStoreStorage.*
-=> pas de difference d'utilisation de objectStorage
