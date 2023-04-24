@@ -42,13 +42,13 @@ etabs:
               - share
               - delete
 
-      - regex: '^coll:admin:central$'
-        group: 'admin.central'
-        folder: 'GIP-RECIA'
-        permF:
-          - write
-          - delete
-        admin: '^GIP-RECIA((/.+)(/.+)?)?'
+#      - regex: '^coll:admin:central$'
+#        group: 'admin.central'
+#        folder: 'GIP-RECIA'
+#        permF:
+#          - write
+#          - delete
+#        admin: '^GIP-RECIA((/.+)(/.+)?)?'
 
     # les regles pour l'asc:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
