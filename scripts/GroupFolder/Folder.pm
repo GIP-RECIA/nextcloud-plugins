@@ -112,6 +112,7 @@ sub updateOrCreateFolder {
 	}
 	return $folder;
 }
+
 sub addAdminGroup {
 	my ($folder, $group) = @_;
 
@@ -124,6 +125,8 @@ sub addAdminGroup {
 		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'");
 		$folder->manage->{$group->gid} = 1;
 	}
+
+	$folder->addGroup($group, 'write','share','delete');
 }
 1;
 __END__
