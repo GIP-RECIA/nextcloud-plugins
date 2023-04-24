@@ -54,11 +54,11 @@ etabs:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
         groups:
           - group: '%2$s.%1$s'
-            folder: 'GIP-RECIA/ASC'
+            folder: 'ASC'
             permF: []
             quotaF: 1
           - group: '%3$s.%1$s'
-            folder: 'GIP-RECIA/ASC/%3$s'
+            folder: 'ASC/%3$s'
             permF:
               - write
               - share
@@ -68,5 +68,5 @@ etabs:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
         groups:
           - group: '%3$s.%1$s'
-            admin: '^GIP-RECIA/ASC(/.*)$'
+            admin: '^ASC(/.*)$'
 ...
