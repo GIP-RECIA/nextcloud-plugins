@@ -2,7 +2,7 @@
 
 NEXTCLOUD_PATH := ${NC_WWW}
 
-NEXTCLOUD_SCRIPTS := ${HOME}scripts
+NEXTCLOUD_SCRIPTS := ${HOME}/scripts
 
 ifeq ($(NEXTCLOUD_PATH), )
 	NEXTCLOUD_PATH = ../web
@@ -30,8 +30,10 @@ CSS=$(LOADER)/inputs/css
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON
+	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS
+	@echo user_cas a faire qu'a la 1er install du plugin (a vérifier)
 	@echo ${USER} $(NEXTCLOUD_PATH)
+	
 
 
 
@@ -53,6 +55,8 @@ COLLABORA:
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
+USER_CAS:
+	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 
 ifneq (${USER}, ncgip)
 CSSJSLOADER:
