@@ -17,7 +17,10 @@ sub new {
 		MOUNT => $mount,
 		QUOTA => $quota,
 		ACL => $acl,
-		MANAGE => {}
+		MANAGE_NEW => {},
+		MANAGE_OLD = > {},
+		GROUPS_OLD => {},
+		GROUPS_NEW => {}
 	};
 	bless $self, $class;
 }
@@ -25,24 +28,32 @@ PARAM! idBase
 PARAM! mount
 PARAM! quota
 PARAM! acl
-PARAM! manage
+
+
 
 sub readNC {
 	my $class = shift;
 	DEBUG! '->readNC';
 
 	my %folderById;
+	#TODO select f.folder_id, mount_point, quota, acl, permissions, group_id  from oc_group_folders f, oc_group_folders_groups g where f.folder_id = g.folder_id; 
 	my $sqlRes = util->executeSql(q/select * from oc_group_folders/);
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
 		my $folder = $class->new(@tuple);
 		$folderInBase{$folder->mount()} = $folder;
 		$folderById{$folder->idBase} = $folder;
 	}
+
+	$sqlRes = util->executeSql(q/select folder_id, group_id from oc_group_folders_groups where group_id like '%:LDAP'/);
+	while (my @tuple = $sqlRes->fetchrow_array()) {
+		$folderById{
+	}
+	 
 	$sqlRes = util->executeSql(q/select folder_id, mapping_id from oc_group_folders_manage where mapping_type ='group'/);
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
 		my $folder = $folderById{$tuple[0]};
 		if ($folder) {
-			$folder->manage->{$tuple[1]} = 1;
+			$folder->MANAGE_OLD->{$tuple[1]} = 1;
 		} else {
 			WARN! 'Dans oc_group_folders_manage folder_id (' . $tuple[0] . ') sans folder associé ';
 		}
