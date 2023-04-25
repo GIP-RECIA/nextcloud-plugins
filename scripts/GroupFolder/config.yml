@@ -68,5 +68,5 @@ etabs:
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
         groups:
           - group: '%3$s.%1$s'
-            admin: '^ASC(/.*)$'
+            admin: '^ASC(/.*)?$'
 ...
