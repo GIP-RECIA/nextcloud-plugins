@@ -6,7 +6,7 @@ CREATE TABLE oc_etablissements (
 	siren VARCHAR(255),
 	unique (siren),
 	unique (uai)
-)
+);
 
 CREATE TABLE oc_asso_uai_user_group (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -67,6 +67,8 @@ create table recia_storage  (
 	primary key (storage),
 	unique (uid)
 );
+
+-- le reste devrait etre inutile pour le gip
 
 insert IGNORE into recia_storage (storage, uid, categorie)
 select s.id, g.uid , 'E' from
