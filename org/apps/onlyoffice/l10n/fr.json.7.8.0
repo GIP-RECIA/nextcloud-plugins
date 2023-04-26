@@ -1,6 +1,4 @@
-OC.L10N.register(
-    "onlyoffice",
-    {
+{ "translations": {
     "Access denied" : "Accès refusé",
     "Invalid request" : "Requête invalide",
     "Files not found" : "Fichiers introuvables",
@@ -107,8 +105,8 @@ OC.L10N.register(
     "Origin format": "Format d’origin",
     "Failed to send notification": "Échec de l’envoi de la notification",
     "Notification sent successfully": "Notification a été envoyée avec succès",
-    "%1\$s mentioned in the %2\$s: \"%3\$s\".": "%1\$s a mentionné dans %2\$s: \"%3\$s\".",
-    "{notifier} mentioned in the {file}: \"%1\$s\".": "{notifier} vous a mentionné dans {file}: \"%1\$s\".",
+    "%1$s mentioned in the %2$s: \"%3$s\".": "%1$s a mentionné dans %2$s: \"%3$s\".",
+    "{notifier} mentioned in the {file}: \"%1$s\".": "{notifier} vous a mentionné dans {file}: \"%1$s\".",
     "Choose a format to convert {fileName}": "Choisissez un format à convertir {fileName}",
     "New form template": "Nouveau modèle de formulaire",
     "Blank": "Vide",
@@ -130,6 +128,10 @@ OC.L10N.register(
     "Custom filter": "Filtre personnalisé",
     "group": "groupe",
     "Advanced": "Avancé",
-    "Provide advanced document permissions using ONLYOFFICE Docs": "Fournir des autorisations avancées pour les documents en utilisant ONLYOFFICE Docs"
-},
-"nplurals=2; plural=(n > 1);");
+    "Provide advanced document permissions using ONLYOFFICE Docs": "Fournir des autorisations avancées pour les documents en utilisant ONLYOFFICE Docs",
+    "Enable plugins": "Activer les plugins",
+    "Enable document protection for": "Activer la protection des documents par mot de passe pour",
+    "All users": "Tous les utilisateurs",
+    "Owner only": "Propriétaire uniquement"
+},"pluralForm" :"nplurals=2; plural=(n > 1);"
+}
