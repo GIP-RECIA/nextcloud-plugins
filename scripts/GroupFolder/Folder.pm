@@ -30,6 +30,35 @@ PARAM! quota
 PARAM! acl
 
 
+sub dictOldNew {
+	my $old = shift;
+	my $new = shift;
+	my $key = shift;
+	my $val = shift;
+
+	if ($key) {
+		if ($val) {
+			$new->{$key} = $val;
+			return $val;
+		}
+		$val = $new->{$gid};
+		unless ($val) {
+			$val = $old->{$gid};
+		}
+		return $val;
+	}
+	return 0;
+}
+sub groups {
+	my $this = shift;
+	return dictOldNew($this->GROUPS_OLD, $this->GROUPS_NEW, @_)
+}
+
+sub manages {
+	my $this = shift;
+	return dictOldNew($this->MANAGE_OLD, $this->MANAGE_NEW, @_)
+}
+
 
 sub readNC {
 	my $class = shift;
@@ -44,9 +73,14 @@ sub readNC {
 		$folderById{$folder->idBase} = $folder;
 	}
 
-	$sqlRes = util->executeSql(q/select folder_id, group_id from oc_group_folders_groups where group_id like '%:LDAP'/);
+	$sqlRes = util->executeSql(q/select folder_id, group_id, permissions from oc_group_folders_groups where group_id like '%:LDAP'/);
 	while (my @tuple = $sqlRes->fetchrow_array()) {
-		$folderById{
+		my $folder = $folderById{$tuple[0]};
+		if ($folder) {
+			$folder->GROUPS_OLD->{$tuple[1]} = $tuple[2];
+		} else {
+			WARN! 'Dans oc_group_folders_groups folder_id (' . $tuple[0] . ') sans folder associé ';
+		}
 	}
 	 
 	$sqlRes = util->executeSql(q/select folder_id, mapping_id from oc_group_folders_manage where mapping_type ='group'/);
