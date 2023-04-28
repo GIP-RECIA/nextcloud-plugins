@@ -26,7 +26,7 @@ ALLETAB=allEtab_ncgip.txt
 
 defaut:
 	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS
-	@echo user_cas a faire qu'a la 1er install du plugin (a vérifier)
+	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
 	
 
