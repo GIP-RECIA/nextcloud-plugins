@@ -11,7 +11,27 @@ apps/dav/lib/CardDAV/CardDavBackend.php (a changer pour v22 et pas change jusqu'
 
 
 ---------------------
-migration 25.0.3 vers 25.0.6
+migration 25.0.3 vers 25.0.6 pour le gip
+
+user_cas n'a pas changé;
+
+onlyoffice 7.6.8 => 7.8.0
+apres l'install en test
+recuperer les fichiers du nouveau plugin onlyoffice 7.8.0
 
 
-.../CardDavBackend.php à changer => ! fait
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/js/main.js org/apps/onlyoffice/js/main.js.7.8.0
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/onlyoffice/l10n/
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/appconfig.php org/apps/onlyoffice/lib/
+
+faire la diff
+
+de collabora 7.1.1 => 7.1.3
+
+cd org/apps/richdocuments/l10n
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/l10n/fr.js* .
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php .
+
+rien a changer pour collabora
