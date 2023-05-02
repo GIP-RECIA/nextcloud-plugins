@@ -10,14 +10,15 @@
 
 =head1 SYNOPSIS
 
- loadGroupFolder.pl [-t] [-f filename.yml] [-l loglevel] [all | siren+]
+	loadGroupFolder.pl [-t] [-f filename.yml] [-l loglevel] up|all|siren...
 
- Options:
+	Options:
 	-t test la conf uniquement
 	-f donne le fichier de conf avec les regexs
-	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2
-	all traite tous les étabs ayant un timestamp dans le fichier des timstamps
-	siren des étabs à traiter.
+	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
+	up traite les étabs du fichier des timestamps ayant des groupes modifiés.
+	all traite tous les étabs du fichier de conf, sans verifier les timestamps. 
+	siren des étabs à traiter sans verifier les timestamps.
 
 =cut
 
@@ -41,8 +42,6 @@ use Folder;
 use Group;
 use Etab;
 use GroupFolder;
-
-
 
 my $fileYml = "config.yml";
 my $test = 0;
@@ -83,6 +82,16 @@ if ($test) {
 	}
 }
 
+my $sirenList;
+
+my $useTimeStamp = $ARGV[0] eq 'up';
+
+unless ($useTimeStamp) {
+	unless ($ARGV[0] eq 'all') {
+		$sirenList = join " " , @ARGV;
+	}
+}
+
 LOG! "-------- Start $0 " , join(" ", @ARGV), ' --------';
 INFO! "configFile= ", $configFile;
 INFO! "logsFile= ", $logsFile;
@@ -94,8 +103,9 @@ unless ($timestampFile) {
 
 INFO! "timestampFile= ", $timestampFile;
 
+
 my %etabTimestamp;
-if (-f $timestampFile) {
+if (-f $timestampFile ) {
 
 	open TS, $timestampFile or FATAL!  $!, " $timestampFile" ;
 	while (<TS>) {
@@ -244,27 +254,33 @@ sub traitementEtab {
 	my $etab = shift;
 	my $siren = $etab->{siren};
 	my $etabNC = Etab->readNC($siren);
-	
+
+	if (! $useTimeStamp && $sirenList && ! $sirenList =~ /$siren/) {
+		return 0;
+	}
+
 	my $newTimeStampLdap = util->timestampLdap(time);
-	
+
 	unless ($etabNC) {
 		$etabNC = Etab->addEtab($siren, $etab->{nom})
 	}
-	
+
 	my $lastTimeStampLdap  = $etabNC->timestamp;
+
 	unless ($lastTimeStampLdap) {
 		$lastTimeStampLdap=$etabTimestamp{$siren};
 	}
-	
+
 	Group->readNC($etabNC);
 	#faire la requete ldap
 
 	my $filtreLdap =  $etab->{ldapFilterGroups};
 	chomp $filtreLdap ;
-	if ($lastTimeStampLdap) {
+
+	if ($useTimeStamp && $lastTimeStampLdap) {
 		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
 	}
-	
+
 	INFO! "filtre ldap =", $filtreLdap;
 	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
