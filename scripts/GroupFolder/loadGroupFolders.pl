@@ -141,13 +141,15 @@ my %etabForLoad;
 
 
 my $isChange;
-my $cpt = 2;
-while (--$cpt) {
+my $cpt = 0;
+my $fin = 0;
+until ($fin++) {
+	$cpt++;
 	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $etab (@{$config->{etabs}}) {
 		if (&traitementEtab($etab)) {
 			$etabForLoad{$etab->{siren}} = 1;
-			$cpt = 1;
+			$fin = 0 if $useTimeStamp;
 			$isChange = 1;
 		}
 	}
