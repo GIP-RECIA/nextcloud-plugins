@@ -18,7 +18,7 @@ sub new {
 		QUOTA => $quota,
 		ACL => $acl,
 		MANAGE_NEW => {},
-		MANAGE_OLD = > {},
+		MANAGE_OLD => {},
 		GROUPS_OLD => {},
 		GROUPS_NEW => {}
 	};
@@ -41,9 +41,9 @@ sub dictOldNew {
 			$new->{$key} = $val;
 			return $val;
 		}
-		$val = $new->{$gid};
+		$val = $new->{$key};
 		unless ($val) {
-			$val = $old->{$gid};
+			$val = $old->{$key};
 		}
 		return $val;
 	}
@@ -51,12 +51,12 @@ sub dictOldNew {
 }
 sub groups {
 	my $this = shift;
-	return dictOldNew($this->GROUPS_OLD, $this->GROUPS_NEW, @_)
+	return dictOldNew($this->{GROUPS_OLD}, $this->{GROUPS_NEW}, @_)
 }
 
 sub manages {
 	my $this = shift;
-	return dictOldNew($this->MANAGE_OLD, $this->MANAGE_NEW, @_)
+	return dictOldNew($this->{MANAGE_OLD}, $this->{MANAGE_NEW}, @_)
 }
 
 
@@ -77,7 +77,8 @@ sub readNC {
 	while (my @tuple = $sqlRes->fetchrow_array()) {
 		my $folder = $folderById{$tuple[0]};
 		if ($folder) {
-			$folder->GROUPS_OLD->{$tuple[1]} = $tuple[2];
+			DEBUG! Dumper($folder);
+			$folder->{GROUPS_OLD}->{$tuple[1]} = $tuple[2];
 		} else {
 			WARN! 'Dans oc_group_folders_groups folder_id (' . $tuple[0] . ') sans folder associé ';
 		}
@@ -87,18 +88,24 @@ sub readNC {
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
 		my $folder = $folderById{$tuple[0]};
 		if ($folder) {
-			$folder->MANAGE_OLD->{$tuple[1]} = 1;
+			$folder->{MANAGE_OLD}->{$tuple[1]} = 1;
 		} else {
 			WARN! 'Dans oc_group_folders_manage folder_id (' . $tuple[0] . ') sans folder associé ';
 		}
 	}
 }
 
+my %permsGroup = (read => 1, update => 2, create => 4, write => 6, 'delete' => 8, share => 16 );
+
 sub addGroup{
 	my $this = shift;
 	my $group = shift;
 	# le reste sont les permissions;
+	my $perms = 1;
+	map {$perms |= $permsGroup{$_} ;} @_;
 	util->occ('groupfolders:group ' .  $this->idBase . " '" . $group->gid . "' " . join(" ", @_));
+	DEBUG! "permisions = $perms";
+	$this->groups($group->gid, $perms);
 }
 
 
@@ -166,9 +173,9 @@ sub addAdminGroup {
 		$folder->acl(1);
 	}
 
-	unless ($folder->manage->{$group->gid}) {
+	unless ($folder->manages($group->gid)) {
 		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'");
-		$folder->manage->{$group->gid} = 1;
+		$folder->manages($group->gid, 1);
 	}
 
 	$folder->addGroup($group, 'write','share','delete');
