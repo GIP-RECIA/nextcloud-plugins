@@ -97,7 +97,7 @@ sub readNC {
 
 my %permsGroup = (read => 1, update => 2, create => 4, write => 6, 'delete' => 8, share => 16 );
 
-sub addGroup{
+sub addGroup {
 	my $this = shift;
 	my $group = shift;
 	# le reste sont les permissions;
@@ -108,6 +108,13 @@ sub addGroup{
 	$this->groups($group->gid, $perms);
 }
 
+sub delGroup {
+	my $this = shift;
+	my $groupId = shift;
+
+	util->occ('groupfolders:group --delete ' .  $this->idBase . " '" . $groupId . "'");
+
+}
 
 sub getFolder {
 	my ($class, $mountPoint) = @_;
@@ -175,12 +182,45 @@ sub addAdminGroup {
 
 	unless ($folder->manages($group->gid)) {
 		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-add  --group '" . $group->gid . "'");
-		$folder->manages($group->gid, 1);
 	}
+	# on ajoute dans manages même s'il existe déjà pour en avoir une liste complète
+	$folder->manages($group->gid, 1);
 
 	$folder->addGroup($group, 'write','share','delete');
 }
+
+sub delAdminGroup {
+	my ($folder, $groupId) = @_;
+	if ($groupId) {
+		util->occ('groupfolders:permissions ' . $folder->idBase . " --manage-remove  --group '" . $groupId . "'");
+	}
+}
+
+
+
+sub cleanFolder {
+	my $this = shift;
+
+	foreach  my $groupId (keys %{$this->{GROUPS_OLD}}) {
+		unless ($this->{GROUPS_NEW}->{$groupId}) {
+			$this->delGroup($groupId);
+			$this->{GROUPS_OLD}->{$groupId} = 0;
+		}
+	}
+	foreach my $groupId (keys %{$this->{MANAGE_OLD}}) {
+		unless ($this->{MANAGE_NEW}->{$groupId}) {
+			$this->delAdminGroup($groupId);
+			$this->{MANAGE_OLD}->{$groupId} = 0;
+		}
+	}
+}
+
+sub cleanAllFolder {
+	my $class = shift;
+	map {$_->cleanFolder} values(%folderInBase);
+}
 1;
+
 __END__
 
 groupfolders:group [-d|--delete] [--output [OUTPUT]] [--] <folder_id> <group> [<permissions>...]
