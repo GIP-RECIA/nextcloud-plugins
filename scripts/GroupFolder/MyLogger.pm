@@ -132,7 +132,7 @@ sub traceSystem {
 
 	my $pid;
 	eval {
-	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande);
+	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande) or fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $! );
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 	info ($fileName, $line, $commande);
@@ -170,6 +170,9 @@ sub traceSystem {
 		}
 	}
 	waitpid $pid, 0;
+	
+	my $child_exit_status = $? >> 8;
+	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status") if $child_exit_status;
 	close $ERR;
 	close $COM;
 }
