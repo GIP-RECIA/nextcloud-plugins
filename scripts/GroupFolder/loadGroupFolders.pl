@@ -158,14 +158,15 @@ until ($fin++) {
 	DEBUG! "-------------------- fin Itération $cpt ------------------";
 }
 
-if ($isChange && !$test) {
-	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
-}
 
 if  ($traitementComplet) {
 	# on ne supprime pas les folders qui n'existe plus mais il faut supprimer les associations des groupes aux folders qui n'ont plus lieux d'être
 	# ce traitement ne peut pas être fait sur les differentiels, il faut un traitement complets.
 	Folder->cleanAllFolder();
+	SYSTEM! $loadUserCommande . " all";
+
+} elsif ($isChange && !$test ) {
+	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
 }
 
 END {
