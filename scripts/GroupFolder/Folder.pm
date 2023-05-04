@@ -80,7 +80,7 @@ sub readNC {
 			DEBUG! Dumper($folder);
 			$folder->{GROUPS_OLD}->{$tuple[1]} = $tuple[2];
 		} else {
-			WARN! 'Dans oc_group_folders_groups folder_id (' . $tuple[0] . ') sans folder associé ';
+			WARN! 'Dans oc_group_folders_groups le groupe '. $tuple[1] . ' est associé un folder_id inexistant : '.  $tuple[0];
 		}
 	}
 	 
@@ -90,7 +90,7 @@ sub readNC {
 		if ($folder) {
 			$folder->{MANAGE_OLD}->{$tuple[1]} = 1;
 		} else {
-			WARN! 'Dans oc_group_folders_manage folder_id (' . $tuple[0] . ') sans folder associé ';
+			WARN! 'Dans oc_group_folders_manage le groupe '. $tuple[1] . ' manage le folder_id inexistant '. $tuple[0];
 		}
 	}
 }
