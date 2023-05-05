@@ -1,7 +1,9 @@
+use MyLogger;
+use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+
 package GroupFolder;
 use strict;
 use utf8;
-use MyLogger;
 use Data::Dumper;
 
 sub createGroupAndFolder {

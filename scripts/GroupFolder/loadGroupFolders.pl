@@ -22,10 +22,17 @@
 
 =cut
 
+
+
 use strict;
 use utf8;
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
+
 use FindBin;
 use lib $FindBin::Bin;
+use MyLogger;
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Net::LDAP; #libnet-ldap-perl
 use Pod::Usage qw(pod2usage);
@@ -33,11 +40,10 @@ use YAML::XS 'LoadFile'; #libyaml-libyaml-perl
 use Data::Dumper;
 use Getopt::Long;
 use sigtrap 'handler' => \&END, 'HUP', 'INT','ABRT','QUIT','TERM';
-binmode STDOUT, ':encoding(UTF-8)';
-binmode STDERR, ':encoding(UTF-8)';
+
 
 use util;
-use MyLogger;
+
 use Folder;
 use Group;
 use Etab;

@@ -1,3 +1,7 @@
+use MyLogger;
+use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+
+
 package util;
 BEGIN {
         use Exporter   ();
@@ -7,7 +11,6 @@ use vars      @EXPORT_OK;
 use strict;
 use utf8;
 use Cwd;
-use MyLogger;
 
 
 my $logRep = $ENV{'NC_LOG'};
