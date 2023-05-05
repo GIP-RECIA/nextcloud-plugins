@@ -3,19 +3,19 @@ use IO::Select;
 use Symbol 'gensym';
 
 # 
-my $version="4.0";
+my $version="4.1";
 
 package MyLogger;
 use Filter::Simple;
 
 FILTER {
-	s/FATAL(\d?)!/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
-	s/ERROR(\d?)!/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
-	s/WARN(\d?)!/MyLogger::is(2) and MyLogger::erreur 'WARN: ',  !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
-	s/INFO(\d?)!/MyLogger::is(3) and MyLogger::info !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
-	s/DEBUG(\d?)!/MyLogger::is(4) and MyLogger::debug !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
+	s/FATAL(\d?)!/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+	s/ERROR(\d?)!/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+	s/WARN(\d?)!/MyLogger::is(2) and MyLogger::erreur 'WARN: ',  !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+	s/INFO(\d?)!/MyLogger::is(3) and MyLogger::info !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+	s/DEBUG(\d?)!/MyLogger::is(4) and MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
 	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
-	s/SYSTEM(\d?)!/MyLogger::traceSystem !'$1' ? (__FILE__, __LINE__) : (caller($1-1))[1,2] ,/g;
+	s/SYSTEM(\d?)!/MyLogger::traceSystem !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
 	s/LOG!/MyLogger::file && MyLogger::logger /g;
 	s/PARAM!\s*(\w+)/sub $1 {return MyLogger::param(shift, uc('$1'), shift);}/g;
 };
