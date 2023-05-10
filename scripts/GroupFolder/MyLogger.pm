@@ -151,7 +151,7 @@ sub traceSystem {
 				my $out = $ligne;
 				$ligne =~ s/\n(.)/\n\t$1/mg;
 				if ($fh == $COM) {
-					push(@$OUT, $out) if $OUT;
+					push(@$OUT, split ("\n" , $out)) if $out ;
 					if ($flagC) {
 						if ( $level >= 4) { debug ($fileName, $line, " STDOUT :"); }
 						$flagC = 0;

@@ -1,5 +1,5 @@
 use MyLogger;
-#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
 use strict;
@@ -10,24 +10,26 @@ use util;
 use Data::Dumper;
 
 my %folderInBase;
+my %folderById;
 
 sub new {
-	my ($class, $idBase, $mount, $quota, $acl) = @_;
+	my ($class, $idBase, $mount, $quotaOct, $acl) = @_;
 	my $self = {
 		IDBASE => $idBase,
 		MOUNT => $mount,
-		QUOTA => $quota,
+		QUOTA => $quotaOct,
 		ACL => $acl,
 		MANAGE_NEW => {},
 		MANAGE_OLD => {},
 		GROUPS_OLD => {},
 		GROUPS_NEW => {}
 	};
+	$folderById{$idBase} = $self;
 	bless $self, $class;
 }
 PARAM! idBase
 PARAM! mount
-PARAM! quota
+PARAM! quota	#en octet
 PARAM! acl
 
 
@@ -65,13 +67,11 @@ sub readNC {
 	my $class = shift;
 	DEBUG! '->readNC';
 
-	my %folderById;
 	#TODO select f.folder_id, mount_point, quota, acl, permissions, group_id  from oc_group_folders f, oc_group_folders_groups g where f.folder_id = g.folder_id; 
 	my $sqlRes = util->executeSql(q/select * from oc_group_folders/);
 	while (my @tuple =  $sqlRes->fetchrow_array()) {
 		my $folder = $class->new(@tuple);
 		$folderInBase{$folder->mount()} = $folder;
-		$folderById{$folder->idBase} = $folder;
 	}
 
 	$sqlRes = util->executeSql(q/select folder_id, group_id, permissions from oc_group_folders_groups where group_id like '%:LDAP'/);
@@ -140,29 +140,29 @@ sub findFolders {
 
 my $pseudoIdFolder = 1;
 sub updateOrCreateFolder {
-	my ($class, $mountPoint, $quota) = @_;
+	my ($class, $mountPoint, $quotaG) = @_;
 	my $folder = $folderInBase{$mountPoint};
 	my $sqlRequete;
 
 
-	my $quotaG = $quota * 1024 * 1024 * 1024;
+	my $quotaO = $quotaG * 1024 * 1024 * 1024;
 	if ($folder) {
-		if ($quota && $quotaG != $folder->quota) {
-			$folder->quota($quota);
-			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quota .'G');
+		if ($quotaG && $quotaO != $folder->quota) {
+			$folder->quota($quotaO);
+			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quotaG .'G');
 		}
 		return $folder
 	}
 	my @RES;
-	if ($quota) {
+	if ($quotaG) {
 		util->occ("groupfolders:create '$mountPoint'", \@RES);
 		if (util->isTestMode) {
 			unshift @RES, '000' . $pseudoIdFolder++;
 		}
 		if (@RES && $RES[0] =~ /^(\d+)\s*$/ ) {
-			$folder = $class->new($1, $mountPoint, $quotaG);
+			$folder = $class->new($1, $mountPoint, $quotaO);
 			$folderInBase{$mountPoint} = $folder;
-			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quota .'G');
+			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quotaG .'G');
 		} else {
 			FATAL! "erreur de creation du folder : $mountPoint";
 		}
@@ -218,6 +218,29 @@ sub cleanFolder {
 
 sub cleanAllFolder {
 	my $class = shift;
+	# verifications de quota de folder par rapport au disque
+	# on recupere la place occupée sur le disque:
+	my @lignes = ();
+	my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
+	SYSTEM! "du -b -d1 $repGF", \@lignes;
+	foreach my $ligne (@lignes) {
+		if ($ligne =~ /^(\d+)\s+$repGF(\d+)$/o) {
+			my $idFolder = $2;
+			my $size = $1;
+			my $folder = $folderById{$idFolder};
+			if ($folder) {
+				my $pourcentQuota = int 100 * $size / $folder->quota;
+				if ($pourcentQuota > 80 ) {
+					WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
+				}
+			} else {
+				print "no folder\n";
+				WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
+			}
+		}
+	}
+	
+	# suppresion des groupes inutiles dans le folder
 	map {$_->cleanFolder} values(%folderInBase);
 }
 1;

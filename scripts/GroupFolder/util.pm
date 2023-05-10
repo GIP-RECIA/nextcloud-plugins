@@ -1,5 +1,5 @@
 use MyLogger;
-use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 
 package util;
@@ -215,6 +215,24 @@ sub localDate {
 }
 sub jour {
 	return sprintf '%6$d%5$02d%4$02d', &localDate (time); 
+}
+
+sub toGiga {
+	my $class = shift;
+	my $val = shift;
+	my $unit = shift;
+	if ($val) {
+		if (@_) {
+			my $mod = $val % 1024;
+			if ($mod) {
+				return $class->toGiga(int($val/1024),@_) . $mod . "$unit ";
+			}
+			return $class->toGiga(int($val/1024),@_);
+		} else {
+			return $unit ? "$val$unit " : $class->toGiga($val, 'o', 'Ko', 'Mo', 'Go', 'To'); 
+		}
+	}
+	return $unit ? "" : "0o";
 }
 
 1;
