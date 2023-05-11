@@ -1,5 +1,5 @@
 use MyLogger;
-use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
 use strict;
