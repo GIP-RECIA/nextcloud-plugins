@@ -100,7 +100,7 @@ class SessionMapper extends QBMapper {
 			$subQuery->where($subQuery->expr()->eq('document_id', $subQuery->createNamedParameter($documentId)));
 		}
 		//$subQuery->groupBy('session_id');
-		
+
 		$selectActiveSessions = $subQuery->getSQL();
 
 		$qb = $this->db->getQueryBuilder();

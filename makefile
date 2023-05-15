@@ -29,7 +29,7 @@ CSS=$(LOADER)/inputs/css
 
 ALLETAB=allEtab.txt
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
 
@@ -64,7 +64,10 @@ SKELETON:
 
 LIB: 
 	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
+
+PATCH:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
+	cp apps/text/lib/Db/SessionMapper.php $(NEXTCLOUD_PATH)/apps/text/lib/Db/SessionMapper.php
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
