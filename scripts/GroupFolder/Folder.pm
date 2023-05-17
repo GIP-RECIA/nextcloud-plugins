@@ -220,11 +220,9 @@ sub cleanAllFolder {
 	my $class = shift;
 	# verifications de quota de folder par rapport au disque
 	# on recupere la place occupée sur le disque:
-	my @lignes = ();
 	my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
-	SYSTEM! "du -b -d1 $repGF", \@lignes;
-	foreach my $ligne (@lignes) {
-		if ($ligne =~ /^(\d+)\s+$repGF(\d+)$/o) {
+	SYSTEM! "du -b -d1 $repGF", sub {
+		if (/^(\d+)\s+$repGF(\d+)$/o) {
 			my $idFolder = $2;
 			my $size = $1;
 			my $folder = $folderById{$idFolder};
@@ -238,9 +236,9 @@ sub cleanAllFolder {
 				WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
 			}
 		}
-	}
+	};
 	
-	# suppresion des groupes inutiles dans le folder
+	# suppresion des groupes inutiles dans les folders
 	map {$_->cleanFolder} values(%folderInBase);
 }
 1;
