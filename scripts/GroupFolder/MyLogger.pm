@@ -202,12 +202,11 @@ sub traceSystem {
 			}
 		}
 	}
-	if ($out) {
-		&$printOut("$out\n");
-	}
-	if ($err) {
-		&$printErr("$err\n");
-	}
+	
+	&$printOut("$out\n") if $out;
+	
+	&$printErr("$err\n") if $err;
+	
 	waitpid $pid, 0;
 	
 	my $child_exit_status = $? >> 8;
