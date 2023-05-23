@@ -239,7 +239,9 @@ sub cleanAllFolder {
 	};
 	
 	# suppresion des groupes inutiles dans les folders
-	map {$_->cleanFolder} values(%folderInBase);
+	# map {$_->cleanFolder} values(%folderInBase);
+
+	foreach (values %folderInBase) { $_->cleanFolder }
 }
 1;
 
