@@ -234,7 +234,7 @@ class ReciaRechercheAPIController extends OCSController {
                 // Query user attributes
                 $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
                 if (ldap_error($ldapConnection) == "No such object") {
-                    return [];
+                    return null;
                 }
                 elseif (ldap_error($ldapConnection) != "Success") {
                     throw new \Exception('Error searching LDAP: ' . ldap_error($ldapConnection));
