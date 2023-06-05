@@ -222,3 +222,7 @@ util.sh
 /Presentation_ESUP_DAYS_06.2023/*.toc
 /Presentation_ESUP_DAYS_06.2023/*.vrb
 /Presentation_ESUP_DAYS_06.2023/build
+
+### Latex VSCODE
+**/*.fdb_latexmk
+**/*.fls

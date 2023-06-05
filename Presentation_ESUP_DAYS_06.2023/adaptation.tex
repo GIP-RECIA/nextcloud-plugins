@@ -2,21 +2,21 @@
 \subsection{Plugins cssJsLoader}
 \begin{frame}[fragile]{\sub}{(steamulo)}
 \begin{itemize}
-\item Permet de charger nos propres js et css.
-\item Personnalisation en fonction du domaine de connexion.
-\item Jusqu'en 2022 intégration en \code/iframe/ dans le portail avec \code/postMessage_resize_iframe_in_parent.js/.
-\item Depuis 2022 plus d'\code/iframe/, peut-être remplacé par l'utilisation de thème? 
+\item Permet de charger nos propres JS et CSS ;
+\item Personnalisation en fonction du domaine de connexion ;
+\item Jusqu'en 2022 intégration en \code/iframe/ dans le portail avec \code/postMessage_resize_iframe_in_parent.js/ ;
+\item Depuis 2022 plus d'\code/iframe/, peut-être remplacé par l'utilisation de thème ? 
 \end{itemize}
 \end{frame} 
 
 
 \begin{frame}{\sub}{(steamulo)} % some commands, e.g. \verb require [fragile]
 \begin{itemize}
-\item Est dérivé du plugin ``CAS user and group backend'' de Felix Rupp.
-\item Permet l'importation des comptes à partir du ldap
-\item Fait l'association des comptes et des groupes aux établissements;
+\item Est dérivé du plugin ``CAS user and group backend'' de Felix Rupp ;
+\item Permet l'importation des comptes à partir du LDAP ;
+\item Fait l'association des comptes et des groupes aux établissements ;
 		{\small $$ => table\ etablissement $$} 
-\item Filtre et traduit les groupes Grouper en groupes Nextcloud
+\item Filtre et traduit les groupes Grouper en groupes Nextcloud ;
 		{\small $$ => table\ asso\_uai\_user\_group $$ } 
 \item Gère les quotas des utilisateurs en fonction des leurs groupes.
 \end{itemize}
@@ -41,11 +41,11 @@
     ^[^:]+:Etablissements:([^:_]+_(\d+\w)):[^:]+:(Eleves_[^:]+) 
     |   ${3}.${1}  |  2
 \end{verbatim}
-\item {\tiny est réécrit pour Nexcloud en:}
+\item {\tiny est réécrit pour Nextcloud en :}
 \begin{verbatim}
     Eleves_3-2.ALBERT CAMUS_0180592W
 \end{verbatim}
-\item {\tiny et déduit l’appartenance de l'utilisateur à l'établissement}
+\item {\tiny et déduit l’appartenance de l'utilisateur à l'établissement :}
 \begin{verbatim}
     ALBERT CAMUS_0180592W
 \end{verbatim}
@@ -53,16 +53,16 @@
 \end{frame}
 
 
-\subsection{Plugin files\_sharing}
+\subsection{Plugin File sharing}
 \begin{frame}[fragile]{\sub}{Présentation}
 
 \includegraphics[height=0.75\textheight]{filesharing.png}
 \raisebox{3cm}{
 \begin{minipage}{8.5cm}
 \begin{itemize}
-\item Facilité la recherche d'utilisateurs et de groupes pour le partage en permettant la recherche par établissement
-\item Fork de l'App File\_sharing de Nextcloud
-\item Backend PHP \& frontend Vue JS
+\item Facilité la recherche d'utilisateurs et de groupes pour le partage en permettant la recherche par établissement ;
+\item Fork de l'App File sharing de Nextcloud ;
+\item Backend PHP \& frontend Vue JS.
 \end{itemize}
 \end{minipage}
 }
@@ -79,10 +79,10 @@
 \begin{itemize}
 	\item 2 routes :
 		\begin{list}{-}{}
-		\item recherche d'établissements liés à l'utilisateur courant
-		\item recherche des utilisateurs \& groupes liés à un établissement
+		\item recherche d'établissements liés à l'utilisateur courant ;
+		\item recherche des utilisateurs et des groupes liés à un établissement.
 		\end{list}
-	\item 1 contrôleur
+	\item 1 contrôleur.
 \end{itemize}
 
 \end{frame}
@@ -94,21 +94,21 @@
 \begin{minipage}{8.5cm}
 Remplacement dans la vue $SharingTab$ du composant $SharingInput$ par :
 \begin{itemize}
-\item boutons radios de sélection du type de recherche
-\item composant de recherche d'établissement basé sur le composant $NcMultiselect$ 
-
-\item composant dérivé du composant originel $SharingInput$
+\item boutons radios de sélection du type de recherche ;
+\item composant de recherche d'établissement basé sur le composant $NcMultiselect$ ;
+\item composant dérivé du composant originel $SharingInput$.
 \end{itemize}
 \end{minipage}
 }
 \end{frame}
 
 \subsection{Bandeau ENT}
+
 \begin{frame}{\sub}
-Les navigateurs n'acceptant plus le cross-domaine sur les cookies de session (auth CAS).
+Les navigateurs n'acceptant plus le cross-domaine sur les cookies de session (authentification CAS).
 \begin{itemize}
-	\item Création d'un composant web simulant le portail (à la prolongation\_ent)
-	\item Intégration dans NC via un thème.
-	\item tenant compte du multi-domaines   
+	\item Création d'un composant web simulant le portail (Extended uPortal Header) ;
+	\item Intégration dans Nextcloud via un thème ;
+	\item tenant compte du multi-domaine.  
 \end{itemize}
 \end{frame}
