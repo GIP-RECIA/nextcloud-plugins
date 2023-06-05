@@ -221,3 +221,7 @@ util.sh
 /Presentation_ESUP_DAYS_06.2023/*.synctex.gz
 /Presentation_ESUP_DAYS_06.2023/*.toc
 /Presentation_ESUP_DAYS_06.2023/*.vrb
+
+### Latex VSCODE
+**/*.fdb_latexmk
+**/*.fls
