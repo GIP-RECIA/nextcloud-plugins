@@ -68,6 +68,7 @@
 }
 \end{frame}
 
+
 \begin{frame}[fragile]{\sub}{Utilisation}
 \vspace{-20pt}
 \begin{figure}
@@ -78,14 +79,17 @@
 \begin{frame}[fragile]{\sub}{Backend}
 \begin{itemize}
 	\item 2 routes :
-		\begin{list}{-}{}
-		\item recherche d'établissements liés à l'utilisateur courant ;
-		\item recherche des utilisateurs et des groupes liés à un établissement.
-		\end{list}
+		\begin{itemize}
+			\item recherche d'établissements liés à l'utilisateur courant ;
+			\item recherche des utilisateurs et des groupes liés à un établissement.
+		\end{itemize}
+
 	\item 1 contrôleur.
 \end{itemize}
 
 \end{frame}
+
+
 
 \begin{frame}[fragile]{\sub}{Frontend}
 
@@ -102,6 +106,7 @@ Remplacement dans la vue $SharingTab$ du composant $SharingInput$ par :
 }
 \end{frame}
 
+
 \subsection{Bandeau ENT}
 
 \begin{frame}{\sub}
@@ -111,4 +116,5 @@ Les navigateurs n'acceptant plus le cross-domaine sur les cookies de session (au
 	\item Intégration dans Nextcloud via un thème ;
 	\item tenant compte du multi-domaine.  
 \end{itemize}
+\includegraphics[width=\textwidth]{extended-uportal-header.png}
 \end{frame}

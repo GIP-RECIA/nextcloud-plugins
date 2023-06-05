@@ -1,8 +1,15 @@
 
 \section{Les difficultés rencontrées}
+\subsection{Synchronisation cluster SQL}
 \subsection{Stockage Objet}
 \subsection{UI groupes et intégration ENT}
 \begin{frame}[fragile]{Les difficultés rencontrées}
+
+\begin{itemize}
+	\item Synchronisation avec le cluster SQL : Une lecture suivant immédiatement l'écriture peut échouer.  
+	ex A la 1ère connexion d'un utilisateur il y création de son carnet adresse (CarDav) qui échoue parfois.
+		$wsrep_sync_wait = 3$
+\end{itemize}
 \begin{itemize}
 
 \item Le stockage object (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation des sortir les \ang{avatars} \ang{previews} du \ang{bucket} par défauts. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
@@ -13,8 +20,8 @@
 
 
 \begin{itemize}
-\pause \item Le grand nombre de groupes génère un \ang{time out} à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
-\pause \item Ajout du bandeau \ang{header} et \ang{footer} pause difficultés. 
+ \item Le grand nombre de groupes génère un \ang{time out} à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
+ \item Ajout du bandeau \ang{header} et \ang{footer} pause difficultés. 
 \end{itemize}
 
 \end{frame}
