@@ -1,6 +1,6 @@
 \section{Nos Adaptations}
-\subsection{Plugins cssJsLoader, ladpImporter}
-\begin{frame}[fragile]{Plugin cssJsLoader}{(steamulo)}
+\subsection{Plugins cssJsLoader}
+\begin{frame}[fragile]{\sub}{(steamulo)}
 \begin{itemize}
 \item Permet de charger nos propres js et css.
 \item Personnalisation en fonction du domaine de connexion.
@@ -9,7 +9,8 @@
 \end{itemize}
 \end{frame} 
 
-\begin{frame}{Plugin ldapImporter}{(steamulo)} % some commands, e.g. \verb require [fragile]
+
+\begin{frame}{\sub}{(steamulo)} % some commands, e.g. \verb require [fragile]
 \begin{itemize}
 \item Est dérivé du plugin ``CAS user and group backend'' de Felix Rupp.
 \item Permet l'importation des comptes à partir du ldap
@@ -21,14 +22,14 @@
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}{Plugin ldapimporter} % some commands, e.g. \verb require [fragile]
+\subsection{Plugins ladpImporter}
+\begin{frame}{\sub} % some commands, e.g. \verb require [fragile]
 \begin{figure}
 \includegraphics[width=\textwidth, height=0.85\textheight]{ldapimporter.png}
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile]{Plugin ldapimporter} % some commands, e.g. \verb require [fragile]
+\begin{frame}[fragile]{\sub} % some commands, e.g. \verb require [fragile]
 {exemple de filtrage et renommage de groupe}
 \begin{list}{}{}
 	\item {\tiny Le groupe Grouper :}
@@ -53,7 +54,7 @@
 
 
 \subsection{Plugin files\_sharing}
-\begin{frame}[fragile]{Plugin files\_sharing}{Présentation}
+\begin{frame}[fragile]{\sub}{Présentation}
 
 \includegraphics[height=0.75\textheight]{filesharing.png}
 \raisebox{3cm}{
@@ -67,13 +68,14 @@
 }
 \end{frame}
 
-\begin{frame}[fragile]{Plugin files\_sharing}{Utilisation}
+\begin{frame}[fragile]{\sub}{Utilisation}
 \vspace{-20pt}
 \begin{figure}
 \includegraphics[width=\textwidth]{Fonctionnement-fork-files_sharing.pdf}
 \end{figure}
 \end{frame}
-\begin{frame}[fragile]{Plugin files\_sharing}{Backend}
+
+\begin{frame}[fragile]{\sub}{Backend}
 \begin{itemize}
 	\item 2 routes :
 		\begin{list}{-}{}
@@ -85,7 +87,7 @@
 
 \end{frame}
 
-\begin{frame}[fragile]{Plugin files\_sharing}{Frontend}
+\begin{frame}[fragile]{\sub}{Frontend}
 
 \includegraphics[height=0.75\textheight]{filesharing.png}
 \raisebox{3cm}{
@@ -102,7 +104,7 @@ Remplacement dans la vue $SharingTab$ du composant $SharingInput$ par :
 \end{frame}
 
 \subsection{Bandeau ENT}
-\begin{frame}{Bandeau ENT}
+\begin{frame}{\sub}
 Les navigateurs n'acceptant plus le cross-domaine sur les cookies de session (auth CAS).
 \begin{itemize}
 	\item Création d'un composant web simulant le portail (à la prolongation\_ent)

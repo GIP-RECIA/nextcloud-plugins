@@ -1,17 +1,20 @@
 
 \section{Les difficultés rencontrées}
-
-\subsection{Stockage Object}
-
+\subsection{Stockage Objet}
 \subsection{UI groupes et intégration ENT}
-
 \begin{frame}[fragile]{Les difficultés rencontrées}
 \begin{itemize}
-\item Le grand nombre de groupes génère un << time out >> à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
-\item Le stockage object (en V18);  OpenIo recommandation de ne pas dépasser $500\,000$ objets par "buckets". Obligation des sortir les "avatars" et "previews" du bucket par défauts. (Résolut pour les previews dans les versions récentes <<$objectstore.multibucket.preview-distribution$>>).
-\item Avec le stockage object pas de <<snapshot>>, comment se prémunir d'une attaque de type <<ransomware>> => projet a l'étude avec Arawa. 
+
+\item Le stockage object (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation des sortir les \ang{avatars} \ang{previews} du \ang{bucket} par défauts. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
+
+\item Avec le stockage object pas de \ang{snapshot}, comment se prémunir d'une attaque de type \ang{ransomware} ; projet a l'étude avec Arawa. 
+
+\end{itemize}
 
 
+\begin{itemize}
+\pause \item Le grand nombre de groupes génère un \ang{time out} à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
+\pause \item Ajout du bandeau \ang{header} et \ang{footer} pause difficultés. 
 \end{itemize}
 
 \end{frame}

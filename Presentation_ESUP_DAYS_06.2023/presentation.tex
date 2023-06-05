@@ -5,6 +5,8 @@
 %pour un ratio 4:3 mettre 43 pour 16:9 169 ; 16:10 1610 ; 
 \documentclass[aspectratio=169]{beamer}
 \usepackage[french]{babel}
+\usepackage[T1]{fontenc} %pour le guillemts à la francaise et ...
+
 %\usepackage{csquotes}
 %\usepackage{calc}
 \usepackage[absolute,overlay]{textpos}
@@ -44,6 +46,8 @@
 	#2\end{tabular}}}}
 
 \newverbcommand{\code}{$}{$}
+\newcommand{\ang}[1]{<<#1>>}
+
 
 \title[]{Nextcloud dans la région\\
 \ \\
@@ -51,6 +55,15 @@ Centre - Val de Loire}
 \institute[]{Gip Recia}
 \author{Grégory Brousse \and  Pierre Legay}
 %\date{}
+\setbeamertemplate{itemize subitem}[ball]
+
+\newcommand{\smallsec}{}
+\let\oldsection\section
+\renewcommand{\section}[1]{\oldsection{#1}\renewcommand{\smallsec}{{\small #1}}}
+
+\newcommand{\sub}{}
+\let\oldsubsection\subsection
+\renewcommand{\subsection}[1]{\oldsubsection{#1}\renewcommand{\sub}{\smallsec\,: #1}}
 
 \begin{document}
 {
