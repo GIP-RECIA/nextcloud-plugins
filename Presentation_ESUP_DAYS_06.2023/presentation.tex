@@ -45,7 +45,9 @@
 
 \newverbcommand{\code}{$}{$}
 
-\title[]{Nextcloud dans la région Centre - Val de Loire}
+\title[]{Nextcloud dans la région\\
+\ \\
+Centre - Val de Loire}
 \institute[]{Gip Recia}
 \author{Grégory Brousse \and  Pierre Legay}
 %\date{}
@@ -62,236 +64,12 @@
 \tableofcontents
 \end{frame}
 
-\section{Contexte}
-\subsection{Le GIP Recia}
- \begin{frame}{Le GIP Recia}
-	Le Groupement d’Intérêt Public RECIA (Région Centre Interactive) associe : 
-\begin{itemize}
-\item l’État (rectorat),
-\item plus de 500 structures publiques sur toute la Région Centre Val de Loire,
-\item les Conseils départementaux 
-	\begin{itemize}
-		\item du Cher,
-		\item de l’Indre-et-Loire,
-		\item de l’Eure-et-Loir,
-		\item de l'Indre, 
-		\item du Loir-et-Cher 
-		\item et du Loiret
-	\end{itemize}
-\item les Universités de Tours et d’Orléans,
-\item l’INSA Bourge, 
-\item le CROUS, 
-\item Ciclic Centre-Val de Loire, 
-\item GIP e-santé Centre Val de Loire, 
-\item des communes et communautés de communes.
-\end{itemize}
-	
- \end{frame}
-\begin{frame}{Les activités du GIP Recia }
-\begin{itemize}
-\item Le réseau régional haut débit (renater ReCOR)
-\item L’hébergement de données
-\item Aménagement numérique du territoire (conseil / réseaux d’initiative publique)
-\item Études, expertises, assistance, conseil, veille, animation, observatoire
-\item Économie numérique et programme transition numérique
-\item La maintenance informatique des Lycées, des collèges, des CFA, des EFSS
-\item Les ENT $1^{er}$ et $2^{nd}$ degrés
-\end{itemize}
-\end{frame}
-
-\subsection{Les ENT des lycées et collèges de la région}
-\begin{frame}{Les ENT des lycées et collèges de la région}
-
-ENT du $2^{nd}$ degrés de la région centre.
-
-\begin{itemize}
-\item multi-domaines 
-	\begin{list}{}{}
-		\item ENT des Lycées de la région.
-		\item 1 ENT par départements de la région pour les collèges (6).
-		\item 238 collèges + 101 lycees + ... 
-	\end{list}
-	
-\item Nombreux utilisateurs potentiels :
-\begin{list}{}{}
-		 \item $187\,000 $ comptes actifs, 
-		 \item $192\,000$ Élèves, 
-		 \item $16\,700$ Enseignants
-\end{list}
-\item  $61\,000$ Groupes: classe, groupe pédagogique, matière ...  
-\item authentification CAS 
-\end{itemize}
-
-\end{frame}
-
-\subsection{L'environnement applicatif}
-\begin{frame}{L'environnement applicatif}
-Infrastructure de production hébergé \raisebox{-2pt}{\includegraphics[scale=0.1]{aquaray.png}} {\tiny(www.aquaray.com)}.
-\begin{itemize}
-	\item OpenLdap
-	\item ENT UPortal
-	\item Authentification SSO CAS
-	\item Grouper
-	\item OnlyOffice (via NC)
-	\item Collabora (via NC)
-	\item Moodle 
-	
-\end{itemize}
-\end{frame}
-
-\section{Infrastructure Nextcloud}
-\subsection{L'architecture}
-\begin{frame}{L'architecture}
-\vspace{-50pt}
-\begin{figure}
-\includegraphics[scale=0.25]{202306-architecture-nextcloud.pdf}
-\end{figure}
-\end{frame}
-
-\subsection{Les instances de production}
-\begin{frame}{Les instances de production} 
-Deux instances de production sur la même infrastructure.
-\begin{enumerate}
-	\item Pour l'ENT depuis mai 2020 (V18.0.3 ... V24.0.12)
-		\begin{list}{-}{}
-		  \item $9$ domaines (avec leurs css)
-		  \item $372$ établissements;
-		  \item $118\,224$ comptes actifs;
-		  \item $67\,383$ groupes;
-		  \item Création des comptes et groupes automatique depuis LDAP;
-		 \end{list}
-
-	\item Pour le Gip Recia (V25.0.6) (extension aux collectivités locales?) 
-	   \begin{list}{-}{}
-	   \item Stockage NetApp.
-	   \item Création  automatique des comptes, groupes et  groupFolder;
-	   \end{list}
-\end{enumerate}
-\end{frame}
-
-\section{Nos Adaptations}
-\subsection{Plugin cssJsLoader}
-\begin{frame}[fragile]{Plugin cssJsLoader}{(steamulo)}
-\begin{itemize}
-\item Permet de charger nos propres js et css.
-\item Personnalisation en fonction du domaine de connexion.
-\item Jusqu'en 2022 intégration en \code/iframe/ dans le portail avec \code/postMessage_resize_iframe_in_parent.js/.
-\item Depuis 2022 plus d'\code/iframe/, peut-être remplacé par l'utilisation de thème? 
-\end{itemize}
-\end{frame} 
-
-\subsection{Plugin ladpimporter}
-\begin{frame}{Plugin ldapimporter}{(steamulo)} % some commands, e.g. \verb require [fragile]
-\begin{itemize}
-\item Est dérivé du plugin ``CAS user and group backend'' de Felix Rupp.
-\item Permet l'importation des comptes à partir du ldap
-\item Fait l'association des comptes et des groupes aux établissements;
-		{\small $$ => table\ etablissement $$} 
-\item Filtre et traduit les groupes Grouper en groupes Nextcloud
-		{\small $$ => table\ asso\_uai\_user\_group $$ } 
-\item Gère les quotas des utilisateurs en fonction des leurs groupes.
-\end{itemize}
-\end{frame}
+\include{context}
+\include{infra}
+\include{adaptation}
+\include{projets}
 
 
-\begin{frame}{Plugin ldapimporter} % some commands, e.g. \verb require [fragile]
-\begin{figure}
-\includegraphics[width=\textwidth, height=0.85\textheight]{ldapimporter.png}
-\end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{Plugin ldapimporter} % some commands, e.g. \verb require [fragile]
-{exemple de filtrage et renommage de groupe}
-\begin{list}{}{}
-	\item {\tiny Le groupe Grouper :}
-\begin{verbatim}
-     clg18:Etablissements:ALBERT CAMUS_0180592W:3EME:Eleves_3-2
-\end{verbatim}
-\item {\tiny satisfait la regex:}
-\begin{verbatim}
-    ^[^:]+:Etablissements:([^:_]+_(\d+\w)):[^:]+:(Eleves_[^:]+) 
-    |   ${3}.${1}  |  2
-\end{verbatim}
-\item {\tiny est réécrit pour Nexcloud en:}
-\begin{verbatim}
-    Eleves_3-2.ALBERT CAMUS_0180592W
-\end{verbatim}
-\item {\tiny et déduit l’appartenance de l'utilisateur à l'établissement}
-\begin{verbatim}
-    ALBERT CAMUS_0180592W
-\end{verbatim}
-\end{list}
-\end{frame}
-
-
-\subsection{Plugin files\_sharing}
-\begin{frame}[fragile]{Plugin files\_sharing}{Présentation}
-
-\includegraphics[height=0.75\textheight]{filesharing.png}
-\raisebox{3cm}{
-\begin{minipage}{8.5cm}
-\begin{itemize}
-\item Facilité la recherche d'utilisateurs et de groupes pour le partage en permettant la recherche par établissement
-\item Fork de l'App File\_sharing de Nextcloud
-\item Backend PHP \& frontend Vue JS
-\end{itemize}
-\end{minipage}
-}
-\end{frame}
-
-\begin{frame}[fragile]{Plugin files\_sharing}{Utilisation}
-\vspace{-20pt}
-\begin{figure}
-\includegraphics[width=\textwidth]{Fonctionnement-fork-files_sharing.pdf}
-\end{figure}
-\end{frame}
-\begin{frame}[fragile]{Plugin files\_sharing}{Backend}
-\begin{itemize}
-	\item 2 routes :
-		\begin{list}{-}{}
-		\item recherche d'établissements liés à l'utilisateur courant
-		\item recherche des utilisateurs \& groupes liés à un établissement
-		\end{list}
-	\item 1 contrôleur
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}[fragile]{Plugin files\_sharing}{Frontend}
-
-\includegraphics[height=0.75\textheight]{filesharing.png}
-\raisebox{3cm}{
-\begin{minipage}{8.5cm}
-Remplacement dans la vue $SharingTab$ du composant $SharingInput$ par :
-\begin{itemize}
-\item boutons radios de sélection du type de recherche
-\item composant de recherche d'établissement basé sur le composant $NcMultiselect$ 
-
-\item composant dérivé du composant originel $SharingInput$
-\end{itemize}
-\end{minipage}
-}
-\end{frame}
-
-\subsection{Bandeau ENT}
-\begin{frame}{Bandeau ENT}
-Les navigateurs n'acceptant plus le cross-domaine sur les cookies de session (auth CAS).
-\begin{itemize}
-	\item Création d'un composant web simulant le portail (à la prolongation\_ent)
-	\item Intégration dans NC via un thème.
-	\item tenant compte du multi-domaines   
-\end{itemize}
-\end{frame}
-
-\section{Les Projets}
-\subsection{Gestion des GroupFolders}
-\begin{frame}{Gestion des GroupFolfers}
-Pour l'NC du GIP besoin de GroupFolders 
-\end{frame}
-\subsection{Comment se prémunir des attaques du types ransomware?}
-\begin{frame}
-
-\end{frame}
 %\begin{frame}[fragile]{Historique}
 %\begin{itemize}
 %\item Premier déploiement avec établissements de test en mai 2020 version 18.0.3 
@@ -299,10 +77,6 @@ Pour l'NC du GIP besoin de GroupFolders
 %\item Intégration dans le portail en mode \code/iframe/.
 %\end{itemize}
 %\end{frame}
-
-
-
-
 
 
 \end{document}
