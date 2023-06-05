@@ -213,3 +213,11 @@ backups/**
 
 ###< perso gbrousse ###
 util.sh
+/Presentation_ESUP_DAYS_06.2023/*.aux
+/Presentation_ESUP_DAYS_06.2023/*.log
+/Presentation_ESUP_DAYS_06.2023/*.nav
+/Presentation_ESUP_DAYS_06.2023/*.out
+/Presentation_ESUP_DAYS_06.2023/*.snm
+/Presentation_ESUP_DAYS_06.2023/*.synctex.gz
+/Presentation_ESUP_DAYS_06.2023/*.toc
+/Presentation_ESUP_DAYS_06.2023/*.vrb
