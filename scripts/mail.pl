@@ -5,22 +5,17 @@ use strict;
 my $subject=shift;
 my $from =shift;
 
-my $isOpen;
-
-
 while (<>) {
-	if (/^\s*$/) {
-		next;
+	unless (/^\s*$/) {
+		open (MAIL, "| /usr/bin/mail -s '$subject' -r '$from' ". 'ent@recia.fr') or die $!;
+		do {
+			print MAIL ;
+		} while <>;
+		close MAIL;
+		last;
 	}
-	open (MAIL, "| /usr/bin/mail -s '$subject' -r '$from' ". 'ent@recia.fr') or die $!;
-	$isOpen = 1;
-	print MAIL $_;
 }
 
-if ($isOpen) {
-	while (<>) {print MAIL $_ ;}
-	close MAIL;
-}
 
 
 __END__
