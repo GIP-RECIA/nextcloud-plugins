@@ -60,16 +60,13 @@ Centre - Val de Loire}
 \newcommand{\smallsec}{}
 \let\oldsection\section
 \renewcommand{\section}[1]{\oldsection{#1}\renewcommand{\smallsec}{{\small #1}}}
-%\renewcommand{\section}[1]{\@ifstar\oldsection*\oldsection{#1}\renewcommand{\smallsec}{{\small #1}}}
+
+\newcommand{\sectionstar}[1]{\oldsection*{#1}\renewcommand{\smallsec}{{\small #1}}}
 
 \newcommand{\sub}{}
 \let\oldsubsection\subsection
 \renewcommand{\subsection}[1]{\oldsubsection{#1}\renewcommand{\sub}{\smallsec\,: #1}}
-%\renewcommand{\subsection}[1]{\@ifstar\oldsubsection*\oldsubsection{#1}\renewcommand{\sub}{\smallsec\,: #1}}
-%%%
-
-
-
+\newcommand{\subsectionstar}[1]{\oldsubsection*{#1}\renewcommand{\sub}{\smallsec\,: #1}}
 
 \begin{document}
 {

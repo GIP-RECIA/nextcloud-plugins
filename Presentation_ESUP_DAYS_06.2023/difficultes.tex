@@ -3,16 +3,16 @@
 \subsection{Synchronisation cluster SQL}
 \subsection{Stockage Objet}
 \subsection{UI groupes et intégration ENT}
-\begin{frame}[fragile]{Les difficultés rencontrées}
+\begin{frame}[fragile]{\smallsec : cluster SQL, Stockage Objet,  UI ... }
 
 \begin{itemize}
 	\item Synchronisation du cluster SQL : Une lecture suivant immédiatement l'écriture peut échouer.  
-	ex: A la $1^{re}$ connexion d'un utilisateur il y a création de son carnet d'adresse (CarDav) qui échoue parfois.
+	Par exemple: A la $1^{re}$ connexion d'un utilisateur il y a création de son carnet d'adresse (CarDav) qui échoue parfois.
 		$wsrep\_sync\_wait = 3$
 \end{itemize}
 \begin{itemize}
 
-\item Le stockage objet (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation de sortir les \ang{avatars} \ang{previews} du \ang{bucket} par défauts. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
+\item Le stockage objet (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation de sortir les \ang{avatars} et les \ang{previews} du \ang{bucket} par défaut. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
 
 \item Avec le stockage objet pas de \ang{snapshot}, comment se prémunir d'une attaque de type \ang{ransomware} ; projet a l'étude avec Arawa. 
 
@@ -20,8 +20,8 @@
 
 
 \begin{itemize}
- \item Le grand nombre de groupes génère un \ang{time out} à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
- \item Ajout du bandeau \ang{header} et \ang{footer} pause difficultés. 
+ \item Le grand nombre de groupes génère un \ang{timeout} à l'appel de la gestions des utilisateurs (pas de pagination sur les groupes)
+ \item Pour le bandeau ENT. L'ajout d'un \ang{header} et d'un \ang{footer} n'est pas prévu, On est obligé de contrôlé la css de chaque page, pour le \ang{footer}, la solution à été de le fixer et de le cacher quand on est dans la page. 
 \end{itemize}
 
 \end{frame}
