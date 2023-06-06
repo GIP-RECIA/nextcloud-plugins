@@ -60,10 +60,16 @@ Centre - Val de Loire}
 \newcommand{\smallsec}{}
 \let\oldsection\section
 \renewcommand{\section}[1]{\oldsection{#1}\renewcommand{\smallsec}{{\small #1}}}
+%\renewcommand{\section}[1]{\@ifstar\oldsection*\oldsection{#1}\renewcommand{\smallsec}{{\small #1}}}
 
 \newcommand{\sub}{}
 \let\oldsubsection\subsection
 \renewcommand{\subsection}[1]{\oldsubsection{#1}\renewcommand{\sub}{\smallsec\,: #1}}
+%\renewcommand{\subsection}[1]{\@ifstar\oldsubsection*\oldsubsection{#1}\renewcommand{\sub}{\smallsec\,: #1}}
+%%%
+
+
+
 
 \begin{document}
 {
@@ -81,15 +87,8 @@ Centre - Val de Loire}
 \include{infra}
 \include{adaptation}
 \include{difficultes}
+\include{projets}
 
-
-%\begin{frame}[fragile]{Historique}
-%\begin{itemize}
-%\item Premier déploiement avec établissements de test en mai 2020 version 18.0.3 
-%\item Généralisation à tous les établissement à partir de Septembre 2020 par groupes d'une dizaine d'établissements. 
-%\item Intégration dans le portail en mode \code/iframe/.
-%\end{itemize}
-%\end{frame}
 
 
 \end{document}

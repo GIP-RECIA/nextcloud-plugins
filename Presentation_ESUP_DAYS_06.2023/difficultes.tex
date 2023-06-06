@@ -6,9 +6,9 @@
 \begin{frame}[fragile]{Les difficultés rencontrées}
 
 \begin{itemize}
-	\item Synchronisation avec le cluster SQL : Une lecture suivant immédiatement l'écriture peut échouer.  
-	ex A la 1ère connexion d'un utilisateur il y création de son carnet adresse (CarDav) qui échoue parfois.
-		$wsrep_sync_wait = 3$
+	\item Synchronisation du cluster SQL : Une lecture suivant immédiatement l'écriture peut échouer.  
+	ex A la $1^{re}$ connexion d'un utilisateur il y a création de son carnet d'adresse (CarDav) qui échoue parfois.
+		$wsrep\_sync\_wait = 3$
 \end{itemize}
 \begin{itemize}
 
