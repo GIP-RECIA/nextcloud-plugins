@@ -7,14 +7,14 @@
 
 \begin{itemize}
 	\item Synchronisation avec le cluster SQL : Une lecture suivant immédiatement l'écriture peut échouer.  
-	ex A la 1ère connexion d'un utilisateur il y création de son carnet adresse (CarDav) qui échoue parfois.
-		$wsrep_sync_wait = 3$
+	ex : A la 1ère connexion d'un utilisateur il y création de son carnet adresse (CarDav) qui échoue parfois.
+		$wsrep\_sync\_wait = 3$
 \end{itemize}
 \begin{itemize}
 
-\item Le stockage object (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation des sortir les \ang{avatars} \ang{previews} du \ang{bucket} par défauts. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
+\item Le stockage objet (en \small{V18});  OpenIo recommandation de ne pas dépasser $500\,000$ objets par \ang{bucket}. Obligation de sortir les \ang{avatars} \ang{previews} du \ang{bucket} par défauts. (Résolut pour les \ang{previews} dans les versions récentes \code/objectstore.multibucket.preview-distribution/).
 
-\item Avec le stockage object pas de \ang{snapshot}, comment se prémunir d'une attaque de type \ang{ransomware} ; projet a l'étude avec Arawa. 
+\item Avec le stockage objet pas de \ang{snapshot}, comment se prémunir d'une attaque de type \ang{ransomware} ; projet a l'étude avec Arawa. 
 
 \end{itemize}
 
