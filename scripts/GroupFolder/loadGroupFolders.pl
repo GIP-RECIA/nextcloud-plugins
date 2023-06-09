@@ -154,9 +154,9 @@ my $fin = 0;
 until ($fin++) {
 	$cpt++;
 	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
-	foreach my $etab (@{$config->{etabs}}) {
-		if (&traitementEtab($etab)) {
-			$etabForLoad{$etab->{siren}} = 1;
+	foreach my $confEtab (@{$config->{etabs}}) {
+		if (&traitementEtab($confEtab)) {
+			$etabForLoad{$confEtab->{siren}} = 1;
 			$fin = 0 if $useTimeStamp;
 			$isChange = 1;
 		}
@@ -203,21 +203,21 @@ END {
 
 sub traitementRegexGroup {
 	my $etabNC = shift;
-	my $regexGroupList = shift;
+	my $confGroupsList = shift;
 	my @grpRegexMatches = @_;
 	
 	# TRACE! Dumper(@res);
-	foreach my $regexGroup (@{$regexGroupList}) {
-		my $groupFormat = $regexGroup->{group};
+	foreach my $confGroup (@{$confGroupsList}) {
+		my $groupFormat = $confGroup->{group};
 
 		if ($groupFormat) {
 			GroupFolder->createGroupAndFolder(
 					$etabNC,
 					$groupFormat,
-					$regexGroup->{folder},
-					$regexGroup->{admin},
-					$regexGroup->{quotaF},
-					$regexGroup->{permF},
+					$confGroup->{folder},
+					$confGroup->{admin},
+					$confGroup->{quotaF},
+					$confGroup->{permF},
 					@grpRegexMatches
 				);
 		}
@@ -226,21 +226,21 @@ sub traitementRegexGroup {
 
 
 sub traitementEtabGroup {
-	my $etab = shift;
+	my $confEtab = shift;
 	my $etabNC = shift;
 	my $allLdapGroups = shift;
 	
-	foreach my $regexGroup (@{$etab->{regexs}}) {
-		my $regex = $regexGroup->{regex};
-		my $groups = $regexGroup->{groups};
-		my $last = $regexGroup->{last};
+	foreach my $confRegexGroup (@{$confEtab->{regexs}}) {
+		my $regex = $confRegexGroup->{regex};
+		my $confGroups = $confRegexGroup->{groups};
+		my $last = $confRegexGroup->{last};
 		my $lastIfMatch;
 		my $lastIfNotMatch;
 		
 		INFO! "REGEX = $regex";
 		
-		unless ($groups) {
-			$groups = [$regexGroup];
+		unless ($confGroups) {
+			$confGroups = [$confRegexGroup];
 		}
 		if ($last) {
 			 # dans last seulement deux terms autorisés les autres sont ignorés
@@ -258,7 +258,7 @@ sub traitementEtabGroup {
 
 			if (my @res = ($cnGroup =~ /$regex/)) {
 				INFO! "\tGrouper Group= $cnGroup ";
-				&traitementRegexGroup($etabNC,$groups, @res);
+				&traitementRegexGroup($etabNC,$confGroups, @res);
 				$entryGrp = '' if $lastIfMatch;
 			} else {
 				$entryGrp = '' if $lastIfNotMatch;
@@ -269,8 +269,8 @@ sub traitementEtabGroup {
 }
 #return 1 si ldap ramene des groups 0 sinon
 sub traitementEtab {
-	my $etab = shift;
-	my $siren = $etab->{siren};
+	my $confEtab = shift;
+	my $siren = $confEtab->{siren};
 	my $etabNC = Etab->readNC($siren);
 
 	if (! $useTimeStamp && $sirenList && ! $sirenList =~ /$siren/) {
@@ -280,7 +280,7 @@ sub traitementEtab {
 	my $newTimeStampLdap = util->timestampLdap(time);
 
 	unless ($etabNC) {
-		$etabNC = Etab->addEtab($siren, $etab->{nom})
+		$etabNC = Etab->addEtab($siren, $confEtab->{nom})
 	}
 
 	my $lastTimeStampLdap  = $etabNC->timestamp;
@@ -292,7 +292,7 @@ sub traitementEtab {
 	Group->readNC($etabNC);
 	#faire la requete ldap
 
-	my $filtreLdap =  $etab->{ldapFilterGroups};
+	my $filtreLdap =  $confEtab->{ldapFilterGroups};
 	chomp $filtreLdap ;
 
 	if ($useTimeStamp && $lastTimeStampLdap) {
@@ -304,7 +304,7 @@ sub traitementEtab {
 
 	if (@ldapGroups) {
 		INFO! $siren, " a des groupes: " ;
-		&traitementEtabGroup($etab, $etabNC, \@ldapGroups);
+		&traitementEtabGroup($confEtab, $etabNC, \@ldapGroups);
 		# si tout est ok on met a jour le  timestamp
 
 		#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
