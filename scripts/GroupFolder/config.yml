@@ -18,7 +18,7 @@ etabs:
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
-              - folders:
+            folders:
                 folder: 'GIP-RECIA'
                 permF: []
                 quotaF: 1
