@@ -19,9 +19,17 @@ etabs:
       - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
         groups:
           - group: 'GIP-RECIA'
-            folder: 'GIP-RECIA'
-            permF: []
-            quotaF: 1
+            folders:
+              - folder: 'GIP-RECIA'
+                permF: []
+                quotaF: 1
+              - folder: 'GIP-RECIA/Commun'
+                permF:
+                  -  write
+                  -  share
+                  -  delete
+                quotaF: 12
+          
           - group: '%2$s.%1$s'
             quotaG: 2
             folder: '%1$s/%2$s'

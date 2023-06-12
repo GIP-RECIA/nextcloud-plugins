@@ -1,11 +1,11 @@
 # les regex  sont testées dans l'ordre
 # un même groupe (ldap) peut matcher  plusieurs regex
-#	si il match une regex et sa definition contient "last: ifMatch" il ne sera pas representé aux autres regex 
+#   si il match une regex et sa definition contient "last: ifMatch" il ne sera pas representé aux autres regex 
 # une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui match.
 # a chaque 'group' on peut associer:
-# 	un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
-# 	un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
-# 	permF definit les droits du groupe sur le groupefolder  
+#   un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
+#   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
+#   permF definit les droits du groupe sur le groupefolder  
 
 
 ---
@@ -18,16 +18,16 @@ etabs:
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
-            folder: 'GIP-RECIA'
-            permF: []
-            quotaF: 1
-          - group: 'GIP-RECIA'
-            folder: 'GIP-RECIA/Commun'
-            permF:
-              - write
-              - delete
-              - share
-            quotaF: 100
+              - folders:
+                folder: 'GIP-RECIA'
+                permF: []
+                quotaF: 1
+              - folder: 'GIP-RECIA/Commun'
+                permF:
+                  - write
+                  - delete
+                  - share
+                quotaF: 100
           - group: '%2$s.%1$s'
             folder: '%1$s/%2$s'
             quotaF: 100

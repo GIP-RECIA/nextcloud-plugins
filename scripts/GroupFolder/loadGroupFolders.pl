@@ -208,18 +208,40 @@ sub traitementRegexGroup {
 	
 	# TRACE! Dumper(@res);
 	foreach my $confGroup (@{$confGroupsList}) {
+		
 		my $groupFormat = $confGroup->{group};
-
+		
 		if ($groupFormat) {
-			GroupFolder->createGroupAndFolder(
-					$etabNC,
-					$groupFormat,
-					$confGroup->{folder},
-					$confGroup->{admin},
-					$confGroup->{quotaF},
-					$confGroup->{permF},
-					@grpRegexMatches
-				);
+
+			my $groupNC = Group->getOrCreateGroup(sprintf($groupFormat, @grpRegexMatches), $etabNC);
+
+			my $confFoldersList = $confGroup->{folders};
+
+			unless ($confFoldersList) {
+				$confFoldersList = [$confGroup];
+			}
+			
+			foreach my $confFolder (@{$confFoldersList}) {
+				GroupFolder->createFolder4Group(
+						$etabNC,
+						$confFolder->{folder},
+						$confFolder->{quotaF},
+						$confFolder->{permF},
+						$groupNC,
+						@grpRegexMatches
+					);
+			}
+			
+			my $adminFolderFormat = $confGroup->{admin};
+
+			if ($adminFolderFormat) {
+				GroupFolder->addGroup4AdminFolder(
+						$etabNC,
+						$groupNC,
+						$adminFolderFormat,
+						@grpRegexMatches
+					);
+			}
 		}
 	}
 }
