@@ -19,7 +19,7 @@ etabs:
         groups:
           - group: 'GIP-RECIA'
             folders:
-                folder: 'GIP-RECIA'
+              - folder: 'GIP-RECIA'
                 permF: []
                 quotaF: 1
               - folder: 'GIP-RECIA/Commun'
