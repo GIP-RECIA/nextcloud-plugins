@@ -92,7 +92,7 @@ class CacheUpdateListener implements IEventListener {
 		]);
 
 
-		$this->logger->log('CacheUpdateListener::GroupFolder modified',[
+		$this->logger->debug('CacheUpdateListener::GroupFolder modified',[
 			'path'=>$path,
 			'id'=>$id,
 			'Etag'=>$etag,
