@@ -38,7 +38,7 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 GROUPFOLDERS:
-	cp -b $(APPS)/groupfolders backups/groupfolders
+	cp -br $(APPS)/groupfolders backups/groupfolders
 	cp -rvT groupfolders $(APPS)/groupfolders
 
 OOPATCH: 
