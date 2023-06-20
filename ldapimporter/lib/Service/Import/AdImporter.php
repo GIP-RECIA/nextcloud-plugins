@@ -593,7 +593,16 @@ class AdImporter implements ImporterInterface
     protected function addEtablissement($uai, $name, $siren)
     {
 		#on ne veux pas enregistré des etablissements sans nom ou sans UAI ni SIREN (j'espere que ca ira, n'ont-ils pas besoin de 2 passe pour etre complet ??)
-        if (!(is_null($name) || (is_null($siren) && is_null($uai)))) {
+        if (!is_null($name)) {
+			if (is_null($siren) && is_null($uai)))) {
+				$newEtablissement = $this->db->getQueryBuilder();
+				$newEtablissement->select('id')
+					->from('etablissements')
+					->where($newEtablissement->expr()->eq('name', $newEtablissement->createNamedParameter($name)));
+				$result = $newEtablissement->execute();
+				$newEtab = $result->fetchAll()[0];
+				return $newEtab["id"];
+			}
             $qbEtablissement = $this->db->getQueryBuilder();
             $qbEtablissement->select('*')
                 ->from('etablissements')
@@ -621,6 +630,7 @@ class AdImporter implements ImporterInterface
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
         }
+        $this->logger->error("can't create etab; uai=$uai, name=$name,  siren=$siren");
         return null;
     }
 
