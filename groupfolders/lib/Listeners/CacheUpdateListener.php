@@ -25,6 +25,7 @@ declare(strict_types=1);
  */
 namespace OCA\GroupFolders\Listeners;
 
+use Exception;
 use OCA\GroupFolders\Folder\FolderManager;
 
 use OCP\EventDispatcher\Event;
@@ -55,6 +56,7 @@ class CacheUpdateListener implements IEventListener {
 	}
 
 	public function handle(Event $event): void {
+		$debug = [];
 		if (!($event instanceof CacheEntryUpdatedEvent)) {
 			return;
 		}
@@ -76,33 +78,45 @@ class CacheUpdateListener implements IEventListener {
 		$groupFolder = $this->folderManager->getFolder((int)$id,(int)$storage->getId());
 		$mountPoint = $groupFolder['mount_point'];
 		$parentMountPoint = dirname($mountPoint);
-		if($parentMountPoint === '.'){
-			return;
-		}
-		if(!$parentGroupFolderId = $this->folderManager->getFolderByMountPoint($parentMountPoint)){
-			return;
-		}
-		$parentFileCachePath = '__groupfolders/'.$parentGroupFolderId;
-		$parentFileInfo = $this->view->getFileInfo($parentFileCachePath);
-		$parentFileId = $parentFileInfo->getId();
-		$cache->update($parentFileId,[
-			'etag'=>$etag,
-			'mtime'=>$mtime,
-			'storage_mtime'=>$storage_mtime,
-		]);
-
-
-		$this->logger->debug('CacheUpdateListener::GroupFolder modified',[
+		$debug = [
+			...$debug,
 			'path'=>$path,
 			'id'=>$id,
+			'fileid'=>$fileId,
 			'Etag'=>$etag,
 			'mtime'=>$mtime,
 			'smtime'=>$storage_mtime,
 			'mountPoint'=>$mountPoint,
 			'parentMountPoint'=>$parentMountPoint,
+		];
+		if($parentMountPoint === '.'){
+			$this->logger->warning('CacheUpdateListener::Abort::has no parent',$debug);
+			return;
+		}
+		$parentGroupFolderId = $this->folderManager->getFolderByMountPoint($parentMountPoint);
+		$debug['parentGroupFolderId']=$parentGroupFolderId;
+		if(!$parentGroupFolderId){
+			$this->logger->warning('CacheUpdateListener::Abort::Parent MountPoint not found',$debug);
+			return;
+		}
+		$parentFileCachePath = '__groupfolders/'.$parentGroupFolderId;
+		$parentFileInfo = $this->view->getFileInfo($parentFileCachePath);
+		$parentFileId = $parentFileInfo->getId();
+		$debug = [
+			...$debug,
 			'parentGroupFolderId'=>$parentGroupFolderId,
 			'parentFileCachePath'=>$parentFileCachePath,
 			'parentFileId'=>$parentFileId,
-		]);
+		];
+		try{
+			$cache->update($parentFileId,[
+				'etag'=>$etag,
+				'mtime'=>$mtime,
+				'storage_mtime'=>$storage_mtime,
+			]);
+		}catch(Exception $e){
+			$this->logger->error('CacheUpdateListener::Update error', ['exception' => $e,...$debug]);
+		}
+		$this->logger->warning('CacheUpdateListener::GroupFolder modified',$debug);
 	}
 }
