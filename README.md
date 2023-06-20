@@ -1,7 +1,6 @@
-#### Adaptation a nextcloud pour le gip recia
+#### Adaptation a nextcloud pour les ENT de la région centre
 
-Le recia à deux déploiements de NC sur la même architecture une pour les
-ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip, gip.nextcloud.recia.aquaray.com) 
+
 
 
 Les modifications portent principalement sur :
@@ -9,14 +8,13 @@ Les modifications portent principalement sur :
 Données les droits (quota) et créer les groupes NC à partir des groupes LDAP.
 
 - La recherche de groupe et personne pour le partage (file_sharing):
-uniquement pour 'nc-ent'.
 
-- gestion des buckets (nc-ent uniquement):
+- gestion des buckets :
 n'avoir qu'un bucket par compte , par avatar et vignette.
 
-- un plugin de chargement de js et css particulier (uniquement nc-ent cssjsLoader)
+- un plugin de chargement de js et css particulier
 
-- les fichiers par défauts (uniquement nc-ent):
+- les fichiers par défauts:
 suppression modification du repertoire skeleton
 
 
