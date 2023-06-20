@@ -73,8 +73,7 @@ class CacheUpdateListener implements IEventListener {
 		$cache = $storage->getCache();
 		$fileCache = $cache->get($fileId);
 		$etag = $fileCache->getEtag();
-		$mtime = $fileCache->getMTime();
-		$storage_mtime = $fileCache->getStorageMTime();
+		$storage_mtime = $mtime = time();
 		$groupFolder = $this->folderManager->getFolder((int)$id,(int)$storage->getId());
 		$mountPoint = $groupFolder['mount_point'];
 		$parentMountPoint = dirname($mountPoint);
