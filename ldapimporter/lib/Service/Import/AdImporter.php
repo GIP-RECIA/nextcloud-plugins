@@ -594,7 +594,7 @@ class AdImporter implements ImporterInterface
     {
 		#on ne veux pas enregistré des etablissements sans nom ou sans UAI ni SIREN (j'espere que ca ira, n'ont-ils pas besoin de 2 passe pour etre complet ??)
         if (!is_null($name)) {
-			if (is_null($siren) && is_null($uai)))) {
+			if (is_null($siren) && is_null($uai)) {
 				$newEtablissement = $this->db->getQueryBuilder();
 				$newEtablissement->select('id')
 					->from('etablissements')
