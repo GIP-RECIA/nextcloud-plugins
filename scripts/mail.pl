@@ -19,5 +19,3 @@ while (<>) {
 
 
 __END__
-/var/www/ncgip.recia/scripts/mail.pl 'cron loadGroupFolder' 'ncgip@aquaray.com'
-/var/www/ncprod.recia/scripts/mail.pl 'cron loadGroupFolder' 'ncprod@aquaray.com'
