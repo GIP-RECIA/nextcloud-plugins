@@ -78,8 +78,8 @@ class CacheUpdateListener implements IEventListener {
 		$groupFolder = $this->folderManager->getFolder((int)$id,(int)$storage->getId());
 		$mountPoint = $groupFolder['mount_point'];
 		$parentMountPoint = dirname($mountPoint);
-		$debug = [
-			...$debug,
+		$debug = array_merge($debug,
+		[
 			'path'=>$path,
 			'id'=>$id,
 			'fileid'=>$fileId,
@@ -88,7 +88,7 @@ class CacheUpdateListener implements IEventListener {
 			'smtime'=>$storage_mtime,
 			'mountPoint'=>$mountPoint,
 			'parentMountPoint'=>$parentMountPoint,
-		];
+		]);
 		if($parentMountPoint === '.'){
 			$this->logger->warning('CacheUpdateListener::Abort::has no parent',$debug);
 			return;
@@ -102,12 +102,12 @@ class CacheUpdateListener implements IEventListener {
 		$parentFileCachePath = '__groupfolders/'.$parentGroupFolderId;
 		$parentFileInfo = $this->view->getFileInfo($parentFileCachePath);
 		$parentFileId = $parentFileInfo->getId();
-		$debug = [
-			...$debug,
+		$debug = array_merge($debug,
+		[
 			'parentGroupFolderId'=>$parentGroupFolderId,
 			'parentFileCachePath'=>$parentFileCachePath,
 			'parentFileId'=>$parentFileId,
-		];
+		]);
 		try{
 			$cache->update($parentFileId,[
 				'etag'=>$etag,
