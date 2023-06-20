@@ -89,13 +89,13 @@ class CacheUpdateListener implements IEventListener {
 			'parentMountPoint'=>$parentMountPoint,
 		]);
 		if($parentMountPoint === '.'){
-			$this->logger->warning('CacheUpdateListener::Abort::has no parent',$debug);
+			$this->logger->debug('CacheUpdateListener::Abort::has no parent',$debug);
 			return;
 		}
 		$parentGroupFolderId = $this->folderManager->getFolderByMountPoint($parentMountPoint);
 		$debug['parentGroupFolderId']=$parentGroupFolderId;
 		if(!$parentGroupFolderId){
-			$this->logger->warning('CacheUpdateListener::Abort::Parent MountPoint not found',$debug);
+			$this->logger->debug('CacheUpdateListener::Abort::Parent MountPoint not found',$debug);
 			return;
 		}
 		$parentFileCachePath = '__groupfolders/'.$parentGroupFolderId;
@@ -116,6 +116,6 @@ class CacheUpdateListener implements IEventListener {
 		}catch(Exception $e){
 			$this->logger->error('CacheUpdateListener::Update error', ['exception' => $e,...$debug]);
 		}
-		$this->logger->warning('CacheUpdateListener::GroupFolder modified',$debug);
+		$this->logger->debug('CacheUpdateListener::GroupFolder modified',$debug);
 	}
 }
