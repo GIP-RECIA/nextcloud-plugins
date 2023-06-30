@@ -29,7 +29,7 @@ CSS=$(LOADER)/inputs/css
 
 ALLETAB=allEtab.txt
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH CONFIG
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
 
@@ -76,6 +76,8 @@ THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
 	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
 
+CONFIG: config/*.json
+	cp config/*.json $(NEXTCLOUD_PATH)/config/
 
 sass: $(CSS)/reciaStyle.css
 

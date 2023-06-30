@@ -1,0 +1,19 @@
+	{
+		"3gp": ["application/octet-stream"],
+		"avi": ["application/octet-stream"],
+		"dv": ["application/octet-stream"],
+		"flv": ["application/octet-stream"],
+		"m2t": ["application/octet-stream"],
+		"m4v": ["application/octet-stream"],
+		"mkv": ["application/octet-stream"],
+		"mov": ["application/octet-stream"],
+		"mp4": ["application/octet-stream"],
+		"mpeg": ["application/octet-stream"],
+		"mpg": ["application/octet-stream"],
+		"mts": ["application/octet-stream"],
+		"mt2s": ["application/octet-stream"],
+		"ogv": ["application/octet-stream"],
+		"vob": ["application/octet-stream"],
+		"webm": ["application/octet-stream"],
+		"wmv": ["application/octet-stream"]
+	}
