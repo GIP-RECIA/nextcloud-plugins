@@ -21,7 +21,7 @@ etabs:
             folders:
               - folder: 'GIP-RECIA'
                 permF: []
-                quotaF: 1
+                quotaF: 100
               - folder: 'GIP-RECIA/Commun'
                 permF:
                   - write
