@@ -26,7 +26,6 @@ etabs:
                 permF:
                   - write
                   - delete
-                  - share
                 quotaF: 100
           - group: '%2$s.%1$s'
             folder: '%1$s/%2$s'
