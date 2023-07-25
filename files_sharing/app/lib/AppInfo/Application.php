@@ -29,6 +29,7 @@
  */
 namespace OCA\Files_Sharing\AppInfo;
 
+use OC\Group\DisplayNameCache as GroupDisplayNameCache;
 use OC\Share\Share;
 use OC\User\DisplayNameCache;
 use OCA\Files_Sharing\Capabilities;
@@ -58,6 +59,7 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\Collaboration\Resources\LoadAdditionalScriptsEvent as ResourcesLoadAdditionalScriptsEvent;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\EventDispatcher\GenericEvent;
 use OCP\Federation\ICloudIdManager;
@@ -65,6 +67,7 @@ use OCP\Files\Config\IMountProviderCollection;
 use OCP\Files\Events\BeforeDirectFileDownloadEvent;
 use OCP\Files\Events\BeforeZipCreatedEvent;
 use OCP\Files\IRootFolder;
+use OCP\Group\Events\GroupChangedEvent;
 use OCP\Group\Events\UserAddedEvent;
 use OCP\IDBConnection;
 use OCP\IGroup;
@@ -107,13 +110,13 @@ class Application extends App implements IBootstrap {
 
 		$context->registerNotifierService(Notifier::class);
 		$context->registerEventListener(UserChangedEvent::class, DisplayNameCache::class);
+		$context->registerEventListener(GroupChangedEvent::class, GroupDisplayNameCache::class);
 	}
 
 	public function boot(IBootContext $context): void {
 		$context->injectFn([$this, 'registerMountProviders']);
 		$context->injectFn([$this, 'registerEventsScripts']);
 		$context->injectFn([$this, 'registerDownloadEvents']);
-		$context->injectFn([$this, 'setupSharingMenus']);
 
 		Helper::registerHooks();
 
@@ -138,11 +141,11 @@ class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(BeforeTemplateRenderedEvent::class, LegacyBeforeTemplateRenderedListener::class);
 		$dispatcher->addServiceListener(LoadSidebar::class, LoadSidebarListener::class);
 		$dispatcher->addServiceListener(ShareCreatedEvent::class, ShareInteractionListener::class);
-		$dispatcher->addListener('\OCP\Collaboration\Resources::loadAdditionalScripts', function () {
-			\OCP\Util::addScript('files_sharing', 'collaboration');
-		});
 		$dispatcher->addServiceListener(ShareCreatedEvent::class, UserShareAcceptanceListener::class);
 		$dispatcher->addServiceListener(UserAddedEvent::class, UserAddedToGroupListener::class);
+		$dispatcher->addListener(ResourcesLoadAdditionalScriptsEvent::class, function () {
+			\OCP\Util::addScript('files_sharing', 'collaboration');
+		});
 
 		// notifications api to accept incoming user shares
 		$oldDispatcher->addListener('OCP\Share::postShare', function (OldGenericEvent $event) {
@@ -209,79 +212,5 @@ class Application extends App implements IBootstrap {
 				}
 			}
 		);
-	}
-
-	public function setupSharingMenus(IManager $shareManager, IFactory $l10nFactory, IUserSession $userSession): void {
-		if (!$shareManager->shareApiEnabled() || !class_exists('\OCA\Files\App')) {
-			return;
-		}
-
-		$navigationManager = \OCA\Files\App::getNavigationManager();
-		// show_Quick_Access stored as string
-		$navigationManager->add(function () use ($shareManager, $l10nFactory, $userSession) {
-			$l = $l10nFactory->get('files_sharing');
-			$user = $userSession->getUser();
-			$userId = $user ? $user->getUID() : null;
-
-			$sharingSublistArray = [];
-
-			if ($shareManager->sharingDisabledForUser($userId) === false) {
-				$sharingSublistArray[] = [
-					'id' => 'sharingout',
-					'appname' => 'files_sharing',
-					'script' => 'list.php',
-					'order' => 16,
-					'name' => $l->t('Shared with others'),
-				];
-			}
-
-			$sharingSublistArray[] = [
-				'id' => 'sharingin',
-				'appname' => 'files_sharing',
-				'script' => 'list.php',
-				'order' => 15,
-				'name' => $l->t('Shared with you'),
-			];
-
-			if ($shareManager->sharingDisabledForUser($userId) === false) {
-				// Check if sharing by link is enabled
-				if ($shareManager->shareApiAllowLinks()) {
-					$sharingSublistArray[] = [
-						'id' => 'sharinglinks',
-						'appname' => 'files_sharing',
-						'script' => 'list.php',
-						'order' => 17,
-						'name' => $l->t('Shared by link'),
-					];
-				}
-			}
-
-			$sharingSublistArray[] = [
-				'id' => 'deletedshares',
-				'appname' => 'files_sharing',
-				'script' => 'list.php',
-				'order' => 19,
-				'name' => $l->t('Deleted shares'),
-			];
-
-			$sharingSublistArray[] = [
-				'id' => 'pendingshares',
-				'appname' => 'files_sharing',
-				'script' => 'list.php',
-				'order' => 19,
-				'name' => $l->t('Pending shares'),
-			];
-
-			return [
-				'id' => 'shareoverview',
-				'appname' => 'files_sharing',
-				'script' => 'list.php',
-				'order' => 18,
-				'name' => $l->t('Shares'),
-				'classes' => 'collapsible',
-				'sublist' => $sharingSublistArray,
-				'expandedState' => 'show_sharing_menu'
-			];
-		});
 	}
 }

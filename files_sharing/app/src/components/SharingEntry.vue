@@ -22,110 +22,101 @@
 
 <template>
 	<li class="sharing-entry">
-		<Avatar class="sharing-entry__avatar"
+		<NcAvatar class="sharing-entry__avatar"
 			:is-no-user="share.type !== SHARE_TYPES.SHARE_TYPE_USER"
 			:user="share.shareWith"
 			:display-name="share.shareWithDisplayName"
-			:tooltip-message="share.type === SHARE_TYPES.SHARE_TYPE_USER ? share.shareWith : ''"
 			:menu-position="'left'"
 			:url="share.shareWithAvatar" />
+
 		<component :is="share.shareWithLink ? 'a' : 'div'"
-			v-tooltip.auto="tooltip"
+			:title="tooltip"
+			:aria-label="tooltip"
 			:href="share.shareWithLink"
 			class="sharing-entry__desc">
-			<h5>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></h5>
+			<span>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></span>
 			<p v-if="hasStatus">
 				<span>{{ share.status.icon || '' }}</span>
 				<span>{{ share.status.message || '' }}</span>
 			</p>
 		</component>
-		<Actions menu-align="right"
+		<NcActions menu-align="right"
 			class="sharing-entry__actions"
 			@close="onMenuClose">
 			<template v-if="share.canEdit">
 				<!-- edit permission -->
-				<ActionCheckbox ref="canEdit"
+				<NcActionCheckbox ref="canEdit"
 					:checked.sync="canEdit"
 					:value="permissionsEdit"
 					:disabled="saving || !canSetEdit">
 					{{ t('files_sharing', 'Allow editing') }}
-				</ActionCheckbox>
+				</NcActionCheckbox>
 
 				<!-- create permission -->
-				<ActionCheckbox v-if="isFolder"
+				<NcActionCheckbox v-if="isFolder"
 					ref="canCreate"
 					:checked.sync="canCreate"
 					:value="permissionsCreate"
 					:disabled="saving || !canSetCreate">
 					{{ t('files_sharing', 'Allow creating') }}
-				</ActionCheckbox>
+				</NcActionCheckbox>
 
 				<!-- delete permission -->
-				<ActionCheckbox v-if="isFolder"
+				<NcActionCheckbox v-if="isFolder"
 					ref="canDelete"
 					:checked.sync="canDelete"
 					:value="permissionsDelete"
 					:disabled="saving || !canSetDelete">
 					{{ t('files_sharing', 'Allow deleting') }}
-				</ActionCheckbox>
+				</NcActionCheckbox>
 
 				<!-- reshare permission -->
-				<ActionCheckbox v-if="config.isResharingAllowed"
+				<NcActionCheckbox v-if="config.isResharingAllowed"
 					ref="canReshare"
 					:checked.sync="canReshare"
 					:value="permissionsShare"
 					:disabled="saving || !canSetReshare">
 					{{ t('files_sharing', 'Allow resharing') }}
-				</ActionCheckbox>
+				</NcActionCheckbox>
 
-				<ActionCheckbox ref="canDownload"
+				<NcActionCheckbox v-if="isSetDownloadButtonVisible"
+					ref="canDownload"
 					:checked.sync="canDownload"
-					v-if="isSetDownloadButtonVisible"
 					:disabled="saving || !canSetDownload">
 					{{ allowDownloadText }}
-				</ActionCheckbox>
+				</NcActionCheckbox>
 
 				<!-- expiration date -->
-				<ActionCheckbox :checked.sync="hasExpirationDate"
+				<NcActionCheckbox :checked.sync="hasExpirationDate"
 					:disabled="config.isDefaultInternalExpireDateEnforced || saving"
 					@uncheck="onExpirationDisable">
 					{{ config.isDefaultInternalExpireDateEnforced
 						? t('files_sharing', 'Expiration date enforced')
 						: t('files_sharing', 'Set expiration date') }}
-				</ActionCheckbox>
-				<ActionInput v-if="hasExpirationDate"
+				</NcActionCheckbox>
+				<NcActionInput v-if="hasExpirationDate"
 					ref="expireDate"
-					v-tooltip.auto="{
-						content: errors.expireDate,
-						show: errors.expireDate,
-						trigger: 'manual'
-					}"
+					:is-native-picker="true"
+					:hide-label="true"
 					:class="{ error: errors.expireDate}"
 					:disabled="saving"
-					:lang="lang"
-					:value="share.expireDate"
-					value-type="format"
-					icon="icon-calendar-dark"
+					:value="new Date(share.expireDate)"
 					type="date"
-					:disabled-date="disabledDate"
-					@update:value="onExpirationChange">
+					:min="dateTomorrow"
+					:max="dateMaxEnforced"
+					@input="onExpirationChange">
 					{{ t('files_sharing', 'Enter a date') }}
-				</ActionInput>
+				</NcActionInput>
 
 				<!-- note -->
 				<template v-if="canHaveNote">
-					<ActionCheckbox :checked.sync="hasNote"
+					<NcActionCheckbox :checked.sync="hasNote"
 						:disabled="saving"
 						@uncheck="queueUpdate('note')">
 						{{ t('files_sharing', 'Note to recipient') }}
-					</ActionCheckbox>
-					<ActionTextEditable v-if="hasNote"
+					</NcActionCheckbox>
+					<NcActionTextEditable v-if="hasNote"
 						ref="note"
-						v-tooltip.auto="{
-							content: errors.note,
-							show: errors.note,
-							trigger: 'manual'
-						}"
 						:class="{ error: errors.note}"
 						:disabled="saving"
 						:value="share.newNote || share.note"
@@ -135,41 +126,36 @@
 				</template>
 			</template>
 
-			<ActionButton v-if="share.canDelete"
+			<NcActionButton v-if="share.canDelete"
 				icon="icon-close"
 				:disabled="saving"
 				@click.prevent="onDelete">
 				{{ t('files_sharing', 'Unshare') }}
-			</ActionButton>
-		</Actions>
+			</NcActionButton>
+		</NcActions>
 	</li>
 </template>
 
 <script>
-import Avatar from '@nextcloud/vue/dist/Components/Avatar'
-import Actions from '@nextcloud/vue/dist/Components/Actions'
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
-import ActionCheckbox from '@nextcloud/vue/dist/Components/ActionCheckbox'
-import ActionInput from '@nextcloud/vue/dist/Components/ActionInput'
-import ActionTextEditable from '@nextcloud/vue/dist/Components/ActionTextEditable'
-import Tooltip from '@nextcloud/vue/dist/Directives/Tooltip'
+import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
+import NcActions from '@nextcloud/vue/dist/Components/NcActions.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
+import NcActionCheckbox from '@nextcloud/vue/dist/Components/NcActionCheckbox.js'
+import NcActionInput from '@nextcloud/vue/dist/Components/NcActionInput.js'
+import NcActionTextEditable from '@nextcloud/vue/dist/Components/NcActionTextEditable.js'
 
-import SharesMixin from '../mixins/SharesMixin'
+import SharesMixin from '../mixins/SharesMixin.js'
 
 export default {
 	name: 'SharingEntry',
 
 	components: {
-		Actions,
-		ActionButton,
-		ActionCheckbox,
-		ActionInput,
-		ActionTextEditable,
-		Avatar,
-	},
-
-	directives: {
-		Tooltip,
+		NcActions,
+		NcActionButton,
+		NcActionCheckbox,
+		NcActionInput,
+		NcActionTextEditable,
+		NcAvatar,
 	},
 
 	mixins: [SharesMixin],
@@ -209,7 +195,6 @@ export default {
 					user: this.share.shareWithDisplayName,
 					owner: this.share.ownerDisplayName,
 				}
-
 				if (this.share.type === this.SHARE_TYPES.SHARE_TYPE_GROUP) {
 					return t('files_sharing', 'Shared with the group {user} by {owner}', data)
 				} else if (this.share.type === this.SHARE_TYPES.SHARE_TYPE_ROOM) {
@@ -379,22 +364,22 @@ export default {
 				return this.config.isDefaultInternalExpireDateEnforced || !!this.share.expireDate
 			},
 			set(enabled) {
+				const defaultExpirationDate = this.config.defaultInternalExpirationDate
+					|| new Date(new Date().setDate(new Date().getDate() + 1))
 				this.share.expireDate = enabled
-					? this.config.defaultInternalExpirationDateString !== ''
-						? this.config.defaultInternalExpirationDateString
-						: moment().format('YYYY-MM-DD')
+					? this.formatDateToString(defaultExpirationDate)
 					: ''
+				console.debug('Expiration date status', enabled, this.share.expireDate)
 			},
 		},
 
 		dateMaxEnforced() {
-			if (!this.isRemote) {
-				return this.config.isDefaultInternalExpireDateEnforced
-					&& moment().add(1 + this.config.defaultInternalExpireDate, 'days')
-			} else {
-				return this.config.isDefaultRemoteExpireDateEnforced
-					&& moment().add(1 + this.config.defaultRemoteExpireDate, 'days')
+			if (!this.isRemote && this.config.isDefaultInternalExpireDateEnforced) {
+				return new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultInternalExpireDate))
+			} else if (this.config.isDefaultRemoteExpireDateEnforced) {
+				return new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultRemoteExpireDate))
 			}
+			return null
 		},
 
 		/**
@@ -419,6 +404,12 @@ export default {
 		 * @return {boolean}
 		 */
 		isSetDownloadButtonVisible() {
+			// TODO: Implement download permission for circle shares instead of hiding the option.
+			//       https://github.com/nextcloud/server/issues/39161
+			if (this.share && this.share.type === this.SHARE_TYPES.SHARE_TYPE_CIRCLE) {
+				return false
+			}
+
 			const allowedMimetypes = [
 				// Office documents
 				'application/msword',

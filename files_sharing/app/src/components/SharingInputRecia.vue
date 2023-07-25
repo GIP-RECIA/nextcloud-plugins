@@ -21,7 +21,7 @@
   -->
 
 <template>
-	<Multiselect ref="multiselect"
+	<NcMultiselect ref="multiselect"
 		class="sharing-input"
 		:clear-on-select="true"
 		:disabled="!canReshare"
@@ -39,7 +39,7 @@
 		track-by="id"
 		@search-change="asyncFind"
 		@select="addShare">
-		<template slot="beforeList" v-if="!this.isValidQuery">
+		<template v-if="!this.isValidQuery" slot="beforeList">
 			<li>
 				<span>
 					{{ t('files_sharing', 'Recommendations :') }}
@@ -52,7 +52,7 @@
 		<template #noResult>
 			{{ noResultText }}
 		</template>
-	</Multiselect>
+	</NcMultiselect>
 </template>
 
 <script>
@@ -60,14 +60,14 @@ import { generateOcsUrl } from '@nextcloud/router'
 import { getCurrentUser } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
 import debounce from 'debounce'
-import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-import MultiselectMixin from '../mixins/MultiselectMixin'
+import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
+import MultiselectMixin from '../mixins/MultiselectMixin.js'
 
-import Config from '../services/ConfigService'
-import GeneratePassword from '../utils/GeneratePassword'
-import Share from '../models/Share'
-import ShareRequests from '../mixins/ShareRequests'
-import ShareTypes from '../mixins/ShareTypes'
+import Config from '../services/ConfigService.js'
+import GeneratePassword from '../utils/GeneratePassword.js'
+import Share from '../models/Share.js'
+import ShareRequests from '../mixins/ShareRequests.js'
+import ShareTypes from '../mixins/ShareTypes.js'
 
 const CancelToken = axios.CancelToken
 let searchCancelSource = null
@@ -76,7 +76,7 @@ export default {
 	name: 'SharingInputRecia',
 
 	components: {
-		Multiselect,
+		NcMultiselect,
 	},
 
 	mixins: [ShareTypes, ShareRequests, MultiselectMixin],
@@ -125,6 +125,7 @@ export default {
 			recommendations: [],
 			ShareSearch: OCA.Sharing.ShareSearch.state,
 			suggestions: [],
+			value: null,
 		}
 	},
 
@@ -187,7 +188,7 @@ export default {
 	},
 
 	methods: {
-		async asyncFind(query, id) {
+		async asyncFind(query) {
 			// save current query to check if we display
 			// recommendations or search results
 			this.query = query.trim()
@@ -225,6 +226,7 @@ export default {
 				this.SHARE_TYPES.SHARE_TYPE_ROOM,
 				this.SHARE_TYPES.SHARE_TYPE_GUEST,
 				this.SHARE_TYPES.SHARE_TYPE_DECK,
+				this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH,
 			]
 
 			if (OC.getCapabilities().files_sharing.public.enabled === true) {
@@ -295,7 +297,7 @@ export default {
 
 			const allSuggestions = exactSuggestions.concat(suggestions).concat(externalResults).concat(lookupEntry)
 
-			// Count occurances of display names in order to provide a distinguishable description if needed
+			// Count occurences of display names in order to provide a distinguishable description if needed
 			const nameCounts = allSuggestions.reduce((nameCounts, result) => {
 				if (!result.displayName) {
 					return nameCounts
@@ -518,25 +520,47 @@ export default {
 		shareTypeToIcon(type) {
 			switch (type) {
 			case this.SHARE_TYPES.SHARE_TYPE_GUEST:
-				// default is a user, other icons are here to differenciate
+				// default is a user, other icons are here to differentiate
 				// themselves from it, so let's not display the user icon
 				// case this.SHARE_TYPES.SHARE_TYPE_REMOTE:
 				// case this.SHARE_TYPES.SHARE_TYPE_USER:
-				return 'icon-user'
+				return {
+					icon: 'icon-user',
+					iconTitle: t('files_sharing', 'Guest'),
+				}
 			case this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP:
 			case this.SHARE_TYPES.SHARE_TYPE_GROUP:
-				return 'icon-group'
+				return {
+					icon: 'icon-group',
+					iconTitle: t('files_sharing', 'Group'),
+				}
 			case this.SHARE_TYPES.SHARE_TYPE_EMAIL:
-				return 'icon-mail'
+				return {
+					icon: 'icon-mail',
+					iconTitle: t('files_sharing', 'Email'),
+				}
 			case this.SHARE_TYPES.SHARE_TYPE_CIRCLE:
-				return 'icon-circle'
+				return {
+					icon: 'icon-circle',
+					iconTitle: t('files_sharing', 'Circle'),
+				}
 			case this.SHARE_TYPES.SHARE_TYPE_ROOM:
-				return 'icon-room'
+				return {
+					icon: 'icon-room',
+					iconTitle: t('files_sharing', 'Talk conversation'),
+				}
 			case this.SHARE_TYPES.SHARE_TYPE_DECK:
-				return 'icon-deck'
-
+				return {
+					icon: 'icon-deck',
+					iconTitle: t('files_sharing', 'Deck board'),
+				}
+			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
+				return {
+					icon: 'icon-sciencemesh',
+					iconTitle: t('files_sharing', 'ScienceMesh'),
+				}
 			default:
-				return ''
+				return {}
 			}
 		},
 
@@ -569,7 +593,7 @@ export default {
 				displayName: result.name || result.label,
 				subtitle,
 				shareWithDisplayNameUnique: result.shareWithDisplayNameUnique || '',
-				icon: this.shareTypeToIcon(result.value.shareType),
+				...this.shareTypeToIcon(result.value.shareType),
 			}
 		},
 
@@ -579,6 +603,8 @@ export default {
 		 * @param {object} value the multiselect option
 		 */
 		async addShare(value) {
+			this.value = null
+
 			if (value.lookup) {
 				await this.getSuggestions(this.query, true)
 

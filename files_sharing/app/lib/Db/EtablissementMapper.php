@@ -61,9 +61,6 @@ class EtablissementMapper extends QBMapper {
 
         $qb->select('*')
            ->from($this->getTableName())
-           ->where(
-            $qb->expr()->isNotNull('siren')
-            )
 		   ->orderBy('name')
            ->setMaxResults($limit)
            ->setFirstResult($offset);
@@ -78,7 +75,6 @@ class EtablissementMapper extends QBMapper {
            ->from($this->getTableName(),'etab')
 		   ->join('etab','asso_uai_user_group','etabgrp','etab.id = etabgrp.id_etablissement')
 		   ->where(
-                $qb->expr()->isNotNull('siren'),
 				$qb->expr()->eq('etabgrp.user_group', $qb->createNamedParameter($userId,IQueryBuilder::PARAM_STR))
 			)
 		   ->orderBy('etab.name')
