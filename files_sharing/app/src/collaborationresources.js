@@ -1,7 +1,8 @@
 /**
- * @copyright Copyright (c) 2022 John Molakvoæ <skjnldsv@protonmail.com>
+ * @copyright Copyright (c) 2019 Julius Härtl <jus@bitgrid.net>
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
  *
  * @license AGPL-3.0-or-later
  *
@@ -19,9 +20,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import { getLoggerBuilder } from '@nextcloud/logger'
 
-export default getLoggerBuilder()
-	.setApp('files_sharing')
-	.detectUser()
-	.build()
+import Vue from 'vue'
+import Vuex from 'vuex'
+import NcPopoverMenu from '@nextcloud/vue/dist/Components/NcPopoverMenu'
+import Tooltip from '@nextcloud/vue/dist/Directives/Tooltip'
+import ClickOutside from 'vue-click-outside'
+
+import View from './views/CollaborationView'
+
+Vue.prototype.t = t
+Tooltip.options.defaultHtml = false
+
+// eslint-disable-next-line vue/match-component-file-name
+Vue.component('NcPopoverMenu', NcPopoverMenu)
+Vue.directive('ClickOutside', ClickOutside)
+Vue.directive('Tooltip', Tooltip)
+Vue.use(Vuex)
+
+export {
+	Vue,
+	View,
+}

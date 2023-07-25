@@ -47,12 +47,12 @@
 
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 import axios from '@nextcloud/axios'
 
-import Share from '../models/Share.js'
-import SharingEntryInherited from '../components/SharingEntryInherited.vue'
-import SharingEntrySimple from '../components/SharingEntrySimple.vue'
+import Share from '../models/Share'
+import SharingEntryInherited from '../components/SharingEntryInherited'
+import SharingEntrySimple from '../components/SharingEntrySimple'
 
 export default {
 	name: 'SharingInherited',

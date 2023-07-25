@@ -50,6 +50,8 @@ class Capabilities implements ICapability {
 
 	/**
 	 * Return this classes capabilities
+	 *
+	 * @return array
 	 */
 	public function getCapabilities() {
 		$res = [];

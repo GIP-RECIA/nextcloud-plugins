@@ -1,3 +1,4 @@
+
 <template>
 	<ul>
 		<SharingEntrySimple ref="shareEntrySimple"
@@ -21,8 +22,8 @@
 <script>
 import { generateUrl } from '@nextcloud/router'
 import { showSuccess } from '@nextcloud/dialogs'
-import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink.js'
-import SharingEntrySimple from './SharingEntrySimple.vue'
+import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink'
+import SharingEntrySimple from './SharingEntrySimple'
 
 export default {
 	name: 'SharingEntryInternal',

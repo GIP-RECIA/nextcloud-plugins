@@ -78,7 +78,7 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 		$discoveryService = \OC::$server->query(\OCP\OCS\IDiscoveryService::class);
 
 		[$protocol, $remote] = explode('://', $this->cloudId->getRemote());
-		if (str_contains($remote, '/')) {
+		if (strpos($remote, '/')) {
 			[$host, $root] = explode('/', $remote, 2);
 		} else {
 			$host = $remote;
@@ -265,9 +265,8 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 
 	private function testRemoteUrl(string $url): bool {
 		$cache = $this->memcacheFactory->createDistributed('files_sharing_remote_url');
-		$cached = $cache->get($url);
-		if ($cached !== null) {
-			return (bool)$cached;
+		if ($cache->hasKey($url)) {
+			return (bool)$cache->get($url);
 		}
 
 		$client = $this->httpClient->newClient();

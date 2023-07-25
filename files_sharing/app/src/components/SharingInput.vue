@@ -24,7 +24,7 @@
 	<div class="sharing-search">
 		<label for="sharing-search-input">{{ t('files_sharing', 'Search for share recipients') }}</label>
 		<NcSelect ref="select"
-			input-id="sharing-search-input"
+			id="sharing-search-input"
 			class="sharing-search__input"
 			:disabled="!canReshare"
 			:loading="loading"
@@ -52,11 +52,11 @@ import axios from '@nextcloud/axios'
 import debounce from 'debounce'
 import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
-import Config from '../services/ConfigService.js'
-import GeneratePassword from '../utils/GeneratePassword.js'
-import Share from '../models/Share.js'
-import ShareRequests from '../mixins/ShareRequests.js'
-import ShareTypes from '../mixins/ShareTypes.js'
+import Config from '../services/ConfigService'
+import GeneratePassword from '../utils/GeneratePassword'
+import Share from '../models/Share'
+import ShareRequests from '../mixins/ShareRequests'
+import ShareTypes from '../mixins/ShareTypes'
 
 export default {
 	name: 'SharingInput',
@@ -424,7 +424,7 @@ export default {
 			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
 				return {
 					icon: 'icon-sciencemesh',
-					iconTitle: t('files_sharing', 'ScienceMesh'),
+					iconTitle: t('files_sharing', 'Science Mesh'),
 				}
 			default:
 				return {}

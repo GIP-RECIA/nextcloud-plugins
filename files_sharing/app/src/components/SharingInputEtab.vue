@@ -78,11 +78,11 @@
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
+import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect'
 
-import MultiselectMixin from '../mixins/MultiselectMixin.js'
+import MultiselectMixin from '../mixins/MultiselectMixin'
 
-import Config from '../services/ConfigService.js'
+import Config from '../services/ConfigService'
 
 export default {
 	name: 'SharingInputEtab',

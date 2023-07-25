@@ -170,19 +170,6 @@ return [
 			'verb' => 'GET',
 		],
 		/*
-		* Recia Sharee API
-		*/
-		[
-			'name' => 'ReciaRechercheAPI#search',
-			'url' => '/api/v1/recia_search',
-			'verb' => 'GET',
-		],
-		[
-			'name' => 'ReciaRechercheAPI#listUserEtabs',
-			'url' => '/api/v1/recia_list_etabs',
-			'verb' => 'GET',
-		],
-		/*
 		 * Remote Shares
 		 */
 		[
@@ -214,6 +201,19 @@ return [
 			'name' => 'Remote#unshare',
 			'url' => '/api/v1/remote_shares/{id}',
 			'verb' => 'DELETE',
+		],
+		/*
+		* Recia Sharee API
+		*/
+		[
+			'name' => 'ReciaRechercheAPI#search',
+			'url' => '/api/v1/recia_search',
+			'verb' => 'GET',
+		],
+		[
+			'name' => 'ReciaRechercheAPI#listUserEtabs',
+			'url' => '/api/v1/recia_list_etabs',
+			'verb' => 'GET',
 		],
 	],
 ];

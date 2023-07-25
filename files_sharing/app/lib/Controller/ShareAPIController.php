@@ -182,11 +182,6 @@ class ShareAPIController extends OCSController {
 		$sharedBy = $this->userManager->get($share->getSharedBy());
 		$shareOwner = $this->userManager->get($share->getShareOwner());
 
-		$isOwnShare = false;
-		if ($shareOwner !== null) {
-			$isOwnShare = $shareOwner->getUID() === $this->currentUser;
-		}
-
 		$result = [
 			'id' => $share->getId(),
 			'share_type' => $share->getShareType(),
@@ -230,11 +225,6 @@ class ShareAPIController extends OCSController {
 			$result['item_type'] = 'file';
 		}
 
-		// Get the original node permission if the share owner is the current user
-		if ($isOwnShare) {
-			$result['item_permissions'] = $node->getPermissions();
-		}
-
 		$result['mimetype'] = $node->getMimetype();
 		$result['has_preview'] = $this->previewManager->isAvailable($node);
 		$result['storage_id'] = $node->getStorage()->getId();
@@ -243,8 +233,6 @@ class ShareAPIController extends OCSController {
 		$result['file_source'] = $node->getId();
 		$result['file_parent'] = $node->getParent()->getId();
 		$result['file_target'] = $share->getTarget();
-		$result['item_size'] = $node->getSize();
-		$result['item_mtime'] = $node->getMTime();
 
 		$expiration = $share->getExpirationDate();
 		if ($expiration !== null) {
@@ -820,7 +808,7 @@ class ShareAPIController extends OCSController {
 			try {
 				$this->getSciencemeshShareHelper()->createShare($share, $shareWith, $permissions, $expireDate);
 			} catch (QueryException $e) {
-				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support ScienceMesh shares', [$node->getPath()]));
+				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support sciencemesh shares', [$node->getPath()]));
 			}
 		} else {
 			throw new OCSBadRequestException($this->l->t('Unknown share type'));
@@ -1435,7 +1423,7 @@ class ShareAPIController extends OCSController {
 			try {
 				$formattedShare = $this->formatShare($share, $node);
 				$formattedShare['status'] = $share->getStatus();
-				$formattedShare['path'] = '/' . $share->getNode()->getName();
+				$formattedShare['path'] = $share->getNode()->getName();
 				$formattedShare['permissions'] = 0;
 				return $formattedShare;
 			} catch (NotFoundException $e) {
@@ -1969,7 +1957,7 @@ class ShareAPIController extends OCSController {
 
 		if ($share->getShareType() === IShare::TYPE_CIRCLE && \OC::$server->getAppManager()->isEnabledForUser('circles')
 			&& class_exists('\OCA\Circles\Api\v1\Circles')) {
-			$hasCircleId = (str_ends_with($share->getSharedWith(), ']'));
+			$hasCircleId = (substr($share->getSharedWith(), -1) === ']');
 			$shareWithStart = ($hasCircleId ? strrpos($share->getSharedWith(), '[') + 1 : 0);
 			$shareWithLength = ($hasCircleId ? -1 : strpos($share->getSharedWith(), ' '));
 			if ($shareWithLength === false) {

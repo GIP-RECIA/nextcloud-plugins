@@ -54,6 +54,7 @@ use OCP\Files\NotFoundException;
 use OCP\Files\Storage;
 use OCP\IConfig;
 use OCP\IL10N;
+use OCP\ILogger;
 use OCP\IPreview;
 use OCP\IRequest;
 use OCP\ISession;
@@ -77,6 +78,7 @@ use OCP\Share\IPublicShareTemplateFactory;
  * @package OCA\Files_Sharing\Controllers
  */
 class ShareControllerTest extends \Test\TestCase {
+
 	/** @var string */
 	private $user;
 	/** @var string */
@@ -158,6 +160,7 @@ class ShareControllerTest extends \Test\TestCase {
 			$this->config,
 			$this->urlGenerator,
 			$this->userManager,
+			$this->createMock(ILogger::class),
 			$this->createMock(IManager::class),
 			$this->shareManager,
 			$this->session,

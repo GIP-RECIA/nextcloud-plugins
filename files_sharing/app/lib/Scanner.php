@@ -25,7 +25,7 @@
 
 namespace OCA\Files_Sharing;
 
-use OC\Files\ObjectStore\ObjectStoreScanner;
+use OC\Files\ObjectStore\NoopScanner;
 
 /**
  * Scanner for SharedStorage
@@ -72,8 +72,7 @@ class Scanner extends \OC\Files\Cache\Scanner {
 
 	public function scanFile($file, $reuseExisting = 0, $parentId = -1, $cacheData = null, $lock = true, $data = null) {
 		$sourceScanner = $this->getSourceScanner();
-		if ($sourceScanner instanceof ObjectStoreScanner) {
-			// ObjectStoreScanner doesn't scan
+		if ($sourceScanner instanceof NoopScanner) {
 			return [];
 		} else {
 			return parent::scanFile($file, $reuseExisting, $parentId, $cacheData, $lock);

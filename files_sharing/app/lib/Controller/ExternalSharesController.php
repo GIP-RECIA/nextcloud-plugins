@@ -129,7 +129,7 @@ class ExternalSharesController extends Controller {
 	 * @return DataResponse
 	 */
 	public function testRemote($remote) {
-		if (str_contains($remote, '#') || str_contains($remote, '?') || str_contains($remote, ';')) {
+		if (strpos($remote, '#') !== false || strpos($remote, '?') !== false || strpos($remote, ';') !== false) {
 			return new DataResponse(false);
 		}
 

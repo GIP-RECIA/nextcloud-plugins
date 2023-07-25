@@ -36,33 +36,34 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Storage\IStorageFactory;
 use OCP\ICacheFactory;
 use OCP\IConfig;
+use OCP\ILogger;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\Share\IAttributes as IShareAttributes;
 use OCP\Share\IManager;
 use OCP\Share\IShare;
-use Psr\Log\LoggerInterface;
 
 /**
  * @group DB
  */
 class MountProviderTest extends \Test\TestCase {
+
 	/** @var MountProvider */
 	private $provider;
 
-	/** @var IConfig|MockObject */
+	/** @var IConfig|\PHPUnit\Framework\MockObject\MockObject */
 	private $config;
 
-	/** @var IUser|MockObject */
+	/** @var IUser|\PHPUnit\Framework\MockObject\MockObject */
 	private $user;
 
-	/** @var IStorageFactory|MockObject */
+	/** @var IStorageFactory|\PHPUnit\Framework\MockObject\MockObject */
 	private $loader;
 
-	/** @var IManager|MockObject */
+	/** @var IManager|\PHPUnit\Framework\MockObject\MockObject */
 	private $shareManager;
 
-	/** @var LoggerInterface|MockObject */
+	/** @var ILogger | \PHPUnit\Framework\MockObject\MockObject */
 	private $logger;
 
 	protected function setUp(): void {
@@ -72,7 +73,7 @@ class MountProviderTest extends \Test\TestCase {
 		$this->user = $this->getMockBuilder(IUser::class)->getMock();
 		$this->loader = $this->getMockBuilder('OCP\Files\Storage\IStorageFactory')->getMock();
 		$this->shareManager = $this->getMockBuilder(IManager::class)->getMock();
-		$this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+		$this->logger = $this->getMockBuilder(ILogger::class)->getMock();
 		$eventDispatcher = $this->createMock(IEventDispatcher::class);
 		$cacheFactory = $this->createMock(ICacheFactory::class);
 		$cacheFactory->method('createLocal')

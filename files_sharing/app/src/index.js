@@ -22,11 +22,7 @@
  */
 
 // register default shares types
-if (!window.OC) {
-	window.OC = {}
-}
-
-Object.assign(window.OC, {
+Object.assign(OC, {
 	Share: {
 		SHARE_TYPE_USER: 0,
 		SHARE_TYPE_GROUP: 1,
