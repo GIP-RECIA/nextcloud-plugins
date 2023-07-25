@@ -29,7 +29,8 @@ CSS=$(LOADER)/inputs/css
 
 ALLETAB=allEtab.txt
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH CONFIG
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH CONFIG USER_CAS
+	@echo user_cas a faire qu'a la 1er install du plugin (a vérifier)
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
 
@@ -62,6 +63,8 @@ RESTORE_FILES_SHARING:
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
+USER_CAS:
+	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 LIB: 
 	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
 
