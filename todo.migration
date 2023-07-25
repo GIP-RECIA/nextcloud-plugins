@@ -79,3 +79,72 @@ grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.12
 cd ../
 meld grep.ObjectStoreStorage.*
 => pas de difference d'utilisation de objectStorage
+
+------------------------------
+migration 24.0.12 => 25.0.9
+diff nc.24.0.12/core/css/variables.scss nextcloud/core/css/variables.scss
+à changé :
+meld nc.24.0.12/core/css/variables.scss ncEnt/core/css/variables.scss nextcloud/core/css/variables.scss
+Fait
+cp nextcloud/core/css/variables.scss ncEnt/org/core/css/variables.scss
+
+
+diff nc.24.0.12/core/templates/layout.user.php nextcloud/core/templates/layout.user.php
+à changé
+meld nc.24.0.12/core/templates/layout.user.php ncEnt/themes/esco/core/templates/layout.user.php nextcloud/core/templates/layout.user.php
+Fait
+cp nextcloud/core/templates/layout.user.php ncEnt/org/core/templates/layout.user.php
+
+
+find nc.24.0.12/ nextcloud ncEnt/ -name ObjectStoreStorage.php -ls
+nc.24.0.12/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+nextcloud/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+	il a changé
+	diff nc.24.0.12/lib/private/Files/ObjectStore/ObjectStoreStorage.php nextcloud/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+	37a38
+	> use OCP\Files\Cache\ICache;
+	553c554
+	< 				$this->copyInner($sourceEntry, $targetInternalPath);
+	---
+	> 				$this->copyInner($sourceStorage->getCache(), $sourceEntry, $targetInternalPath);
+	571c572
+	< 		$this->copyInner($sourceEntry, $path2);
+	---
+	> 		$this->copyInner($cache, $sourceEntry, $path2);
+	576c577
+	< 	private function copyInner(ICacheEntry $sourceEntry, string $to) {
+	---
+	> 	private function copyInner(ICache $sourceCache, ICacheEntry $sourceEntry, string $to) {
+	585,586c586,587
+	< 			foreach ($cache->getFolderContentsById($sourceEntry->getId()) as $child) {
+	< 				$this->copyInner($child, $to . '/' . $child->getName());
+	---
+	> 			foreach ($sourceCache->getFolderContentsById($sourceEntry->getId()) as $child) {
+	> 				$this->copyInner($sourceCache, $child, $to . '/' . $child->getName());
+la fonction stat que je réécris n'a pas changé donc on laisse comme ca pour voir.
+
+
+diff nc.24.0.12/lib/private/Files/ObjectStore/Mapper.php nextcloud/lib/private/Files/ObjectStore/Mapper.php
+	Mapper n'a pas changé
+diff nc.24.0.12/lib/private/Files/ObjectStore/S3.php nextcloud/lib/private/Files/ObjectStore/S3.php
+	S3 n'a pas changer
+
+find nc.24.0.12/ nextcloud ncEnt/ -name CardDavBackend.php -ls
+meld nc.24.0.12/apps/dav/lib/CardDAV/CardDavBackend.php ncEnt/apps/dav/lib/CardDAV/CardDavBackend.php nextcloud/apps/dav/lib/CardDAV/CardDavBackend.php
+	CardDavBackend.php a changé
+	une ligne a ajouter je copie la nouvelle version et ajoute la ligne
+	Fait
+cp nextcloud/apps/dav/lib/CardDAV/CardDavBackend.php ncEnt/org/apps/dav/lib/CardDAV/CardDavBackend.php
+
+find nc.24.0.12/ nextcloud ncEnt/ -name RootMountProvider.php -ls
+	RootMountProvider n'a pas changé
+
+recherche de ObjectStoreStorage:
+cd nc.24.0.12 ; grep -R ObjectStoreStorage . > ../../V25/grep.ObjectStoreStorage.24.0.12 ; cd -
+cd nextcloud ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.25.0.9 ; cd -
+
+meld grep.ObjectStoreStorage.*
+ il y a une nouvelle utilisation de ObjectStoreStorage pour sortir des infos en occ (à verifier) qu'il faudrait tester:
+ ./core/Command/Info/File.php:use OC\Files\ObjectStore\ObjectStoreStorage;
+./core/Command/Info/File.php:		if ($storage->instanceOfStorage(ObjectStoreStorage::class)) {
+./core/Command/Info/File.php:			/** @var ObjectStoreStorage $storage */
