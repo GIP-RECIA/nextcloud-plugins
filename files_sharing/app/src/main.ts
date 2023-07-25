@@ -22,7 +22,11 @@
  */
 
 // register default shares types
-Object.assign(OC, {
+if (!window.OC) {
+	window.OC = {}
+}
+
+Object.assign(window.OC, {
 	Share: {
 		SHARE_TYPE_USER: 0,
 		SHARE_TYPE_GROUP: 1,
@@ -34,5 +38,6 @@ Object.assign(OC, {
 		SHARE_TYPE_REMOTE_GROUP: 9,
 		SHARE_TYPE_ROOM: 10,
 		SHARE_TYPE_DECK: 12,
+		SHARE_TYPE_SCIENCEMESH: 15,
 	},
 })

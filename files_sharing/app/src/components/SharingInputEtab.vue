@@ -23,7 +23,7 @@
 
 <template>
 	<div>
-		<Multiselect ref="multiselect"
+		<NcMultiselect ref="multiselect"
 			v-model="selected"
 			class="sharing-input-etab"
 			track-by="id"
@@ -71,24 +71,24 @@
 			<template #noResult>
 				{{ noResultText }}
 			</template>
-		</Multiselect>
+		</NcMultiselect>
 	</div>
 </template>
 
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
+import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
 
-import MultiselectMixin from '../mixins/MultiselectMixin'
+import MultiselectMixin from '../mixins/MultiselectMixin.js'
 
-import Config from '../services/ConfigService'
+import Config from '../services/ConfigService.js'
 
 export default {
 	name: 'SharingInputEtab',
 
 	components: {
-		Multiselect,
+		NcMultiselect,
 	},
 
 	mixins: [MultiselectMixin],

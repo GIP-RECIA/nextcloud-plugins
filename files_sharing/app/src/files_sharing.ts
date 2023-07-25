@@ -1,5 +1,5 @@
 /**
- * @copyright Copyright (c) 2019 Julius Härtl <jus@bitgrid.net>
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Julius Härtl <jus@bitgrid.net>
@@ -20,25 +20,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import registerSharingViews from './views/shares'
 
-import Vue from 'vue'
-import Vuex from 'vuex'
-import PopoverMenu from '@nextcloud/vue/dist/Components/PopoverMenu'
-import Tooltip from '@nextcloud/vue/dist/Directives/Tooltip'
-import ClickOutside from 'vue-click-outside'
+import './actions/acceptShareAction'
+import './actions/openInFilesAction'
+import './actions/rejectShareAction'
+import './actions/restoreShareAction'
 
-import View from './views/CollaborationView'
-
-Vue.prototype.t = t
-Tooltip.options.defaultHtml = false
-
-// eslint-disable-next-line vue/match-component-file-name
-Vue.component('PopoverMenu', PopoverMenu)
-Vue.directive('ClickOutside', ClickOutside)
-Vue.directive('Tooltip', Tooltip)
-Vue.use(Vuex)
-
-export {
-	Vue,
-	View,
-}
+registerSharingViews()

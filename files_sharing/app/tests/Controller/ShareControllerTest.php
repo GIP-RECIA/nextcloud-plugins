@@ -54,7 +54,6 @@ use OCP\Files\NotFoundException;
 use OCP\Files\Storage;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\ILogger;
 use OCP\IPreview;
 use OCP\IRequest;
 use OCP\ISession;
@@ -69,6 +68,8 @@ use OCP\Activity\IManager;
 use OCP\Files\IRootFolder;
 use OCP\Defaults;
 use OC\Share20\Manager;
+use OCA\Files_Sharing\DefaultPublicShareTemplateProvider;
+use OCP\Share\IPublicShareTemplateFactory;
 
 /**
  * @group DB
@@ -76,7 +77,6 @@ use OC\Share20\Manager;
  * @package OCA\Files_Sharing\Controllers
  */
 class ShareControllerTest extends \Test\TestCase {
-
 	/** @var string */
 	private $user;
 	/** @var string */
@@ -110,6 +110,8 @@ class ShareControllerTest extends \Test\TestCase {
 	private $secureRandom;
 	/** @var Defaults|MockObject */
 	private $defaults;
+	/** @var IPublicShareTemplateFactory|MockObject */
+	private $publicShareTemplateFactory;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -131,6 +133,24 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->l10n = $this->createMock(IL10N::class);
 		$this->secureRandom = $this->createMock(ISecureRandom::class);
 		$this->defaults = $this->createMock(Defaults::class);
+		$this->publicShareTemplateFactory = $this->createMock(IPublicShareTemplateFactory::class);
+		$this->publicShareTemplateFactory
+			->expects($this->any())
+			->method('getProvider')
+			->willReturn(
+				new DefaultPublicShareTemplateProvider(
+					$this->userManager,
+					$this->accountManager,
+					$this->previewManager,
+					$this->federatedShareProvider,
+					$this->urlGenerator,
+					$this->eventDispatcher,
+					$this->l10n,
+					$this->defaults,
+					$this->config,
+					$this->createMock(IRequest::class),
+				)
+			);
 
 		$this->shareController = new \OCA\Files_Sharing\Controller\ShareController(
 			$this->appName,
@@ -138,7 +158,6 @@ class ShareControllerTest extends \Test\TestCase {
 			$this->config,
 			$this->urlGenerator,
 			$this->userManager,
-			$this->createMock(ILogger::class),
 			$this->createMock(IManager::class),
 			$this->shareManager,
 			$this->session,
@@ -149,7 +168,8 @@ class ShareControllerTest extends \Test\TestCase {
 			$this->eventDispatcher,
 			$this->l10n,
 			$this->secureRandom,
-			$this->defaults
+			$this->defaults,
+			$this->publicShareTemplateFactory,
 		);
 
 
@@ -263,10 +283,17 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->session->method('exists')->with('public_link_authenticated')->willReturn(true);
 		$this->session->method('get')->with('public_link_authenticated')->willReturn('42');
 
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -343,8 +370,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => 'ownerDisplay',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => false,
@@ -414,10 +441,17 @@ class ShareControllerTest extends \Test\TestCase {
 		$this->session->method('exists')->with('public_link_authenticated')->willReturn(true);
 		$this->session->method('get')->with('public_link_authenticated')->willReturn('42');
 
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -494,8 +528,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => '',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => false,
@@ -569,10 +603,17 @@ class ShareControllerTest extends \Test\TestCase {
 		// Even if downloads are disabled the "downloadURL" parameter is
 		// provided to the template, as it is needed to preview audio and GIF
 		// files.
-		$this->urlGenerator->expects($this->at(0))
+		$this->urlGenerator->expects($this->exactly(3))
 			->method('linkToRouteAbsolute')
-			->with('files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename])
-			->willReturn('downloadURL');
+			->withConsecutive(
+				['files_sharing.sharecontroller.downloadShare', ['token' => 'token', 'filename' => $filename]],
+				['files_sharing.sharecontroller.showShare', ['token' => 'token']],
+				['files_sharing.PublicPreview.getPreview', ['token' => 'token', 'x' => 200, 'y' => 200, 'file' => '/'.$filename]],
+			)->willReturnOnConsecutiveCalls(
+				'downloadURL',
+				'shareUrl',
+				'previewImage',
+			);
 
 		$this->previewManager->method('isMimeSupported')->with('text/plain')->willReturn(true);
 
@@ -645,8 +686,8 @@ class ShareControllerTest extends \Test\TestCase {
 			'hideFileList' => false,
 			'shareOwner' => 'ownerDisplay',
 			'disclaimer' => 'My disclaimer text',
-			'shareUrl' => null,
-			'previewImage' => null,
+			'shareUrl' => 'shareUrl',
+			'previewImage' => 'previewImage',
 			'previewURL' => 'downloadURL',
 			'note' => $note,
 			'hideDownload' => true,

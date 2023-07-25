@@ -1,8 +1,7 @@
 /**
- * @copyright Copyright (c) 2016 John Molakvoæ <skjnldsv@protonmail.com>
+ * @copyright Copyright (c) 2022 John Molakvoæ <skjnldsv@protonmail.com>
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
- * @author Julius Härtl <jus@bitgrid.net>
  *
  * @license AGPL-3.0-or-later
  *
@@ -20,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import { getLoggerBuilder } from '@nextcloud/logger'
 
-import '../js/app'
-import '../js/sharedfilelist'
+export default getLoggerBuilder()
+	.setApp('files_sharing')
+	.detectUser()
+	.build()

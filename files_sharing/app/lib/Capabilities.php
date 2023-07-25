@@ -50,8 +50,6 @@ class Capabilities implements ICapability {
 
 	/**
 	 * Return this classes capabilities
-	 *
-	 * @return array
 	 */
 	public function getCapabilities() {
 		$res = [];
@@ -116,7 +114,7 @@ class Capabilities implements ICapability {
 			$res['group'] = [];
 			$res['group']['enabled'] = $this->shareManager->allowGroupSharing();
 			$res['group']['expire_date']['enabled'] = true;
-			$res['default_permissions'] = (int)$this->config->getAppValue('core', 'shareapi_default_permissions', Constants::PERMISSION_ALL);
+			$res['default_permissions'] = (int)$this->config->getAppValue('core', 'shareapi_default_permissions', (string)Constants::PERMISSION_ALL);
 		}
 
 		//Federated sharing

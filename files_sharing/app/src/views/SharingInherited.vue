@@ -25,13 +25,15 @@
 		<!-- Main collapsible entry -->
 		<SharingEntrySimple class="sharing-entry__inherited"
 			:title="mainTitle"
-			:subtitle="subTitle">
+			:subtitle="subTitle"
+			:aria-expanded="showInheritedShares">
 			<template #avatar>
 				<div class="avatar-shared icon-more-white" />
 			</template>
-			<ActionButton :icon="showInheritedSharesIcon" @click.prevent.stop="toggleInheritedShares">
-				{{ toggleTooltip }}
-			</ActionButton>
+			<NcActionButton :icon="showInheritedSharesIcon"
+				:aria-label="toggleTooltip"
+				:title="toggleTooltip"
+				@click.prevent.stop="toggleInheritedShares" />
 		</SharingEntrySimple>
 
 		<!-- Inherited shares list -->
@@ -45,18 +47,18 @@
 
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 import axios from '@nextcloud/axios'
 
-import Share from '../models/Share'
-import SharingEntryInherited from '../components/SharingEntryInherited'
-import SharingEntrySimple from '../components/SharingEntrySimple'
+import Share from '../models/Share.js'
+import SharingEntryInherited from '../components/SharingEntryInherited.vue'
+import SharingEntrySimple from '../components/SharingEntrySimple.vue'
 
 export default {
 	name: 'SharingInherited',
 
 	components: {
-		ActionButton,
+		NcActionButton,
 		SharingEntryInherited,
 		SharingEntrySimple,
 	},

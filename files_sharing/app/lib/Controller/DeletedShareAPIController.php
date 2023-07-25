@@ -133,6 +133,8 @@ class DeletedShareAPIController extends OCSController {
 		$result['file_source'] = $node->getId();
 		$result['file_parent'] = $node->getParent()->getId();
 		$result['file_target'] = $share->getTarget();
+		$result['item_size'] = $node->getSize();
+		$result['item_mtime'] = $node->getMTime();
 
 		$expiration = $share->getExpirationDate();
 		if ($expiration !== null) {
@@ -159,6 +161,14 @@ class DeletedShareAPIController extends OCSController {
 				$result = array_merge($result, $this->getDeckShareHelper()->formatShare($share));
 			} catch (QueryException $e) {
 			}
+		} elseif ($share->getShareType() === IShare::TYPE_SCIENCEMESH) {
+			$result['share_with'] = $share->getSharedWith();
+			$result['share_with_displayname'] = '';
+
+			try {
+				$result = array_merge($result, $this->getSciencemeshShareHelper()->formatShare($share));
+			} catch (QueryException $e) {
+			}
 		}
 
 		return $result;
@@ -171,8 +181,9 @@ class DeletedShareAPIController extends OCSController {
 		$groupShares = $this->shareManager->getDeletedSharedWith($this->userId, IShare::TYPE_GROUP, null, -1, 0);
 		$roomShares = $this->shareManager->getDeletedSharedWith($this->userId, IShare::TYPE_ROOM, null, -1, 0);
 		$deckShares = $this->shareManager->getDeletedSharedWith($this->userId, IShare::TYPE_DECK, null, -1, 0);
+		$sciencemeshShares = $this->shareManager->getDeletedSharedWith($this->userId, IShare::TYPE_SCIENCEMESH, null, -1, 0);
 
-		$shares = array_merge($groupShares, $roomShares, $deckShares);
+		$shares = array_merge($groupShares, $roomShares, $deckShares, $sciencemeshShares);
 
 		$shares = array_map(function (IShare $share) {
 			return $this->formatShare($share);
@@ -224,7 +235,7 @@ class DeletedShareAPIController extends OCSController {
 	}
 
 	/**
-	 * Returns the helper of ShareAPIHelper for deck shares.
+	 * Returns the helper of DeletedShareAPIHelper for deck shares.
 	 *
 	 * If the Deck application is not enabled or the helper is not available
 	 * a QueryException is thrown instead.
@@ -238,5 +249,22 @@ class DeletedShareAPIController extends OCSController {
 		}
 
 		return $this->serverContainer->get('\OCA\Deck\Sharing\ShareAPIHelper');
+	}
+
+	/**
+	 * Returns the helper of DeletedShareAPIHelper for sciencemesh shares.
+	 *
+	 * If the sciencemesh application is not enabled or the helper is not available
+	 * a QueryException is thrown instead.
+	 *
+	 * @return \OCA\Deck\Sharing\ShareAPIHelper
+	 * @throws QueryException
+	 */
+	private function getSciencemeshShareHelper() {
+		if (!$this->appManager->isEnabledForUser('sciencemesh')) {
+			throw new QueryException();
+		}
+
+		return $this->serverContainer->get('\OCA\ScienceMesh\Sharing\ShareAPIHelper');
 	}
 }

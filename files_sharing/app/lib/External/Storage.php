@@ -78,7 +78,7 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 		$discoveryService = \OC::$server->query(\OCP\OCS\IDiscoveryService::class);
 
 		[$protocol, $remote] = explode('://', $this->cloudId->getRemote());
-		if (strpos($remote, '/')) {
+		if (str_contains($remote, '/')) {
 			[$host, $root] = explode('/', $remote, 2);
 		} else {
 			$host = $remote;
@@ -265,8 +265,9 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 
 	private function testRemoteUrl(string $url): bool {
 		$cache = $this->memcacheFactory->createDistributed('files_sharing_remote_url');
-		if ($cache->hasKey($url)) {
-			return (bool)$cache->get($url);
+		$cached = $cache->get($url);
+		if ($cached !== null) {
+			return (bool)$cached;
 		}
 
 		$client = $this->httpClient->newClient();
@@ -355,18 +356,18 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 		return $this->cloudId->getDisplayId();
 	}
 
-	public function isSharable($path) {
+	public function isSharable($path): bool {
 		if (\OCP\Util::isSharingDisabledForUser() || !\OC\Share\Share::isResharingAllowed()) {
 			return false;
 		}
-		return ($this->getPermissions($path) & Constants::PERMISSION_SHARE);
+		return (bool)($this->getPermissions($path) & Constants::PERMISSION_SHARE);
 	}
 
-	public function getPermissions($path) {
+	public function getPermissions($path): int {
 		$response = $this->propfind($path);
 		// old federated sharing permissions
 		if (isset($response['{http://open-collaboration-services.org/ns}share-permissions'])) {
-			$permissions = $response['{http://open-collaboration-services.org/ns}share-permissions'];
+			$permissions = (int)$response['{http://open-collaboration-services.org/ns}share-permissions'];
 		} elseif (isset($response['{http://open-cloud-mesh.org/ns}share-permissions'])) {
 			// permissions provided by the OCM API
 			$permissions = $this->ocmPermissions2ncPermissions($response['{http://open-collaboration-services.org/ns}share-permissions'], $path);

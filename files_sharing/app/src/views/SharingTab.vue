@@ -29,14 +29,13 @@
 		</div>
 
 		<!-- shares content -->
-		<template v-else>
+		<div v-else class="sharingTab__content">
 			<!-- shared with me information -->
 			<SharingEntrySimple v-if="isSharedWithMe" v-bind="sharedWithMe" class="sharing-entry__reshare">
 				<template #avatar>
-					<Avatar :user="sharedWithMe.user"
+					<NcAvatar :user="sharedWithMe.user"
 						:display-name="sharedWithMe.displayName"
-						class="sharing-entry__avatar"
-						tooltip-message="" />
+						class="sharing-entry__avatar" />
 				</template>
 			</SharingEntrySimple>
 
@@ -92,13 +91,13 @@
 			<SharingEntryInternal :file-info="fileInfo" />
 
 			<!-- projects -->
-			<CollectionList v-if="fileInfo"
+			<CollectionList v-if="projectsEnabled && fileInfo"
 				:id="`${fileInfo.id}`"
 				type="file"
 				:name="fileInfo.name" />
-		</template>
+		</div>
 
-		<!-- additionnal entries, use it with cautious -->
+		<!-- additional entries, use it with cautious -->
 		<div v-for="(section, index) in sections"
 			:ref="'section-' + index"
 			:key="index"
@@ -111,34 +110,35 @@
 <script>
 import { CollectionList } from 'nextcloud-vue-collections'
 import { generateOcsUrl } from '@nextcloud/router'
-import Avatar from '@nextcloud/vue/dist/Components/Avatar'
+import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 import axios from '@nextcloud/axios'
+import { loadState } from '@nextcloud/initial-state'
 
-import Config from '../services/ConfigService'
-import { shareWithTitle } from '../utils/SharedWithMe'
-import Share from '../models/Share'
-import ShareTypes from '../mixins/ShareTypes'
-import SharingEntryInternal from '../components/SharingEntryInternal'
-import SharingEntrySimple from '../components/SharingEntrySimple'
+import Config from '../services/ConfigService.js'
+import { shareWithTitle } from '../utils/SharedWithMe.js'
+import Share from '../models/Share.js'
+import ShareTypes from '../mixins/ShareTypes.js'
+import SharingEntryInternal from '../components/SharingEntryInternal.vue'
+import SharingEntrySimple from '../components/SharingEntrySimple.vue'
 // import SharingInput from '../components/SharingInput'
 import SharingInputRecia from '../components/SharingInputRecia'
 import SharingInputEtab from '../components/SharingInputEtab'
 import SharingInputChoice from '../components/SharingInputChoice'
 
-import SharingInherited from './SharingInherited'
-import SharingLinkList from './SharingLinkList'
-import SharingList from './SharingList'
+import SharingInherited from './SharingInherited.vue'
+import SharingLinkList from './SharingLinkList.vue'
+import SharingList from './SharingList.vue'
 
 export default {
 	name: 'SharingTab',
 
 	components: {
-		Avatar,
+		NcAvatar,
 		CollectionList,
 		SharingEntryInternal,
 		SharingEntrySimple,
 		SharingInherited,
-		/* SharingInput, */
+		/*SharingInput,*/
 		SharingInputRecia,
 		SharingInputEtab,
 		SharingInputChoice,
@@ -168,6 +168,7 @@ export default {
 			selectedEtabs: [],
 
 			sections: OCA.Sharing.ShareTabSections.getSections(),
+			projectsEnabled: loadState('core', 'projects_enabled', false),
 		}
 	},
 
@@ -386,6 +387,7 @@ export default {
 				}
 			})
 		},
+
 		updateSearchType(type) {
 			this.searchType = type
 		},
@@ -400,5 +402,14 @@ export default {
 <style scoped lang="scss">
 .emptyContentWithSections {
 	margin: 1rem auto;
+}
+
+.sharingTab {
+	&__content {
+		padding: 0 6px;
+	}
+	&__additionalContent {
+		margin: 44px 0;
+	}
 }
 </style>

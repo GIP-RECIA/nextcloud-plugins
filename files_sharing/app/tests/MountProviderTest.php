@@ -36,34 +36,33 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Storage\IStorageFactory;
 use OCP\ICacheFactory;
 use OCP\IConfig;
-use OCP\ILogger;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\Share\IAttributes as IShareAttributes;
 use OCP\Share\IManager;
 use OCP\Share\IShare;
+use Psr\Log\LoggerInterface;
 
 /**
  * @group DB
  */
 class MountProviderTest extends \Test\TestCase {
-
 	/** @var MountProvider */
 	private $provider;
 
-	/** @var IConfig|\PHPUnit\Framework\MockObject\MockObject */
+	/** @var IConfig|MockObject */
 	private $config;
 
-	/** @var IUser|\PHPUnit\Framework\MockObject\MockObject */
+	/** @var IUser|MockObject */
 	private $user;
 
-	/** @var IStorageFactory|\PHPUnit\Framework\MockObject\MockObject */
+	/** @var IStorageFactory|MockObject */
 	private $loader;
 
-	/** @var IManager|\PHPUnit\Framework\MockObject\MockObject */
+	/** @var IManager|MockObject */
 	private $shareManager;
 
-	/** @var ILogger | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var LoggerInterface|MockObject */
 	private $logger;
 
 	protected function setUp(): void {
@@ -73,7 +72,7 @@ class MountProviderTest extends \Test\TestCase {
 		$this->user = $this->getMockBuilder(IUser::class)->getMock();
 		$this->loader = $this->getMockBuilder('OCP\Files\Storage\IStorageFactory')->getMock();
 		$this->shareManager = $this->getMockBuilder(IManager::class)->getMock();
-		$this->logger = $this->getMockBuilder(ILogger::class)->getMock();
+		$this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 		$eventDispatcher = $this->createMock(IEventDispatcher::class);
 		$cacheFactory = $this->createMock(ICacheFactory::class);
 		$cacheFactory->method('createLocal')
@@ -163,31 +162,29 @@ class MountProviderTest extends \Test\TestCase {
 			$this->makeMockShare(12, 103, 'user2', '/share7', 31),
 			$this->makeMockShare(13, 103, 'user2', '/share7', 31),
 		];
-		// tests regarding circles are made in the app itself.
+		// tests regarding circles and sciencemesh are made in the apps themselves.
 		$circleShares = [];
+		$sciencemeshShares = [];
 		$this->user->expects($this->any())
 			->method('getUID')
 			->willReturn('user1');
-		$this->shareManager->expects($this->at(0))
+		$this->shareManager->expects($this->exactly(6))
 			->method('getSharedWith')
-			->with('user1', IShare::TYPE_USER)
-			->willReturn($userShares);
-		$this->shareManager->expects($this->at(1))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_GROUP, null, -1)
-			->willReturn($groupShares);
-		$this->shareManager->expects($this->at(2))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_CIRCLE, null, -1)
-			->willReturn($circleShares);
-		$this->shareManager->expects($this->at(3))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_ROOM, null, -1)
-			->willReturn($roomShares);
-		$this->shareManager->expects($this->at(4))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_DECK, null, -1)
-			->willReturn($deckShares);
+			->withConsecutive(
+				['user1', IShare::TYPE_USER],
+				['user1', IShare::TYPE_GROUP, null, -1],
+				['user1', IShare::TYPE_CIRCLE, null, -1],
+				['user1', IShare::TYPE_ROOM, null, -1],
+				['user1', IShare::TYPE_DECK, null, -1],
+				['user1', IShare::TYPE_SCIENCEMESH, null, -1],
+			)->willReturnOnConsecutiveCalls(
+				$userShares,
+				$groupShares,
+				$circleShares,
+				$roomShares,
+				$deckShares,
+				$sciencemeshShares
+			);
 		$this->shareManager->expects($this->any())
 			->method('newShare')
 			->willReturnCallback(function () use ($rootFolder, $userManager) {
@@ -391,26 +388,24 @@ class MountProviderTest extends \Test\TestCase {
 		$circleShares = [];
 		$roomShares = [];
 		$deckShares = [];
-		$this->shareManager->expects($this->at(0))
+		$sciencemeshShares = [];
+		$this->shareManager->expects($this->exactly(6))
 			->method('getSharedWith')
-			->with('user1', IShare::TYPE_USER)
-			->willReturn($userShares);
-		$this->shareManager->expects($this->at(1))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_GROUP, null, -1)
-			->willReturn($groupShares);
-		$this->shareManager->expects($this->at(2))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_CIRCLE, null, -1)
-			->willReturn($circleShares);
-		$this->shareManager->expects($this->at(3))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_ROOM, null, -1)
-			->willReturn($roomShares);
-		$this->shareManager->expects($this->at(4))
-			->method('getSharedWith')
-			->with('user1', IShare::TYPE_DECK, null, -1)
-			->willReturn($deckShares);
+			->withConsecutive(
+				['user1', IShare::TYPE_USER],
+				['user1', IShare::TYPE_GROUP, null, -1],
+				['user1', IShare::TYPE_CIRCLE, null, -1],
+				['user1', IShare::TYPE_ROOM, null, -1],
+				['user1', IShare::TYPE_DECK, null, -1],
+				['user1', IShare::TYPE_SCIENCEMESH, null, -1],
+			)->willReturnOnConsecutiveCalls(
+				$userShares,
+				$groupShares,
+				$circleShares,
+				$roomShares,
+				$deckShares,
+				$sciencemeshShares
+			);
 		$this->shareManager->expects($this->any())
 			->method('newShare')
 			->willReturnCallback(function () use ($rootFolder, $userManager) {
