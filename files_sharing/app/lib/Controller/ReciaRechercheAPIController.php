@@ -210,7 +210,7 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-    	return '19450042700035';
+    	//return '19450042700035';
 		try {
             $currentSchool = null;
 
@@ -225,11 +225,11 @@ class ReciaRechercheAPIController extends OCSController {
             if ($ldapConnection) {
                 $ldapIsBound = ldap_bind($ldapConnection, $this->config->getAppValue('ldapimporter', 'cas_import_ad_user'), $this->config->getAppValue('ldapimporter', 'cas_import_ad_password'));
                 if (!$ldapIsBound) {
-                    throw new \Exception("LDAP bind failed. Error: " . ldap_error($this->ldapConnection));
+                    throw new \Exception("LDAP bind failed. Error: " . ldap_error($ldapConnection));
                 }
 
                 // Disable pagination setting, not needed for individual attribute queries
-                ldap_control_paged_result($ldapConnection, 1);
+                //ldap_control_paged_result($ldapConnection, 1);
 
                 // Query user attributes
                 $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
