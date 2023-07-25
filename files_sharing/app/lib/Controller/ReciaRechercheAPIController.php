@@ -210,7 +210,7 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-    	//return '19450042700035';
+    	return '19450042700035';
 		try {
             $currentSchool = null;
 
@@ -229,7 +229,7 @@ class ReciaRechercheAPIController extends OCSController {
                 }
 
                 // Disable pagination setting, not needed for individual attribute queries
-                //ldap_control_paged_result($ldapConnection, 1);
+                //ldap_control_paged_result($ldapConnection, 1); //DEPRECATED PHP>=8.0
 
                 // Query user attributes
                 $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);

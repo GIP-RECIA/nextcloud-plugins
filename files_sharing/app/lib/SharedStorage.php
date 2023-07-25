@@ -54,7 +54,6 @@ use OCP\Files\Storage\IDisableEncryptionStorage;
 use OCP\Files\Storage\IStorage;
 use OCP\Lock\ILockingProvider;
 use OCP\Share\IShare;
-use Psr\Log\LoggerInterface;
 
 /**
  * Convert target path to source path and pass the function call to the correct storage provider
@@ -81,7 +80,10 @@ class SharedStorage extends \OC\Files\Storage\Wrapper\Jail implements ISharedSto
 	/** @var string */
 	private $user;
 
-	private LoggerInterface $logger;
+	/**
+	 * @var \OCP\ILogger
+	 */
+	private $logger;
 
 	/** @var  IStorage */
 	private $nonMaskedStorage;
@@ -98,7 +100,7 @@ class SharedStorage extends \OC\Files\Storage\Wrapper\Jail implements ISharedSto
 
 	public function __construct($arguments) {
 		$this->ownerView = $arguments['ownerView'];
-		$this->logger = \OC::$server->get(LoggerInterface::class);
+		$this->logger = \OC::$server->getLogger();
 
 		$this->superShare = $arguments['superShare'];
 		$this->groupedShares = $arguments['groupedShares'];
@@ -171,7 +173,7 @@ class SharedStorage extends \OC\Files\Storage\Wrapper\Jail implements ISharedSto
 			$this->storage = new FailedStorage(['exception' => $e]);
 			$this->cache = new FailedCache();
 			$this->rootPath = '';
-			$this->logger->error($e->getMessage(), ['exception' => $e]);
+			$this->logger->logException($e);
 		}
 
 		if (!$this->nonMaskedStorage) {
@@ -222,17 +224,17 @@ class SharedStorage extends \OC\Files\Storage\Wrapper\Jail implements ISharedSto
 	/**
 	 * Get the permissions granted for a shared file
 	 *
-	 * @param string $path Shared target file path
+	 * @param string $target Shared target file path
 	 * @return int CRUDS permissions granted
 	 */
-	public function getPermissions($path = ''): int {
+	public function getPermissions($target = ''): int {
 		if (!$this->isValid()) {
 			return 0;
 		}
-		$permissions = parent::getPermissions($path) & $this->superShare->getPermissions();
+		$permissions = parent::getPermissions($target) & $this->superShare->getPermissions();
 
 		// part files and the mount point always have delete permissions
-		if ($path === '' || pathinfo($path, PATHINFO_EXTENSION) === 'part') {
+		if ($target === '' || pathinfo($target, PATHINFO_EXTENSION) === 'part') {
 			$permissions |= \OCP\Constants::PERMISSION_DELETE;
 		}
 
@@ -515,9 +517,9 @@ class SharedStorage extends \OC\Files\Storage\Wrapper\Jail implements ISharedSto
 	}
 
 	/**
-	 * @param bool $isAvailable
+	 * @param bool $available
 	 */
-	public function setAvailability($isAvailable) {
+	public function setAvailability($available) {
 		// shares do not participate in availability logic
 	}
 

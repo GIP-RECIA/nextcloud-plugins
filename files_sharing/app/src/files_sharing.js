@@ -1,5 +1,5 @@
 /**
- * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ * @copyright Copyright (c) 2016 John Molakvoæ <skjnldsv@protonmail.com>
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Julius Härtl <jus@bitgrid.net>
@@ -20,11 +20,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import registerSharingViews from './views/shares'
 
-import './actions/acceptShareAction'
-import './actions/openInFilesAction'
-import './actions/rejectShareAction'
-import './actions/restoreShareAction'
-
-registerSharingViews()
+import '../js/app'
+import '../js/sharedfilelist'

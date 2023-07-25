@@ -23,18 +23,15 @@
 
 import Vue from 'vue'
 import { translate as t, translatePlural as n } from '@nextcloud/l10n'
-import { getRequestToken } from '@nextcloud/auth'
 
+import SharingTab from './views/SharingTab.vue'
 import ShareSearch from './services/ShareSearch.js'
 import ExternalLinkActions from './services/ExternalLinkActions.js'
 import ExternalShareActions from './services/ExternalShareActions.js'
 import TabSections from './services/TabSections.js'
 
-// eslint-disable-next-line n/no-missing-import, import/no-unresolved
+// eslint-disable-next-line node/no-missing-import, import/no-unresolved
 import ShareVariant from '@mdi/svg/svg/share-variant.svg?raw'
-
-// eslint-disable-next-line camelcase
-__webpack_nonce__ = btoa(getRequestToken())
 
 // Init Sharing Tab Service
 if (!window.OCA.Sharing) {
@@ -49,6 +46,7 @@ Vue.prototype.t = t
 Vue.prototype.n = n
 
 // Init Sharing tab component
+const View = Vue.extend(SharingTab)
 let TabInstance = null
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -59,9 +57,6 @@ window.addEventListener('DOMContentLoaded', function() {
 			iconSvg: ShareVariant,
 
 			async mount(el, fileInfo, context) {
-				const SharingTab = (await import('./views/SharingTab.vue')).default
-				const View = Vue.extend(SharingTab)
-
 				if (TabInstance) {
 					TabInstance.$destroy()
 				}

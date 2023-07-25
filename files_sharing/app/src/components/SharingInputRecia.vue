@@ -39,7 +39,7 @@
 		track-by="id"
 		@search-change="asyncFind"
 		@select="addShare">
-		<template v-if="!this.isValidQuery" slot="beforeList">
+		<template slot="beforeList" v-if="!this.isValidQuery">
 			<li>
 				<span>
 					{{ t('files_sharing', 'Recommendations :') }}
@@ -60,14 +60,14 @@ import { generateOcsUrl } from '@nextcloud/router'
 import { getCurrentUser } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
 import debounce from 'debounce'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
-import MultiselectMixin from '../mixins/MultiselectMixin.js'
+import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect'
+import MultiselectMixin from '../mixins/MultiselectMixin'
 
-import Config from '../services/ConfigService.js'
-import GeneratePassword from '../utils/GeneratePassword.js'
-import Share from '../models/Share.js'
-import ShareRequests from '../mixins/ShareRequests.js'
-import ShareTypes from '../mixins/ShareTypes.js'
+import Config from '../services/ConfigService'
+import GeneratePassword from '../utils/GeneratePassword'
+import Share from '../models/Share'
+import ShareRequests from '../mixins/ShareRequests'
+import ShareTypes from '../mixins/ShareTypes'
 
 const CancelToken = axios.CancelToken
 let searchCancelSource = null
@@ -557,7 +557,7 @@ export default {
 			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
 				return {
 					icon: 'icon-sciencemesh',
-					iconTitle: t('files_sharing', 'ScienceMesh'),
+					iconTitle: t('files_sharing', 'Science Mesh'),
 				}
 			default:
 				return {}
@@ -604,7 +604,6 @@ export default {
 		 */
 		async addShare(value) {
 			this.value = null
-
 			if (value.lookup) {
 				await this.getSuggestions(this.query, true)
 

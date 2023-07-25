@@ -33,9 +33,9 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import Share from '../models/Share.js'
-import SharingEntry from '../components/SharingEntry.vue'
-import ShareTypes from '../mixins/ShareTypes.js'
+import Share from '../models/Share'
+import SharingEntry from '../components/SharingEntry'
+import ShareTypes from '../mixins/ShareTypes'
 
 export default {
 	name: 'SharingList',

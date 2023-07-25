@@ -26,6 +26,7 @@
 			<!-- file -->
 			<NcActionCheckbox v-if="!isFolder"
 				:checked="shareHasPermissions(atomicPermissions.UPDATE)"
+				:disabled="saving"
 				@update:checked="toggleSharePermissions(atomicPermissions.UPDATE)">
 				{{ t('files_sharing', 'Allow editing') }}
 			</NcActionCheckbox>
@@ -36,18 +37,21 @@
 					<NcActionRadio :checked="sharePermissionEqual(bundledPermissions.READ_ONLY)"
 						:value="bundledPermissions.READ_ONLY"
 						:name="randomFormName"
+						:disabled="saving"
 						@change="setSharePermissions(bundledPermissions.READ_ONLY)">
 						{{ t('files_sharing', 'Read only') }}
 					</NcActionRadio>
 
 					<NcActionRadio :checked="sharePermissionEqual(bundledPermissions.UPLOAD_AND_UPDATE)"
 						:value="bundledPermissions.UPLOAD_AND_UPDATE"
+						:disabled="saving"
 						:name="randomFormName"
 						@change="setSharePermissions(bundledPermissions.UPLOAD_AND_UPDATE)">
 						{{ t('files_sharing', 'Allow upload and editing') }}
 					</NcActionRadio>
 					<NcActionRadio :checked="sharePermissionEqual(bundledPermissions.FILE_DROP)"
 						:value="bundledPermissions.FILE_DROP"
+						:disabled="saving"
 						:name="randomFormName"
 						class="sharing-entry__action--public-upload"
 						@change="setSharePermissions(bundledPermissions.FILE_DROP)">
@@ -67,22 +71,22 @@
 				<!-- custom permissions -->
 				<span v-else :class="{error: !sharePermissionsSetIsValid}">
 					<NcActionCheckbox :checked="shareHasPermissions(atomicPermissions.READ)"
-						:disabled="!canToggleSharePermissions(atomicPermissions.READ)"
+						:disabled="saving || !canToggleSharePermissions(atomicPermissions.READ)"
 						@update:checked="toggleSharePermissions(atomicPermissions.READ)">
 						{{ t('files_sharing', 'Read') }}
 					</NcActionCheckbox>
 					<NcActionCheckbox :checked="shareHasPermissions(atomicPermissions.CREATE)"
-						:disabled="!canToggleSharePermissions(atomicPermissions.CREATE)"
+						:disabled="saving || !canToggleSharePermissions(atomicPermissions.CREATE)"
 						@update:checked="toggleSharePermissions(atomicPermissions.CREATE)">
 						{{ t('files_sharing', 'Upload') }}
 					</NcActionCheckbox>
 					<NcActionCheckbox :checked="shareHasPermissions(atomicPermissions.UPDATE)"
-						:disabled="!canToggleSharePermissions(atomicPermissions.UPDATE)"
+						:disabled="saving || !canToggleSharePermissions(atomicPermissions.UPDATE)"
 						@update:checked="toggleSharePermissions(atomicPermissions.UPDATE)">
 						{{ t('files_sharing', 'Edit') }}
 					</NcActionCheckbox>
 					<NcActionCheckbox :checked="shareHasPermissions(atomicPermissions.DELETE)"
-						:disabled="!canToggleSharePermissions(atomicPermissions.DELETE)"
+						:disabled="saving || !canToggleSharePermissions(atomicPermissions.DELETE)"
 						@update:checked="toggleSharePermissions(atomicPermissions.DELETE)">
 						{{ t('files_sharing', 'Delete') }}
 					</NcActionCheckbox>
@@ -100,11 +104,11 @@
 </template>
 
 <script>
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
-import NcActionRadio from '@nextcloud/vue/dist/Components/NcActionRadio.js'
-import NcActionCheckbox from '@nextcloud/vue/dist/Components/NcActionCheckbox.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
+import NcActionRadio from '@nextcloud/vue/dist/Components/NcActionRadio'
+import NcActionCheckbox from '@nextcloud/vue/dist/Components/NcActionCheckbox'
 
-import SharesMixin from '../mixins/SharesMixin.js'
+import SharesMixin from '../mixins/SharesMixin'
 import {
 	ATOMIC_PERMISSIONS,
 	BUNDLED_PERMISSIONS,
@@ -112,10 +116,10 @@ import {
 	permissionsSetIsValid,
 	togglePermissions,
 	canTogglePermissions,
-} from '../lib/SharePermissionsToolBox.js'
+} from '../lib/SharePermissionsToolBox'
 
-import Tune from 'vue-material-design-icons/Tune.vue'
-import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
+import Tune from 'vue-material-design-icons/Tune'
+import ChevronLeft from 'vue-material-design-icons/ChevronLeft'
 
 export default {
 	name: 'SharePermissionsEditor',
