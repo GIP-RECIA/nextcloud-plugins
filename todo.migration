@@ -148,3 +148,52 @@ meld grep.ObjectStoreStorage.*
  ./core/Command/Info/File.php:use OC\Files\ObjectStore\ObjectStoreStorage;
 ./core/Command/Info/File.php:		if ($storage->instanceOfStorage(ObjectStoreStorage::class)) {
 ./core/Command/Info/File.php:			/** @var ObjectStoreStorage $storage */
+
+pour le CAS:
+recup des modifs faites pour ncgip
+cd ~/git/GITHUB/Nextcloud;
+cp -rp esco-nextcloud-plugins-gip/apps/user_cas esco-nextcloud-plugins-ent/apps/user_cas
+cp -rp esco-nextcloud-plugins-gip/org/apps/user_cas esco-nextcloud-plugins-ent/org/apps/user_cas
+
+---------------------------------
+passage dans la foulé en nc.26.0.4
+diff nc.old/core/css/variables.scss nextcloud/core/css/variables.scss
+à changé :
+meld nc.old/core/css/variables.scss ncEnt/core/css/variables.scss nextcloud/core/css/variables.scss
+Fait
+cp nextcloud/core/css/variables.scss ncEnt/org/core/css/variables.scss
+
+
+diff nc.old/core/templates/layout.user.php nextcloud/core/templates/layout.user.php
+à changé
+meld nc.old/core/templates/layout.user.php ncEnt/themes/esco/core/templates/layout.user.php nextcloud/core/templates/layout.user.php
+Fait
+cp nextcloud/core/templates/layout.user.php ncEnt/org/core/templates/layout.user.php
+
+
+find nc.old/ nextcloud ncEnt/ -name ObjectStoreStorage.php -ls
+	a changé:
+	mais la fonction stat que je réécris n'a pas changé donc on laisse comme ca pour voir.
+
+diff nc.old/lib/private/Files/ObjectStore/Mapper.php nextcloud/lib/private/Files/ObjectStore/Mapper.php
+	Mapper n'a pas changé
+diff nc.old/lib/private/Files/ObjectStore/S3.php nextcloud/lib/private/Files/ObjectStore/S3.php
+	S3 a changé
+cp nextcloud/lib/private/Files/ObjectStore/S3.php S3Recia.php
+meld nc.old/lib/private/Files/ObjectStore/S3.php ncEnt/lib/private/Files/ObjectStore/S3Recia.php S3Recia.php
+cp S3Recia.php ncEnt/lib/private/Files/ObjectStore/S3Recia.php
+
+find nc.old/ nextcloud ncEnt/ -name CardDavBackend.php -ls
+CarDavBackend.php modifié
+	cp nextcloud/apps/dav/lib/CardDAV/CardDavBackend.php CardDavBackend.php
+	meld nc.old/apps/dav/lib/CardDAV/CardDavBackend.php ncEnt/apps/dav/lib/CardDAV/CardDavBackend.php CardDavBackend.php
+	cp CardDavBackend.php ncEnt/apps/dav/lib/CardDAV/CardDavBackend.php
+	cp nextcloud/apps/dav/lib/CardDAV/CardDavBackend.php ncEnt/org/apps/dav/lib/CardDAV/CardDavBackend.php
+
+find nc.old/ nextcloud ncEnt/ -name RootMountProvider.php -ls
+	RootMountProvider n'a pas changé
+
+recherche de ObjectStoreStorage:
+cd nc.old ; grep -R ObjectStoreStorage . > ../../V26/grep.ObjectStoreStorage.25.0.9 ; cd -
+cd nextcloud ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.26.0.4 ; cd -
+meld grep.ObjectStoreStorage.*
