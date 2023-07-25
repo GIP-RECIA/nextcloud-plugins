@@ -16,7 +16,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 }
 
 ?><!DOCTYPE html>
-<html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
+<html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
 		<?php //mise en place du bandeau ENT
@@ -26,6 +26,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		?>
 		<title>
 			<?php
+				p(!empty($_['pageTitle'])?$_['pageTitle'].' - ':'');
 				p(!empty($_['application'])?$_['application'].' - ':'');
 				p($theme->getTitle());
 			?>
