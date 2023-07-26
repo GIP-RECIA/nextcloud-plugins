@@ -170,6 +170,8 @@ $getUserAvatar = static function (int $size) use ($_): string {
 	<body id="<?php p($_['bodyid']);?>" <?php foreach ($_['enabledThemes'] as $themeId) {
 				p("data-theme-$themeId ");
 			}?> data-themes=<?php p(join(',', $_['enabledThemes'])) ?>>
+	<?php include 'layout.noscript.warning.php'; ?>
+
 <div id="escoDiv" >
 	<header id="escoHeader" >
 		<extended-uportal-header
@@ -226,8 +228,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		</extended-uportal-footer> 
 	</footer>
 
-	<?php include 'layout.noscript.warning.php'; ?>
-
+	
 		<?php foreach ($_['initialStates'] as $app => $initialState) { ?>
 			<input type="hidden" id="initial-state-<?php p($app); ?>" value="<?php p(base64_encode($initialState)); ?>">
 		<?php }?>
@@ -258,7 +259,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 				<div id="user-menu"></div>
 			</div>
 		</header>
-
+</div>
 		<div id="sudo-login-background" class="hidden"></div>
 		<form id="sudo-login-form" class="hidden" method="POST">
 			<label>
