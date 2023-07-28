@@ -117,7 +117,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		}
 /* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
 		body main#content > div#app-content > iframe#onlyofficeFrame {
-				height: calc(100vh - 30px);
+				height: calc(100vh - 35px);
 		}
 		body main#content.app-onlyoffice > div#app > iframe {
 				height: calc(100vh - 88px);
