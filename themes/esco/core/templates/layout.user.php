@@ -51,11 +51,25 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		<?php print_unescaped($_['headers']); ?>
 
 		<style>
-
-			/* on recale le header du tableau des fichier */
-		body #app-content-files thead, body #app-content-trashbin thead {
-			top: 120px;
+			/* suppression des bords arrondis et recalcul de la hauteur et largeur */ 
+		main#content {
+			height: calc(100% - 88px);
+			border-radius: 0;
+			margin-right: 0;
+			width: 100%;
+			margin-left: 0;
 		}
+		body > main#content div#app-navigation-vue {
+
+			padding-bottom: 10px ; /* pour l'aisser passer l'affichage des url */
+		}
+		body > main#content div#app-content label.button.icon-toggle-pictures {
+			opacity: 1;
+			border-radius: 0;
+			top: 0px;
+			right: 0px;
+		}
+
 			/* Style du bandeau ENT */
 		body > div#escoDiv >#escoHeader {
 			position: fixed;
@@ -94,7 +108,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		body > div#escoDiv > header#header.escoDivWrapper .header-right > form > .menutoggle {
 			width: 50px;
 		}
-		body > div#escoDiv > header#header.escoDivWrapper .header-right > div#unified-search > div {
+		body > div#escoDiv > header#header.escoDivWrapper .header-right > div > div.header-menu__wrapper {
 			top: unset;
 		}
 
@@ -102,37 +116,21 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			padding-top: 88px; // pour Applications
 		}
 /* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
-		body  div#content > div#app-content > iframe {
-			top: 88px;
-			height: calc(100vh - 88px);
-			position: fixed;
-			padding-bottom: 4px;
-			background-color: #f1f1f1;
+		body main#content > div#app-content > iframe#onlyofficeFrame {
+				height: calc(100vh - 30px);
 		}
-		body.onlyoffice-inline  div#content > div#app-content > iframe#onlyofficeFrame {
-			top: 88px;
-			height: calc(100vh - 88px);
-			position: fixed;
-			padding-bottom: 4px;
-			background-color: #f1f1f1;
+		body main#content.app-onlyoffice > div#app > iframe {
+				height: calc(100vh - 88px);
 		}
-		body  div#content > div#app-content > iframe#onlyofficeFrame {
-			top: 88px;
-			height: calc(100vh - 88px);
-			position: fixed;
-			padding-bottom: 4px;
-			background-color: #f1f1f1;
-		}
-		body  div#content.app-onlyoffice > div > iframe {
-			top: 88px;
-			height: calc(100vh - 88px);
-			position: fixed;
-			padding-bottom: 4px;
-			background-color: #f1f1f1;
+		body.onlyoffice-inline  main#content {
+			margin-bottom:0;
+			bottom: 0;
+			border-radius: 0;
 		}
 /* fin OO */
 /* pour MD */
-              div#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
+/* pour MD */
+              main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
                         z-index: 3000 !important;
                 }
 /* fin LD */

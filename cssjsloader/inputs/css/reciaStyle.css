@@ -11,6 +11,11 @@ body {
   body#body-public.not_embedded footer {
     /* on supprime dans les liens transmis public les liens de pub nextcloud */
     display: none; }
+  body#body-public.not_embedded .onlyoffice-inline main#content {
+    border-radius: 0;
+    margin-right: 0;
+    width: 100%;
+    height: 100%; }
   body div.section.development-notice {
     display: none; }
   body div#contactsmenu {
