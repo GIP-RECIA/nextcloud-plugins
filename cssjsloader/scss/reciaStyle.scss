@@ -10,7 +10,7 @@ body {
 			/* on supprime dans les liens transmis public les liens de pub nextcloud */
 			display: none;
 		}
-		.onlyoffice-inline main#content{
+		&.onlyoffice-inline main#content{
 			border-radius: 0;
 			margin-left:0;
 			width: 100%;
@@ -18,6 +18,11 @@ body {
 		}
 	}
 
+	&#body-public.layout-base.embedded {
+		div#content.app-public > div#app > iframe {
+			height: calc(100vh - 52px);
+		}
+	}
 	div.section.development-notice {
 		display: none;
 	}
