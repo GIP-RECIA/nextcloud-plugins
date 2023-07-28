@@ -9,7 +9,7 @@ style('ldapimporter', 'settings');
     <input type="hidden" autocomplete="false" />
 
     <h2><?php p($l->t('Import Users')); ?>
-        &nbsp;<?php p(\OCP\App::getAppInfo('ldap_mporter')["version"]); ?></h2>
+        &nbsp;<!-- ?php p(\OCP\App::getAppInfo('ldap_mporter')["version"]); ? --></h2>
 
     <div id="casSettings" class="personalblock">
         <ul>

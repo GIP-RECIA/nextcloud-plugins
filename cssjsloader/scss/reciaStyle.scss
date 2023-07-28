@@ -5,9 +5,17 @@ body {
 	&#body-settings div#content div#app-content div.section div.warning {
 		display: none;
 	}
-	&#body-public.not_embedded footer {
-		/* on supprime dans les liens transmis public les liens de pub nextcloud */
-		display: none;
+	&#body-public.not_embedded {
+		footer {
+			/* on supprime dans les liens transmis public les liens de pub nextcloud */
+			display: none;
+		}
+		.onlyoffice-inline main#content{
+			border-radius: 0;
+			margin-right:0;
+			width: 100%;
+			height: 100%;
+		}
 	}
 
 	div.section.development-notice {
