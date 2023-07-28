@@ -63,7 +63,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 
 			padding-bottom: 10px ; /* pour l'aisser passer l'affichage des url */
 		}
-		body > main#content div#app-content label.button.icon-toggle-pictures {
+		body > main#content div#app-content label#view-toggle.button {
 			opacity: 1;
 			border-radius: 0;
 			top: 0px;
