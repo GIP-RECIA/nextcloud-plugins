@@ -73,7 +73,6 @@ LIB:
 
 PATCH:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
-	cp apps/text/lib/Db/SessionMapper.php $(NEXTCLOUD_PATH)/apps/text/lib/Db/SessionMapper.php
 
 CSS: 
 	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
