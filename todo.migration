@@ -148,3 +148,34 @@ meld grep.ObjectStoreStorage.*
  ./core/Command/Info/File.php:use OC\Files\ObjectStore\ObjectStoreStorage;
 ./core/Command/Info/File.php:		if ($storage->instanceOfStorage(ObjectStoreStorage::class)) {
 ./core/Command/Info/File.php:			/** @var ObjectStoreStorage $storage */
+
+-------------------
+migration 25.0.9 => 25.0.10 (la migration n'a pas ete faite vers la 25.0.9 mais seulement preparer et donc prepare la 25.0.10)
+diff nc.25.0.9/core/css/variables.scss nextcloud/core/css/variables.scss
+null
+diff nc.25.0.9/core/templates/layout.user.php nextcloud/core/templates/layout.user.php
+null
+
+find nc.25.0.9/ nextcloud ncEnt/ -name ObjectStoreStorage.php -ls
+none
+diff nc.25.0.9/lib/private/Files/ObjectStore/Mapper.php nextcloud/lib/private/Files/ObjectStore/Mapper.php
+null
+diff nc.25.0.9/lib/private/Files/ObjectStore/S3.php nextcloud/lib/private/Files/ObjectStore/S3.php
+null
+find nc.25.0.9/ nextcloud ncEnt/ -name CardDavBackend.php -ls
+none
+
+find nc.25.0.9/ nextcloud ncEnt/ -name RootMountProvider.php -ls
+none
+
+recherche de ObjectStoreStorage:
+cd nextcloud ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.25.0.10 ; cd -
+diff grep.ObjectStoreStorage.25.0.9 grep.ObjectStoreStorage.25.0.10
+none
+
+find  nc.25.0.9/ nextcloud ncEnt/ -name SessionMapper.php
+none
+
+il faut suprimer les modifs de SessionMapper.php dans la version finale
+
+---------------------
