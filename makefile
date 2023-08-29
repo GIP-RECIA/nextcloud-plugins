@@ -63,6 +63,9 @@ RESTORE_FILES_SHARING:
 NOTIFICATIONS:
 	cp -rv apps/notifications/* $(NEXTCLOUD_PATH)/apps/notifications
 
+SETTINGS_APP:
+	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
+
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
