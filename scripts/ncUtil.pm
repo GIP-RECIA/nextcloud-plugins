@@ -142,6 +142,18 @@ sub promptCommande(){
 	return $choix eq 'O';
 }
 
+my @share_type = qw(user group usergroup link email contact remote circle gues remote_group room userroom deck deck_user);
+
+my @share_status = qw(pending accepted rejected);
+
+sub partageType {
+	return $share_type[shift];
+}
+
+sub partageStatus {
+	return $share_status[shift];
+}
+
 sub partagePermission {
 	my $perm = shift;
 	my $flags = "($perm";

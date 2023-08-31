@@ -107,16 +107,16 @@ if ($cpt == 1) {
 		my $fileName = $tuple->{'path'};
 		my $fileId = $tuple->{'file_source'};
 		my $uidTarget = $tuple->{'share_with'};
-		my $type = $tuple->{'share_type'};
+		my $type = &partageType($tuple->{'share_type'});
 		my $token = $tuple->{'token'};
 		my $permission = &partagePermission( $tuple->{'permissions'});
 		my $debut = $tuple->{'debut'};
 		my $fin = $tuple->{'fin'};
 		if ($token) {
-			$uidTarget = $token;
+			$uidTarget .=  "($token)";
 		} else {
 			$uidTarget .= "\t";
 		}
-		print "$uid_init => $uidTarget\t$permission\t($debut , $fin)\t$fileName\n";
+		print "$uid_init $type\t$uidTarget\t$permission\t($debut , $fin)\t$fileName\n";
 	}
 }
