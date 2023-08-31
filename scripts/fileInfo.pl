@@ -113,9 +113,9 @@ if ($cpt == 1) {
 		my $debut = $tuple->{'debut'};
 		my $fin = $tuple->{'fin'};
 		if ($token) {
-			$uidTarget .=  "($token)";
+			$uidTarget .=  "\t$token";
 		} else {
-			$uidTarget .= "\t";
+			$uidTarget .= "\t\t\t";
 		}
 		print "$uid_init $type\t$uidTarget\t$permission\t($debut , $fin)\t$fileName\n";
 	}
