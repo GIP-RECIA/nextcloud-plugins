@@ -6,6 +6,8 @@ BEGIN {
         use Exporter   ();
 		@EXPORT_OK   = qw(%PARAM);
     }
+
+use utf8;
 use vars      @EXPORT_OK;
 use Cwd;
 
@@ -167,7 +169,11 @@ sub toGiga {
 	my $unit = shift;
 	if ($val) {
 		if (@_) {
-			return toGiga(int($val/1024),@_) . $val % 1024 . "$unit";
+			my $res = $val % 1024;
+			if ($res) {
+				return toGiga(int($val/1024),@_) . $res. "$unit";
+			}
+			return toGiga(int($val/1024),@_);
 		} else {
 			return $unit ? "$val$unit" : toGiga($val, 'o', 'Ko ', 'Mo ', 'Go ', 'To '); 
 		}
