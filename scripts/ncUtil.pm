@@ -139,4 +139,40 @@ sub promptCommande(){
 	}
 	return $choix eq 'O';
 }
+
+sub partagePermission {
+	my $perm = shift;
+	my $flags = "($perm";
+	
+	if ($perm < 0) {
+		return  "(permission possible:  Modification Création Supression Repartage)";
+	}
+	if ($perm & 2 ) {
+		$flags .= ' Mo'; # Modification
+	}
+	if ($perm & 4 ) {
+		$flags .= ' Cr'; # création
+	} 
+	if ($perm & 8 ) {
+		$flags .= ' Su'; # Supression
+	}
+	if ($perm & 16 ) {
+		$flags .= ' Re'; # Repartage
+	}
+	return $flags . ')';
+}
+
+sub toGiga {
+	my $val = shift;
+	my $unit = shift;
+	if ($val) {
+		if (@_) {
+			return toGiga(int($val/1024),@_) . $val % 1024 . "$unit";
+		} else {
+			return $unit ? "$val$unit" : toGiga($val, 'o', 'Ko ', 'Mo ', 'Go ', 'To '); 
+		}
+	}
+	return $unit ? "" : "0o";
+}
+
 1;

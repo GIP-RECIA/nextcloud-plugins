@@ -3,7 +3,7 @@
 =encoding utf8
 
 =head1 NAME userInfo.pl
-	Donne les infos utils d'un compte Nextcloud .
+	Donne les infos utiles d'un compte Nextcloud .
 
 =head1 SYNOPSIS userInfo.pl [ -a | -b | -f | -p ] [ uid | displayname | bucket | fileId ]
 avec
@@ -51,7 +51,8 @@ my $all;
 
 unless (@ARGV and GetOptions ( "a" => \$all, "b" =>  \$bucket, "f" => \$file, "p" => \$partage)) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
-	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself);
+	$ENV{'MANPAGER'} = 'cat';
+	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself, -noperldoc => 0);
 }
 
 if ($all) {
@@ -210,27 +211,7 @@ sub getNexcloudGroups{
 	return @groups;
 }
 
-sub permissionDecode {
-	my $perm = shift;
-	my $flags = "($perm";
-	
-	if ($perm < 0) {
-		return  "(permission possible:  Modification Création Supression Repartage)";
-	}
-	if ($perm & 2 ) {
-		$flags .= ' Mo'; # Modification
-	}
-	if ($perm & 4 ) {
-		$flags .= ' Cr'; # création
-	} 
-	if ($perm & 8 ) {
-		$flags .= ' Su'; # Supression
-	}
-	if ($perm & 16 ) {
-		$flags .= ' Re'; # Repartage
-	}
-	return $flags . ')';
-}
+
 
 
 my @share_type = qw(user group usergroup link email contact remote circle gues remote_group room userroom deck deck_user);
@@ -248,18 +229,19 @@ sub printPartage {
 	my $lastType;
 	my $cpt;
 	
-	my $sqlQuery = "select share_type , share_with, file_source, path , permissions  from recia_share where uid_owner = ? order by path, share_type";
+	my $sqlQuery = "select share_type , share_with, file_source, path , permissions, token  from recia_share where uid_owner = ? order by path, share_type";
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	
-	print "\n\nLes partages de l'utilisateur " . &permissionDecode(-1) . ":\n";
+	print "\n\nLes partages de l'utilisateur " . &partagePermission(-1) . ":\n";
 	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 		my $fileName = $tuple->{'path'};
 		my $fileId = $tuple->{'file_source'};
 		my $uidTarget = $tuple->{'share_with'};
 		my $type = $tuple->{'share_type'};
-		$uidTarget .= &permissionDecode( $tuple->{'permissions'});
+		my $token = $tuple->{'token'};
+		$uidTarget .= &partagePermission( $tuple->{'permissions'});
 		if ($lastFile ne $fileId ) {
 			$lastFile = $fileId;
 			 print "\n $fileId : $fileName";
@@ -267,14 +249,14 @@ sub printPartage {
 			 $lastType = '';
 		}
 		if ($lastType ne $type) {
-			print "\n\t". $share_type[$type]. ' -->';
+			print "\n\t". $share_type[$type]. ' -->' ;
 			$cpt = 0;
 			$lastType = $type;
 		}
 		if ($cpt++ % 5) {
-			print ",\t$uidTarget"
+			print ", $token\t$uidTarget";
 		} else {
-			print "\n\t\t$uidTarget"
+			print "\n\t$token\t$uidTarget";
 		}
 	}
 	print "\n\n";
@@ -289,25 +271,12 @@ sub printPartage {
 		my $uidOwner = $tuple->{'uid_owner'};
 		my $type = $tuple->{'share_type'};
 		$type = $share_type[$type];
-		my $perm = &permissionDecode($tuple->{'permissions'});
+		my $perm = &partagePermission($tuple->{'permissions'});
 		print "$fileId \t: $fileName\n\t$type <-- $uidOwner $perm\n";
 	}
 	print "\n";
 }
 
-
-sub toGiga {
-	my $val = shift;
-	my $unit = shift;
-	if ($val) {
-		if (@_) {
-			return toGiga(int($val/1024),@_) . $val % 1024 . "$unit ";
-		} else {
-			return $unit ? "$val$unit " : toGiga($val, ' o ', ' Ko ', ' Mo ', ' Go ', ' To '); 
-		}
-	}
-	return $unit ? "" : " 0 o ";
-}
 
 
 my $nom = getUserName($uid);

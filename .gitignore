@@ -213,3 +213,4 @@ backups/**
 
 ###< perso gbrousse ###
 util.sh
+/scripts/makefile
