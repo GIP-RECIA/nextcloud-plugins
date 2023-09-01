@@ -8,7 +8,8 @@
 =head1 SYNOPSIS fileInfo.pl [ fileId | fileName ]
 avec
 	fileId 	: recherche du fichier par son fileId
-	fileName: recherche du fichier par son nom peut contenir des % 
+	fileName: recherche du fichier par son nom peut contenir des %
+	si le resultat n'a qu'un élément alors on en donne les partages.
 =cut
 
 use strict;
@@ -112,14 +113,7 @@ if ($cpt == 1) {
 		my $permission = &partagePermission( $tuple->{'permissions'});
 		my $debut = $tuple->{'debut'};
 		my $fin = $tuple->{'fin'};
-		unless ($uidTarget) {
-			$uidTarget = "\t\t";
-		}
-		if ($token) {
-			$uidTarget .=  "\t$token";
-		} else {
-			$uidTarget .= "\t\t\t";
-		}
-		print "$uid_init $type\t$uidTarget\t$permission\t($debut , $fin)\t$fileName\n";
+		
+		print "$uid_init $type\t$uidTarget\t$token\n\t$permission\t($debut , $fin)\t$fileName\n";
 	}
 }
