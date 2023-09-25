@@ -1,6 +1,7 @@
 # fait la lecture de parametre depuis config.php
 # donne une connection a la base
 # place l'execution dans le HOME de l'utilisateur
+use Net::LDAP;
 
 BEGIN {
         use Exporter   ();
@@ -55,6 +56,7 @@ my $sqlUsr=$PARAM{'dbuser'};
 my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
+
 
 
 sub newConnectSql {
@@ -191,6 +193,112 @@ sub toGiga {
 		}
 	}
 	return $unit ? "" : "0o";
+}
+
+# les infos ldap seront récupérées dans la base nextcloud.
+my $ldapHost;
+my $ldapUser;
+my $ldapPass;
+my $ldapBaseDn;
+my $ldapPort = ':389';
+my $lapProto = 'ldap//';
+
+my $LDAP_CONNEXION;
+
+sub connectLdap {
+		# $newHost est utile si on veux se connecter à un réplicat déterminé
+		# le reste de la conf reste celle de NC en base.
+	my $newHost = shift;
+
+	if ($LDAP_CONNEXION) {
+		unless ($newHost) {
+			return $LDAP_CONNEXION;
+		}
+		$LDAP_CONNEXION->unbind; 
+	}
+	
+	unless ($ldapHost && $ldapUser && $ldapPass) {
+		my $sql = connectSql();
+		my $sqlQuery = q(select configkey, configvalue from oc_appconfig where configkey like 'cas_import_ad%' and appid = 'ldapimporter');
+		print  "$sqlQuery\n";
+		my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+		$sqlStatement->execute() or die $sqlStatement->errstr;
+
+		my $host = 'localhost';
+		
+		
+		while (my @tuple =  $sqlStatement->fetchrow_array()) {
+			if ($tuple[0] eq 'cas_import_ad_base_dn') {
+				$ldapBaseDn = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_host') {
+				$host = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_password') {
+				$ldapPass = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_port') {
+				$ldapPort = ':' . $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_user') {
+				$ldapUser = $tuple[1];
+			} elsif ($tuple[0] eq 'cas_import_ad_protocol') {
+				$ldapProto = $tuple[1];
+			}
+		}
+		$ldapBaseDn =~ s/^ou=[^,]+,//;
+		$ldapHost = $ldapProto . $host . $ldapPort;
+		$PARAM{'ldapHost'} = $host;
+#		$ldapHost= 'chene.srv-ent.brgm.recia.net';
+	}
+	if  ($newHost) {
+		$newHost = $ldapProto . $newHost . $ldapPort;
+	} else {
+		$newHost = $ldapHost;
+	}
+	print "Ldap connexion: $newHost\n";
+		# le parametre raw est un regex qui filtre  les attributs binaires. 
+		# Les attributs qui ne verifie pas la regex seront en utf-8.
+		# si on ne met rien les attribut utf-8 seront considérés comme binaire
+		# et l'encodage sera incorecte.
+		# Nous n'avons pas d'attribut binaire d'ou la valeur choisie qui ne doit matcher aucun attribut
+	my $ldap = Net::LDAP->new($newHost,  async => 1, raw => '^UTF-8$' ) or die "$@";
+	my $mesg ;
+	$ldap->debug(0);
+	
+	print "Ldap user: $ldapUser\n";
+	$mesg = $ldap->bind( $ldapUser,
+	                      password => $ldapPass
+	                    );
+	
+	$mesg->code && die $mesg->error;
+	
+	print "Ldap bind: ", $ldapUser , "\n";
+	$LDAP_CONNEXION = $ldap;
+	return $ldap;
+}
+
+# fait une recherche ldap : si le branche est vide recherche dans tout et si le filtre est vide aussi ramene l'element racine uniquement
+sub searchLDAP {
+	my $branch = shift;
+	my $filter = shift;
+	my $attrs ; #shift;
+	 
+	my $ldap = connectLdap();
+	if ($branch) {
+		$branch .= ",".$ldapBaseDn;
+	} else {
+		$branch = $ldapBaseDn;
+		unless ($filter) {
+			if ($ldapBaseDn =~ /^([^,]+)/) {
+				$filter = "$1";
+			}
+		}
+	}
+	if (@_) {
+		$attrs = [@_];
+	}else {
+		$attrs = ['1.1'];
+	}
+	my $srch = $ldap->search( base => $branch, filter => $filter , attrs => $attrs);
+	$srch->code  and  die "ldap  $branch"," $filter :", $srch->error;
+	return $srch->entries;
 }
 
 1;

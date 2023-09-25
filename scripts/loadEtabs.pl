@@ -59,6 +59,42 @@ unless (-d $dataRep) {
 	die "erreur sur le repertoire des data :  $dataRep\n";
 }
 
+&connectLdap(); #initialise la connexion ldap avec le paramtre en base
+my @allLdap;
+if ($PARAM{'ladpHost'} =~ /pigeon/) {
+	# on est sur la ferme de replicat de prod
+	@allLdap = qw/courlis-vm.girecia.net stern-vm.giprecia.net goeland-vm.giprecia.net/;
+} else {
+	push @allLdap, $PARAM{'ladpHost'};
+}
+
+
+foreach $ldapHost (@allLdap) {
+	&connectLdap($ldapHost);
+	my @entries = &searchLDAP("","", "contextCSN");
+	if (@entries) {
+		foreach my $entry (@entries) {
+			my @values = $entry->get_value('contextCSN');
+			my $maxTz= 0;
+			foreach my $value (@values) {
+				if ($value =~ /(\d{14}).\d{6}Z/) {
+					my $tz = $1;
+					print "$tz\n";
+					if ($tz > $maxTz) {
+						$maxTz = $tz;
+					}
+				}
+				print "	$maxTz\n";
+			}
+		}
+		if ($modifytimestamp > $maxTz) {
+			$modifytimestamp = $maxTz
+		}
+	} else {
+		print "no entry\n";
+	}
+}
+
         #0180006J 0281047L 0410017W 0360019A 0451483T 0450064A 0450786K   0370024A  
         #0180006J 0281047L 0371418R 0371418R 0410017W 0360019A 0451483T 0450064A 0450786K 0370769K 0371159J 0370024A  
 
