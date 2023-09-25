@@ -172,9 +172,9 @@ sub temps() {
 }	
 
 sub timestampLdap() {
-		# calcul du timestamp courant donné a la minute
+		# calcul du timestamp courant donné a la journée
 	my @local = gmtime (shift);
-	return sprintf "%d%02d%02d%02d%02d00 " , $local[5] + 1900,  $local[4]+1, $local[3], $local[2], $local[1];
+	return sprintf "%d%02d%02d000000 " , $local[5] + 1900,  $local[4]+1, $local[3];
 }	
 
 
