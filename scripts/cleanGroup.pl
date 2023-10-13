@@ -7,7 +7,7 @@
 =head1 NAME cleanGroup.pl
 	Supprime les groupes des comptes NC désactive .
 
-=head1 SYNOPSIS userInfo.pl  [test | all | uai]
+=head1 SYNOPSIS userInfo.pl  [test] [all | uai]
 avec
 	all : supprime des groupes  tous les comptes désactivé dont l'uid est du type F.......
 	test : affiche les action sans les faire.
@@ -44,15 +44,22 @@ my $wwwRep = $PARAM{'NC_WWW'};
 my $uai;
 
 $_ = shift;
-	if (/^test$/i) {
-		$test = 1;
-	} elsif (/^all$/i) {
+if (/^test$/i) {
+	$test = 1;
+	$_=shift;
+}
+if ($_) {
+	if (/^all$/i) {
 		$all = 1;
 	} elsif (/^0\d{6}\D$/) {
 		$uai = $_;
 	} else {
 		&erreurParam;
 	}
+} else {
+	&erreurParam unless $test;
+}
+
 if (@ARGV) {
 	&erreurParam;
 }
