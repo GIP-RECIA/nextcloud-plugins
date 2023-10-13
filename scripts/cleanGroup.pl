@@ -89,7 +89,7 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 	$cpt++;
 }
 
-print "$cpt group user dupprimés\n";
+print "$cpt group user supprimés\n";
 # on delete les
 
 $sqlQuery = "delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = false)";
