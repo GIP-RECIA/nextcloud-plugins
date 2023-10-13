@@ -7,10 +7,11 @@
 =head1 NAME cleanGroup.pl
 	Supprime les groupes des comptes NC désactive .
 
-=head1 SYNOPSIS userInfo.pl  [test | all ]
+=head1 SYNOPSIS userInfo.pl  [test | all | uai]
 avec
 	all : supprime des groupes  tous les comptes désactivé dont l'uid est du type F.......
-	test : affiche les action sans les faire. 
+	test : affiche les action sans les faire.
+	uai : uai de l'établissement à traiter
 =cut
 
 use strict;
@@ -40,13 +41,15 @@ unless (@ARGV) {
 my $logRep = $PARAM{'NC_LOG'} . "/Loader";
 my $wwwRep = $PARAM{'NC_WWW'};
 
-
+my $uai;
 
 $_ = shift;
 	if (/^test$/i) {
 		$test = 1;
-	} elsif (/all/i) {
+	} elsif (/^all$/i) {
 		$all = 1;
+	} elsif (/^0\d{6}\D$/) {
+		$uai = $_;
 	} else {
 		&erreurParam;
 	}
@@ -57,10 +60,15 @@ if (@ARGV) {
 chdir $wwwRep;
 
 my @allUids;
-
+my $cpt = 0;
 my $sql = connectSql();
 #on cherche les comptes désactivés
-my $sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false" ;
+my $sqlQuery;
+if ($uai) {
+	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false and gid like '%$uai'";
+} else {
+	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false limit 10000" ;
+}
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 while (my @tuple =  $sqlStatement->fetchrow_array) {
@@ -71,13 +79,20 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 	} else {
 		system ($commande ) == 0 or die $!;
 	}
+	$cpt++;
 }
 
-# on delete les 
-$sqlQuery = "delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = false)";
-my $nb =$sql->do($sqlQuery) or die $!;
-print "$nb lignes supprimé dans oc_asso_uai_user_group \n";
+print "$cpt group user dupprimés\n";
+# on delete les
 
+$sqlQuery = "delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = false)";
+
+if ($all) {
+	my $nb =$sql->do($sqlQuery) or die $!;
+	print "$nb lignes supprimé dans oc_asso_uai_user_group \n";
+} else {
+	print $sqlQuery,"\n";
+}
 
 #select * from oc_group_user where uid =  'F22102o7';
 #select * from oc_asso_uai_user_group where user_group = 'F22102o7';
