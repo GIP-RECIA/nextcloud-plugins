@@ -18,7 +18,7 @@ date
 
 $rcode/saveBucketId.pl
 
-/bin/gzip $rlog/cleanBucket.*.log 
+/bin/gzip $rlog/*.log 
 
 logClean=$rlog/cleanBucket.`date +'%d'`.log
 
