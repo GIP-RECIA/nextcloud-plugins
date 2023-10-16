@@ -74,18 +74,20 @@ my $sqlQuery;
 if ($uai) {
 	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false and gid like '%$uai'";
 } else {
-	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false limit 10000" ;
+	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false limit 20000" ;
 }
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 while (my @tuple =  $sqlStatement->fetchrow_array) {
 	my $commande = sprintf($delGroupCommande , @tuple) ;
-	print (join ("\t" , @tuple), "\n");
+
 	if ($test) {
 		print STDERR $commande, "\n";
 	} else {
-		system ($commande ) == 0 or die $!;
+		system ($commande ) == 0 or die "$commande\t$!";
+		print (join ("\t" , @tuple), " was removed\n");
 	}
+	
 	$cpt++;
 }
 
