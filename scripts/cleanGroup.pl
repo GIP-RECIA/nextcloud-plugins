@@ -85,7 +85,7 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 		print STDERR $commande, "\n";
 	} else {
 		system ($commande ) == 0 or die "$commande\t$!";
-		print (join ("\t" , @tuple), " was removed\n");
+		print STDERR  join ("\t" , @tuple), " was removed\n";
 	}
 	
 	$cpt++;
