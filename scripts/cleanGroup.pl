@@ -72,9 +72,9 @@ my $sql = connectSql();
 #on cherche les comptes désactivés
 my $sqlQuery;
 if ($uai) {
-	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false and gid like '%$uai'";
+	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false' and gid like '%$uai'";
 } else {
-	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = false limit 20000" ;
+	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false' limit 20000" ;
 }
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
@@ -87,14 +87,14 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 		system ($commande ) == 0 or die "$commande\t$!";
 		print STDERR  join ("\t" , @tuple), " was removed\n";
 	}
-	
+
 	$cpt++;
 }
 
 print "$cpt group user supprimés\n";
 # on delete les tuples de oc_asso_uai_user_group inutiles
 
-my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = false)",
+my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false')",
 			"delete from oc_asso_uai_user_group a where user_group not in (select gid from oc_groups) and user_group not in (select uid from oc_users)");
 
 if ($all) {
