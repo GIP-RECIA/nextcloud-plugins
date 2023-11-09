@@ -10,12 +10,13 @@
 
 =head1 SYNOPSIS
 
-	loadGroupFolder.pl [-t] [-f filename.yml] [-l loglevel] up|all|siren...
+	loadGroupFolder.pl [-t] [-q] [-f filename.yml] [-l loglevel] up|all|siren...
 
 	Options:
 	-t test la conf uniquement
 	-f donne le fichier de conf avec les regexs
 	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
+	-q force la mise a jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)     
 	up traite les étabs du fichier des timestamps ayant des groupes modifiés.
 	all traite tous les étabs du fichier de conf, sans verifier les timestamps. 
 	siren des étabs à traiter sans verifier les timestamps.
@@ -52,10 +53,11 @@ use GroupFolder;
 my $fileYml = "config.yml";
 my $test = 0;
 my $loglevel;
+my $forceQuota;
 
 MyLogger::level(2, 1);
 
-unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel) ) {
+unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel, "q" => \$forceQuota) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
@@ -141,6 +143,9 @@ if ($test) {
 	util->testMode();
 } 
 
+if ($forceQuota) {
+	GroupFolder->forceQuota(1);
+}
 ##### debut du travail ######
 
 Folder->readNC;

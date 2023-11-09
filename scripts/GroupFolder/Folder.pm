@@ -140,14 +140,14 @@ sub findFolders {
 
 my $pseudoIdFolder = 1;
 sub updateOrCreateFolder {
-	my ($class, $mountPoint, $quotaG) = @_;
+	my ($class, $mountPoint, $quotaG, $forceQuota) = @_;
 	my $folder = $folderInBase{$mountPoint};
 	my $sqlRequete;
 
 
 	my $quotaO = $quotaG * 1024 * 1024 * 1024;
 	if ($folder) {
-		if ($quotaG && $quotaO != $folder->quota) {
+		if ($quotaG && ($quotaO > $folder->quota || ($forceQuota && $quotaO < $folder->quota))) {
 			$folder->quota($quotaO);
 			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quotaG .'G');
 		}

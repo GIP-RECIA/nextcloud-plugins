@@ -31,6 +31,12 @@ sub addGroup4AdminFolder {
 	}
 }
 
+my $isForceQuota = 0;
+sub forceQuota{
+	$isForceQuota = shift;
+}
+
+
 sub createFolder4Group {
 	my $class = shift;
 	my $etabNC = shift;
@@ -42,7 +48,7 @@ sub createFolder4Group {
 
 	if ($groupNC) {
 		if ($folderFormat) {
-			my $folder = Folder->updateOrCreateFolder(sprintf($folderFormat, @grpMatched), $quotaF);
+			my $folder = Folder->updateOrCreateFolder(sprintf($folderFormat, @grpMatched), $quotaF, $isForceQuota);
 			if ($folder) {
 				$folder->addGroup($groupNC, @$permF);
 				DEBUG! "\t\t\tgroup folder ", Dumper($folder);
