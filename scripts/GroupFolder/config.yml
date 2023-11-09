@@ -34,7 +34,20 @@ etabs:
               - write
               - share
               - delete
-
+            
+      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(Services numériques aux collectivités):(Prestations Numériques Mutualisées)$'
+        last: ifMatch
+        groups:
+          - group: 'GIP-RECIA'
+          - group: '%2$s.%1$s'
+          - group: '%3$s.%1$s'
+            folder: '%1$s/%2$s/%3$s'
+            quotaF: 200
+            permF:
+              - write
+              - share
+              - delete
+            
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
         last: ifMatch
         groups:
@@ -47,7 +60,6 @@ etabs:
               - write
               - share
               - delete
-
 #      - regex: '^coll:admin:central$'
 #        group: 'admin.central'
 #        folder: 'GIP-RECIA'
