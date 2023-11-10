@@ -145,7 +145,7 @@ sub updateOrCreateFolder {
 	my $sqlRequete;
 
 
-	my $quotaO = $quotaG * 1024 * 1024 * 1024;
+	my $quotaO = $quotaG * (1024 ** 3);
 	if ($folder) {
 		if ($quotaG && ($quotaO > $folder->quota || ($forceQuota && $quotaO < $folder->quota))) {
 			$folder->quota($quotaO);
@@ -219,6 +219,13 @@ sub cleanFolder {
 sub cleanAllFolder {
 	my $class = shift;
 	# verifications de quota de folder par rapport au disque
+	# on recupere les size  en base:
+	my %Size;
+	my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
+	while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
+		$Size{$name} = $size;
+	}
+
 	# on recupere la place occupée sur le disque:
 	my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
 	SYSTEM! "du -b -d1 $repGF", sub {
@@ -231,10 +238,14 @@ sub cleanAllFolder {
 				if ($pourcentQuota > 80 ) {
 					WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
 				}
+				if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
+					WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". $Size{$idFolder} . ") différente de sa taille réélle ($size)"; 
+				}
 			} else {
 				print "no folder\n";
 				WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
 			}
+			
 		}
 	};
 	
