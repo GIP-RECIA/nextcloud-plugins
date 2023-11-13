@@ -239,7 +239,7 @@ sub cleanAllFolder {
 					WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
 				}
 				if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
-					WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". $Size{$idFolder} . ") différente de sa taille réélle ($size)"; 
+					WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". util->toGiga($Size{$idFolder}) . ") différente de sa taille réélle (". util->toGiga($size) . ")"; 
 				}
 			} else {
 				print "no folder\n";
