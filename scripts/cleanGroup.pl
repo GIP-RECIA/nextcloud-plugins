@@ -5,12 +5,12 @@
 =encoding utf8
 
 =head1 NAME cleanGroup.pl
-	Supprime les groupes des comptes NC désactive .
+	Supprime les groupes des comptes NC désactivés .
 
 =head1 SYNOPSIS userInfo.pl  [test] [all | uai]
 avec
 	all : supprime des groupes  tous les comptes désactivé dont l'uid est du type F.......
-	test : affiche les action sans les faire.
+	test : affiche les actions sans les faire.
 	uai : uai de l'établissement à traiter
 =cut
 
