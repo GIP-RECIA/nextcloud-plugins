@@ -12,6 +12,14 @@ CREATE TABLE oc_asso_uai_user_group (
 	user_group VARCHAR(255)
 );
 
+/* historisation des user
+	isadd = 0 si la derniere mise a jour n'etait pas un ajout
+			= 1 si derniere modif est un ajout
+	isdel = 0 si n'est pas en etat SUPPRIMER
+		= 1 quand le compte  est dans l'état DELETE
+		= 2 quand le compte est disabled (ldapimporter/lib/Service/Delete/DeleteService.php 259)
+		= 3 quand le compte est supprimé (ldapimporter/lib/Service/Delete/DeleteService.php 139)
+*/
 CREATE TABLE oc_recia_user_history (
 	uid char(8) PRIMARY KEY,
 	siren varchar(15), 
@@ -19,7 +27,7 @@ CREATE TABLE oc_recia_user_history (
 	eta varchar(32),
 	isadd tinyint(1),
 	isdel tinyint(1),
-	hasRep tinyint(1),
+/*	hasRep tinyint(1), */
 	name varchar(100),
 	UNIQUE (siren, isdel, uid)
 );

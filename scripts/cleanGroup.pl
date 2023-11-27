@@ -72,9 +72,21 @@ my $sql = connectSql();
 #on cherche les comptes désactivés
 my $sqlQuery;
 if ($uai) {
-	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false' and gid like '%$uai'";
+	$sqlQuery = q/select gid, uid
+					from oc_group_user, oc_preferences
+					where uid=userid
+					and appid = 'core'
+					and configkey = 'enabled'
+					and configvalue = 'false'
+					and gid like '%$uai'/;
 } else {
-	$sqlQuery = "select gid, uid from oc_group_user, oc_preferences where uid=userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false' limit 20000" ;
+	$sqlQuery = q/select gid, uid
+					from oc_group_user, oc_preferences
+					where uid=userid
+					and appid = 'core'
+					and configkey = 'enabled'
+					and configvalue = 'false'
+					limit 20000/;
 }
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
@@ -105,10 +117,29 @@ if ($all) {
 	print "$nb lignes supprimés dans oc_asso_uai_user_group \n";
 }
 
-
+__END__
 #select * from oc_group_user where uid =  'F22102o7';
 #select * from oc_asso_uai_user_group where user_group = 'F22102o7';
 
 #select * from oc_preferences where userid = 'F22102o7';
 
 #select * from oc_preferences where appid = 'core' and configkey = 'enabled' and configvalue = false
+
+select *
+from oc_preferences p,
+oc_recia_user_history r
+where p.userid = r.uid
+and  p.appid = 'core'
+and p.configkey = 'enabled'
+and p.configvalue = 'false'
+and r.isdel != 2;
+
+select *
+from oc_preferences p,
+oc_recia_user_history r
+where p.userid = r.uid
+and  p.appid = 'core'
+and p.configkey = 'enabled'
+and p.configvalue = 'true'
+and r.eta = 'DELETE'
+and r.isdel > 1;
