@@ -25,7 +25,7 @@ APPS = $(NEXTCLOUD_PATH)/apps
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS
+	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS LIB
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
 	
@@ -52,3 +52,6 @@ SKELETON:
 
 USER_CAS:
 	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
+
+LIB: 
+	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
