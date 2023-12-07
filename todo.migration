@@ -35,3 +35,24 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/l10n/fr.js* .
 scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php .
 
 rien a changer pour collabora
+
+---------------
+migration 25.0.6 vers 27.1.4 pour le gip
+
+user_cas n'a pas changé;
+ collabora 7.1.8 => 8.2.3
+
+>cd org/apps/richdocuments/l10n
+> scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/l10n/fr.js* .
+cp fr.js fr.js.8.2.3
+cp fr.json fr.json.8.2.3
+
+> cd - ; # on modifie seulement org/apps/richdocuments/l10n/fr.js que l'on 
+> meld org/apps/richdocuments/l10n/fr.js.7.1.8 apps/richdocuments/l10n/fr.js org/apps/richdocuments/l10n/fr.js
+> mv org/apps/richdocuments/l10n/fr.js apps/richdocuments/l10n/fr.js
+
+> meld org/apps/richdocuments/l10n/fr.json.7.1.8 apps/richdocuments/l10n/fr.json org/apps/richdocuments/l10n/fr.json
+> mv org/apps/richdocuments/l10n/fr.json apps/richdocuments/l10n/fr.json
+
+même chose avec lib/Capabilities.php 
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php .
