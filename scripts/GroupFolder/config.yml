@@ -35,7 +35,7 @@ etabs:
               - share
               - delete
             
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(Services numériques aux collectivités):(Prestations Numériques Mutualisées)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(SNC):(PNM)$'
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
