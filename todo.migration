@@ -37,6 +37,7 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.ph
 rien a changer pour collabora
 
 ---------------
+---------------
 migration 25.0.6 vers 27.1.4 pour le gip
 
 user_cas n'a pas changé;
@@ -56,3 +57,12 @@ cp fr.json fr.json.8.2.3
 
 même chose avec lib/Capabilities.php 
 scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php .
+
+
+----------
+onlyoffice => 8.2.4
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/js/main.js org/apps/onlyoffice/js/main.js.8.2.4
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/onlyoffice/l10n/
+
+# scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/appconfig.php org/apps/onlyoffice/lib/
