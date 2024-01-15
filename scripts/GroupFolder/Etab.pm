@@ -39,7 +39,7 @@ sub addEtab {
 		# avec le ignore il n'y a pas d'erreur en cas de préexistance
 	my $sth = util->executeSql(q/INSERT IGNORE INTO oc_etablissements (siren, name) values (?, ?)/, $siren, $name);
 	my $id;
-	if (util->isModTest) {
+	if (util->isTestMode) {
 		$id = $pseudoIdEtab ++;
 	} else {
 		$id = $sth->last_insert_id();
