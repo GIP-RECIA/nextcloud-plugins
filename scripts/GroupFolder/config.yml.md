@@ -55,7 +55,7 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 
 	- **regex**: une regex 
 
-	- **last**: permet de sortir le groupe Grouper testé, avec la **regex** de même niveau, de la liste des groupes.  
+	- **last**: permet de sortir le groupe Grouper testé, avec les **regex** de même niveau (), de la liste des groupes.  
 	2 valeurs possibles:
 		- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
 		Il ne sera donc pas testé avec les regexs suivantes.

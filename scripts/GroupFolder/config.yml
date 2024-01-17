@@ -10,81 +10,60 @@
 
 ---
 etabs:
-  - nom: GIP-RECIA
-    siren: 18450311800020
-    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*))'
-    regexs:  
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):(?:Tous_)(\2)$'
-        last: ifMatch
-        groups:
-          - group: 'GIP-RECIA'
-            folders:
-              - folder: 'GIP-RECIA'
-                permF: []
-                quotaF: 100
-              - folder: 'GIP-RECIA/Commun'
+  - nom: CD18-CHER
+    siren: 22180001400013
+    ldapFilterList:
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Evaluations professionelles:Managers)'
+        regexs:  
+          - regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
+            last: ifMatch
+            groups:
+              - group: 'Evaluations professionelles.$%1'
+                folders:
+                  - folder: 'Évaluations professionnelles' ???
+                    permF:
+                      - write
+                      - share
+                      - delete
+                    quotaF: 100
+      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT*)
+                               (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                           )'
+        regexs:
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:CHEF D ETABLISSEMENT( ADJOINT)?$'
+            last: ifMatch
+            uai: '%2$s'
+            groups:
+              - group: 'CHEF D ETABLISSEMENT.%1$s'
+                folders:
+                  - folder: 'Évaluations professionnelles' ???
+                    permF: []
+                  - folder: 'Évaluations professionnelles/%1$s' ???
+                    quotaF: 50
+                    permF: 
+                      - write
+                      - delete
+              - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: 'Évaluations professionnelles/%1$s' ???
+                permF: 
+                  - write
+                  - delete
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE$'
+            last: ifMatch
+            uai: '%2$s'
+            groups:
+              - group: 'GESTIONNAIRE.%1$s'
+                folders:
+                  - folder: 'Évaluations professionnelles' ???
+                    permF: []
+                  - folder: 'Évaluations professionnelles/%1$s' ???
+                    quotaF: 50
+                    permF: 
+                      - write
+                      - delete
+              - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: 'Évaluations professionnelles/%1$s' ???
                 permF:
                   - write
                   - delete
-                quotaF: 100
-          - group: '%2$s.%1$s'
-            folder: '%1$s/%2$s'
-            quotaF: 100
-            permF:
-              - write
-              - share
-              - delete
-            
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(SNC):(PNM)$'
-        last: ifMatch
-        groups:
-          - group: 'GIP-RECIA'
-          - group: '%2$s.%1$s'
-          - group: '%3$s.%1$s'
-            folder: '%1$s/%2$s/%3$s'
-            quotaF: 200
-            permF:
-              - write
-              - share
-              - delete
-            
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
-        last: ifMatch
-        groups:
-          - group: 'GIP-RECIA'
-          - group: '%2$s.%1$s'
-          - group: '%3$s.%1$s'
-            folder: '%1$s/%2$s/%3$s'
-            quotaF: 100
-            permF:
-              - write
-              - share
-              - delete
-#      - regex: '^coll:admin:central$'
-#        group: 'admin.central'
-#        folder: 'GIP-RECIA'
-#        permF:
-#          - write
-#          - delete
-#        admin: '^GIP-RECIA((/.+)(/.+)?)?'
-
-    # les regles pour l'asc:
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
-        groups:
-          - group: '%2$s.%1$s'
-            folder: 'ASC'
-            permF: []
-            quotaF: 1
-          - group: '%3$s.%1$s'
-            folder: 'ASC/%3$s'
-            permF:
-              - write
-              - share
-              - delete
-            quotaF: 100
-             
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
-        groups:
-          - group: '%3$s.%1$s'
-            admin: '^ASC(/.*)?$'
 ...
