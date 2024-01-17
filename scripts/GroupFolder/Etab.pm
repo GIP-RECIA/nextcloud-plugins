@@ -26,6 +26,7 @@ PARAM! groupsNC;
 PARAM! timestamp;
 
 my %etabInBase;
+my %etabInBaseByUai;
 
 my $pseudoIdEtab = 1;
 
@@ -67,6 +68,25 @@ sub getEtab{
 	return $etabInBase{$siren};
 }
 
+sub etabNCbyUai {
+	my $class = shift;
+	my $uai = shift;
+
+	my $etab = $etabInBaseByUai{$uai};
+
+	unless ($etab) {
+		my $sqlRes = util->executeSql(q/select * from oc_etablissements where uai=?/, $uai);
+		while (my @tuple =  $sqlRes->fetchrow_array()) {
+			$etab = Etab->new(@tuple);
+			$etabInBaseByUai{$uai} = $etab;
+			if ($etab->siren) {
+				$etabInBase{$etab->siren} = $etab;
+			}
+			last;
+		}
+	}
+	return $etab;
+}
 sub readNC {
 	my $class = shift;
 	my $siren = shift;
@@ -79,6 +99,9 @@ sub readNC {
 		while (my @tuple =  $sqlRes->fetchrow_array()) {
 			$etab = Etab->new(@tuple);
 			$etabInBase{$etab->siren} = $etab;
+			if ($etab->uai) {
+				etabInBaseByUai{$etab->uai} = $etab;
+			}
 			last;
 		}
 	}
