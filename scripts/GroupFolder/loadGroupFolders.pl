@@ -166,7 +166,6 @@ until ($fin++) {
 	DEBUG! "-------------------- fin Itération $cpt ------------------";
 }
 
-exit 0;
 
 if  ($traitementComplet ) {
 	# on ne supprime pas les folders qui n'existe plus mais il faut supprimer les associations des groupes aux folders qui n'ont plus lieux d'être
@@ -261,6 +260,7 @@ sub traitementEtabGroup {
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
 
+	my $etabReload = 0;
 	#DEBUG! Dumper($confEtab);
 	DEBUG! Dumper($confEtab->{regexs});
 	foreach my $confRegexGroup (@{$confEtab->{regexs}}) {
@@ -314,15 +314,20 @@ GROUPLDAP:
 				}
 				&traitementRegexGroup($etabNC,$confGroups, @res);
 				$entryGrp = '' if $lastIfMatch;
+				if ($uai) {
+					$etabForLoad{$uai} = 1;
+				} else {
+					$etabForLoad{$etabNC->siren()} = 1;
+				}
+				$etabReload = 1;
 			} else {
 				$entryGrp = '' if $lastIfNotMatch;
 			}
-			if ($uai) {
-				$etabForLoad{$uai} = 1;
-			}
+			
 		}
 		
 	}
+	return $etabReload;
 }
 #return 1 si ldap rammene des groups 0 sinon
 sub traitementEtab {
@@ -370,28 +375,20 @@ sub traitementEtab {
 
 			DEBUG! "nb ldapGroups =", scalar @ldapGroups;
 			if (@ldapGroups) {
-				&traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
+				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
 				# si tout est ok on met a jour le  timestamp
 
 				#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
 				$etabNC->timestamp($newTimeStampLdap);
-				
-				#on indique qu'il faut recharge les utilisateurs de cet etab:
-				$etabForLoad{$siren} = 1;
-				$reloadEtab = 1;
+
 			} else {
 				INFO! "pas de groupe LDAP";
 			}
 		}
 		$etabNC->timestamp($lastTimeStampLdap);
-		return $etabForLoad{$siren} = $reloadEtab;
+		return $reloadEtab;
 	}
-#	# pas de siren => les etabs seront deduit par les regexs avec les uai
-#	foreach my $confFiltreLdap (@$filtreLdapList) {
-#		my $filtreLdap =  $confFiltreLdap->{ldapFilterGroups};
-#		chomp $filtreLdap ;
-#		
-#	}
+	return 0;
 }
 
 #util->occ("user:list");
