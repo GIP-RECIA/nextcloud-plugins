@@ -32,7 +32,7 @@ binmode STDERR, ':encoding(UTF-8)';
 
 use FindBin;
 use lib $FindBin::Bin;
-use MyLogger;
+use MyLogger 'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Net::LDAP; #libnet-ldap-perl
@@ -86,7 +86,7 @@ if ($test) {
 	MyLogger::level(5, 1);
 } else {
 	if ($loglevel) {
-		MyLogger::level($loglevel, 1);
+		MyLogger::level($loglevel, 2);
 	}
 }
 
@@ -153,7 +153,6 @@ Folder->readNC;
 my %etabForLoad;
 
 
-my $isChange;
 my $cpt = 0;
 my $fin = 0;
 until ($fin++) {
@@ -161,23 +160,25 @@ until ($fin++) {
 	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $confEtab (@{$config->{etabs}}) {
 		if (&traitementEtab($confEtab)) {
-			$etabForLoad{$confEtab->{siren}} = 1;
 			$fin = 0 if $useTimeStamp;
-			$isChange = 1;
 		}
 	}
 	DEBUG! "-------------------- fin Itération $cpt ------------------";
 }
 
+exit 0;
 
-if  ($traitementComplet) {
+if  ($traitementComplet ) {
 	# on ne supprime pas les folders qui n'existe plus mais il faut supprimer les associations des groupes aux folders qui n'ont plus lieux d'être
 	# ce traitement ne peut pas être fait sur les differentiels, il faut un traitement complets.
 	Folder->cleanAllFolder();
 	SYSTEM! $loadUserCommande . " all";
 
-} elsif ($isChange && !$test ) {
-	SYSTEM! $loadUserCommande . join(" ", keys(%etabForLoad)); 
+} elsif (!$test ) {
+	my @etabList = keys(%etabForLoad);
+	if (@etabList) {
+		SYSTEM! $loadUserCommande . join(" ", @etabList);
+	}
 }
 
 END {
@@ -206,14 +207,17 @@ END {
 	LOG! "-------- Stop $0 ---------\n";
 }
 
+
 sub traitementRegexGroup {
 	my $etabNC = shift;
 	my $confGroupsList = shift;
 	my @grpRegexMatches = @_;
-	
+
 	# TRACE! Dumper(@res);
+	#DEBUG! "traitementRegexGroup :" ,Dumper($confGroupsList);
 	foreach my $confGroup (@{$confGroupsList}) {
-		
+
+		DEBUG! Dumper($confGroup);
 		my $groupFormat = $confGroup->{group};
 		
 		if ($groupFormat) {
@@ -254,13 +258,16 @@ sub traitementRegexGroup {
 
 sub traitementEtabGroup {
 	my $confEtab = shift;
-	my $etabNC = shift;
+	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
-	
+
+	#DEBUG! Dumper($confEtab);
+	DEBUG! Dumper($confEtab->{regexs});
 	foreach my $confRegexGroup (@{$confEtab->{regexs}}) {
 		my $regex = $confRegexGroup->{regex};
 		my $confGroups = $confRegexGroup->{groups};
 		my $last = $confRegexGroup->{last};
+		my $uaiFormat = $confRegexGroup->{uai};
 		my $lastIfMatch;
 		my $lastIfNotMatch;
 		
@@ -279,68 +286,112 @@ sub traitementEtabGroup {
 				WARN! "Ingnore last: $last";
 			}
 		}
+
+		#s'il y a un uai on traite sur un autre etab que celui passé en parametre
+		
+		
+GROUPLDAP:
 		foreach my $entryGrp (@{$allLdapGroups}) {
 			next unless $entryGrp;
+			my $etabNC;
+			my $uai;
+			#DEBUG! "entryGrp=", Dumper($entryGrp);
 			my $cnGroup = $entryGrp->get_value ( 'cn' );
 
+			DEBUG! "avant regex $cnGroup ";
 			if (my @res = ($cnGroup =~ /$regex/)) {
 				INFO! "\tGrouper Group= $cnGroup ";
+				
+				if ($uaiFormat) { #si on a un uai tiré du groupe on le calcul
+					$uai = sprintf($uaiFormat, @res);
+					$etabNC = Etab->etabNCbyUai($uai);
+					unless ($etabNC) {
+						WARN! "Etab non trouvé, uaiFormat=$uaiFormat => uai = $uai";
+						next GROUPLDAP ;
+					} 
+				} else { # si pas d'uai le groupe est crée dans l'etab par défaut
+					$etabNC = $etabNCdefault;
+				}
 				&traitementRegexGroup($etabNC,$confGroups, @res);
 				$entryGrp = '' if $lastIfMatch;
 			} else {
 				$entryGrp = '' if $lastIfNotMatch;
 			}
+			if ($uai) {
+				$etabForLoad{$uai} = 1;
+			}
 		}
-			#DEBUG! $cn;
+		
 	}
 }
-#return 1 si ldap ramene des groups 0 sinon
+#return 1 si ldap rammene des groups 0 sinon
 sub traitementEtab {
 	my $confEtab = shift;
 	my $siren = $confEtab->{siren};
-	my $etabNC = Etab->readNC($siren);
+	my $filtreLdapList = $confEtab->{ldapFilterList};
 
-	if (! $useTimeStamp && $sirenList && ! $sirenList =~ /$siren/) {
-		return 0;
+	unless ( $filtreLdapList ) {
+				$filtreLdapList = [ $confEtab->{ldapFilterGroups} ];
 	}
+		
+	if ($siren) { 
+		my $etabNC = Etab->readNC($siren);
 
-	my $newTimeStampLdap = util->timestampLdap(time);
+		if (! $useTimeStamp && $sirenList && ! $sirenList =~ /$siren/) {
+			return 0;
+		}
 
-	unless ($etabNC) {
-		$etabNC = Etab->addEtab($siren, $confEtab->{nom})
+		my $newTimeStampLdap = util->timestampLdap(time);
+
+		unless ($etabNC) {
+			$etabNC = Etab->addEtab($siren, $confEtab->{nom})
+		}
+
+		my $lastTimeStampLdap  = $etabNC->timestamp;
+
+		unless ($lastTimeStampLdap) {
+			$lastTimeStampLdap=$etabTimestamp{$siren};
+		}
+
+		Group->readNC($etabNC);
+
+		my $reloadEtab = 0;
+		foreach my $confFiltreLdap (@$filtreLdapList) {
+			#faire la requete ldap
+			my $filtreLdap =  $confFiltreLdap->{ldapFilterGroups};
+			chomp $filtreLdap ;
+
+			if ($useTimeStamp && $lastTimeStampLdap) {
+				$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
+			}
+
+			DEBUG! "filtre ldap =", $filtreLdap;
+			my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
+
+			DEBUG! "nb ldapGroups =", scalar @ldapGroups;
+			if (@ldapGroups) {
+				&traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
+				# si tout est ok on met a jour le  timestamp
+
+				#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
+				$etabNC->timestamp($newTimeStampLdap);
+				
+				#on indique qu'il faut recharge les utilisateurs de cet etab:
+				$etabForLoad{$siren} = 1;
+				$reloadEtab = 1;
+			} else {
+				INFO! "pas de groupe LDAP";
+			}
+		}
+		$etabNC->timestamp($lastTimeStampLdap);
+		return $etabForLoad{$siren} = $reloadEtab;
 	}
-
-	my $lastTimeStampLdap  = $etabNC->timestamp;
-
-	unless ($lastTimeStampLdap) {
-		$lastTimeStampLdap=$etabTimestamp{$siren};
-	}
-
-	Group->readNC($etabNC);
-	#faire la requete ldap
-
-	my $filtreLdap =  $confEtab->{ldapFilterGroups};
-	chomp $filtreLdap ;
-
-	if ($useTimeStamp && $lastTimeStampLdap) {
-		$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
-	}
-
-	INFO! "filtre ldap =", $filtreLdap;
-	my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
-
-	if (@ldapGroups) {
-		INFO! $siren, " a des groupes: " ;
-		&traitementEtabGroup($confEtab, $etabNC, \@ldapGroups);
-		# si tout est ok on met a jour le  timestamp
-
-		#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
-		$etabNC->timestamp($newTimeStampLdap);
-		return 1;
-	} 
-	INFO! "pas de groupe LDAP";
-	$etabNC->timestamp($lastTimeStampLdap);
-	return 0;
+#	# pas de siren => les etabs seront deduit par les regexs avec les uai
+#	foreach my $confFiltreLdap (@$filtreLdapList) {
+#		my $filtreLdap =  $confFiltreLdap->{ldapFilterGroups};
+#		chomp $filtreLdap ;
+#		
+#	}
 }
 
 #util->occ("user:list");
