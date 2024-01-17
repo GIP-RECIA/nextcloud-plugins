@@ -1,80 +1,69 @@
-#les regex  sont testées dans l'ordre
-#un même groupe (ldap) peut matcher  plusieurs regex
-#une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui match.
-#a chaque 'group' on peut associer:
-#un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
-#un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
-#permF definit les droits du groupe sur le groupefolder  
+# les regex  sont testées dans l'ordre
+# un même groupe (ldap) peut matcher  plusieurs regex
+#   si il match une regex et sa definition contient "last: ifMatch" il ne sera pas representé aux autres regex 
+# une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui match.
+# a chaque 'group' on peut associer:
+#   un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
+#   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
+#   permF definit les droits du groupe sur le groupefolder  
 
- 
+
 ---
 etabs:
-  - nom: GIP-RECIA
-    siren: 18450311800020
-    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_GIP-RECIA))'
-    regexs:
-      - regex: '^coll:Collectivites:GIP-RECIA:PERSONNEL:GEOMATIQUE$'
-        last: ifMatch
-        
-      - regex: '^coll:Collectivites:(GIP-RECIA):PERSONNEL:(?:Tous_)?([^:]+)$'
-        groups:
-          - group: 'GIP-RECIA'
-            folders:
-              - folder: 'GIP-RECIA'
-                permF: []
-                quotaF: 1
-              - folder: 'GIP-RECIA/Commun'
+  - nom: CD18-CHER
+    siren: 22180001400013
+    ldapFilterList:
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:*)'
+        regexs:  
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:Tous_AGENT DU SIEGE$'
+            last: ifMatch
+            groups:
+              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
+                folders:
+                  - folder: 'Entretiens Professionnels (CD18)'
+                    permF:
+                      - write
+                      - share
+                      - delete
+                    quotaF: 100
+      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+                               (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                           )'
+        regexs:
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:CHEF D ETABLISSEMENT$'
+            last: ifMatch
+            uai: '%2$s'
+            groups:
+              - group: 'CHEF D ETABLISSEMENT.%2$s'
+                folders:
+                  - folder: 'Entretiens Professionnels (CD18)'
+                    permF: []
+                  - folder: 'Entretiens Professionnels (CD18)/%1$s'
+                    quotaF: 50
+                    permF: 
+                      - write
+                      - delete
+              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: 'Entretiens Professionnels (CD18)/%1$s'
+                permF: 
+                  - write
+                  - delete
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE$'
+            last: ifMatch
+            uai: '%2$s'
+            groups:
+              - group: 'GESTIONNAIRE.%2$s'
+                folders:
+                  - folder: 'Entretiens Professionnels (CD18)'
+                    permF: []
+                  - folder: 'Entretiens Professionnels (CD18)/%1$s'
+                    quotaF: 50
+                    permF: 
+                      - write
+                      - delete
+              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: 'Entretiens Professionnels (CD18)/%1$s'
                 permF:
-                  -  write
-                  -  share
-                  -  delete
-                quotaF: 12
-          
-          - group: '%2$s.%1$s'
-            quotaG: 2
-            folder: '%1$s/%2$s'
-            permF:
-              - write
-              - share
-              - delete
-            quotaF: 10
-              
-      - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
-        groups:
-          - group: 'GIP-RECIA'
-            folder: 'GIP-RECIA'
-          - group: '%2$s.%1$s'
-            quotaG: 1
-              
-      - regex: '^coll:admin:Nextcloud:(GIP-RECIA):(?:Tous_)?([^:]+)$'
-        group: '%2$s.admin.%1$s'
-        admin: '%1$s/%2$s'
-       
-      - regex: '^coll:admin:local:admin_(GIP-RECIA)$'
-        group: 'admin.%1$s'
-        folder: 'GIP-RECIA'
-        permF:
-          - write
-          - delete
-        admin: '^%1$s(/.+)?'
-            
-    # les regles pour l'asc:
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):([^:]+)$'
-        groups:
-          - group: '%2$s.%1$s'
-            folder: 'ASC'
-            permF: []
-            quotaF: 1
-          - group: '%3$s.%1$s'
-            folder: 'ASC/%3$s'
-            permF:
-              - write
-              - share
-              - delete
-            quotaF: 10
-              
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(Bureau_ASC)$'
-        groups:
-          - group: '%3$s.%1$s'
-            admin: '^ASC(/.*)$'
+                  - write
+                  - delete
 ...
