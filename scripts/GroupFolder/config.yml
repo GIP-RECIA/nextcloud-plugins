@@ -18,9 +18,9 @@ etabs:
           - regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
             last: ifMatch
             groups:
-              - group: 'Evaluations professionelles.$%1'
+              - group: 'Evaluations professionelles.%1$s'
                 folders:
-                  - folder: 'Évaluations professionnelles' ???
+                  - folder: 'Évaluations pro ATTE18'
                     permF:
                       - write
                       - share
@@ -36,15 +36,15 @@ etabs:
             groups:
               - group: 'CHEF D ETABLISSEMENT.%1$s'
                 folders:
-                  - folder: 'Évaluations professionnelles' ???
+                  - folder: 'Évaluations pro ATT18'
                     permF: []
-                  - folder: 'Évaluations professionnelles/%1$s' ???
+                  - folder: 'Évaluations pro ATT18/%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
               - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Évaluations professionnelles/%1$s' ???
+                folder: 'Évaluations pro ATT18/%1$s'
                 permF: 
                   - write
                   - delete
@@ -54,15 +54,15 @@ etabs:
             groups:
               - group: 'GESTIONNAIRE.%1$s'
                 folders:
-                  - folder: 'Évaluations professionnelles' ???
+                  - folder: 'Évaluations pro ATT18'
                     permF: []
-                  - folder: 'Évaluations professionnelles/%1$s' ???
+                  - folder: 'Évaluations pro ATT18/%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
               - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Évaluations professionnelles/%1$s' ???
+                folder: 'Évaluations pro ATT18/%1$s'
                 permF:
                   - write
                   - delete
