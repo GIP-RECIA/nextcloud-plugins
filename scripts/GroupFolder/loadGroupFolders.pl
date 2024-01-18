@@ -130,7 +130,7 @@ if (-f $timestampFile ) {
 } else {
 	WARN! "timestampFile inexistant !\n";
 }
-
+my $newTimeStampLdap = util->timestampLdap(time);
 
 
 if ($test) {
@@ -156,7 +156,7 @@ my %etabForLoad;
 my $cpt = 0;
 my $fin = 0;
 until ($fin++) {
-	$cpt++;
+	$cpt++; # multiples iterations, au cas ou l'annuaire est en cours de mise a jour 
 	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $confEtab (@{$config->{etabs}}) {
 		if (&traitementEtab($confEtab)) {
@@ -189,17 +189,22 @@ END {
 		open NEW, ">$timestampFile" or FATAL! $!, " " , $timestampFile;
 		while (<OLD>) {
 			my ($siren, $time, $nom) = split('\s*;\s*');
+			# attention $nom finit par \n
 			if ($siren) {
 				my  $etab = Etab->getEtab($siren);
-				if ($etab && $etab->timestamp) {
-					printf NEW "%s; %s; %s\n", $siren, $etab->timestamp, $etab->name;
-					$etab->releaseEtab;
+				if ($etab) {
+					if ($etab->timestamp()) {
+						printf NEW "%s; %s; %s\n", $siren, $etab->timestamp, $etab->name;
+					} else {
+						printf NEW "%s; %s; %s", $siren, $time, $nom;
+					}
+					$etab->releaseEtab();
 					next;
 				}
 			}
 			print NEW;
 		}
-		while (my $etab = Etab->nextEtab) {
+		while (my $etab = Etab->nextEtab()) {
 			printf NEW "%s; %s; %s\n", $etab->siren, $etab->timestamp, $etab->name;
 		}
 	}
@@ -308,7 +313,7 @@ GROUPLDAP:
 					unless ($etabNC) {
 						WARN! "Etab non trouvé, uaiFormat=$uaiFormat => uai = $uai";
 						next GROUPLDAP ;
-					} 
+					}
 				} else { # si pas d'uai le groupe est crée dans l'etab par défaut
 					$etabNC = $etabNCdefault;
 				}
@@ -316,6 +321,7 @@ GROUPLDAP:
 				$entryGrp = '' if $lastIfMatch;
 				if ($uai) {
 					$etabForLoad{$uai} = 1;
+					$etabNC->timestamp($newTimeStampLdap);
 				} else {
 					$etabForLoad{$etabNC->siren()} = 1;
 				}
@@ -346,7 +352,7 @@ sub traitementEtab {
 			return 0;
 		}
 
-		my $newTimeStampLdap = util->timestampLdap(time);
+		
 
 		unless ($etabNC) {
 			$etabNC = Etab->addEtab($siren, $confEtab->{nom})
@@ -385,7 +391,7 @@ sub traitementEtab {
 				INFO! "pas de groupe LDAP";
 			}
 		}
-		$etabNC->timestamp($lastTimeStampLdap);
+		
 		return $reloadEtab;
 	}
 	return 0;
