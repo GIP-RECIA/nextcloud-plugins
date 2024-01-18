@@ -111,7 +111,7 @@ sub readNC {
 
 sub releaseEtab{
 	my $etab = shift;
-	delete $etabInBase{$etab->siren};
+	delete $etabInBase{$etab->siren()};
 }
 sub nextEtab{
 	my ($siren, $etab) = each %etabInBase;

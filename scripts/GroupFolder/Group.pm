@@ -12,7 +12,7 @@ sub new {
 		GID => $gid,
 		NAME => $displayname,
 	};
-	bless $self, $class;
+	return bless $self, $class;
 }
 PARAM! name;
 PARAM! gid;
@@ -57,6 +57,9 @@ sub getOrCreateGroup {
 	my $gid = NFKD($name . ':LDAP');
 	$gid =~ s/\p{NonspacingMark}//g; #suppression des accents
 
+	unless (scalar %{$etab->groupsNC()}) {
+		Group->readNC($etab);
+	}
 	my $inEtab = 0;
 	
 	my $group = $etab->groupsNC->{$gid};
