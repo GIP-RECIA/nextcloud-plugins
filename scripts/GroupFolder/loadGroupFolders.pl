@@ -235,9 +235,14 @@ sub traitementRegexGroup {
 			}
 			
 			foreach my $confFolder (@{$confFoldersList}) {
+				my $folderName = $confFolder->{folder};
+				if (ref($folderName) eq  'ARRAY') {
+					$folderName = join "/", @$folderName;
+				}
+				DEBUG! "foldername = ", Dumper($folderName);
 				GroupFolder->createFolder4Group(
 						$etabNC,
-						$confFolder->{folder},
+						$folderName,
 						$confFolder->{quotaF},
 						$confFolder->{permF},
 						$groupNC,
