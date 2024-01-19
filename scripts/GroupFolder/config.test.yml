@@ -20,7 +20,7 @@ etabs:
             groups:
               - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
                 folders:
-                  - folder: 'Entretiens Professionnels (CD18)'
+                  - folder: &folder1 'Entretiens Professionnels (CD18)'
                     permF:
                       - write
                       - share
@@ -36,7 +36,7 @@ etabs:
             groups:
               - group: 'CHEF D ETABLISSEMENT.%2$s'
                 folders:
-                  - folder: 'Entretiens Professionnels (CD18)'
+                  - folder: *folder1
                     permF: []
                   - folder: 'Entretiens Professionnels (CD18)/%1$s'
                     quotaF: 50

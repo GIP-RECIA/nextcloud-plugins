@@ -20,7 +20,7 @@ etabs:
             groups:
               - group: 'Evaluations professionelles.%1$s'
                 folders:
-                  - folder: 'Évaluations pro ATTE18'
+                  - folder: &folder18 'Évaluations pro ATTE18'
                     permF:
                       - write
                       - share
@@ -36,15 +36,15 @@ etabs:
             groups:
               - group: 'CHEF D ETABLISSEMENT.%1$s'
                 folders:
-                  - folder: 'Évaluations pro ATT18'
+                  - folder: *folder18
                     permF: []
-                  - folder: 'Évaluations pro ATT18/%1$s'
+                  - folder: 'Évaluations pro ATTE18/%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
               - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Évaluations pro ATT18/%1$s'
+                folder: 'Évaluations pro ATTE18/%1$s'
                 permF: 
                   - write
                   - delete
@@ -54,15 +54,15 @@ etabs:
             groups:
               - group: 'GESTIONNAIRE.%1$s'
                 folders:
-                  - folder: 'Évaluations pro ATT18'
+                  - folder: *folder18
                     permF: []
-                  - folder: 'Évaluations pro ATT18/%1$s'
+                  - folder: 'Évaluations pro ATTE18/%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
               - group: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Évaluations pro ATT18/%1$s'
+                folder: 'Évaluations pro ATTE18/%1$s'
                 permF:
                   - write
                   - delete
