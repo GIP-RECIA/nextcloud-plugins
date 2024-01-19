@@ -221,34 +221,33 @@ sub cleanAllFolder {
 	# verifications de quota de folder par rapport au disque
 	# on recupere les size  en base:
 	my %Size;
-	my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
-	while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
-		$Size{$name} = $size;
-	}
-
-	# on recupere la place occupée sur le disque:
-	my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
-	SYSTEM! "du -b -d1 $repGF", sub {
-		if (/^(\d+)\s+$repGF(\d+)$/o) {
-			my $idFolder = $2;
-			my $size = $1;
-			my $folder = $folderById{$idFolder};
-			if ($folder) {
-				my $pourcentQuota = int 100 * $size / $folder->quota;
-				if ($pourcentQuota > 80 ) {
-					WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
-				}
-				if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
-					WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". util->toGiga($Size{$idFolder}) . ") différente de sa taille réélle (". util->toGiga($size) . ")"; 
-				}
-			} else {
-				print "no folder\n";
-				WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
-			}
-			
+	if (util->isObjectStore) {
+		my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
+		while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
+			$Size{$name} = $size;
 		}
-	};
-	
+		# on recupere la place occupée sur le disque:
+		my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
+		SYSTEM! "du -b -d1 $repGF", sub {
+			if (/^(\d+)\s+$repGF(\d+)$/o) {
+				my $idFolder = $2;
+				my $size = $1;
+				my $folder = $folderById{$idFolder};
+				if ($folder) {
+					my $pourcentQuota = int 100 * $size / $folder->quota;
+					if ($pourcentQuota > 80 ) {
+						WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
+					}
+					if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
+						WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". util->toGiga($Size{$idFolder}) . ") différente de sa taille réélle (". util->toGiga($size) . ")"; 
+					}
+				} else {
+					print "no folder\n";
+					WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
+				}
+			}
+		};
+	}
 	# suppresion des groupes inutiles dans les folders
 	# map {$_->cleanFolder} values(%folderInBase);
 
