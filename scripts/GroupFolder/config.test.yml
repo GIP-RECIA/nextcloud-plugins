@@ -18,7 +18,7 @@ etabs:
           - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:Tous_AGENT DU SIEGE$'
             last: ifMatch
             groups:
-              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
+              - group: &grp1 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
                 folders:
                   - folder: &folder1 'Entretiens Professionnels (CD18)'
                     permF:
@@ -38,13 +38,15 @@ etabs:
                 folders:
                   - folder: *folder1
                     permF: []
-                  - folder: 'Entretiens Professionnels (CD18)/%1$s'
+                  - folder: &folder2
+                      - *folder1
+                      - '%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
-              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Entretiens Professionnels (CD18)/%1$s'
+              - group: *grp1
+                folder: *folder2
                 permF: 
                   - write
                   - delete
@@ -54,15 +56,17 @@ etabs:
             groups:
               - group: 'GESTIONNAIRE.%2$s'
                 folders:
-                  - folder: 'Entretiens Professionnels (CD18)'
+                  - folder: *folder1
                     permF: []
-                  - folder: 'Entretiens Professionnels (CD18)/%1$s'
+                  - folder: &folder3
+                      - *folder1
+                      - '%1$s'
                     quotaF: 50
                     permF: 
                       - write
                       - delete
-              - group: 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: 'Entretiens Professionnels (CD18)/%1$s'
+              - group: *grp1
+                folder: *folder3
                 permF:
                   - write
                   - delete
