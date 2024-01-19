@@ -16,7 +16,8 @@
 	-t test la conf uniquement
 	-f donne le fichier de conf avec les regexs
 	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
-	-q force la mise a jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)     
+	-q force la mise a jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)
+	-u importe les utilisateurs des établissements modifiés à l'aide de loadEtab.pl.      
 	up traite les étabs du fichier des timestamps ayant des groupes modifiés.
 	all traite tous les étabs du fichier de conf, sans verifier les timestamps. 
 	siren des étabs à traiter sans verifier les timestamps.
@@ -54,10 +55,11 @@ my $fileYml = "config.yml";
 my $test = 0;
 my $loglevel;
 my $forceQuota;
+my $userLoad;
 
 MyLogger::level(2, 1);
 
-unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel, "q" => \$forceQuota) ) {
+unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel, "q" => \$forceQuota, "u" => \$userLoad) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
@@ -171,11 +173,13 @@ if  ($traitementComplet ) {
 	# on ne supprime pas les folders qui n'existe plus mais il faut supprimer les associations des groupes aux folders qui n'ont plus lieux d'être
 	# ce traitement ne peut pas être fait sur les differentiels, il faut un traitement complets.
 	Folder->cleanAllFolder();
-	SYSTEM! $loadUserCommande . " all";
+	if ($userLoad) {
+		SYSTEM! $loadUserCommande . " all";
+	}
 
 } elsif (!$test ) {
 	my @etabList = keys(%etabForLoad);
-	if (@etabList) {
+	if (@etabList && $userLoad) {
 		SYSTEM! $loadUserCommande . join(" ", @etabList);
 	}
 }
