@@ -25,8 +25,8 @@ etabs:
                       - write
                       - share
                       - delete
-                    quotaF: 100
-      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT*)
+                    quotaF: 50
+      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
                            )'
         regexs:
