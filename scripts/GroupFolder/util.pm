@@ -76,6 +76,10 @@ sub isTestMode {
 	return $occ =~ /^echo/; 
 }
 
+sub isObjectStore {
+	return exists $PARAM{'objectstore_multibucket'} ;
+}
+
 sub newConnectSql {
 	INFO! "connexion sql: $sqlDataSource, $sqlUsr\n";
 	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
