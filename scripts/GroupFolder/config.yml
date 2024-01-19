@@ -34,7 +34,7 @@ etabs:
             last: ifMatch
             uai: '%2$s'
             groups: &groupsEtab18
-              - group: '%2$s.%1$s'
+              - group: '%3$s.%1$s'
                 folders:
                   - folder: *folder18
                     permF: []
