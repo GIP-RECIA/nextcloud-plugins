@@ -45,7 +45,7 @@ etabs:
                     permF: 
                       - write
                       - delete
-              - group: &group18
+              - group: *group18
                 folder: *folderEtab18
                 permF: 
                   - write
