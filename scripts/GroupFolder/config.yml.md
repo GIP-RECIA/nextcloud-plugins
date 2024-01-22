@@ -1,7 +1,7 @@
 ## La conf de loadGroupFolders.
 La déclaration des groupes et de leurs associations aux GroupFolders ce fait dans le fichier 'config.yml'.
 
-### Micro rappel de la syntaxe yaml et conventions.
+### Micro rappel de la syntaxe yaml et conventions ([ref wikipedia](https://en.wikipedia.org/wiki/YAML)).
 Les paramètres sont déclarés avec la syntaxe "clé: valeur";
 ainsi 
 
@@ -38,6 +38,13 @@ Les traitements respecteront les ordres des listes.
 Ainsi les établissements seront traités  dans l'ordre de leurs déclarations.
 De même pour les regexs, c'est important : chaque regex filtre tous les groupes Grouper avant de passer à la suivante, donc les groupes NC et GroupFolders sont créés dans l'ordre de leurs déclarations.
 
+
+Pour factoriser la même conf, on peut utilisé les ancres et alias  de yaml; les nœuds signalés par une esperluette (&identifiant)
+peuvent être  référencés avec un astérisque (*identifiant). Tout l'arbre sous '&identifiant' sera comme recopié sous le nœud marqué '*identifiant'
+
+
+
+
 ### Les paramètres:
 Dans l'ordre d'utilisation (avec la bonne indentation):
 
@@ -48,40 +55,42 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 
 - **siren**: siren de l'établissement.
 
-- **ladpFiltrerGroups**: filtre ldap pour retrouver les groupes, de l'établissement, qui nous intéresses.  
-	La recherche se fait sur la branche "ou=groups".
+- **ldapFilterList**: Liste de filtre ldap à appliquer associé au regexs de deduction de groupe.
+	Une requête ldap sera executées pour chaque élément de cette liste (dans l'ordre).
+	- **ladpFiltrerGroups**: filtre ldap pour retrouver les groupes, de l'établissement, qui nous intéresses.  
+		La recherche se fait sur la branche "ou=groups".
 
-- **regexs**: liste de **regex** pour filtrer les groupes Grouper obtenus par la recherche donnée par **ladpFiltrerGroups**.
+	- **regexs**: liste de **regex** pour filtrer les groupes Grouper obtenus par la recherche donnée par **ladpFiltrerGroups**.
 
-	- **regex**: une regex 
+		- **regex**: une regex, si elle match on créer les groupes et folders associés.
 
-	- **last**: permet de sortir le groupe Grouper testé, avec les **regex** de même niveau (), de la liste des groupes.  
-	2 valeurs possibles:
-		- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
-		Il ne sera donc pas testé avec les regexs suivantes.
-		- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.  
-	Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
+		- **last**: permet de sortir le groupe Grouper testé, avec les **regex** de même niveau (), de la liste des groupes.  
+		2 valeurs possibles:
+			- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
+			Il ne sera donc pas testé avec les regexs suivantes.
+			- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.  
+		Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
 
-	- **groups**: liste des groupes NC à créer ssi la **regex** match le groupe Grouper.  
-		- **group**: Format (à la printf du C) pour déduire le nom du groupe NC à créer, à partir des groupements de la **regex** qui match le groupe Grouper. 
+		- **groups**: liste des groupes NC à créer ssi la **regex** match le groupe Grouper.  
+			- **group**: Format (à la printf du C) pour déduire le nom du groupe NC à créer, à partir des groupements de la **regex** qui match le groupe Grouper. 
 
-		- **folders**: liste des GroupFolder à créer associés aux groupes NC donnés par **group**.
-			- **folder**: Format (à la printf du C) pour déduire le nom du GroupFolder à créer (point de montage).
+			- **folders**: liste des GroupFolder à créer associés aux groupes NC donnés par **group**.
+				- **folder**: Format (à la printf du C) pour déduire le nom du GroupFolder à créer (point de montage).
 
-			- **permF**: liste des permisions du groupe NC sur le GF;  
-					3 valeurs possibles:
-				- *write*
-				- *delete*
-				- *share*
-			
-				sans **permF** le GF ne sera pas créé, si aucune permission mettre la liste vide [].
-			- **quotaF**: Quota en Go associé au GF, obligatoire pour créer le GF.
+				- **permF**: liste des permisions du groupe NC sur le GF;  
+						3 valeurs possibles:
+					- *write*
+					- *delete*
+					- *share*
+				
+					sans **permF** le GF ne sera pas créé, si aucune permission mettre la liste vide [].
+				- **quotaF**: Quota en Go associé au GF, obligatoire pour créer le GF.
 
-		- **admin**: regex qui filtre parmis tous des GroupFolders existant ceux sur lesquels le groupe NC donné par **group** aurra des droits d'administration.
+			- **admin**: regex qui filtre parmis tous des GroupFolders existant ceux sur lesquels le groupe NC donné par **group** aurra des droits d'administration.
 
 ### Exemple et raccoursi.
-Pour les paramètres de listes **groups** et **folders**, si la liste contient qu'un élément
-on peut omettre le paramètre de liste et déclarer son contenu directement dans son contenant (resp **regex** et **group**)
+Pour les paramètres de listes **ldapFilterList** **groups** et **folders**, si la liste contient qu'un élément
+on peut omettre le paramètre de liste et déclarer son contenu directement dans son contenant (resp **ldapFilterGroups** **regex** et **group**)
 Par exemple:
 
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
@@ -112,7 +121,7 @@ Peut se réécrir en:
             folder: 'ASC'
             permF: []
             quotaF: 1
-          - group: '%3$s.%1$s'
+          - group: &groupA '%3$s.%1$s' 
             folder: 'ASC/%3$s'
             permF:
               - write
@@ -120,7 +129,7 @@ Peut se réécrir en:
               - delete
             quotaF: 100
 	  - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
-        group: '%3$s.%1$s'
+        group: *groupA
         admin: '^ASC(/.*)?$'
 
 Dans cette exemple, on voit que tous les groupes Grouper qui match la 1re regex vont créer le GroupFolder *ASC* et un autre, fonction de son nom (*ASC/...*).  

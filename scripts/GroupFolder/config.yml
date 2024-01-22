@@ -5,7 +5,8 @@
 # a chaque 'group' on peut associer:
 #   un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
 #   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
-#   permF definit les droits du groupe sur le groupefolder  
+#   permF definit les droits du groupe sur le groupefolder
+# pour le moment les utilisateurs ne sont pas crééer avce loadGroupFolder mais avec loadEtab (du coup quotaG par exemple ne sert a rien)
 
 
 ---
