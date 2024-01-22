@@ -18,10 +18,10 @@ etabs:
           - regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
             last: ifMatch
             groups:
-              - group: &group18 'Evaluations professionelles.%1$s'
+              - group: &group18 'Evaluations professionelles.%1$s' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
                 folders:
-                  - folder: &folder18 'Évaluations pro ATTE18'
-                    permF:
+                  - folder: &folder18 'Évaluations pro ATTE18' # création du folder 'Évaluations pro ATTE18'
+                    permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
                       - write
                       - share
                       - delete
@@ -34,24 +34,24 @@ etabs:
             last: ifMatch
             uai: '%2$s'
             groups: &groupsEtab18
-              - group: '%3$s.%1$s'
+              - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
                 folders:
                   - folder: *folder18
                     permF: []
-                  - folder: &folderEtab18
+                  - folder: &folderEtab18 # création des folders: 'Évaluations pro ATTE18/nomEtab_uai'
                       - *folder18
                       - '%1$s'
                     quotaF: 50
-                    permF: 
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Évaluations pro ATTE18/nomEtab_uai'
                       - write
                       - delete
-              - group: *group18
-                folder: *folderEtab18
+              - group: *group18 # donne au groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: *folderEtab18 # les droits sur les folders 'Évaluations pro ATTE18/nomEtab_uai'
                 permF: 
                   - write
                   - delete
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE)$'
             last: ifMatch
             uai: '%2$s'
-            groups: *groupsEtab18
+            groups: *groupsEtab18 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
 ...
