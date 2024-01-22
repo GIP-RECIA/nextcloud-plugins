@@ -33,7 +33,7 @@ binmode STDERR, ':encoding(UTF-8)';
 
 use FindBin;
 use lib $FindBin::Bin;
-use MyLogger 'DEBUG';
+use MyLogger ; # 'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Net::LDAP; #libnet-ldap-perl

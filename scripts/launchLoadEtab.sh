@@ -10,6 +10,7 @@ find $rlog \( -name '*.log' -o -name '*.log.*gz' \) -a -ctime +7 -delete
 
 #echo Arret des chargements Nextcloud
 #exit 1
+/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 /usr/bin/nice $rcode/loadEtabs.pl all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 
 $rcode/diffEtab.pl
