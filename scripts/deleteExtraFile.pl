@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# scipt pour supprimer les fichiers en trop dans l'arborécense de NC (EXTRA_FILE)
+# scipt pour supprimer les fichiers en trop dans l'arborécense de déploiement (sources) de NC (EXTRA_FILE)
 # certaint de ces fichiers peuvent poser des problèmes.
 
 use strict;
