@@ -123,7 +123,9 @@ if (-f $timestampFile ) {
 		my ($siren, $time, $nom) = split('\s*;\s*');
 		if ($siren) {
 			$time =~ s/\s*//g;
-			$etabTimestamp{$siren} = $time;
+			if (! exists $etabTimestamp{$siren} || $etabTimestamp{$siren} lt $time) { 
+				$etabTimestamp{$siren} = $time;
+			}
 		}
 	}
 	close TS;
@@ -191,9 +193,13 @@ END {
 			my ($siren, $time, $nom) = split('\s*;\s*');
 			if ($siren) {
 				my  $etab = Etab->getEtab($siren);
-				if ($etab && $etab->timestamp) {
-					printf NEW "%s; %s; %s\n", $siren, $etab->timestamp, $etab->name;
-					$etab->releaseEtab;
+				if ($etab) {
+					if ($etab->timestamp()) {
+						printf NEW "%s; %s; %s\n", $siren, $etab->timestamp, $etab->name;
+					} else {
+						printf NEW "%s; %s; %s", $siren, $time, $nom;
+					}
+					$etab->releaseEtab();
 					next;
 				}
 			}
