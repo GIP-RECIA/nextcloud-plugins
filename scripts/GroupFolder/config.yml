@@ -19,7 +19,7 @@ etabs:
           - regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
             last: ifMatch
             groups:
-              - group: &group18 'Evaluations professionelles.%1$s' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
+              - group: &group18 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
                 folders:
                   - folder: &folder18 'Évaluations pro ATTE18' # création du folder 'Évaluations pro ATTE18'
                     permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
