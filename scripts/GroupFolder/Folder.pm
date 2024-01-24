@@ -1,7 +1,11 @@
 use MyLogger;
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
+
+
+
 package Folder;
+
 use strict;
 use utf8;
 #use Symbol 'gensym';
@@ -167,7 +171,7 @@ sub updateOrCreateFolder {
 			FATAL! "erreur de creation du folder : $mountPoint";
 		}
 	} else {
-		INFO! "folder $mountPoint non créé quota null!";
+		INFO! "folder $mountPoint non créé quota null !";
 		return 0;
 	}
 	return $folder;
