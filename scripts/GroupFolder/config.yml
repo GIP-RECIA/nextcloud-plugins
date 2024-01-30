@@ -48,7 +48,9 @@ etabs:
                       - delete
               - group: *group18 # donne au groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
                 folder: *folderEtab18 # les droits sur les folders 'Évaluations pro ATTE18/nomEtab_uai'
-                permF: []
+                permF:
+                  - write
+                  - delete
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE)$'
             last: ifMatch
             uai: '%2$s'
