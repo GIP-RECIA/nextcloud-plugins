@@ -21,7 +21,7 @@ etabs:
             groups:
               - group: &group18 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
                 folders:
-                  - folder: &folder18 'Évaluations pro ATTE18' # création du folder 'Évaluations pro ATTE18'
+                  - folder: &folder18 'entretiens pro ATTEE18' # création du folder 'entretiens pro ATTEE18'
                     permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
                       - write
                       - share
