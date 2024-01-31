@@ -274,10 +274,16 @@ sub traitementEtabGroup {
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
 
+	my $regexes =  $confEtab->{regexs};
+
+	unless ($regexes) {
+		$regexes = [$confEtab];
+	}
+
 	my $etabReload = 0;
 	#DEBUG! Dumper($confEtab);
-	DEBUG! Dumper($confEtab->{regexs});
-	foreach my $confRegexGroup (@{$confEtab->{regexs}}) {
+	DEBUG! Dumper($regexes);
+	foreach my $confRegexGroup (@{$regexes}) {
 		my $regex = $confRegexGroup->{regex};
 		my $confGroups = $confRegexGroup->{groups};
 		my $last = $confRegexGroup->{last};

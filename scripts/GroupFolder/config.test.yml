@@ -13,19 +13,16 @@ etabs:
   - nom: CD18-CHER
     siren: 22180001400013
     ldapFilterList:
-      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:*)'
-        regexs:  
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:Tous_AGENT DU SIEGE$'
-            last: ifMatch
-            groups:
-              - group: &grp1 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
-                folders:
-                  - folder: &folder1 'Entretiens Professionnels (CD18)'
-                    permF:
-                      - write
-                      - share
-                      - delete
-                    quotaF: 100
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:*)'  
+        regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:AGENT DU SIEGE:Tous_AGENT DU SIEGE$'
+        last: ifMatch
+        group: &grp1 'SIEGE.CONSEIL DEPARTEMENTAL DU CHER'
+        folder: &folder1 'Entretiens Professionnels (CD18)'
+        permF:
+          - write
+          - share
+          - delete
+        quotaF: 100
       - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
                            )'
