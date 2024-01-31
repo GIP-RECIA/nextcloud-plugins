@@ -15,7 +15,7 @@ sub addGroup4AdminFolder {
 
 	if ($adminFormat) {
 		my $folderAdmin = sprintf($adminFormat, @grpMatched);
-		DEBUG! "\t\t\tgroup folder admin: ",  $folderAdmin;
+		§DEBUG "\t\t\tgroup folder admin: ",  $folderAdmin;
 		if (index($folderAdmin, '^') == 0 ) {
 			my @folderList = Folder->findFolders($folderAdmin);
 				foreach my $f (@folderList) {
@@ -24,7 +24,7 @@ sub addGroup4AdminFolder {
 		} else {
 			my $folder = Folder->getFolder($folderAdmin);
 			if ($folder) {
-				DEBUG! "\t\t\t\tgroup folder admin add group";
+				§DEBUG "\t\t\t\tgroup folder admin add group";
 				$folder->addAdminGroup($groupNC);
 			}
 		} 
@@ -51,7 +51,7 @@ sub createFolder4Group {
 			my $folder = Folder->updateOrCreateFolder(sprintf($folderFormat, @grpMatched), $quotaF, $isForceQuota);
 			if ($folder) {
 				$folder->addGroup($groupNC, @$permF);
-				DEBUG! "\t\t\tgroup folder ", Dumper($folder);
+				§DEBUG "\t\t\tgroup folder ", Dumper($folder);
 			}
 		}
 	}
