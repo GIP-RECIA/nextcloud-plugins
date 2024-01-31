@@ -18,12 +18,12 @@ sub new {
 	bless $self, $class;
 }
 
-PARAM! idBase;
-PARAM! name;
-PARAM! uai;
-PARAM! siren;
-PARAM! groupsNC;
-PARAM! timestamp;
+§PARAM idBase;
+§PARAM name;
+§PARAM uai;
+§PARAM siren;
+§PARAM groupsNC;
+§PARAM timestamp;
 
 my %etabInBase;
 my %etabInBaseByUai;
@@ -35,7 +35,7 @@ sub addEtab {
 	my $siren = shift;
 	my $name = shift;
 
-	DEBUG! "addEtab, siren : $siren  , name : $name";
+	§DEBUG "addEtab, siren : $siren  , name : $name";
 	my $etab;
 		# avec le ignore il n'y a pas d'erreur en cas de préexistance
 	my $sth = util->executeSql(q/INSERT IGNORE INTO oc_etablissements (siren, name) values (?, ?)/, $siren, $name);
@@ -53,7 +53,7 @@ sub addEtab {
 		($id, my $nameInBase)   =  $sth->fetchrow_array();
 
 		if ($name ne $nameInBase) {
-			WARN! "Etab avec 2 noms $siren, $name, $nameInBase.";
+			§WARN "Etab avec 2 noms $siren, $name, $nameInBase.";
 		}
 		$etab = Etab->new($id, $name, undef, $siren);
 	}
@@ -90,7 +90,7 @@ sub etabNCbyUai {
 sub readNC {
 	my $class = shift;
 	my $siren = shift;
-	DEBUG! '->readNC $siren';
+	§DEBUG '->readNC $siren';
 	
 	my $etab = $etabInBase{$siren};
 
@@ -105,7 +105,7 @@ sub readNC {
 			last;
 		}
 	}
-	TRACE! Dumper(%etabInBase);
+	§TRACE Dumper(%etabInBase);
 	return $etab;
 }
 

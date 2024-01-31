@@ -14,8 +14,8 @@ sub new {
 	};
 	return bless $self, $class;
 }
-PARAM! name;
-PARAM! gid;
+§PARAM name;
+§PARAM gid;
 
 my %groupInBase;
 
@@ -24,7 +24,7 @@ sub readNC {
 	my $class = shift;
 	my $etab = shift;
 
-	DEBUG! "->readNC ", Dumper($etab);
+	§DEBUG "->readNC ", Dumper($etab);
 	my $sqlRes;
 	my $res;
 	if ($etab) {
@@ -46,7 +46,7 @@ sub readNC {
 			}
 		}
 	}
-	TRACE! Dumper($res);
+	§TRACE Dumper($res);
 }
 
 
@@ -84,7 +84,7 @@ sub getOrCreateGroup {
 		$group = Group->new($gid, $name);
 		util->occ("group:add --display-name '$name' '$gid'");
 		$groupInBase{$gid} = $group;
-		DEBUG! "new group " , Dumper($group);
+		§DEBUG "new group " , Dumper($group);
 	}
 
 	if ($etab && !$inEtab) {

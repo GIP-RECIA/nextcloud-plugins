@@ -57,7 +57,7 @@ my $loglevel;
 my $forceQuota;
 my $userLoad;
 
-MyLogger::level(2, 1);
+MyLogger->level(2, 1);
 
 unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$loglevel, "q" => \$forceQuota, "u" => \$userLoad) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
@@ -85,10 +85,10 @@ $logsFile =~ s/\.log/\.$jour\.log/;
 MyLogger->file('>>' . $logsFile);
 
 if ($test) {
-	MyLogger::level(5, 1);
+	MyLogger->level(5, 1);
 } else {
 	if ($loglevel) {
-		MyLogger::level($loglevel, 2);
+		MyLogger->level($loglevel, 2);
 	}
 }
 
@@ -104,22 +104,22 @@ unless ($useTimeStamp) {
 	}
 }
 
-LOG! "-------- Start $0 " , join(" ", @ARGV), ' --------';
-INFO! "configFile= ", $configFile;
-INFO! "logsFile= ", $logsFile;
+§LOG "-------- Start $0 " , join(" ", @ARGV), ' --------';
+§INFO "configFile= ", $configFile;
+§INFO "logsFile= ", $logsFile;
 
 my $timestampFile = $config->{timestampFile};
 unless ($timestampFile) {
 	$timestampFile = ${util::PARAM}{'NC_LOG'}. '/groupFoldersTime.csv'
 }
 
-INFO! "timestampFile= ", $timestampFile;
+§INFO "timestampFile= ", $timestampFile;
 
 
 my %etabTimestamp;
 if (-f $timestampFile ) {
 
-	open TS, $timestampFile or FATAL!  $!, " $timestampFile" ;
+	open TS, $timestampFile or §FATAL  $!, " $timestampFile" ;
 	while (<TS>) {
 		chomp ;
 		my ($siren, $time, $nom) = split('\s*;\s*');
@@ -130,18 +130,18 @@ if (-f $timestampFile ) {
 	}
 	close TS;
 } else {
-	WARN! "timestampFile inexistant !\n";
+	§WARN "timestampFile inexistant !\n";
 }
 my $newTimeStampLdap = util->timestampLdap(time);
 
 
 if ($test) {
-	INFO! "Mode Test : Affichage des timestamps : ";
-	INFO! Dumper(\%etabTimestamp);
-	INFO! "Mode Test : Dump du fichier de conf";
-	INFO! Dumper($config);
+	§INFO "Mode Test : Affichage des timestamps : ";
+	§INFO Dumper(\%etabTimestamp);
+	§INFO "Mode Test : Dump du fichier de conf";
+	§INFO Dumper($config);
 
-	INFO! "Mode Test : on fait les calculs sans executer les commandes occ ";
+	§INFO "Mode Test : on fait les calculs sans executer les commandes occ ";
 	util->testMode();
 } 
 
@@ -159,13 +159,13 @@ my $cpt = 0;
 my $fin = 0;
 until ($fin++) {
 	$cpt++; # multiples iterations, au cas ou l'annuaire est en cours de mise a jour 
-	DEBUG! "------------------- nouvelle Itération $cpt ------------------"; 
+	§DEBUG "------------------- nouvelle Itération $cpt ------------------"; 
 	foreach my $confEtab (@{$config->{etabs}}) {
 		if (&traitementEtab($confEtab)) {
 			$fin = 0 if $useTimeStamp;
 		}
 	}
-	DEBUG! "-------------------- fin Itération $cpt ------------------";
+	§DEBUG "-------------------- fin Itération $cpt ------------------";
 }
 
 
@@ -174,23 +174,23 @@ if  ($traitementComplet ) {
 	# ce traitement ne peut pas être fait sur les differentiels, il faut un traitement complets.
 	Folder->cleanAllFolder();
 	if ($userLoad) {
-		SYSTEM! $loadUserCommande . " all";
+		§SYSTEM $loadUserCommande . " all";
 	}
 
 } elsif (!$test ) {
 	my @etabList = keys(%etabForLoad);
 	if (@etabList && $userLoad) {
-		SYSTEM! $loadUserCommande . join(" ", @etabList);
+		§SYSTEM $loadUserCommande . join(" ", @etabList);
 	}
 }
 
 END {
 	if (! $test && -f $timestampFile) {
-		INFO! "écriture des timestamps";
+		§INFO "écriture des timestamps";
 		my $oldFile = $timestampFile . ".old";
 		rename $timestampFile, $oldFile;
-		open OLD, $oldFile or FATAL!  $!, " $oldFile" ;
-		open NEW, ">$timestampFile" or FATAL! $!, " " , $timestampFile;
+		open OLD, $oldFile or §FATAL  $!, " $oldFile" ;
+		open NEW, ">$timestampFile" or §FATAL $!, " " , $timestampFile;
 		while (<OLD>) {
 			my ($siren, $time, $nom) = split('\s*;\s*');
 			# attention $nom finit par \n
@@ -212,7 +212,7 @@ END {
 			printf NEW "%s; %s; %s\n", $etab->siren, $etab->timestamp, $etab->name;
 		}
 	}
-	LOG! "-------- Stop $0 ---------\n";
+	§LOG "-------- Stop $0 ---------\n";
 }
 
 
@@ -221,11 +221,11 @@ sub traitementRegexGroup {
 	my $confGroupsList = shift;
 	my @grpRegexMatches = @_;
 
-	# TRACE! Dumper(@res);
-	#DEBUG! "traitementRegexGroup :" ,Dumper($confGroupsList);
+	# §TRACE Dumper(@res);
+	#§DEBUG "traitementRegexGroup :" ,Dumper($confGroupsList);
 	foreach my $confGroup (@{$confGroupsList}) {
 
-		DEBUG! Dumper($confGroup);
+		§DEBUG Dumper($confGroup);
 		my $groupFormat = $confGroup->{group};
 		
 		if ($groupFormat) {
@@ -243,7 +243,7 @@ sub traitementRegexGroup {
 				if (ref($folderName) eq  'ARRAY') {
 					$folderName = join "/", @$folderName;
 				}
-				DEBUG! "foldername = ", Dumper($folderName);
+				§DEBUG "foldername = ", Dumper($folderName);
 				GroupFolder->createFolder4Group(
 						$etabNC,
 						$folderName,
@@ -281,8 +281,8 @@ sub traitementEtabGroup {
 	}
 
 	my $etabReload = 0;
-	#DEBUG! Dumper($confEtab);
-	DEBUG! Dumper($regexes);
+	#§DEBUG Dumper($confEtab);
+	§DEBUG Dumper($regexes);
 	foreach my $confRegexGroup (@{$regexes}) {
 		my $regex = $confRegexGroup->{regex};
 		my $confGroups = $confRegexGroup->{groups};
@@ -291,7 +291,7 @@ sub traitementEtabGroup {
 		my $lastIfMatch;
 		my $lastIfNotMatch;
 		
-		INFO! "REGEX = $regex";
+		§INFO "REGEX = $regex";
 		
 		unless ($confGroups) {
 			$confGroups = [$confRegexGroup];
@@ -303,7 +303,7 @@ sub traitementEtabGroup {
 			} elsif ($last =~ /^ifNoMatch$/) {
 				$lastIfNotMatch = 1;
 			} else {
-				WARN! "Ingnore last: $last";
+				§WARN "Ingnore last: $last";
 			}
 		}
 
@@ -315,18 +315,18 @@ GROUPLDAP:
 			next unless $entryGrp;
 			my $etabNC;
 			my $uai;
-			#DEBUG! "entryGrp=", Dumper($entryGrp);
+			#§DEBUG "entryGrp=", Dumper($entryGrp);
 			my $cnGroup = $entryGrp->get_value ( 'cn' );
 
-			DEBUG! "avant regex $cnGroup ";
+			§DEBUG "avant regex $cnGroup ";
 			if (my @res = ($cnGroup =~ /$regex/)) {
-				INFO! "\tGrouper Group= $cnGroup ";
+				§INFO "\tGrouper Group= $cnGroup ";
 				
 				if ($uaiFormat) { #si on a un uai tiré du groupe on le calcul
 					$uai = sprintf($uaiFormat, @res);
 					$etabNC = Etab->etabNCbyUai($uai);
 					unless ($etabNC) {
-						WARN! "Etab non trouvé, uaiFormat=$uaiFormat => uai = $uai";
+						§WARN "Etab non trouvé, uaiFormat=$uaiFormat => uai = $uai";
 						next GROUPLDAP ;
 					}
 				} else { # si pas d'uai le groupe est crée dans l'etab par défaut
@@ -391,10 +391,10 @@ sub traitementEtab {
 				$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
 			}
 
-			DEBUG! "filtre ldap =", $filtreLdap;
+			§DEBUG "filtre ldap =", $filtreLdap;
 			my @ldapGroups = util->searchLDAP('ou=groups', $filtreLdap, 'cn');
 
-			DEBUG! "nb ldapGroups =", scalar @ldapGroups;
+			§DEBUG "nb ldapGroups =", scalar @ldapGroups;
 			if (@ldapGroups) {
 				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
 				# si tout est ok on met a jour le  timestamp
@@ -403,7 +403,7 @@ sub traitementEtab {
 				$etabNC->timestamp($newTimeStampLdap);
 
 			} else {
-				INFO! "pas de groupe LDAP";
+				§INFO "pas de groupe LDAP";
 			}
 		}
 		
