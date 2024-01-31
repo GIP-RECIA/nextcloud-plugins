@@ -29,14 +29,14 @@ Chaque élément d'une liste de valeurs peut être un sous-ensemble de "cle:vale
 		- nom: GIP-RECIA
 		  siren: 18450311800020
 		  ldapFilterGroups: ....
-	      regexs: ...
+	      regexes: ...
 
-Ici l'ordre des clés *nom*, *siren*, *ldapFilterGroups* et *regexs* n'a pas d'importance sémantique , mais pour plus de lisibilité, on respectera toujours le même ordre.
+Ici l'ordre des clés *nom*, *siren*, *ldapFilterGroups* et *regexes* n'a pas d'importance sémantique , mais pour plus de lisibilité, on respectera toujours le même ordre.
 
 
 Les traitements respecteront les ordres des listes.
 Ainsi les établissements seront traités  dans l'ordre de leurs déclarations.
-De même pour les regexs, c'est important : chaque regex filtre tous les groupes Grouper avant de passer à la suivante, donc les groupes NC et GroupFolders sont créés dans l'ordre de leurs déclarations.
+De même pour les regexes, c'est important : chaque regex filtre tous les groupes Grouper avant de passer à la suivante, donc les groupes NC et GroupFolders sont créés dans l'ordre de leurs déclarations.
 
 
 Pour factoriser la même conf, on peut utilisé les ancres et alias  de yaml; les nœuds signalés par une esperluette (&identifiant)
@@ -55,19 +55,19 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 
 - **siren**: siren de l'établissement.
 
-- **ldapFilterList**: Liste de filtre ldap à appliquer associé au regexs de deduction de groupe.
+- **ldapFilterList**: Liste de filtre ldap à appliquer associé au regexes de deduction de groupe.
 	Une requête ldap sera executées pour chaque élément de cette liste (dans l'ordre).
 	- **ladpFiltrerGroups**: filtre ldap pour retrouver les groupes, de l'établissement, qui nous intéresses.  
 		La recherche se fait sur la branche "ou=groups".
 
-	- **regexs**: liste de **regex** pour filtrer les groupes Grouper obtenus par la recherche donnée par **ladpFiltrerGroups**.
+	- **regexes**: liste de **regex** pour filtrer les groupes Grouper obtenus par la recherche donnée par **ladpFiltrerGroups**.
 
 		- **regex**: une regex, si elle match on créer les groupes et folders associés.
 
 		- **last**: permet de sortir le groupe Grouper testé, avec les **regex** de même niveau (), de la liste des groupes.  
 		2 valeurs possibles:
 			- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
-			Il ne sera donc pas testé avec les regexs suivantes.
+			Il ne sera donc pas testé avec les regexes suivantes.
 			- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.  
 		Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
 
