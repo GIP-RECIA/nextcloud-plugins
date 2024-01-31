@@ -15,18 +15,15 @@ etabs:
     siren: 22180001400013
     ldapFilterList:
       - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Evaluations professionelles:Managers)'
-        regexs:  
-          - regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
-            last: ifMatch
-            groups:
-              - group: &group18 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folders:
-                  - folder: &folder18 'entretiens pro ATTEE18' # création du folder 'entretiens pro ATTEE18'
-                    permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
-                      - write
-                      - share
-                      - delete
-                    quotaF: 50
+        regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
+        last: ifMatch
+        group: &group18 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
+        folder: &folder18 'entretiens pro ATTEE18' # création du folder 'entretiens pro ATTEE18'
+        permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
+          - write
+          - share
+          - delete
+        quotaF: 50
       - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
                            )'
