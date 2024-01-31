@@ -26,7 +26,7 @@ etabs:
       - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
                            )'
-        regexs:
+        regexes:
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:CHEF D ETABLISSEMENT$'
             last: ifMatch
             uai: '%2$s'

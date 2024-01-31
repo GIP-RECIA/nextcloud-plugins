@@ -14,7 +14,7 @@
 
 	Options:
 	-t test la conf uniquement
-	-f donne le fichier de conf avec les regexs
+	-f donne le fichier de conf avec les regexes
 	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
 	-q force la mise a jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)
 	-u importe les utilisateurs des établissements modifiés à l'aide de loadEtab.pl.      
@@ -274,7 +274,7 @@ sub traitementEtabGroup {
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
 
-	my $regexes =  $confEtab->{regexs};
+	my $regexes =  $confEtab->{regexes};
 
 	unless ($regexes) {
 		$regexes = [$confEtab];
