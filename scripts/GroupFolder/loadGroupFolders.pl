@@ -10,21 +10,19 @@
 
 =head1 SYNOPSIS
 
-	loadGroupFolder.pl [-t] [-q] [-f filename.yml] [-l loglevel] up|all|siren...
+	loadGroupFolder.pl [-t] [-q] [-f filename.yml] [-l loglevel] (up|all|siren...)
 
 	Options:
-	-t test la conf uniquement
-	-f donne le fichier de conf avec les regexes
+	-t test la conf uniquement, sans (up|all|siren) sort la résolution interne de la conf yaml.
+	-f fixe le fichier de conf avec les regexes
 	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
-	-q force la mise a jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)
+	-q force la mise à jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)
 	-u importe les utilisateurs des établissements modifiés à l'aide de loadEtab.pl.      
 	up traite les étabs du fichier des timestamps ayant des groupes modifiés.
-	all traite tous les étabs du fichier de conf, sans verifier les timestamps. 
-	siren des étabs à traiter sans verifier les timestamps.
+	all traite tous les étabs du fichier de conf, sans vérifier les timestamps. 
+	siren des étabs à traiter sans vérifier les timestamps.
 
 =cut
-
-
 
 use strict;
 use utf8;
@@ -56,6 +54,23 @@ my $test = 0;
 my $loglevel;
 my $forceQuota;
 my $userLoad;
+
+local $YAML::XS::ForbidDuplicateKeys = 1; # ne marche pas vraiement
+{
+	my $cpt;
+	my %orderTags = map(($_, $cpt++) ,qw/suffixGroup etabs nom siren ldapFilterList ldapFilterGroups regexes regex last uai groups group quotaG admin folders folder permF quotaF/);
+	sub orderTags {
+		my @ary;
+		for ( keys %{shift()} ){
+			my $idx = $orderTags{$_};
+			§FATAL "Mauvaise clé dans le fichier de conf: $_, $idx" if  ($idx eq undef);
+			§FATAL "Doublon de clé dans le fichier de  conf: $_" unless $ary[$idx] eq undef; # innopérant le doublon est gérée par ecrassement avant 
+			$ary[$idx] = $_;
+		}
+		return [ grep $_ , @ary ];
+	}
+}
+
 
 MyLogger->level(2, 1);
 
@@ -99,8 +114,10 @@ my $useTimeStamp = $ARGV[0] eq 'up';
 unless ($useTimeStamp) {
 	if ($ARGV[0] eq 'all') {
 		$traitementComplet = 1;
-	} else {
+	} elsif (@ARGV) {
 		$sirenList = join " " , @ARGV;
+	} else {
+		$test++;
 	}
 }
 
@@ -138,13 +155,24 @@ my $newTimeStampLdap = util->timestampLdap(time);
 
 
 if ($test) {
-	§INFO "Mode Test : Affichage des timestamps : ";
-	§INFO Dumper(\%etabTimestamp);
+
+	if ($test > 1) {
+		YAML::XS::LibYAML->can('libyaml_version') and
+		print 'YAML::XS version ' , YAML::XS::LibYAML::libyaml_version(), "\n";
+		local $Data::Dumper::Indent= 1;
+		local $Data::Dumper::Deepcopy = 1;
+		local $Data::Dumper::Sortkeys = \&orderTags;
+		§FATAL "Mode Test seulement : \n", Data::Dumper->Dump([$config], ["config"]);
+	}
 	§INFO "Mode Test : Dump du fichier de conf";
 	§INFO Dumper($config);
+	§INFO "Mode Test : Affichage des timestamps : ";
+	§INFO Dumper(\%etabTimestamp);
 
 	§INFO "Mode Test : on fait les calculs sans executer les commandes occ ";
 	util->testMode();
+	
+	
 } 
 
 if ($forceQuota) {
@@ -196,10 +224,13 @@ END {
 		rename $timestampFile, $oldFile;
 		open OLD, $oldFile or §FATAL  $!, " $oldFile" ;
 		open NEW, ">$timestampFile" or §FATAL $!, " " , $timestampFile;
+
+		my %sirenInNew ;
 		while (<OLD>) {
 			my ($siren, $time, $nom) = split('\s*;\s*');
 			# attention $nom finit par \n
 			if ($siren) {
+				next if $sirenInNew{$siren};
 				my  $etab = Etab->getEtab($siren);
 				if ($etab) {
 					if ($etab->timestamp()) {
@@ -207,6 +238,7 @@ END {
 					} else {
 						printf NEW "%s; %s; %s", $siren, $time, $nom;
 					}
+					$sirenInNew{$siren} = 1;
 					$etab->releaseEtab();
 					next;
 				}
@@ -362,7 +394,7 @@ sub traitementEtab {
 	my $filtreLdapList = $confEtab->{ldapFilterList};
 
 	unless ( $filtreLdapList ) {
-				$filtreLdapList = [ $confEtab->{ldapFilterGroups} ];
+				$filtreLdapList = [ $confEtab ];
 	}
 		
 	if ($siren) { 
