@@ -76,10 +76,14 @@ sub isTestMode {
 	return $occ =~ /^echo/; 
 }
 
+sub isObjectStore {
+	return exists $PARAM{'objectstore_multibucket'} ;
+}
+
 sub newConnectSql {
-	INFO! "connexion sql: $sqlDataSource, $sqlUsr\n";
+	§INFO "connexion sql: $sqlDataSource, $sqlUsr\n";
 	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
-	INFO! " OK \n";
+	§INFO " OK \n";
 	$sql_connexion->{'mysql_auto_reconnect'} = 1;
 	$sql_connexion->{'mysql_enable_utf8'} = 1;
 	$sql_connexion->do('SET NAMES utf8');
@@ -102,7 +106,7 @@ sub connectLdap {
 	unless ($ldapHost && $ldapUser && $ldapPass) {
 		my $sql = connectSql();
 		my $sqlQuery = q(select configkey, configvalue from oc_appconfig where configkey like 'cas_import_ad%' and appid = 'ldapimporter');
-		INFO! "$sqlQuery\n";
+		§INFO "$sqlQuery\n";
 		my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 		$sqlStatement->execute() or die $sqlStatement->errstr;
 
@@ -129,24 +133,24 @@ sub connectLdap {
 		$ldapHost = $proto . $host . $port;
 #		$ldapHost= 'chene.srv-ent.brgm.recia.net';
 	}
-	INFO! "Ldap connexion: $ldapHost";
+	§INFO "Ldap connexion: $ldapHost";
 		# le parametre raw est un regex qui filtre  les attributs binaires. 
 		# Les attributs qui ne verifie pas la regex seront en utf-8.
 		# si on ne met rien les attribut utf-8 seront considérés comme binaire
 		# et l'encodage sera incorecte.
 		# Nous n'avons pas d'attribut binaire d'ou la valeur choisie qui ne doit matcher aucun attribut
-	my $ldap = Net::LDAP->new($ldapHost,  async => 1, raw => '^UTF-8$' ) or FATAL! "$@";
+	my $ldap = Net::LDAP->new($ldapHost,  async => 1, raw => '^UTF-8$' ) or §FATAL "$@";
 	my $mesg ;
 	$ldap->debug(0);
 	
-	INFO! "Ldap user: $ldapUser";
+	§INFO "Ldap user: $ldapUser";
 	$mesg = $ldap->bind( $ldapUser,
 	                      password => $ldapPass
 	                    );
 	
-	$mesg->code && FATAL! $mesg->error;
+	$mesg->code && §FATAL $mesg->error;
 	
-	INFO! "Ldap bind: ", $ldapUser;
+	§INFO "Ldap bind: ", $ldapUser;
 	$LDAP_CONNEXION = $ldap;
 	return $ldap;
 }
@@ -157,15 +161,15 @@ sub executeSql {
 	my $class = shift;
 	my $sqlQuery = shift;
 	my $sql = connectSql();
-	DEBUG1! $sqlQuery;
+	§DEBUG1 $sqlQuery;
 	if (!isTestMode() || ( $sqlQuery =~ /^\s*select/i &&  ! ($sqlQuery =~ /into/i))) {
-		my $sqlStatment =  $sql->prepare($sqlQuery) or FATAL1! $sql->errstr;
-		DEBUG! 'execute ', join(", ", @_);
-		$sqlStatment->execute(@_) or FATAL1!  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
+		my $sqlStatment =  $sql->prepare($sqlQuery) or §FATAL1 $sql->errstr;
+		§DEBUG 'execute ', join(", ", @_);
+		$sqlStatment->execute(@_) or §FATAL1  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
 		return $sqlStatment;
 	} 
-	DEBUG! "TestMode => pas de modif de base la requête aurait été executé avec :";
-	DEBUG! 'execute ', join(", ", @_);
+	§DEBUG "TestMode => pas de modif de base la requête aurait été executé avec :";
+	§DEBUG 'execute ', join(", ", @_);
 	return 0;
 }
 
@@ -183,7 +187,7 @@ sub searchLDAP {
 		$attrs = ['1.1'];
 	}
 	my $srch = $ldap->search( base => $branch, filter => $filter , attrs => $attrs);
-	$srch->code  and  FATAL! "ldap  $branch"," $filter :", $srch->error;
+	$srch->code  and  §FATAL "ldap  $branch"," $filter :", $srch->error;
 	return $srch->entries;
 }
 
@@ -194,9 +198,9 @@ sub occ {
 	my $out = shift;
 
 	if ($out) {
-		SYSTEM1! "$occ $com", $out;
+		§SYSTEM1 "$occ $com", $out;
 	} else {
-		SYSTEM1! "$occ $com" ;
+		§SYSTEM1 "$occ $com" ;
 	}
 }
 

@@ -27,10 +27,10 @@ sub new {
 	$folderById{$idBase} = $self;
 	bless $self, $class;
 }
-PARAM! idBase
-PARAM! mount
-PARAM! quota	#en octet
-PARAM! acl
+§PARAM idBase
+§PARAM mount
+§PARAM quota	#en octet
+§PARAM acl
 
 
 sub dictOldNew {
@@ -65,7 +65,7 @@ sub manages {
 
 sub readNC {
 	my $class = shift;
-	DEBUG! '->readNC';
+	§DEBUG '->readNC';
 
 	#TODO select f.folder_id, mount_point, quota, acl, permissions, group_id  from oc_group_folders f, oc_group_folders_groups g where f.folder_id = g.folder_id; 
 	my $sqlRes = util->executeSql(q/select * from oc_group_folders/);
@@ -78,10 +78,10 @@ sub readNC {
 	while (my @tuple = $sqlRes->fetchrow_array()) {
 		my $folder = $folderById{$tuple[0]};
 		if ($folder) {
-			DEBUG! Dumper($folder);
+			§DEBUG Dumper($folder);
 			$folder->{GROUPS_OLD}->{$tuple[1]} = $tuple[2];
 		} else {
-			WARN! 'Dans oc_group_folders_groups le groupe '. $tuple[1] . ' est associé un folder_id inexistant : '.  $tuple[0];
+			§WARN 'Dans oc_group_folders_groups le groupe '. $tuple[1] . ' est associé un folder_id inexistant : '.  $tuple[0];
 		}
 	}
 	 
@@ -91,7 +91,7 @@ sub readNC {
 		if ($folder) {
 			$folder->{MANAGE_OLD}->{$tuple[1]} = 1;
 		} else {
-			WARN! 'Dans oc_group_folders_manage le groupe '. $tuple[1] . ' manage le folder_id inexistant '. $tuple[0];
+			§WARN 'Dans oc_group_folders_manage le groupe '. $tuple[1] . ' manage le folder_id inexistant '. $tuple[0];
 		}
 	}
 }
@@ -105,7 +105,7 @@ sub addGroup {
 	my $perms = 1;
 	map {$perms |= $permsGroup{$_} ;} @_;
 	util->occ('groupfolders:group ' .  $this->idBase . " '" . $group->gid . "' " . join(" ", @_));
-	DEBUG! "permisions = $perms";
+	§DEBUG "permisions = $perms";
 	$this->groups($group->gid, $perms);
 }
 
@@ -124,7 +124,7 @@ sub getFolder {
 	if ($folder) {
 		return $folder;
 	}
-	WARN! "folder $mountPoint n'existe pas";
+	§WARN "folder $mountPoint n'existe pas";
 	return 0;
 }
 sub findFolders {
@@ -164,10 +164,10 @@ sub updateOrCreateFolder {
 			$folderInBase{$mountPoint} = $folder;
 			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quotaG .'G');
 		} else {
-			FATAL! "erreur de creation du folder : $mountPoint";
+			§FATAL "erreur de creation du folder : $mountPoint";
 		}
 	} else {
-		INFO! "folder $mountPoint non créé quota null!";
+		§INFO "folder $mountPoint non créé quota null !";
 		return 0;
 	}
 	return $folder;
@@ -221,34 +221,33 @@ sub cleanAllFolder {
 	# verifications de quota de folder par rapport au disque
 	# on recupere les size  en base:
 	my %Size;
-	my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
-	while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
-		$Size{$name} = $size;
-	}
-
-	# on recupere la place occupée sur le disque:
-	my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
-	SYSTEM! "du -b -d1 $repGF", sub {
-		if (/^(\d+)\s+$repGF(\d+)$/o) {
-			my $idFolder = $2;
-			my $size = $1;
-			my $folder = $folderById{$idFolder};
-			if ($folder) {
-				my $pourcentQuota = int 100 * $size / $folder->quota;
-				if ($pourcentQuota > 80 ) {
-					WARN! 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
-				}
-				if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
-					WARN! 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". util->toGiga($Size{$idFolder}) . ") différente de sa taille réélle (". util->toGiga($size) . ")"; 
-				}
-			} else {
-				print "no folder\n";
-				WARN! "Répertoire $idFolder correspondant a aucun  GroupFolder ";
-			}
-			
+	if (util->isObjectStore) {
+		my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
+		while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
+			$Size{$name} = $size;
 		}
-	};
-	
+		# on recupere la place occupée sur le disque:
+		my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
+			§SYSTEM "du -b -d1 $repGF", sub {
+			if (/^(\d+)\s+$repGF(\d+)$/o) {
+				my $idFolder = $2;
+				my $size = $1;
+				my $folder = $folderById{$idFolder};
+				if ($folder) {
+					my $pourcentQuota = int 100 * $size / $folder->quota;
+					if ($pourcentQuota > 80 ) {
+							§WARN 'le groupfolder '.  $folder->mount() . ' a atteind '. $pourcentQuota . '% de son quota (' .  util->toGiga($size) . '/' . util->toGiga($folder->quota)  . ' )';
+					}
+					if (abs ($Size{$idFolder} - $size) > (1024 ** 2) ) {
+							§WARN 'le groupfolder '.  $folder->mount() . "($idFolder) a une taille NC (". util->toGiga($Size{$idFolder}) . ") différente de sa taille réélle (". util->toGiga($size) . ")"; 
+					}
+				} else {
+					print "no folder\n";
+						§WARN "Répertoire $idFolder correspondant a aucun  GroupFolder ";
+				}				
+			}
+		};
+	}
 	# suppresion des groupes inutiles dans les folders
 	# map {$_->cleanFolder} values(%folderInBase);
 

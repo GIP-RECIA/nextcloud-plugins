@@ -8,11 +8,12 @@
 
  
 ---
+suffixGroup: ':LDAP'
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800020
     ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:*)(cn=coll:admin:*:GIP-RECIA:*)(cn=coll:admin:local:admin_GIP-RECIA))'
-    regexs:
+    regexes:
       - regex: '^coll:Collectivites:GIP-RECIA:PERSONNEL:GEOMATIQUE$'
         last: ifMatch
         
@@ -20,7 +21,7 @@ etabs:
         groups:
           - group: 'GIP-RECIA'
             folders:
-              - folder: 'GIP-RECIA'
+              - folder: &folderRecia 'GIP-RECIA'
                 permF: []
                 quotaF: 1
               - folder: 'GIP-RECIA/Commun'
@@ -42,7 +43,7 @@ etabs:
       - regex: '^coll:Collectivites:(GIP-RECIA):STAGIAIRE:(?:Tous_)?([^:]+)$'
         groups:
           - group: 'GIP-RECIA'
-            folder: 'GIP-RECIA'
+            folder: *folderRecia
           - group: '%2$s.%1$s'
             quotaG: 1
               
