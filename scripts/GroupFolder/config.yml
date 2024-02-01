@@ -9,11 +9,12 @@
 
 
 ---
+suffixGroup: ':LDAP'  # tous les identifiants de groupes NC géré par cette appli finissent par :LDAP
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800020
     ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*))'
-    regexs:  
+    regexes:  
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):(?:Tous_)(\2)$'
         last: ifMatch
         groups:

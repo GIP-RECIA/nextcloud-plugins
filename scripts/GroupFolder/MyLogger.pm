@@ -1,46 +1,119 @@
+use strict;
 use IPC::Open3;
 use IO::Select;
 use Symbol 'gensym';
 
 # 
-my $version="4.2";
+my $version="6.3";
 
 package MyLogger;
 use Filter::Simple;
 
+
+my $isDebug;
+
+sub import {
+	$isDebug = $_[1] ? $_[1] : 0;
+}
 FILTER {
-	s/FATAL(\d?)!/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-	s/ERROR(\d?)!/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-	s/WARN(\d?)!/MyLogger::is(2) and MyLogger::erreur 'WARN: ',  !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-	s/INFO(\d?)!/MyLogger::is(3) and MyLogger::info !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-	s/DEBUG(\d?)!/MyLogger::is(4) and MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-	s/TRACE!/MyLogger::is(5) and MyLogger::trace/g;
-	s/SYSTEM(\d?)!/MyLogger::traceSystem '$1',/g;
-	s/LOG!/MyLogger::file && MyLogger::logger /g;
-	s/PARAM!\s*(\w+)/sub $1 {return MyLogger::param(shift, uc('$1'), shift);}/g;
-};
+	
+			if ($isDebug eq 'TRACE') {
+				s/\#§TRACE/MyLogger::trace/g;
+				$isDebug = 'DEBUG';
+			}
+			if ($isDebug eq 'DEBUG') {
+				s/\#§DEBUG(\d?)/MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+			}
+	
+		s/§FATAL(\d?)/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		s/§ERROR(\d?)/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		s/§WARN(\d?)/MyLogger::is(2) and MyLogger::erreur 'WARN: ',  !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		s/§INFO(\d?)/MyLogger::is(3) and MyLogger::info !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		s/§DEBUG(\d?)/MyLogger::is(4) and MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		s/§TRACE/MyLogger::is(5) and MyLogger::trace /g;
+		s/§SYSTEM(\d?)/MyLogger::traceSystem '$1',/g;
+		s/§LOG/MyLogger::file && MyLogger::logger /g;
+	
+
+		my $out;
+		my $nbParam = -1;
+		my $isArray = 0;
+		my $paramIdx = '';
+		for (split /(?<=\n)/) {
+			if (s/^(\s*)(\§?)package/$1package/) {
+				$nbParam = -1;
+				$isArray =$2;
+			}
+			if ($isArray) {
+				s/(?<=my\s)\s*§NEW\s*(?=;)/\$self = bless \[\], shift()/;
+				s/(?<=(\s|=))§NEW\s*(?=;)/bless \[\], shift()/;
+				s/(?<=(\s|=))§NEW\s*(?=,)/bless \[\]/;
+				s/§PARAM\s*(\w+)(?{ $nbParam++;})/sub $1 {my (\$self, \$val) = \@_; if (defined \$val) { if (ref(\$val) && \$val == \$self) {return \\(\$self->[$nbParam])} else {\$self->[$nbParam] = \$val }} else {return \$self->[$nbParam]} }/g;
+			} else {
+				s/(?<=my\s)\s*§NEW\s*(?=;)/\$self = bless {}, shift()/;
+				s/(?<=(\s|=))§NEW\s*(?=;)/bless {}, shift()/;
+				s/(?<=(\s|=))§NEW\s*(?=,)/bless {}/;
+			#	s/§PARAM\s*(\w+)(?{ $paramIdx=uc($1);})/sub $1 {my (\$self, \$val) = \@_; if (defined \$val) {\$self->{$paramIdx} = \$val } else {return \$self->{$paramIdx}} }/g;
+				s/§PARAM\s*(\w+)(?{ $paramIdx=uc($1);})/sub $1 {my (\$self, \$val) = \@_; if (defined \$val) { if (ref(\$val) && \$val == \$self) {return \\(\$self->{$paramIdx})} else {\$self->{$paramIdx} = \$val }} else {return \$self->{$paramIdx}} }/g;
+			}
+
+	#	my $in = $_;
+			unless (/(§NEW|§PARAM)/) {
+			#	s/§(\w+)(\s*\=\s*)(.+?)(?=\;)/\$self->$1($3)/g;
+				s/§(\w+)(?=(\s*\=))/\${\$self->$1(\$self)}/g;
+				s/§(\w+)(?=\s*\()/\$self->$1/g;
+				s/§(\w+)\b(?!\s*\()/\$self->$1\(\)/g;
+				s/(?<=(\W))§(?=(\W))/\$self/g;
+			}
+			$out .= $_ ;
+		}
+		$_ = $out;
+	};
+
 
 my $level;
 my $file;
 my $mod;
-# si mod = 0 : si on a un fichier  on ne sort sur STDOUT que les WARN ERROR et FATAL si pas de fichier on sort aussi INFO
-# si mod = 1 : et on a un fichier on sort sur STDOUT les INFO aussi 
-# si mod = 2 : on sort tout sur STDOUT 
+my $MyLoggerFile;
 
+# si pas de fichiers les logs sortent sur SDTERR en fonction du level.
+# si un fichier ils sortent en fonction du level dans le fichier de log
+# et dans STDERR en fonction du level et du mod :
+#  	mod = 0 => on ne sort rien sur STDERR
+# 	mod = 1 => on sort les FATAL, ERROR et WARN sur STDERR 
+# 	mod = 2 => on sort les INFO sur STDERR
+#	mod = 3 => on sort les DEBUG et TRACE sur STDERR
+# si pas de fichiers mod n'a pas d'influence.
+
+
+# sans parametre  (MyLogger::file) renvoie le descripteur de fichier de log courant ou null
+# avec 1 param (MyLogger->file()) ferme le fichier de log 
+# sinon (MyLogger->file(filename, autoflush) ) fixe le fichier de log et le statut (autofluch des logs)
 sub file {
 	unless (shift) {
-		return $file;
+		return $MyLoggerFile;
 	};
-	if ($file) {
-		close MyLoggerFile;
+	my ($filename, $autoflush) = @_;
+
+	if ($MyLoggerFile) {
+		close $MyLoggerFile;
 	}
-	$file = shift;
-	$file =~ s/^\>//;
-	open (MyLoggerFile, ">$file" ) or die $file . " $!" ;
+	if ($filename) {
+		$filename =~ s/^\>//;
+		open ($MyLoggerFile, ">$filename" ) or die $filename . " $!" ;
+		if ($autoflush) {
+			my $old_fh = select($MyLoggerFile);
+			$| = 1;
+			select($old_fh);
+		}
+	}
+	$file = $filename;
 }
 
 
+
 sub level {
+	my $class = shift;
 	if (@_) {
 		$level = shift;
 		if (@_) {
@@ -55,63 +128,71 @@ sub is {
 	return $levelMin <= $level;
 }
 
-
-
-
-
 sub trace {
 	if ($file ) {
-		print MyLoggerFile @_;
-	};
-	if ($mod > 1) {
-		print @_;
+		print $MyLoggerFile @_;
+		if ($mod >  2) {
+			print STDERR @_;
+		}
+	} else {
+		print STDERR @_;
 	}
 }
 
-
 sub logger {
-	print MyLoggerFile dateHeure(), @_, "\n";
+	print $MyLoggerFile dateHeure(), @_, "\n";
 }
 
 sub debug {
 	unshift (@_, lastname (shift) . ' (', shift . '): ');
 	if ($file) {
-		logger 'DEBUG: ', @_;
+		logger ('DEBUG: ', @_);
+		if ($mod > 1) {
+			print STDERR ' DEBUG: ', @_, "\n";
+		}
+	} else {
+		print STDERR ' DEBUG: ', @_, "\n";
 	}
-	
-	if ($mod > 1) {
-		print ' DEBUG: ', @_, "\n";
-	}
-	
 }
 
 sub info {
 	my $fileName = lastname (shift) . ' (' . shift . '): ';
 
 	if ($file) {
-		logger 'INFO: ', $fileName, @_;
-		if ($mod > 0) {
-			print '  INFO: ', @_,"\n";
+		logger ('INFO: ', $fileName, @_);
+		if ($mod > 1) {
+			print STDERR '  INFO: ', @_,"\n";
 		}
 	} else {
-		print '  INFO: ', $fileName, @_, "\n";
+		print STDERR '  INFO: ', $fileName, @_, "\n";
 	}
 }
 
 sub erreur {
 	my $type = shift;
 	my $fileName = lastname(shift). ' (' . shift . '): ';
-	
+
 	if ($file) {
-		logger $type, $fileName, @_; 
+		logger $type, $fileName, @_;
+		if ($mod > 0) {
+			print STDERR  '> ', $type, $fileName, @_, "\n";
+		} 
+	} else {
+		print STDERR  '> ', $type, $fileName, @_, "\n";
 	}
-	print STDERR  '> ', $type, $fileName, @_, "\n"; 
 }
 
 sub fatal {
-	erreur @_;
-	close MyLoggerFile;
-	exit 1;
+	erreur( @_);
+	if (is(4)) {
+		my $i = 1;
+		erreur (" ", "Stack Trace");
+		while  ((my ($file, $line, $sub) = (caller($i++))[1,2,3])) {
+			erreur ("\t" , $file, $line, $sub);
+		}
+	}
+	file();
+	die "\n";
 }
 
 sub dateHeure {
@@ -127,8 +208,8 @@ sub lastname {
 
 sub traceSystem {
 	my $backTrace = shift;
-	my $commande = shift;
-	my ($fileName , $line) = (caller($backTrace))[1,2]; 
+	my $commande = shift;	
+	my ($fileName , $line) = (caller($backTrace ? $backTrace : 0))[1,2]; 
 
 	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un code qui prend en charge chaque ligne envoyé par la commande
 	my $outIsCode;
@@ -142,13 +223,13 @@ sub traceSystem {
 	my $ERR = Symbol::gensym();
 	my $select = new IO::Select;
 
-
 	my $pid;
 	eval {
 	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande) or fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $! );
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
-	info ($fileName, $line, $commande);
+
+	info ($fileName, $line, $commande) if $level >= 3;
 
 	$select->add($COM, $ERR);
 
@@ -215,14 +296,7 @@ sub traceSystem {
 	close $COM;
 }
 
-sub param {
-	my $self = shift;
-	my $param = shift;
-	my $value = shift;
 
- 	if ($value) {
-		$self->{$param} = $value;
-	}
-	return $self->{$param};
-}
+
+
 1;

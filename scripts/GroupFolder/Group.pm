@@ -12,10 +12,10 @@ sub new {
 		GID => $gid,
 		NAME => $displayname,
 	};
-	bless $self, $class;
+	return bless $self, $class;
 }
-PARAM! name;
-PARAM! gid;
+§PARAM name;
+§PARAM gid;
 
 my %groupInBase;
 
@@ -24,7 +24,7 @@ sub readNC {
 	my $class = shift;
 	my $etab = shift;
 
-	DEBUG! "->readNC ", Dumper($etab);
+	§DEBUG "->readNC ", Dumper($etab);
 	my $sqlRes;
 	my $res;
 	if ($etab) {
@@ -46,17 +46,20 @@ sub readNC {
 			}
 		}
 	}
-	TRACE! Dumper($res);
+	§TRACE Dumper($res);
 }
 
 
 
 sub getOrCreateGroup {
-	my ($class, $name, $etab) = @_;
+	my ($class, $name, $etab, $suffixGroup) = @_;
 	
-	my $gid = NFKD($name . ':LDAP');
+	my $gid = NFKD($name . $suffixGroup);
 	$gid =~ s/\p{NonspacingMark}//g; #suppression des accents
 
+	unless (scalar %{$etab->groupsNC()}) {
+		Group->readNC($etab);
+	}
 	my $inEtab = 0;
 	
 	my $group = $etab->groupsNC->{$gid};
@@ -80,7 +83,7 @@ sub getOrCreateGroup {
 		$group = Group->new($gid, $name);
 		util->occ("group:add --display-name '$name' '$gid'");
 		$groupInBase{$gid} = $group;
-		DEBUG! "new group " , Dumper($group);
+		§DEBUG "new group " , Dumper($group);
 	}
 
 	if ($etab && !$inEtab) {
