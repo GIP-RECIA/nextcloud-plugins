@@ -1,11 +1,7 @@
 use MyLogger;
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
-
-
-
 package Folder;
-
 use strict;
 use utf8;
 #use Symbol 'gensym';
