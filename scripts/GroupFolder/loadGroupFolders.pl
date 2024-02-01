@@ -125,7 +125,9 @@ if (-f $timestampFile ) {
 		my ($siren, $time, $nom) = split('\s*;\s*');
 		if ($siren) {
 			$time =~ s/\s*//g;
-			$etabTimestamp{$siren} = $time;
+			if (! exists $etabTimestamp{$siren} || $etabTimestamp{$siren} lt $time) { 
+				$etabTimestamp{$siren} = $time;
+			}
 		}
 	}
 	close TS;
@@ -148,6 +150,9 @@ if ($test) {
 if ($forceQuota) {
 	GroupFolder->forceQuota(1);
 }
+
+
+my $suffixGroup = $config->{suffixGroup};
 ##### debut du travail ######
 
 Folder->readNC;
@@ -230,7 +235,7 @@ sub traitementRegexGroup {
 		
 		if ($groupFormat) {
 
-			my $groupNC = Group->getOrCreateGroup(sprintf($groupFormat, @grpRegexMatches), $etabNC);
+			my $groupNC = Group->getOrCreateGroup(sprintf($groupFormat, @grpRegexMatches), $etabNC, $suffixGroup);
 
 			my $confFoldersList = $confGroup->{folders};
 
