@@ -147,7 +147,7 @@ sub debug {
 	unshift (@_, lastname (shift) . ' (', shift . '): ');
 	if ($file) {
 		logger ('DEBUG: ', @_);
-		if ($mod > 1) {
+		if ($mod > 2) {
 			print STDERR ' DEBUG: ', @_, "\n";
 		}
 	} else {
