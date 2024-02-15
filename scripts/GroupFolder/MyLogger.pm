@@ -4,7 +4,7 @@ use IO::Select;
 use Symbol 'gensym';
 
 # 
-my $version="6.3";
+my $version="6.4";
 
 package MyLogger;
 use Filter::Simple;
@@ -147,7 +147,7 @@ sub debug {
 	unshift (@_, lastname (shift) . ' (', shift . '): ');
 	if ($file) {
 		logger ('DEBUG: ', @_);
-		if ($mod > 1) {
+		if ($mod > 2) {
 			print STDERR ' DEBUG: ', @_, "\n";
 		}
 	} else {
@@ -211,14 +211,21 @@ sub traceSystem {
 	my $commande = shift;	
 	my ($fileName , $line) = (caller($backTrace ? $backTrace : 0))[1,2]; 
 
-	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un code qui prend en charge chaque ligne envoyé par la commande
+	my $OUT = shift; #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
 	my $outIsCode;
 
 	if ($OUT) {
 		$outIsCode = ref $OUT;
-		fatal ("FATAL: ",  $fileName, $line, "SYSTEM! The last parameter must be an ARRAY or CODE réference") unless $outIsCode =~ /(ARRAY)|(CODE)/;
-		$outIsCode = $2;
+		fatal ("FATAL: ",  $fileName, $line, '§'."SYSTEM The last parameter must be an ARRAY or CODE réference") unless $outIsCode =~ /(ARRAY)|(CODE)/;
+		if ($2) {
+			$outIsCode = $OUT;
+		} else {
+			$outIsCode = sub {
+				push @$OUT, $_;
 	}
+		}
+	}
+	
 	my $COM = Symbol::gensym();
 	my $ERR = Symbol::gensym();
 	my $select = new IO::Select;
@@ -241,12 +248,8 @@ sub traceSystem {
 	my $printOut = sub {
 		local $_ = shift;
 		if ($level >=  4) { trace("\t", $_); }
-			if ($OUT) {
 				if ($outIsCode) {
-					&$OUT;
-				} else {
-					push @$OUT, $_;
-				}
+			&$outIsCode ;
 			}
 	};
 
@@ -295,8 +298,5 @@ sub traceSystem {
 	close $ERR;
 	close $COM;
 }
-
-
-
 
 1;

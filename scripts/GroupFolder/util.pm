@@ -1,3 +1,4 @@
+use DBI;
 use MyLogger;
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
