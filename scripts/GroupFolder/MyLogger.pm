@@ -17,13 +17,13 @@ sub import {
 }
 FILTER {
 	
-			if ($isDebug eq 'TRACE') {
-				s/\#§TRACE/MyLogger::trace/g;
-				$isDebug = 'DEBUG';
-			}
-			if ($isDebug eq 'DEBUG') {
-				s/\#§DEBUG(\d?)/MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-			}
+		if ($isDebug eq 'TRACE') {
+			s/\#§TRACE/MyLogger::trace/g;
+			$isDebug = 'DEBUG';
+		}
+		if ($isDebug eq 'DEBUG') {
+			s/\#§DEBUG(\d?)/MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		}
 	
 		s/§FATAL(\d?)/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
 		s/§ERROR(\d?)/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
@@ -211,12 +211,12 @@ sub traceSystem {
 	my $commande = shift;	
 	my ($fileName , $line) = (caller($backTrace ? $backTrace : 0))[1,2]; 
 
-	my $OUT = shift; #OUT peut etre vide sinon doit etre la reference d'un code qui prend en charge chaque ligne envoyé par la commande
+	my $OUT = shift; #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne envoyée par la commande
 	my $outIsCode;
 
 	if ($OUT) {
 		$outIsCode = ref $OUT;
-		fatal ("FATAL: ",  $fileName, $line, "SYSTEM! The last parameter must be an ARRAY or CODE réference") unless $outIsCode =~ /(ARRAY)|(CODE)/;
+		fatal ("FATAL: ",  $fileName, $line, '§'."SYSTEM The last parameter must be an ARRAY or CODE réference") unless $outIsCode =~ /(ARRAY)|(CODE)/;
 		$outIsCode = $2;
 	}
 	my $COM = Symbol::gensym();
@@ -241,13 +241,13 @@ sub traceSystem {
 	my $printOut = sub {
 		local $_ = shift;
 		if ($level >=  4) { trace("\t", $_); }
-			if ($OUT) {
-				if ($outIsCode) {
-					&$OUT;
-				} else {
-					push @$OUT, $_;
-				}
+		if ($OUT) {
+			if ($outIsCode) {
+				&$OUT;
+			} else {
+				push @$OUT, $_;
 			}
+		}
 	};
 
 	my $printErr = sub {
@@ -295,8 +295,5 @@ sub traceSystem {
 	close $ERR;
 	close $COM;
 }
-
-
-
 
 1;
