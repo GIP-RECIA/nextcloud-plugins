@@ -10,7 +10,7 @@ find $rlog  -name 'groupFolders.*.log' -exec gzip  \{\} \;
 
 #echo Arret des chargements Nextcloud
 #exit 1
-/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -l 4 all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
+/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -u -l 4 all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 
 $rcode/diffEtab.pl
 
