@@ -5,12 +5,12 @@
 =head1 NAME
 
 	loadGroupFolder.pl
-
+	version 1.0
 	charge les groupes ldap pour créer les groupes NC avec leurs groupFolders associés.
 
 =head1 SYNOPSIS
 
-	loadGroupFolder.pl [-t] [-q] [-f filename.yml] [-l loglevel] (up|all|siren...)
+	loadGroupFolder.pl [-t] [-q] [-u] [-f filename.yml] [-l loglevel] (up|all|siren...)
 
 	Options:
 	-t test la conf uniquement, sans (up|all|siren) sort la résolution interne de la conf yaml.
