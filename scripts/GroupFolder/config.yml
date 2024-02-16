@@ -70,6 +70,12 @@ etabs:
 #        admin: '^GIP-RECIA((/.+)(/.+)?)?'
 
     # les regles pour l'asc:
+      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:ASC:(Membres_ASC)$'
+        group: ASC.GIP-RECIA
+        folder: 'ASC'
+        permF: []
+        quotaF: 1
+        
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
         groups:
           - group: '%2$s.%1$s'
