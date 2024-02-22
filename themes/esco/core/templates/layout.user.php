@@ -128,12 +128,18 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			border-radius: 0;
 		}
 /* fin OO */
-/* pour MD */
+
 /* pour MD */
               main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
                         z-index: 3000 !important;
                 }
-/* fin LD */
+/* fin MD */
+/* pour Notes */
+		body div.content.app-notes div.app-navigation__content {
+			height: calc(100% - 35px);
+		}
+/* fin notes */
+
 
 
 		@media only screen and (min-width: 1024px) {
