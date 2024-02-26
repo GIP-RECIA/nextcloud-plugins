@@ -52,7 +52,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 
 		<style>
 			/* suppression des bords arrondis et recalcul de la hauteur et largeur */ 
-		main#content {
+		main#content, body > div#content-vue.content {
 			height: calc(100% - 88px);
 			border-radius: 0;
 			margin-right: 0;
