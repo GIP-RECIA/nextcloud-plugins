@@ -17,13 +17,13 @@ sub import {
 }
 FILTER {
 	
-			if ($isDebug eq 'TRACE') {
-				s/\#§TRACE/MyLogger::trace/g;
-				$isDebug = 'DEBUG';
-			}
-			if ($isDebug eq 'DEBUG') {
-				s/\#§DEBUG(\d?)/MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
-			}
+		if ($isDebug eq 'TRACE') {
+			s/\#§TRACE/MyLogger::trace/g;
+			$isDebug = 'DEBUG';
+		}
+		if ($isDebug eq 'DEBUG') {
+			s/\#§DEBUG(\d?)/MyLogger::debug !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
+		}
 	
 		s/§FATAL(\d?)/MyLogger::fatal 'FATAL: die at ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
 		s/§ERROR(\d?)/MyLogger::is(1) and MyLogger::erreur 'ERROR: ', !'$1' ? (__FILE__, __LINE__) : ((caller($1-1))[1,2]) ,/g;
@@ -222,7 +222,7 @@ sub traceSystem {
 		} else {
 			$outIsCode = sub {
 				push @$OUT, $_;
-	}
+			}
 		}
 	}
 	
@@ -248,9 +248,9 @@ sub traceSystem {
 	my $printOut = sub {
 		local $_ = shift;
 		if ($level >=  4) { trace("\t", $_); }
-				if ($outIsCode) {
+		if ($outIsCode) {
 			&$outIsCode ;
-			}
+		}
 	};
 
 	my $printErr = sub {
