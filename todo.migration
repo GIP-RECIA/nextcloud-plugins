@@ -66,3 +66,9 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/js/main.js org/apps/on
 scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/onlyoffice/l10n/
 
 # scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/appconfig.php org/apps/onlyoffice/lib/
+
+
+---------------
+-------------
+migration de 27.0.4 a 27.0.7
+lib/private/Http/Client/DnsPinMiddleware.php ne doit pus être utile
