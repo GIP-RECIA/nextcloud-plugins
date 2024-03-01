@@ -25,7 +25,7 @@ APPS = $(NEXTCLOUD_PATH)/apps
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS
+	@echo SCRIPTS LDAPIMPORTER COLLABORA  SKELETON USER_CAS
 #   @echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS LIB
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
@@ -41,8 +41,7 @@ SCRIPTS:
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
-OOPATCH: 
-	cp apps/onlyoffice/js/main.js $(NEXTCLOUD_PATH)/apps/onlyoffice/js/main.js
+
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
