@@ -104,8 +104,8 @@ OC.L10N.register(
     "File has been converted. Its content might look different.": "Le fichier a été converti. Son contenu peut s'afficher différemment.",
     "Download as": "Télécharger sous",
     "Download": "Télécharger",
-    "Origin format": "Format d’origin",
-    "Failed to send notification": "Échec de l’envoi de la notification",
+    "Origin format": "Format d'origin",
+    "Failed to send notification": "Échec de l'envoi de la notification",
     "Notification sent successfully": "Notification a été envoyée avec succès",
     "%1\$s mentioned in the %2\$s: \"%3\$s\".": "%1\$s a mentionné dans %2\$s: \"%3\$s\".",
     "{notifier} mentioned in the {file}: \"%1\$s\".": "{notifier} vous a mentionné dans {file}: \"%1\$s\".",
@@ -124,8 +124,8 @@ OC.L10N.register(
     "Light": "Clair",
     "Classic Light": "Classique clair",
     "Dark": "Sombre",
-    "Review": "Révision",
-    "Comment": "Commentaire",
+    "Review only": "Révision uniquement",
+    "Comment only": "Commentaires uniquement",
     "Form filling": "Remplissage de formulaire",
     "Custom filter": "Filtre personnalisé",
     "group": "groupe",
@@ -134,6 +134,10 @@ OC.L10N.register(
     "Enable plugins": "Activer les plugins",
     "Enable document protection for": "Activer la protection des documents par mot de passe pour",
     "All users": "Tous les utilisateurs",
-    "Owner only": "Propriétaire uniquement"
+    "Owner only": "Propriétaire uniquement",
+    "Authorization header (leave blank to use default header)": "En-tête d'autorisation (laissez vide pour utiliser l'en-tête par défaut)",
+    "ONLYOFFICE server is not available": "Le serveur ONLYOFFICE n'est pas disponible",
+    "Please check the settings to resolve the problem.": "Veuillez vérifier les paramètres pour résoudre le problème.",
+    "View settings": "Afficher les paramètres"
 },
 "nplurals=2; plural=(n > 1);");
