@@ -66,10 +66,11 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 
 		- **last**: permet de sortir le groupe Grouper testé, avec les **regex** de même niveau (), de la liste des groupes.  
 	2 valeurs possibles:
-		- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
+			- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
 			Il ne sera donc pas testé avec les regexes suivantes.
-		- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.  
-	Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
+			- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.
+
+				Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
 
 	- **groups**: liste des groupes NC à créer ssi la **regex** match le groupe Grouper.  
 		- **group**: Format (à la printf du C) pour déduire le nom du groupe NC à créer, à partir des groupements de la **regex** qui match le groupe Grouper. 
