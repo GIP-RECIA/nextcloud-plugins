@@ -1,7 +1,7 @@
 ## La conf de loadGroupFolders.
 La déclaration des groupes et de leurs associations aux GroupFolders ce fait dans le fichier 'config.yml'.
 
-### Micro rappel de la syntaxe yaml et conventions.
+### Micro rappel de la syntaxe yaml et conventions ([ref wikipedia](https://en.wikipedia.org/wiki/YAML)).
 Les paramètres sont déclarés avec la syntaxe "clé: valeur";
 ainsi 
 
@@ -90,8 +90,8 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 		- **admin**: regex qui filtre parmis tous des GroupFolders existant ceux sur lesquels le groupe NC donné par **group** aurra des droits d'administration.
 
 ### Exemple et raccoursi.
-Pour les paramètres de listes **groups** et **folders**, si la liste contient qu'un élément
-on peut omettre le paramètre de liste et déclarer son contenu directement dans son contenant (resp **regex** et **group**)
+Pour les paramètres de listes **ldapFilterList** **groups** et **folders**, si la liste contient qu'un élément
+on peut omettre le paramètre de liste et déclarer son contenu directement dans son contenant (resp **ldapFilterGroups** **regex** et **group**)
 Par exemple:
 
       - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
@@ -122,7 +122,7 @@ Peut se réécrir en:
             folder: 'ASC'
             permF: []
             quotaF: 1
-          - group: '%3$s.%1$s'
+          - group: &groupA '%3$s.%1$s' 
             folder: 'ASC/%3$s'
             permF:
               - write
@@ -130,7 +130,7 @@ Peut se réécrir en:
               - delete
             quotaF: 100
 	  - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
-        group: '%3$s.%1$s'
+        group: *groupA
         admin: '^ASC(/.*)?$'
 
 Dans cette exemple, on voit que tous les groupes Grouper qui match la 1re regex vont créer le GroupFolder *ASC* et un autre, fonction de son nom (*ASC/...*).  
