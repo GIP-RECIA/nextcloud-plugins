@@ -168,7 +168,7 @@ if ($test) {
 	§INFO Dumper($config);
 	§INFO "Mode Test : Affichage des timestamps : ";
 	§INFO Dumper(\%etabTimestamp);
-	
+
 	§INFO "Mode Test : on fait les calculs sans executer les commandes occ ";
 	util->testMode();
 	
@@ -257,11 +257,11 @@ sub traitementRegexGroup {
 	my $etabNC = shift;
 	my $confGroupsList = shift;
 	my @grpRegexMatches = @_;
-	
+
 	# §TRACE Dumper(@res);
 	#§DEBUG "traitementRegexGroup :" ,Dumper($confGroupsList);
 	foreach my $confGroup (@{$confGroupsList}) {
-		
+
 		§DEBUG Dumper($confGroup);
 		my $groupFormat = $confGroup->{group};
 		
@@ -310,7 +310,7 @@ sub traitementEtabGroup {
 	my $confEtab = shift;
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
-	
+
 	my $regexes =  $confEtab->{regexes};
 
 	unless ($regexes) {
@@ -404,7 +404,7 @@ sub traitementEtab {
 			return 0;
 		}
 
-			
+		
 
 		unless ($etabNC) {
 			$etabNC = Etab->addEtab($siren, $confEtab->{nom})
@@ -417,10 +417,10 @@ sub traitementEtab {
 		}
 
 		Group->readNC($etabNC);
-	
+
 		my $reloadEtab = 0;
 		foreach my $confFiltreLdap (@$filtreLdapList) {
-					#faire la requete ldap
+			#faire la requete ldap
 			my $filtreLdap =  $confFiltreLdap->{ldapFilterGroups};
 			chomp $filtreLdap ;
 
@@ -433,17 +433,17 @@ sub traitementEtab {
 
 			§DEBUG "nb ldapGroups =", scalar @ldapGroups;
 			if (@ldapGroups) {
-						$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
+				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
 				# si tout est ok on met a jour le  timestamp
 
 				#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
 				$etabNC->timestamp($newTimeStampLdap);
 
 			} else {
-						§INFO "pas de groupe LDAP";
-			} 
+				§INFO "pas de groupe LDAP";
+			}
 		}
-			
+		
 		return $reloadEtab;
 	}
 	return 0;
