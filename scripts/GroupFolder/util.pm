@@ -162,11 +162,11 @@ sub executeSql {
 	my $class = shift;
 	my $sqlQuery = shift;
 	my $sql = connectSql();
-	§DEBUG1 $sqlQuery;
+	§DEBUG[1] $sqlQuery;
 	if (!isTestMode() || ( $sqlQuery =~ /^\s*select/i &&  ! ($sqlQuery =~ /into/i))) {
-		my $sqlStatment =  $sql->prepare($sqlQuery) or §FATAL1 $sql->errstr;
+		my $sqlStatment =  $sql->prepare($sqlQuery) or §FATAL[1] $sql->errstr;
 		§DEBUG 'execute ', join(", ", @_);
-		$sqlStatment->execute(@_) or §FATAL1  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
+		$sqlStatment->execute(@_) or §FATAL[1]  $sqlStatment->errstr, "\n$sqlQuery \n(", join(", ", @_), ")\n";
 		return $sqlStatment;
 	} 
 	§DEBUG "TestMode => pas de modif de base la requête aurait été executé avec :";
@@ -199,9 +199,9 @@ sub occ {
 	my $out = shift;
 
 	if ($out) {
-		§SYSTEM1 "$occ $com", $out;
+		§SYSTEM[1] "$occ $com", $out;
 	} else {
-		§SYSTEM1 "$occ $com" ;
+		§SYSTEM[1] "$occ $com" ;
 	}
 }
 
