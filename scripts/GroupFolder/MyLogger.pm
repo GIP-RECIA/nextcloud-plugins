@@ -55,13 +55,13 @@ use strict;
 use IPC::Open3;
 use IO::Select;
 use Symbol 'gensym';
-
+#use Hash::Util::FieldHash;
 # 
-my $version="8.2";
+my $version="8.3";
 
 package MyLogger;
 use Filter::Simple;
-
+use Encode qw(decode encode);
 
 my $isDebug;
 
@@ -459,6 +459,8 @@ sub traceSystem {
 	eval {
 	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande) or fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $! );
 	};
+#binmode $COM, ':utf8';
+#binmode $COM, ':encoding(UTF-8)';
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 
 	info ($fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
@@ -481,14 +483,19 @@ sub traceSystem {
 	my $printErr = sub {
 		if ($defautLog->{LEVEL} >= 1) { trace(">\t", $_[0]) };
 	};
-	
+
+#	Hash::Util::FieldHash::fieldhash my %BUF;
+	my %BUF;
 	while (my @ready = $select->can_read) {
 		foreach my $fh (@ready) {
+			
 			my $buf;
-			my $len = sysread $fh, $buf, 4096;
+			my $len = sysread $fh, $BUF{$fh}, 4096, length($BUF{$fh});
+			
 			if ($len == 0){
 				$select->remove($fh);
 			} else {
+				$buf = decode_utf8_partial($BUF{$fh});
 				if ($fh == $COM) {
 					$out .= $buf;
 					unless ($flagC) {
@@ -522,6 +529,24 @@ sub traceSystem {
 	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status") if $child_exit_status;
 	close $ERR;
 	close $COM;
+}
+
+## pour convertir en utf8 les sortie dans system
+# on decode se que l'on peut ce qui n'est pas decodé reste dans le buffer
+sub decode_utf8_partial {
+   my $s = decode('UTF-8', $_[0], Encode::FB_QUIET);
+   return undef
+      if !length($s) && $_[0] =~ /
+         ^
+         (?: [\x80-\xBF]
+         |   [\xC0-\xDF].
+         |   [\xE0-\xEF]..
+         |   [\xF0-\xF7]...
+         |   [\xF8-\xFF]
+         )
+      /xs;
+
+    return $s;
 }
 
 1;

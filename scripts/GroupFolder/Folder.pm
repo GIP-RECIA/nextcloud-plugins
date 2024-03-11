@@ -1,4 +1,4 @@
-use MyLogger;
+use MyLogger ; # 'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
@@ -274,10 +274,10 @@ sub diffBaseDisque {
 					chop $_;
 					if ($pathInBase{$_}) {
 						delete $pathInBase{$_};
-						§DEBUG "$_ : in base";
+						#§DEBUG "$_ : in base";
 					} else {
 						push @pathNotInBase, $_;
-						§DEBUG "$_ : NOT IN base";
+						#§DEBUG "$_ : NOT IN base";
 					}
 				};
 		return [sort @pathNotInBase], [sort keys %pathInBase];
