@@ -1,5 +1,5 @@
 use MyLogger ; # 'DEBUG';
-#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
 use strict;
@@ -272,7 +272,7 @@ sub diffBaseDisque {
 		§SYSTEM "cd $repData; find '$folderPath'",
 				sub{
 					chop $_;
-					if ($pathInBase{$_}) {
+					if (exists $pathInBase{$_}) {
 						delete $pathInBase{$_};
 						#§DEBUG "$_ : in base";
 					} else {

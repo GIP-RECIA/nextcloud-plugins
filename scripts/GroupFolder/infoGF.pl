@@ -50,10 +50,10 @@ sub diffGf {
 
 	if (@{$notInBase}) {
 		print "Path on __groupefolders but not in base :\n";
-		for (@{$notInBase}) {print $_."\n"};
+		for (@{$notInBase}) {print "'$_'\n"};
 	}
 	if ((@{$notInDisque})) {
 		print "Path not on __groupefolders but in base :\n";
-		for (@{$notInDisque}) {print $_."\n"};
+		for (@{$notInDisque}) {print "'$_'\n"};
 	}
 }
