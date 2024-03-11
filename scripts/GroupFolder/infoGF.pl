@@ -49,11 +49,11 @@ sub diffGf {
 	my ($notInBase, $notInDisque) = $folder->diffBaseDisque();
 
 	if (@{$notInBase}) {
-		print "Path on __groupefolders but not in base :\n";
+		print "\nPath on __groupefolders but not in base :\n";
 		for (@{$notInBase}) {print "'$_'\n"};
 	}
 	if ((@{$notInDisque})) {
-		print "Path not on __groupefolders but in base :\n";
+		print "\nPath not on __groupefolders but in base :\n";
 		for (@{$notInDisque}) {print "'$_'\n"};
 	}
 }
