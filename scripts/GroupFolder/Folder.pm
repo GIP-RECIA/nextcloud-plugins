@@ -269,7 +269,7 @@ sub diffBaseDisque {
 			$pathInBase{$path} = $type;
 		}
 
-		§SYSTEM "cd $repData; find $folderPath",
+		§SYSTEM "cd $repData; find '$folderPath'",
 				sub{
 					chop $_;
 					if ($pathInBase{$_}) {
