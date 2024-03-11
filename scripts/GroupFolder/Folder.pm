@@ -280,7 +280,7 @@ sub diffBaseDisque {
 						#§DEBUG "$_ : NOT IN base";
 					}
 				};
-		return [sort @pathNotInBase], [sort keys %pathInBase];
+		return ([sort @pathNotInBase], [sort keys %pathInBase]);
 	}
 }
 1;

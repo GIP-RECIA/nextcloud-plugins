@@ -30,7 +30,7 @@ use Folder;
 
 my $folderById = Folder->readNC;
 
-MyLogger->level(2);
+MyLogger->level(4);
 if  (@ARGV) {
 	my $fid = shift;
 	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
@@ -51,10 +51,16 @@ sub diffGf {
 
 	if (@{$notInBase}) {
 		print "\nPath on __groupefolders but not in base :\n";
-		for (@{$notInBase}) {print "'$_'\n"};
+		for (@{$notInBase}) {
+			print "'$_'\n";
+			§DEBUG  "'$_'", "not in base";
+		};
 	}
 	if (@{$notInDisque}) {
 		print "\nPath not on __groupefolders but in base :\n";
-		for (@{$notInDisque}) {print "'$_'\n"};
+		for (@{$notInDisque}) {
+				print "'$_'\n";
+				§DEBUG  "'$_'", "not in disque";
+		};
 	}
 }
