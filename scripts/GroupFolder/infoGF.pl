@@ -27,11 +27,25 @@ use util;
 use Folder;
 
 
+
 my $folderById = Folder->readNC;
 MyLogger->level(2);
-while (my ($fid, $folder) = each %{$folderById}) {
-	#print $fid, "\t", $folder->mount, "\n";
-	
+if  (@ARGV) {
+	my $fid = shift;
+	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
+	 my $folder = $$folderById{$fid};
+
+	§ERROR "$fid n'existe pas en base" unless $folder;
+	diffGf($fid, $folder);
+	 
+} else {
+	while (my ($fid, $folder) = each %{$folderById}) {
+		diffGf ($fid, $folder);
+	}
+}
+
+sub diffGf {
+	my ($fid, $folder) = @_;
 	my ($notInBase, $notInDisque) = $folder->diffBaseDisque();
 
 	if (@{$notInBase}) {
