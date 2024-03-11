@@ -29,6 +29,7 @@ use Folder;
 
 
 my $folderById = Folder->readNC;
+
 MyLogger->level(2);
 if  (@ARGV) {
 	my $fid = shift;
@@ -52,7 +53,7 @@ sub diffGf {
 		print "\nPath on __groupefolders but not in base :\n";
 		for (@{$notInBase}) {print "'$_'\n"};
 	}
-	if ((@{$notInDisque})) {
+	if (@{$notInDisque}) {
 		print "\nPath not on __groupefolders but in base :\n";
 		for (@{$notInDisque}) {print "'$_'\n"};
 	}
