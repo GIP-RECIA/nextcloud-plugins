@@ -302,5 +302,6 @@ class CreateUser extends Command
 
             $output->writeln('This is a Nextcloud instance, no backend update needed.');
         }
+        return 0;
     }
 }
