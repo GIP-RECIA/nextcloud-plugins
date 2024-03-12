@@ -295,7 +295,9 @@ class AdImporter implements ImporterInterface
                                             }
                                             elseif (!is_null($groupFilter["uaiNumber"]) && !is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
                                                 $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
-                                            }
+                                            } else {
+												$this->logger->debug("ERREUR ETAB");
+											}
                                             break;
                                         }
                                     }
@@ -620,7 +622,9 @@ class AdImporter implements ImporterInterface
             $result = $newEtablissement->execute();
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
-        }
+        } else {
+			$this->logger->error("addEtablissement sans nom (". $name . ") ou sans UAI (" . $uai . ") ni SIREN (" . $siren . ")");
+		}
         return null;
     }
 
@@ -794,6 +798,7 @@ class AdImporter implements ImporterInterface
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, $filter, $keep) : ldap_search($this->ldapConnection, $groupCn, $filter));
         if (ldap_error($this->ldapConnection) == "No such object") {
+			$this->logger->error("No such object: ". $groupCn .": " . $filter);
             return [];
         }
         elseif (ldap_error($this->ldapConnection) != "Success") {
