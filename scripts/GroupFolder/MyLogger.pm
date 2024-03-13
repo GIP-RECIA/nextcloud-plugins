@@ -546,6 +546,7 @@ sub decode_utf8_partial {
          )
       /xs;
 
+	print STDERR "|$s|\n";
     return $s;
 }
 

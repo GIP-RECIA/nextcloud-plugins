@@ -30,7 +30,7 @@ use Folder;
 
 my $folderById = Folder->readNC;
 
-MyLogger->level(4);
+MyLogger->level(2);
 if  (@ARGV) {
 	my $fid = shift;
 	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
