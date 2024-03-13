@@ -531,8 +531,9 @@ sub traceSystem {
 	close $COM;
 }
 
-## pour convertir en utf8 les sortie dans system
-# on decode se que l'on peut ce qui n'est pas decodé reste dans le buffer
+## pour convertir en utf8 les sorties de system
+# on decode ce que l'on peut ce qui n'est pas decodé reste dans le buffer
+# et sera décodé au prochain tour 
 sub decode_utf8_partial {
    my $s = decode('UTF-8', $_[0], Encode::FB_QUIET);
    return undef
@@ -545,8 +546,6 @@ sub decode_utf8_partial {
          |   [\xF8-\xFF]
          )
       /xs;
-
-	print STDERR "|$s|\n";
     return $s;
 }
 
