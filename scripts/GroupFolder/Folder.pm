@@ -1,5 +1,5 @@
 use MyLogger 'DEBUG';
-use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
 use strict;
@@ -264,7 +264,7 @@ sub diffBaseDisque {
 	unless (util->isObjectStore) {
 		my $fid = $folder->idBase;
 		my $folderPath = "__groupfolders/$fid";
-		my $sqlRes = util->executeSql(q"select path, mimetype from oc_filecache where path like ? ", "$folderPath%") ;
+		my $sqlRes = util->executeSql(q"select path, mimetype from oc_filecache where path like ? ", "$folderPath/%") ;
 		while (my ($path, $type) =  $sqlRes->fetchrow_array()) {
 			$pathInBase{$path} = $type;
 		}
@@ -277,8 +277,10 @@ sub diffBaseDisque {
 						delete $pathInBase{$_};
 						#§DEBUG "$_ : in base";
 					} else {
-						push @pathNotInBase, $_;
-						#§DEBUG "$_ : NOT IN base";
+						if ($_ ne $folderPath) {
+							push @pathNotInBase, $_;
+							#§DEBUG "$_ : NOT IN base";
+						}
 					}
 				};
 		return ([sort @pathNotInBase], [sort keys %pathInBase]);
