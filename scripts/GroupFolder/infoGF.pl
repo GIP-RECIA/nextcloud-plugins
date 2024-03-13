@@ -22,15 +22,24 @@ use MyLogger ; # 'DEBUG';
 use DBI();
 use Pod::Usage qw(pod2usage);
 use Getopt::Long;
-
+use List::Util qw(reduce);
 use util;
 use Folder;
 
+my $resume;
+my $all;
+my $loglevel = 2;
+
+unless (@ARGV && GetOptions ( "r" => \$resume, "a" => \$all, "l=i" => \$loglevel) ) {
+	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
+	#$ENV{'MANPAGER'}='cat';
+	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
+}
 
 
 my $folderById = Folder->readNC;
 
-MyLogger->level(2);
+MyLogger->level($loglevel);
 if  (@ARGV) {
 	my $fid = shift;
 	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
@@ -51,16 +60,25 @@ sub diffGf {
 
 	if (@{$notInBase}) {
 		print "\nPath not in base :\n";
-		for (@{$notInBase}) {
-			print "'$_'\n";
-			#§DEBUG  "'$_'", "not in base";
-		};
+		resumeList($notInBase, $resume);
 	}
 	if (@{$notInDisque}) {
 		print "\nPath not in filesystem :\n";
-		for (@{$notInDisque}) {
+		resumeList($notInDisque, $resume);
+	}
+}
+
+sub resumeList {
+	my $ary = shift;
+	my $filtre = shift;
+	if ($filtre) {
+		my $last = '$';
+		for (grep /^$last/ ? 0 : ($last = $_), @{$ary}) {
 			print "'$_'\n";
-			#§DEBUG  "'$_'", "not in disque";
-		};
+		}
+	} else {
+		for (@{$ary}) {
+			print "'$_'\n";
+		}
 	}
 }
