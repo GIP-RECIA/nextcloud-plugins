@@ -94,4 +94,14 @@ etabs:
         groups:
           - group: '%3$s.%1$s'
             admin: '^ASC(/.*)?$'
+  - nom Region Centre
+    siren: 23450002300028
+    ldapFilterGroups: '(| (cn=coll:Collectivites:Région Centre:services:DGEECVC - DEJS:NUMÉRIQUE EDUCATIF)(cn=coll:Collectivites:Région Centre:services:DGEECVC - DEJS:SNE - EQUIPE*))'
+    regexes:
+      - regex: '^coll:Collectivites:Région Centre:services:DGEECVC - DEJS:NUMÉRIQUE EDUCATIF$'
+        group: 'responsables-SNE.Region Centre'
+        quotaG: 1
+      - regex: '^coll:Collectivites:Région Centre:services:DGEECVC - DEJS:SNE - EQUIPE (NORD|EST|OUEST|SUD)$'
+        group: 'equipes-SNE.Region Centre'
+        quotaG: 1
 ...
