@@ -67,12 +67,14 @@ sub diffGf {
 	my ($fid, $folder) = @_;
 	my ($notInBase, $notInDisque) = $folder->diffBaseDisque();
 
+	my $mount = $folder->mount;
 	if (@{$notInBase}) {
-		print "\nPath not in base :\n";
+		print "$mount:\nPath not in base :\n";
+		$mount = '';
 		resumeList($notInBase, $resume);
 	}
 	if (@{$notInDisque}) {
-		print "\nPath not in filesystem :\n";
+		print "$mount:\nPath not in filesystem :\n";
 		resumeList($notInDisque, $resume);
 	}
 }
