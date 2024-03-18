@@ -49,14 +49,14 @@ unless (@ARGV && GetOptions ( "d=s" => \$diffFileOld ,"r" => \$resume, "a" => \$
 }
 
 if (defined $loglevel) {
-	MyLogger->file(">" . $util::PARAM{'NC_LOG'}."/infoGF.log");
+	MyLogger->file($util::PARAM{'NC_LOG'}."/infoGF.log");
 } else {
 	$loglevel = 2;
 }
 MyLogger->level($loglevel);
 
 if ($diffFileOld) {
-	open $diffFileNew, ">".$diffFileOld.'.new' or §FATAL $diffFileOld.'.new', $!;
+	open $diffFileNew, ">:encoding(UTF-8)", $diffFileOld.'.new' or §FATAL $diffFileOld.'.new', $!;
 	select $diffFileNew;
 }
 my $folderById = Folder->readNC;
@@ -86,7 +86,7 @@ if  (@ARGV) {
 			#§SYSTEM "diff $diffFileOld $diffFileOld".'.new', OUT => sub {print;} ;
 			system "diff $diffFileOld $diffFileOld".'.new';
 		} else {
-			open $diffFileNew , $diffFileOld.'.new' or §FATAL $diffFileOld.'.new ', $!;
+			open $diffFileNew , "<:encoding(UTF-8)", $diffFileOld.'.new' or §FATAL $diffFileOld.'.new ', $!;
 			while (<$diffFileNew>) {print }; 
 			rename $diffFileOld.'.new', $diffFileOld or §FATAL "mv $diffFileOld".'.new ', $diffFileOld, " ", $!;
 		}
