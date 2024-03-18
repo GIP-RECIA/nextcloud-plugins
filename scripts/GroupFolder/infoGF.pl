@@ -5,7 +5,7 @@
 =head1 NAME infoGF.pl
 	Donne des info sur les GroupFolders
 
-=head1 VERSION 0.0 
+=head1 VERSION 1.0 
 
 =head1 SYNOPSIS
 
@@ -16,7 +16,7 @@
 	-a : ne résume pas les listes par défaut si gfid not null;
 	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
 		 si tmp.file n'existe pas il le crée;
-	-l : fixe le log level.
+	-l : fixe le log level,  1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
   
 =cut
 
