@@ -9,12 +9,14 @@
 
 =head1 SYNOPSIS
 
-	infoGF.pl [-r] [-a] [-l loglevel] [gfid]
+	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid]
 
-	gfid: groupFolder id
-	-r : résume les listes de resultats (par défaut si pas de gfid)
-	-a : ne résume pas les listes par défaut si gfid not null.
-	-l : fixe le log level
+	gfid: groupFolder id;
+	-r : résume les listes de résultats (par défaut si pas de gfid);
+	-a : ne résume pas les listes par défaut si gfid not null;
+	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
+		 si tmp.file n'existe pas il le crée;
+	-l : fixe le log level.
   
 =cut
 
@@ -36,18 +38,29 @@ use Folder;
 
 my $resume;
 my $all;
-my $loglevel = 2;
+my $loglevel;
+my $diffFileOld;
+my $diffFileNew;
 
-unless (@ARGV && GetOptions ( "r" => \$resume, "a" => \$all, "l=i" => \$loglevel) ) {
+unless (@ARGV && GetOptions ( "d=s" => \$diffFileOld ,"r" => \$resume, "a" => \$all, "l=i" => \$loglevel) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
 }
 
+if (defined $loglevel) {
+	MyLogger->file(">" . $util::PARAM{'NC_LOG'}."/infoGF.log");
+} else {
+	$loglevel = 2;
+}
+MyLogger->level($loglevel);
 
+if ($diffFileOld) {
+	open $diffFileNew, ">".$diffFileOld.'.new' or §FATAL $diffFileOld.'.new', $!;
+	select $diffFileNew;
+}
 my $folderById = Folder->readNC;
 
-MyLogger->level($loglevel);
 if  (@ARGV) {
 	my $fid = shift;
 	
@@ -58,8 +71,24 @@ if  (@ARGV) {
 	diffGf($fid, $folder);
 	 
 } else {
-	while (my ($fid, $folder) = each %{$folderById}) {
-		diffGf ($fid, $folder);
+	#~ while (my ($fid, $folder) = each %{$folderById}) {
+		#~ diffGf ($fid, $folder);
+	#~ }
+		# le trie permet la comparaison des résultats
+	for my $fid (sort keys %{$folderById}) {
+		diffGf ($fid, $$folderById{$fid});
+	}
+
+	if (defined $diffFileNew) {
+		select STDOUT;
+		close $diffFileNew;
+		if (-e $diffFileOld) {
+			§SYSTEM "diff $diffFileOld $diffFileOld".'.new', OUT => sub {print;} ;
+		} else {
+			open $diffFileNew , $diffFileOld.'.new' or §FATAL $diffFileOld.'.new ', $!;
+			while (<$diffFileNew>) {print }; 
+			rename $diffFileOld.'.new', $diffFileOld or §FATAL "mv $diffFileOld".'.new ', $diffFileOld, " ", $!;
+		}
 	}
 }
 
