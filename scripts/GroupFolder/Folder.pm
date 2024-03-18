@@ -229,7 +229,7 @@ sub cleanAllFolder {
 		}
 		# on recupere la place occupée sur le disque:
 		my $repGF =  ${util::PARAM}{'NC_DATA'} . "/__groupfolders/";
-			§SYSTEM "du -b -d1 $repGF", sub {
+			§SYSTEM "du -b -d1 $repGF", OUT => sub {
 			if (/^(\d+)\s+$repGF(\d+)$/o) {
 				my $idFolder = $2;
 				my $size = $1;
@@ -270,7 +270,7 @@ sub diffBaseDisque {
 		}
 
 		§SYSTEM "cd $repData; find '$folderPath'",
-				sub{
+			out => sub{
 					chop $_;
 					#§DEBUG "|$_|";
 					if (exists $pathInBase{$_}) {
