@@ -199,7 +199,7 @@ sub occ {
 	my $out = shift;
 
 	if ($out) {
-		§SYSTEM[1] "$occ $com", $out;
+		§SYSTEM[1] "$occ $com", OUT => $out;
 	} else {
 		§SYSTEM[1] "$occ $com" ;
 	}
