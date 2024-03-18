@@ -5,7 +5,7 @@
 =head1 NAME infoGF.pl
 	Donne des info sur les GroupFolders
 
-=head1 VERSION 1.0 
+=head1 VERSION 1.0.1
 
 =head1 SYNOPSIS
 
@@ -83,7 +83,8 @@ if  (@ARGV) {
 		select STDOUT;
 		close $diffFileNew;
 		if (-e $diffFileOld) {
-			§SYSTEM "diff $diffFileOld $diffFileOld".'.new', OUT => sub {print;} ;
+			#§SYSTEM "diff $diffFileOld $diffFileOld".'.new', OUT => sub {print;} ;
+			system "diff $diffFileOld $diffFileOld".'.new';
 		} else {
 			open $diffFileNew , $diffFileOld.'.new' or §FATAL $diffFileOld.'.new ', $!;
 			while (<$diffFileNew>) {print }; 
