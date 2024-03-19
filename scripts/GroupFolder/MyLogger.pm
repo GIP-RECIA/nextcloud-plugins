@@ -265,8 +265,9 @@ sub file {
 	}
 	if ($filename) {
 		
-		$filename =~ s/^\>//;
-		open ($MyLoggerFile, ">:encoding(UTF-8)", $filename) or die $filename . " $!" ;
+		$filename =~ s/(\>{1,2})//;
+		my $encoding = $1 ? "$1:encoding(UTF-8)" : ">:encoding(UTF-8)";
+		open ($MyLoggerFile, $encoding, $filename) or die $filename . " $!" ;
 		if ($autoflush) {
 			my $old_fh = select($MyLoggerFile);
 			$| = 1;
