@@ -57,7 +57,7 @@ use IO::Select;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.0";
+my $version="9.1";
 
 package MyLogger;
 use Filter::Simple;
@@ -353,7 +353,6 @@ sub debug {
 	}
 }
 
-
 sub _info {
 	local $::defautLog = shift;
 	info(@_);
@@ -371,7 +370,6 @@ sub info {
 		print STDERR '  INFO: ', $fileName, @_, "\n";
 	}
 }
-
 
 sub _erreur {
 	local $::defautLog = shift;
@@ -426,7 +424,7 @@ sub _traceSystem {
 	traceSystem(@_);
 }
 
-sub traceSystem {
+sub traceSystem  {
 	my $fileName = shift;
 	my $line = shift;
 	my $commande = shift;
@@ -527,12 +525,14 @@ sub printCodeFromParameter {
 			}
 		}
 		return sub {
-			if ($defautLog->{LEVEL} >=  $level) { trace($tab, $_[0]); }
+			my $line = shift;
+			if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
 			push @$code, $_[0];
 		}
 	}
 	return sub {
-		if ($defautLog->{LEVEL} >=  $level) { trace($tab, $_[0]); }
+		my $line = shift;
+		if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
 	}
 }
 
