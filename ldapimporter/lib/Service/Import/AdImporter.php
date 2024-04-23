@@ -464,12 +464,13 @@ class AdImporter implements ImporterInterface
 	protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
 		$qbHist = $this->db->getQueryBuilder();
 		
-		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+	//	$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+		$del = preg_match("/(DELETE|BLOQUE)"/i), $eta);
 		
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
 				->set('eta', $qbHist->createNamedParameter($etat))
-				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
+				->set('isadd', $qbHist->createNamedParameter($isAdded ? 1: 0))
 				->set('dat', $qbHist->createNamedParameter($date))
 				->set('siren', $qbHist->createNamedParameter($siren))
 				->set('isdel', $qbHist->createNamedParameter($del))
