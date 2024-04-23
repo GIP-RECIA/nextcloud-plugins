@@ -35,7 +35,9 @@
 'loadEtap.pl' qui execute 'occ ldap:import-users-ad' pour mettre a jour les comptes, ceux qui sont en DELETE ont le champs 'isdel' de la table 'oc_recia_user_history' mise à 1.
 
 Ensuite 'loadEtab.pl' excute 'occ ldap:disable-deleted-user' qui désactive les comptes NC qui ont 'isdel' à 1 (mise à false dans oc_preferences du champs qui va bien), et met 'isdel' à 2.
-régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils sont encore dans le ldap sinon on les supprimes comme si ils avaient eu le DELETE et met isDel a 2.
+régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils sont encore dans le ldap sinon on les supprimes on les marques DELETE_NOT_IN_LDAP et met isDel a 2.
+
+
 
 'occ ldap:remove-disable-user' doit effacer les comptes ayant 'isdel à 2 depuis plus de 60 jours et le mettre à 3. N'est pour le moment jamais appelé, pas vraiment testé non plus.
 

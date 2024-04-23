@@ -44,7 +44,7 @@ unless (@ARGV[0] eq 'all') {
 my $sql = connectSql();
 
 # 
-
+# recupère les groupes qui n'ont pas d'utilisateurs dans l'historique avec isDel < 2
 my $sqlQuery = q/select g.gid from  oc_groups g left join (select u.gid, u.uid from  oc_group_user u, oc_recia_user_history h where h.uid = u.uid and h.isdel < 2) u on u.gid = g.gid where u.uid is null/;
  
 print "$sqlQuery\n";
