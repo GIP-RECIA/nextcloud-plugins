@@ -69,6 +69,7 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 			- *ifMatch*:	le groupe est sorti après les traitements ssi il vérifie la **regex** de même niveau;  
 			Il ne sera donc pas testé avec les regexes suivantes.
 			- *ifNoMatch*: le groupe est sorti sans traitements ssi il ne vérifie pas la **regex** de même niveau.  
+
 		Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
 
 		- **groups**: liste des groupes NC à créer ssi la **regex** match le groupe Grouper.  
