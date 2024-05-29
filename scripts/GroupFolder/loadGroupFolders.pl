@@ -17,7 +17,7 @@
 	-f fixe le fichier de conf avec les regexes
 	-l niveau de log : 1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
 	-q force la mise à jour des quotas sinon les quotas de la conf sont les quotas minimums (ne peuvent pas faire diminuer les quotas de la base)
-	-u importe les utilisateurs des établissements modifiés à l'aide de loadEtab.pl.      
+	-u importe les utilisateurs des établissements modifiés à l'aide de loadEtab.pl.
 	up traite les étabs du fichier des timestamps ayant des groupes modifiés.
 	all traite tous les étabs du fichier de conf, sans vérifier les timestamps. 
 	siren des étabs à traiter sans vérifier les timestamps.
