@@ -121,7 +121,7 @@ class DeleteService
             ->where($queryBuilder->expr()->eq('p.appid', $queryBuilder->createNamedParameter('core')))
             ->andWhere($queryBuilder->expr()->eq('p.configkey', $queryBuilder->createNamedParameter('enabled')))
             ->andWhere($queryBuilder->expr()->eq('p.configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR))
-            ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(2)))
+            ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(3)))
             ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(60));
         $result = $queryBuilder->execute();
         $disabledUsers = $result->fetchAll();
@@ -136,7 +136,7 @@ class DeleteService
             $user = $this->userManager->get($uidUser);
             if ($user->delete()) {
                 $this->logger->info('User with uid :' . $uidUser . ' was deleted');
-                $this->markDelUserHistory($uidUser, 3);
+                $this->markDelUserHistory($uidUser, 4);
             }
         }
     }
