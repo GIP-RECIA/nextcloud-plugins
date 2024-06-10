@@ -92,3 +92,10 @@ where g.uid = s.uid
 update IGNORE recia_storage rs, (select storage , sum(size) vol from oc_filecache where mimetype != 4 and storage != 1 group by storage) st
 set rs.volume = st.vol
 where rs.storage = st.storage;
+
+create or replace view recia_direct_partages as (
+	select f.fileid, f.path, p.uid_owner, (p.item_type = 'folder') isFolder, f.mimetype, regexp_substr(f.path, '(?<=__groupfolders/)\\d+') gfid, share_type
+	from oc_share p, oc_filecache f
+	where f.fileid = item_source
+	and share_type in (0, 2, 13)
+);
