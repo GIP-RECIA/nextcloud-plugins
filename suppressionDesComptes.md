@@ -38,10 +38,14 @@ Ensuite 'loadEtab.pl' excute 'occ ldap:disable-deleted-user' qui désactive les 
 régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils sont encore dans le ldap sinon on les supprimes comme si ils avaient eu le DELETE et met isDel a 2,
 du coup ces compte sont indiqués comme VALIDE dans  oc_recia_user_history.
 
-un script perl pas encore ecrit doit tester les comptes qui ont isDel à 2 et les passer a 3 si ils n'ont pas de partage.
+removeOldUser.pl :
+	test les comptes obsolete (isDel = 2 et > 60 jour)  benificiant d'un partage et supprime ce partages.
+	test les comptes obsolete n'ayant pas fait de partage et le marque isDel = 3
+	lance occ ldap:remove-disabled-user
+	Pour limité le nombre d'update et delete removeOldUser prend le nombre d'action a faire en parametre (<= 1000), les suppressions se feront donc sur plusieurs jours.
+	
+'occ ldap:remove-disabled-user' doit effacer les comptes ayant 'isdel à 3 depuis plus de 60 jours et le mettre à 4. Il supprime définitivement les comptes avec leurs fichier et partages.
+	les comptes ayant isDel à 3 il ne devrait plus y avoir de partage.
 
-'occ ldap:remove-disabled-user' doit effacer les comptes ayant 'isdel à 3 depuis plus de 60 jours et le mettre à 4. N'est pour le moment jamais appelé, pas vraiment testé non plus.
 
-Pour le moment il n'y a pas de gestion des partages donc si on utilise 'occ ldap:remove-disabled-user' rien ne se passera car il n'y a pas de isDel a 3 .
-
-Il faut un processus qui verifie que les comptes avec isDel à 4 sont bien supprimer ainsi que les bucket et si ok  supprimer les lignes concerné dans nos tables.
+Il faut un processus qui verifie que les comptes avec isDel à 4 sont bien supprimer ainsi que les bucket et si ok  supprimer les lignes concerné dans nos tables (oc_recia_user_history, recia_bucket ...).
