@@ -62,13 +62,6 @@ if ($loglevel) {
 
 # suppression des partages vers des comptes obsolètes
 
-
-# select s.* from oc_share s, oc_recia_user_history u where s.share_with like 'F_______' and  s.share_with = u.uid and u.isDel >= 2 and datediff(now(), dat) > 60 ;
-#begin;
-#delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60);
-#rollback;
-#;
-
 my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
 
 my $sql = connectSql;
@@ -91,14 +84,19 @@ $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->e
 
 §INFO "\t $nbLines mise à jours";
 
+
 # Suppression des comptes marqués isDel = 3
 
-my $commandeDel = "/usr/bin/php occ ldap:remove-disabled-user -vvv  ";
 my $wwwRep = $PARAM{'NC_WWW'};
 
 chdir $wwwRep;
 
-§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ";
+my $nbSuppression;
+
+§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
+
+§INFO "nombre de suppressions de compte : $nbSuppression";
+
 
 __END__
 
