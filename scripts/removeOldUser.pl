@@ -60,6 +60,7 @@ if ($loglevel) {
 		MyLogger->level($loglevel, 2);
 }
 
+§INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel";
 # suppression des partages vers des comptes obsolètes
 
 my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
@@ -76,7 +77,7 @@ my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement
 
 # Marquer les comptes sans partage candidat a la suppression
 
-my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages) order by dat  limit ?/;
+my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
 
 §INFO "update oc_recia_user_history set isDel = 3 ...";
 $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
@@ -106,12 +107,12 @@ delete from oc_share where share_with like 'F_______' and share_with in (select 
 select share_with from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit 10;
 rollback;
 
-select uid, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages) order by dat  limit 10;
+select uid, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
 
 begin;
-select uid, isDel, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages) order by dat  limit 10;
-update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages) order by dat  limit 10;
-select uid, isDel, dat from  oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages) order by dat  limit 10;
+select uid, isDel, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
+update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
+select uid, isDel, dat from  oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
 select * from oc_recia_user_history where isDel = 3;
 rollback;
 
