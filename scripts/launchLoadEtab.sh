@@ -52,3 +52,8 @@ echo "/usr/bin/nice $rcode/deleteGroupeVide.pl all" >  $logClean
 grep -v 'was removed' $logClean
 
 date
+
+echo "suppression définitive des comptes obsolètes"
+/usr/bin/nice $rcode/removeOldUser.pl -n 2 -l 4
+
+date
