@@ -93,6 +93,22 @@ update IGNORE recia_storage rs, (select storage , sum(size) vol from oc_filecach
 set rs.volume = st.vol
 where rs.storage = st.storage;
 
+/* vue qui donne les partages directes d'un owner à une personne
+	donne les repertoires partagés mais pas les fichiers du répertoire
+	ne donne pas non plus les partages a un groupe.
+	select distinct share_type from oc_share; 
++------------+
+| share_type |
++------------+
+|          0 | -> a des personnes
+|          1 | -> a des groupes
+|          2 | -> a des personnes via un groupe dans ce cas le partage a un parent : le partage au groupe
+|          3 | -> partage public link
+|          4 | -> partage par mail
+|         12 | -> deck '/{DECK_PLACEHOLDER}' ressemble au 1 sauf le share_with est un numero 
+|         13 | -> deck a des personne resemble au 2 avec de groupe a la deck et parent avec share_type 12
++------------+
+*/ 
 create or replace view recia_direct_partages as (
 	select f.fileid, f.path, p.uid_owner, (p.item_type = 'folder') isFolder, f.mimetype, regexp_substr(f.path, '(?<=__groupfolders/)\\d+') gfid, share_type
 	from oc_share p, oc_filecache f

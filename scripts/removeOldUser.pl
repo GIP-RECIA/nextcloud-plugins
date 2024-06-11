@@ -23,7 +23,7 @@ use lib $FindBin::Bin;
 use lib $FindBin::Bin . "/GroupFolder";
 #use ncUtil;
 use MyLogger 'DEBUG';
-use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Pod::Usage qw(pod2usage);
 use Getopt::Long;
@@ -61,43 +61,47 @@ if ($loglevel) {
 }
 
 §INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel";
-# suppression des partages vers des comptes obsolètes
-
-my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
-
 my $sql = connectSql;
 
-§INFO "delete from oc_share ";
-my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
+# suppression des comptes déjà marqué à supprimer.
+&deleteComptes;
 
-my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+# suppression des partages vers des comptes obsolètes.
+&delPartage;
 
-§INFO "\t $nbLines suppressions";
+# marque les comptes que l'on peut supprimer. 
+&markToDelete;
 
+# suppression des partages vers des comptes obsolètes
+sub delPartage {
+	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
+
+	§INFO "delete from oc_share ";
+	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
+
+	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+
+	§INFO "\t $nbLines suppressions";
+}
 
 # Marquer les comptes sans partage candidat a la suppression
+sub markToDelete {
+	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
+	§INFO "update oc_recia_user_history set isDel = 3 ...";
+	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
+	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
-my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
-
-§INFO "update oc_recia_user_history set isDel = 3 ...";
-$sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
-$nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
-
-§INFO "\t $nbLines mise à jours";
-
+	§INFO "\t $nbLines mise à jours";
+}
 
 # Suppression des comptes marqués isDel = 3
-
-my $wwwRep = $PARAM{'NC_WWW'};
-
-chdir $wwwRep;
-
-my $nbSuppression;
-
-§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
-
-§INFO "nombre de suppressions de compte : $nbSuppression";
-
+sub deleteComptes{
+	my $wwwRep = $PARAM{'NC_WWW'};
+	chdir $wwwRep;
+	my $nbSuppression;
+	§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
+	§INFO "nombre de suppressions de compte : $nbSuppression";
+}
 
 __END__
 
