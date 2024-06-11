@@ -49,3 +49,37 @@ removeOldUser.pl :
 
 
 Il faut un processus qui verifie que les comptes avec isDel à 4 sont bien supprimer ainsi que les bucket et si ok  supprimer les lignes concerné dans nos tables (oc_recia_user_history, recia_bucket, recia_storage ...).
+verifier aussi les buckets correspondant au avatar et prewiew .
+les avatar sont dans des bucket de la forme : s3://nc-recette-0f19z004g (l'uid est en minuscule)
+les previews dans des buckets de la forme : s3://nc-recette-0preview10 (le 10 est remplacer par des valeurs modulo 1000)
+
+select * from recia_bucket where uid is null;
++--------------+------+
+| bucket       | uid  |
++--------------+------+
+| nc-recette-0 | NULL |
+| nc-recette-1 | NULL |
+| nc-recette-3 | NULL |
++--------------+------+
+
+select * from oc_recia_user_history where isDel = 4;
+| F195073t | 19410017800012 | 2024-06-11 | DELETE |     1 |     4 | Ayse Reyyan KUCUKKARA  |
+select * from recia_bucket where uid = 'F195073t';
+
+select b.* from oc_recia_user_history u, recia_bucket b where u.isDel = 4 and b.uid = u.uid;
+ nc-recette-aq8izlrn994ckgc08w8ocg008 | F19Z001v |
+| nc-recette-3wk8lxofk4qo0c4cog04soock | F19Z003b |
+| nc-recette-b3aglgb9zg0sk8s4448880gc8 | F19Z003d |
+| nc-recette-75thpzp5n84c4g444c04oc44o | F19Z004g |
++--------------------------------------+----------+
+
+select * from oc_users where uid = 'F19Z004g';
+Empty set (0.001 sec)
+select * from oc_storages where id = 'object::user:F19Z004g';
+Empty set (0.001 sec)
+select * from oc_preferences where userid = 'F19Z004g';
+Empty set (0.001 sec)
+
+select u.* from oc_recia_user_history h, oc_users u where h.isDel = 4 and h.uid = u.uid;
+
+verifier  
