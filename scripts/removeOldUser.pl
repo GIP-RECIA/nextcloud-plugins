@@ -112,7 +112,7 @@ sub deleteComptes{
 	my $wwwRep = $PARAM{'NC_WWW'};
 	chdir $wwwRep;
 	my $nbSuppression;
-	§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
+	§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
 	§INFO "nombre de suppressions de compte : $nbSuppression";
 }
 
