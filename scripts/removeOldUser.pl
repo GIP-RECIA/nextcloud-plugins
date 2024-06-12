@@ -81,7 +81,7 @@ sub delPartage {
 
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
-	§INFO "\t $nbLines suppressions";
+	§INFO "\t", 0 + $nbLines, " suppressions";
 }
 
 # Marquer les comptes sans partage candidat a la suppression
@@ -90,8 +90,21 @@ sub markToDelete {
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	§INFO "\t", 0 + $nbLines, " mise à jours";
+	§INFO "Nombre de partages restants  : ", isDelPartage(3);
+}
 
-	§INFO "\t $nbLines mise à jours";
+#donne les partages des comptes en fonction de la valeurs de isDel 
+sub isDelPartage {
+	my $isDel = shift;
+	$isDel = 3 unless $isDel;
+	my $req= q/select s.share_type, s.share_with, s.uid_owner, s.item_source, s.file_target, s.expiration from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid/;
+	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
+	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
+	while (my @tuple =  $sta->fetchrow_array) {
+		§LOG @tuple;
+	}
+	return 0 + $nb;
 }
 
 # Suppression des comptes marqués isDel = 3
@@ -120,4 +133,7 @@ select uid, isDel, dat from  oc_recia_user_history where isDel >= 2 and datediff
 select * from oc_recia_user_history where isDel = 3;
 rollback;
 
+requete pour voir qui va être enlevé a la  prochaine suppression 
 select * from oc_recia_user_history r , oc_users u where r.isDel = 3 and r.uid = u.uid;
+pour voir si il reste de partage :
+select s.* from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = 3 and r.uid = u.uid and s.uid_owner = r.uid;
