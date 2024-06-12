@@ -55,13 +55,13 @@ use strict;
 use IPC::Open3;
 use IO::Select;
 use Symbol 'gensym';
-
+#use Hash::Util::FieldHash;
 # 
-my $version="8.2";
+my $version="9.2";
 
 package MyLogger;
 use Filter::Simple;
-
+use Encode qw(decode);
 
 my $isDebug;
 
@@ -108,6 +108,7 @@ FILTER {
 
 sub rewrite4Var {
 	my ($all, $name , $pEgal) = @_;
+	$pEgal = '' unless (defined $pEgal);
 	if ($name) {
 		unless ($name =~ /(NEW|PARAM|package)/){
 			if ($pEgal eq '=') {
@@ -228,7 +229,7 @@ sub new {
 	my $class = shift;
 	my ($fileName, $autoflush) = @_;
 	
-	my $self = bless { LEVEL=>2, MOD=>1 }, $class;
+	my $self = bless { LEVEL=>2, MOD=>1, BUFSIZE=>1024 }, $class;
 	if ($fileName) {
 		$self->file($fileName, $autoflush);
 	}
@@ -265,8 +266,9 @@ sub file {
 	}
 	if ($filename) {
 		
-		$filename =~ s/^\>//;
-		open ($MyLoggerFile, ">$filename" ) or die $filename . " $!" ;
+		$filename =~ s/(\>{1,2})//;
+		my $encoding = $1 ? "$1:encoding(UTF-8)" : ">:encoding(UTF-8)";
+		open ($MyLoggerFile, $encoding, $filename) or die $filename . " $!" ;
 		if ($autoflush) {
 			my $old_fh = select($MyLoggerFile);
 			$| = 1;
@@ -352,7 +354,6 @@ sub debug {
 	}
 }
 
-
 sub _info {
 	local $::defautLog = shift;
 	info(@_);
@@ -370,7 +371,6 @@ sub info {
 		print STDERR '  INFO: ', $fileName, @_, "\n";
 	}
 }
-
 
 sub _erreur {
 	local $::defautLog = shift;
@@ -429,27 +429,19 @@ sub traceSystem {
 	my $fileName = shift;
 	my $line = shift;
 	my $commande = shift;
-
+	my %params = @_; 
+	
 	unless ($fileName or $line) {
 		($fileName, $line) = (caller())[1,2];
 		erreur ( 'WARN : ', $fileName, $line, '§SYSTEM appelé avec un indice ne permetant pas de déterminer le fichier et la ligne de d\'appèle' );
 	}
-	
+	# les parametres optionnels donnés par name => valeur
+	my $printOut = printCodeFromParameter($fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
+	my $printErr = printCodeFromParameter($fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
 
-	my $OUT = shift; #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
-	my $outIsCode;
+	my $bufSize = $params{'bufferSize'}; #taille du buffer de lecture
 
-	if ($OUT) {
-		$outIsCode = ref $OUT;
-		fatal ("FATAL: ",  $fileName, $line, '§'."SYSTEM The last parameter must be an ARRAY or CODE réference") unless $outIsCode =~ /(ARRAY)|(CODE)/;
-		if ($2) {
-			$outIsCode = $OUT;
-		} else {
-			$outIsCode = sub {
-				push @$OUT, $_;
-	}
-		}
-	}
+	$bufSize = $defautLog->{BUFSIZE} unless $bufSize;
 	
 	my $COM = Symbol::gensym();
 	my $ERR = Symbol::gensym();
@@ -469,26 +461,17 @@ sub traceSystem {
 	my $flagE =0;
 	my $out;
 	my $err;
-
-	my $printOut = sub {
-		local $_ = shift;
-		if ($defautLog->{LEVEL} >=  4) { trace("\t", $_); }
-		if ($outIsCode) {
-			&$outIsCode ;
-		}
-	};
-
-	my $printErr = sub {
-		if ($defautLog->{LEVEL} >= 1) { trace(">\t", $_[0]) };
-	};
 	
+	my %BUF;
 	while (my @ready = $select->can_read) {
 		foreach my $fh (@ready) {
 			my $buf;
-			my $len = sysread $fh, $buf, 4096;
+			my $len = sysread $fh, $BUF{$fh}, $bufSize, length($BUF{$fh});
+			
 			if ($len == 0){
 				$select->remove($fh);
 			} else {
+				$buf = decode_utf8_partial($BUF{$fh});
 				if ($fh == $COM) {
 					$out .= $buf;
 					unless ($flagC) {
@@ -522,6 +505,54 @@ sub traceSystem {
 	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status") if $child_exit_status;
 	close $ERR;
 	close $COM;
+}
+
+sub printCodeFromParameter {
+	my $fileName = shift;
+	my $line = shift;
+	my $level = shift;
+	my $pName = shift;
+	my $code = shift;
+
+	my $tab =  ($level < 3) ? ">\t" : "\t";
+
+	if ($code) {
+		fatal ("FATAL: ",  $fileName, $line, '§'."SYSTEM The $pName parameter must be an ARRAY or CODE réference") unless ref($code) =~ /(ARRAY)|(CODE)/;
+		if ($2) {
+			return sub {
+				local $_ = shift;
+				if ($defautLog->{LEVEL} >=  $level) { trace($tab, $_); }
+				&$code;
+			}
+		}
+		return sub {
+			my $line = shift;
+			if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
+			push @$code, $_[0];
+		}
+	}
+	return sub {
+		my $line = shift;
+		if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
+	}
+}
+
+## pour convertir en utf8 les sorties de system
+# on decode ce que l'on peut ce qui n'est pas decodé reste dans le buffer
+# et sera décodé au prochain tour 
+sub decode_utf8_partial {
+   my $s = decode('UTF-8', $_[0], Encode::FB_QUIET);
+   return undef
+      if !length($s) && $_[0] =~ /
+         ^
+         (?: [\x80-\xBF]
+         |   [\xC0-\xDF].
+         |   [\xE0-\xEF]..
+         |   [\xF0-\xF7]...
+         |   [\xF8-\xFF]
+         )
+      /xs;
+    return $s;
 }
 
 1;
