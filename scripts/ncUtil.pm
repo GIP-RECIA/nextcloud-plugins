@@ -6,6 +6,8 @@ BEGIN {
         use Exporter   ();
 		@EXPORT_OK   = qw(%PARAM);
     }
+
+use utf8;
 use vars      @EXPORT_OK;
 use Cwd;
 
@@ -141,4 +143,56 @@ sub promptCommande(){
 	}
 	return $choix eq 'O';
 }
+
+my @share_type = qw(user group usergroup link email contact remote circle gues remote_group room userroom deck deck_user);
+
+my @share_status = qw(pending accepted rejected);
+
+sub partageType {
+	return $share_type[shift];
+}
+
+sub partageStatus {
+	return $share_status[shift];
+}
+
+sub partagePermission {
+	my $perm = shift;
+	my $flags = "($perm";
+	
+	if ($perm < 0) {
+		return  "(permission possible:  Modification Création Supression Repartage)";
+	}
+	if ($perm & 2 ) {
+		$flags .= ' Mo'; # Modification
+	}
+	if ($perm & 4 ) {
+		$flags .= ' Cr'; # création
+	} 
+	if ($perm & 8 ) {
+		$flags .= ' Su'; # Supression
+	}
+	if ($perm & 16 ) {
+		$flags .= ' Re'; # Repartage
+	}
+	return $flags . ')';
+}
+
+sub toGiga {
+	my $val = shift;
+	my $unit = shift;
+	if ($val) {
+		if (@_) {
+			my $res = $val % 1024;
+			if ($res) {
+				return toGiga(int($val/1024),@_) . $res. "$unit";
+			}
+			return toGiga(int($val/1024),@_);
+		} else {
+			return $unit ? "$val$unit" : toGiga($val, 'o', 'Ko ', 'Mo ', 'Go ', 'To '); 
+		}
+	}
+	return $unit ? "" : "0o";
+}
+
 1;

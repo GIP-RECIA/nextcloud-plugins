@@ -57,7 +57,7 @@ use IO::Select;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.1";
+my $version="9.2";
 
 package MyLogger;
 use Filter::Simple;
@@ -108,6 +108,7 @@ FILTER {
 
 sub rewrite4Var {
 	my ($all, $name , $pEgal) = @_;
+	$pEgal = '' unless (defined $pEgal);
 	if ($name) {
 		unless ($name =~ /(NEW|PARAM|package)/){
 			if ($pEgal eq '=') {
@@ -424,7 +425,7 @@ sub _traceSystem {
 	traceSystem(@_);
 }
 
-sub traceSystem  {
+sub traceSystem {
 	my $fileName = shift;
 	my $line = shift;
 	my $commande = shift;

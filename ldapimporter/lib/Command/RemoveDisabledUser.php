@@ -75,7 +75,7 @@ class RemoveDisabledUser extends Command
     {
         $this
             ->setName('ldap:remove-disabled-user')
-            ->setDescription('Remove disable users')
+            ->setDescription('Remove disabled users')
         ;
     }
 
