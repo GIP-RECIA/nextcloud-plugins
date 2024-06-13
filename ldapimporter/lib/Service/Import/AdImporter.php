@@ -200,7 +200,11 @@ class AdImporter implements ImporterInterface
 
                 $addUser = FALSE;
 
-                if (isset($m[strtolower($groupsAttribute)][0])) {
+                /* pl change */
+                $etatUser = isset($m[$enableAttribute][0]) ? $m[$enableAttribute][0] : false;
+				$etatUserOk = $etatUser && preg_match("/(DELETE|BLOQUE)/i"), $etatUser) ? false : true;
+				
+                if ($etatUserOk && isset($m[strtolower($groupsAttribute)][0])) {
 
                     # Cycle all groups of the user
                     $assoEtablissementUaiOrNameAndId = [];
@@ -406,25 +410,22 @@ class AdImporter implements ImporterInterface
                 }
 				
 				/* pl mettre l'historique a jours. */
-				$etat = false;
 				$alreadyExist= false;
-				
                 
-                if (isset($m[$enableAttribute][0]) && $employeeID) {
-					$etat = $m[$enableAttribute][0];
+                if ($etatUser  && $employeeID) {
 					$etabRatach = $m['entpersonstructrattach'][0];
-					if ($etat && $etabRatach ) {
+					if ($etabRatach ) {
 						$alreadyExists =$this->userHistoryExists($employeeID);
 						if ($alreadyExists || $addUser) {
 							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
-								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etatUser, $date, $grp[1]);
 							} else {
 								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
 							}
 						}
 					} else {
 						if ($adduser) {
-							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
+							$this->logger->error("compte ajouté ($employeeID) sans structure de ratachement ($etabRatach). \n");
 						}
 					}
                 }
@@ -465,7 +466,7 @@ class AdImporter implements ImporterInterface
 		$qbHist = $this->db->getQueryBuilder();
 		
 	//	$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
-		$del = preg_match("/(DELETE|BLOQUE)"/i), $eta);
+		$del = preg_match("/(DELETE|BLOQUE)/i", $etat);
 		
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
@@ -596,7 +597,16 @@ class AdImporter implements ImporterInterface
     protected function addEtablissement($uai, $name, $siren)
     {
 		#on ne veux pas enregistré des etablissements sans nom ou sans UAI ni SIREN (j'espere que ca ira, n'ont-ils pas besoin de 2 passe pour etre complet ??)
-        if (!(is_null($name) || (is_null($siren) && is_null($uai)))) {
+        if (!is_null($name)) {
+			if (is_null($siren) && is_null($uai)) {
+				$newEtablissement = $this->db->getQueryBuilder();
+				$newEtablissement->select('id')
+					->from('etablissements')
+					->where($newEtablissement->expr()->eq('name', $newEtablissement->createNamedParameter($name)));
+				$result = $newEtablissement->execute();
+				$newEtab = $result->fetchAll()[0];
+				return $newEtab["id"];
+			}
             $qbEtablissement = $this->db->getQueryBuilder();
             $qbEtablissement->select('*')
                 ->from('etablissements')
@@ -623,9 +633,9 @@ class AdImporter implements ImporterInterface
             $result = $newEtablissement->execute();
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
-        } else {
-			$this->logger->error("addEtablissement sans nom (". $name . ") ou sans UAI (" . $uai . ") ni SIREN (" . $siren . ")");
-		}
+        } 
+	$this->logger->error("addEtablissement sans nom (". $name . ") ou sans UAI (" . $uai . ") ni SIREN (" . $siren . ")");
+
         return null;
     }
 
