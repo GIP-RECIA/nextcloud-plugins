@@ -5,7 +5,7 @@
 use strict;
 use utf8;
 use DBI();
-
+binmode STDOUT, ':encoding(UTF-8)';
 use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
