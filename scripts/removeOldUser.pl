@@ -9,7 +9,12 @@
 
 =head1 SYNOPSIS
 
-	removeOldUser.pl -n nbCompteASupprimer [-l loglevel]
+	removeOldUser.pl -n nbCompteASupprimer [-l loglevel] [--force]
+
+	nbCompteASupprimer : nombre maximum de comptes à traiter.
+	loglevel : 0 FATAL, 1 ERROR, 2 WARN, 3 INFO, 4 DEBUG, 5 TRACE; defaut = 4.
+	force :  force l'execution même s'il reste des partage depuis les comptes à supprimer,
+	         à n'utiliser que si on est sure que ces partages peuvent être perdu (genre par mail ).
 
 =cut
 
@@ -33,8 +38,9 @@ use ncUtil;
 my $nbRemovedUserMax;
 my $nbJourDelay = 60;
 my $loglevel = 4;
+my $force = '';
 
-unless (@ARGV && GetOptions ( "n=i" => \$nbRemovedUserMax, "l=i" => \$loglevel ) ) {
+unless (@ARGV && GetOptions ( "n=i" => \$nbRemovedUserMax, "l=i" => \$loglevel, 'force' => \$force ) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
@@ -62,6 +68,12 @@ if ($loglevel) {
 
 §INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel";
 my $sql = connectSql;
+
+
+if (!$force && &isDelPartage(3) > 0) {
+	# si il reste des partages pour les isDel=3 on s'arrete:
+	§FATAL "Il reste des partages pour les comptes a supprimer!";
+}
 
 # suppression des comptes déjà marqué à supprimer.
 &deleteComptes;
@@ -98,12 +110,14 @@ sub markToDelete {
 sub isDelPartage {
 	my $isDel = shift;
 	$isDel = 3 unless $isDel;
+	§DEBUG "Compte partage isDel = $isDel";
 	my $req= q/select s.share_type, s.share_with, s.uid_owner, s.item_source, s.file_target, s.expiration from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid/;
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
 		§LOG @tuple;
 	}
+	§DEBUG "		$nb";
 	return 0 + $nb;
 }
 
