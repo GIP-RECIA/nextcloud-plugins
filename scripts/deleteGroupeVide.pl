@@ -24,9 +24,16 @@ unless (@ARGV) {
 	exit 1;
 }
 
+my $groupSuffix;
+
 unless (@ARGV[0] eq 'all') {
+	if  (@ARGV[0] eq 'LDAP' ) {
+		$groupSuffix = ':LDAP';
+	} else {
 	print STDERR  "argument illégal\n";
 	exit 1;
+}
+
 }
 
 ##################
@@ -37,7 +44,7 @@ unless (@ARGV[0] eq 'all') {
 my $sql = connectSql();
 
 # 
-
+# recupère les groupes qui n'ont pas d'utilisateurs dans l'historique avec isDel < 2
 my $sqlQuery = q/select g.gid from  oc_groups g left join (select u.gid, u.uid from  oc_group_user u, oc_recia_user_history h where h.uid = u.uid and h.isdel < 2) u on u.gid = g.gid where u.uid is null/;
  
 print "$sqlQuery\n";
@@ -48,6 +55,7 @@ my $cpt = 0;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $gid = $tuple->{'gid'};
 
+	next if ($groupSuffix and rindex($gid, $groupSuffix) < 0 );
 	unless ($gid eq 'admin') { 
 #		print "$commande '$gid' \n";
 		system ("$commande '$gid'") == 0 or die "$!\n";
