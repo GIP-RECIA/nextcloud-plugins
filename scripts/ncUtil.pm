@@ -12,12 +12,11 @@ use vars      @EXPORT_OK;
 use Cwd;
 
 my $logRep = $ENV{'NC_LOG'};
-my  $dataRep = $ENV{'NC_DATA'};
 my $wwwRep = $ENV{'NC_WWW'};
 
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
-$dataRep = $ENV{'HOME'} . '/data' unless $dataRep;
+
 
 my $configFile = "$wwwRep/config/config.php";
 
@@ -27,7 +26,6 @@ our %PARAM;
 
 $PARAM{'REP_ORG'} = $dir;
 $PARAM{'NC_LOG'} = $logRep;
-$PARAM{'NC_DATA'} = $dataRep;
 $PARAM{'NC_WWW'} = $wwwRep;
 	
 	# lecture des paramatres de conf
@@ -39,6 +37,7 @@ $PARAM{'NC_WWW'} = $wwwRep;
 					$PARAM{$1} = $2;
 			}
 	}
+$PARAM{'NC_DATA'} = $PARAM{'datadirectory'};
 
 
 # ex: 'nc-recette-'
@@ -74,6 +73,9 @@ sub connectSql {
 	return $SQL_CONNEXION ;
 }
 
+sub isObjectStore {
+	return exists $PARAM{'objectstore_multibucket'} ;
+}
 
 # si $name == nc-recette-name/... => s3://nc-recette-name
 # si $name != null =>  s3://nc-recette-name

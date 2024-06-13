@@ -1,4 +1,4 @@
-use MyLogger;
+use MyLogger ; #'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
@@ -94,6 +94,7 @@ sub readNC {
 			§WARN 'Dans oc_group_folders_manage le groupe '. $tuple[1] . ' manage le folder_id inexistant '. $tuple[0];
 		}
 	}
+	return \%folderById;
 }
 
 my %permsGroup = (read => 1, update => 2, create => 4, write => 6, 'delete' => 8, share => 16 );
@@ -252,6 +253,38 @@ sub cleanAllFolder {
 	# map {$_->cleanFolder} values(%folderInBase);
 
 	foreach (values %folderInBase) { $_->cleanFolder }
+}
+
+sub diffBaseDisque {
+	my $folder = shift;
+	my $repData = ${util::PARAM}{'NC_DATA'};
+	my %pathInBase;
+	my @pathNotInBase;
+	
+	unless (util->isObjectStore) {
+		my $fid = $folder->idBase;
+		my $folderPath = "__groupfolders/$fid";
+		my $sqlRes = util->executeSql(q"select path, mimetype from oc_filecache where path like ? ", "$folderPath/%") ;
+		while (my ($path, $type) =  $sqlRes->fetchrow_array()) {
+			$pathInBase{$path} = $type;
+		}
+
+		§SYSTEM "cd $repData; find '$folderPath'",
+			OUT => sub{
+					chop $_;
+					#§DEBUG "|$_|";
+					if (exists $pathInBase{$_}) {
+						delete $pathInBase{$_};
+						#§DEBUG "$_ : in base";
+					} else {
+						if ($_ ne $folderPath) {
+							push @pathNotInBase, $_;
+							#§DEBUG "$_ : NOT IN base";
+						}
+					}
+				};
+		return ([sort @pathNotInBase], [sort keys %pathInBase]);
+	}
 }
 1;
 

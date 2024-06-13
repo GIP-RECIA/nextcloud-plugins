@@ -375,6 +375,30 @@ if ($saveTimestamp) {
 # on fait le menage dans les comptes hors étab ou pas modifiés depuis longtemps.
 &traitementEtab('HORS_ETAB', 0);
 
+unless (isObjectStore()) {
+	# creation des répertoires manquants
+	# recherche des comptes créés sans répertoires.
+	my $sql = connectSql();
+	my $sqlQuery = q/select uid from oc_recia_user_history where hasRep is null and isadd = 1 and isdel = 0/;
+	print "$sqlQuery\n";
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	$sqlStatement->execute() or die $sqlStatement->errstr;
+	my $cpt = 0;
+	my $dir = $PARAM{'NC_DATA'} ;
+	my $sqlUpdate = $sql->prepare(q/update oc_recia_user_history set hasRep = 1 where uid = ?/);
+	while (my $uid =  ($sqlStatement->fetchrow_array)[0]) {
+		my $newRep = "$dir/$uid";
+		if  (-d $newRep) {
+			print "$newRep existe déjà \n";
+		} else {
+			print "création de $newRep  ";
+			mkdir($newRep, 0755) or die $!;
+			print "\n";
+		}
+		$sqlUpdate->execute($uid) or die $sqlUpdate->errstr ;
+	}
+}
+
 
 __END__
 attribut ldap de detection des changement modifytimestamp>=20080601070000

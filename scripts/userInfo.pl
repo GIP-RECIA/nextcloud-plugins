@@ -213,7 +213,6 @@ sub getNexcloudGroups{
 
 
 
-
 my @share_type = qw(user group usergroup link email contact remote circle gues remote_group room userroom deck deck_user);
 
 my @share_status = qw(pending accepted rejected);
