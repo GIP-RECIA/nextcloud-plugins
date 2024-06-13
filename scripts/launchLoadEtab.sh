@@ -23,12 +23,12 @@ $rcode/saveBucketId.pl
 
 logClean=$rlog/cleanBucket.`date +'%d'`.log
 
-echo -e "\nnettoyage de nc-prod-0"
+echo "\nnettoyage de nc-prod-0"
 /usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
 
 tail -1 $logClean
 
-echo -e "\nnettoyage de nc-prod-corbeille"
+echo "\nnettoyage de nc-prod-corbeille"
 /usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
 
 tail -1 $logClean
@@ -36,7 +36,7 @@ tail -1 $logClean
 date
 logClean=$rlog/cleanGroup.`date +'%d'`.log
 
-echo -e "\nsuppression des comptes désactivés dans les groupes"
+echo "\nsuppression des comptes désactivés dans les groupes"
 
 echo "/usr/bin/nice $rcode/cleanGroup.pl all" > $logClean
 /usr/bin/nice $rcode/cleanGroup.pl all 2>&1 >> $logClean
@@ -45,7 +45,7 @@ grep -v 'was removed' $logClean
 date
 logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
 
-echo -e "\nsuppression des groupes vides"
+echo "\nsuppression des groupes vides"
 echo "/usr/bin/nice $rcode/deleteGroupeVide.pl all" >  $logClean 
 /usr/bin/nice $rcode/deleteGroupeVide.pl all 2>&1  >>  $logClean 
 
@@ -53,7 +53,7 @@ grep -v 'was removed' $logClean
 
 date
 
-echo -e "\nsuppression définitive des comptes obsolètes"
-/usr/bin/nice $rcode/removeOldUser.pl -n 100 -l 4
+echo "\nsuppression définitive des comptes obsolètes"
+/usr/bin/nice $rcode/removeOldUser.pl -n 100 -l 4 2>&1
 
 date
