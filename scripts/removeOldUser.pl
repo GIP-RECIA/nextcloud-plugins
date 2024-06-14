@@ -91,6 +91,8 @@ sub delPartage {
 	§INFO "delete from oc_share ";
 	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
 
+	$sqlStatement->trace(2, MyLogger::file()) if $loglevel = 5;
+
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	§INFO "\t", 0 + $nbLines, " suppressions";
@@ -101,6 +103,9 @@ sub markToDelete {
 	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
+	
+	$sqlStatement->trace(2, MyLogger::file()) if $loglevel = 5;
+
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§INFO "\t", 0 + $nbLines, " mise à jours";
 	§INFO "Nombre de partages restants  : ", isDelPartage(3);
@@ -115,7 +120,7 @@ sub isDelPartage {
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
-		§LOG @tuple;
+		§LOG join(' ', @tuple);
 	}
 	§DEBUG "		$nb";
 	return 0 + $nb;
