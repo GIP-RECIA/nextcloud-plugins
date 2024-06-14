@@ -34,3 +34,8 @@ logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
 grep -v 'was removed' $logClean
 
 date
+
+echo "\nsuppression définitive des comptes obsolètes"
+/usr/bin/nice $rcode/removeOldUser.pl -n 10 -l 5 2>&1
+
+date

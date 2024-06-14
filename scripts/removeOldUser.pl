@@ -120,7 +120,7 @@ sub isDelPartage {
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
-		§LOG join(' ', @tuple);
+		§TRACE "\t", join(' ', @tuple), "\n";
 	}
 	§DEBUG "		$nb";
 	return 0 + $nb;
