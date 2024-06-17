@@ -102,7 +102,7 @@ sub delPartage {
 # expiration des partages des comptes obsolètes
 sub expirePartage {
 	my $req = q/update oc_share set expiration = now() where share_type = 3 and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
-	$INFO "update oc_share set expiration";
+	§INFO "update oc_share set expiration";
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
 	my $nbLines = $sta->execute($nbRemovedUserMax) or §FATAL $sta->errstr;
 
