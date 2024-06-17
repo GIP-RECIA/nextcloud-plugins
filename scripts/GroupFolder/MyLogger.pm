@@ -29,12 +29,12 @@
 	Si le nom du logger est suivi d'un chiffre entre crochets [n] ; il affichera le fichier et la ligne de la énième procédure appelante dans la trace d'exécution, utile dans une lib pour indiquer l'erreur dans la procédure appelante et pas dans la lib.
 	Le logger §LOG écrit dans le fichier de log sans condition de niveau, si pas de fichier ne fait rien.
 	
-	Exemples : les macros seront remplacées par le code ad hoc les arguments suivants resteront tels quel à la suite, donc ne pas mettre de () et finir par, le 1er argument est obligatoire ;  
+	Exemples : les macros seront remplacées par le code ad hoc les arguments suivants resteront tels quel à la suite, donc ne pas mettre de () et finir par; le 1er argument est obligatoire ;
 	§DEBUG "un message ", "de debug" ;
 	open ('myfile') or §FATAL "erreur de lecture du fichier ", 'myfile ' , $!; # §FATAL termine le processus (die).
 	§INFO " myfile ouvert en lecture ! " ;
 
-	§WARN1 "paramètre vide " unless ($param) ; # la ligne et le fichier seront sur l'appel de la fonction qui contient ce code.
+	§WARN[1] "paramètre vide " unless ($param) ; # la ligne et le fichier seront sur l'appel de la fonction qui contient ce code.
 
 	§LOG "une info pour le fichier de log ", " seulement" ;
 
@@ -42,7 +42,9 @@
 	Exemple:
 	§SYSTEM "tar -czf monfichier.tgz monrep"; # exécute la commande tar et met les erreurs dans  le fichier de log ou stderr suivant le niveau et le mode
 	si on veut traiter la sortie de la commande ou peut passer une closure, $_ donne chaque ligne renvoyée par la commande.
-	§SYSTEM "tar -cvzf monfichier.tgz monrep", sub {print $_;}; # affichera la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+
+	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => sub {print $_;}; # affichera la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+
 	Si la commande ne peut pas se lancer un §FATAL est exécuté et le programme finit.
 
 =cut

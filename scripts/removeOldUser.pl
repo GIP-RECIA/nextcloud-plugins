@@ -81,6 +81,9 @@ if (!$force && &isDelPartage(3) > 0) {
 # suppression des partages vers des comptes obsolètes.
 &delPartage;
 
+# expiration des partages public;
+&expirePartage;
+
 # marque les comptes que l'on peut supprimer. 
 &markToDelete;
 
@@ -98,9 +101,21 @@ sub delPartage {
 	§INFO "\t", 0 + $nbLines, " suppressions";
 }
 
+# expiration des partages des comptes obsolètes
+sub expirePartage {
+	my $req = q/update oc_share set expiration = now() where share_type = 3 and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
+	§INFO "update oc_share set expiration";
+	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
+	my $nbLines = $sta->execute($nbRemovedUserMax) or §FATAL $sta->errstr;
+
+	§INFO "\t", 0 + $nbLines, " updates";
+}
+
 # Marquer les comptes sans partage candidat a la suppression
 sub markToDelete {
-	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
+#	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
+	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type != 4 and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
+
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	
@@ -116,7 +131,7 @@ sub isDelPartage {
 	my $isDel = shift;
 	$isDel = 3 unless $isDel;
 	§DEBUG "Compte partage isDel = $isDel";
-	my $req= q/select s.share_type, s.share_with, s.uid_owner, s.item_source, s.file_target, s.expiration from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid/;
+	my $req= q/select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid and s.share_type not in (4)/;
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
