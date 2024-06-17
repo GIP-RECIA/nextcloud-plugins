@@ -39,8 +39,9 @@ régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils
 du coup ces compte sont indiqués comme VALIDE dans  oc_recia_user_history.
 
 removeOldUser.pl :
-	test les comptes obsolete (isDel = 2 et > 60 jour)  benificiant d'un partage et supprime ce partages.
-	test les comptes obsolete n'ayant pas fait de partage et le marque isDel = 3
+	test les comptes obsolete (isDel = 2 et > 60 jour)  beneficiant d'un partage et supprime ce partages.
+	test les comptes obsolete n'ayant pas fait de partage (ou ayant des partages expiré depuis plus de 60 jours) et le marque isDel = 3
+	expire a la date du jour les partages public des comptes obsoletes. 
 	lance occ ldap:remove-disabled-user
 	Pour limité le nombre d'update et delete removeOldUser prend le nombre d'action a faire en parametre (<= 1000), les suppressions se feront donc sur plusieurs jours.
 	
