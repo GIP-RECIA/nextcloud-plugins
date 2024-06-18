@@ -200,7 +200,11 @@ class AdImporter implements ImporterInterface
 
                 $addUser = FALSE;
 
-                if (isset($m[strtolower($groupsAttribute)][0])) {
+                /* pl change */
+                $etatUser = isset($m[$enableAttribute][0]) ? $m[$enableAttribute][0] : false;
+				$etatUserOk = $etatUser && preg_match("/(DELETE|BLOQUE)/i"), $etatUser) ? false : true;
+				
+                if ($etatUserOk && isset($m[strtolower($groupsAttribute)][0])) {
 
                     # Cycle all groups of the user
                     $assoEtablissementUaiOrNameAndId = [];
@@ -295,6 +299,8 @@ class AdImporter implements ImporterInterface
                                             }
                                             elseif (!is_null($groupFilter["uaiNumber"]) && !is_null($groupFilterMatches[intval($groupFilter["uaiNumber"])]) && !array_key_exists($groupFilterMatches[intval($groupFilter["uaiNumber"])], $assoEtablissementUaiOrNameAndId)) {
                                                 $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
+                                            } else {
+												$this->logger->debug("ERREUR ETAB");
                                             }
                                             break;
                                         }
@@ -407,22 +413,20 @@ class AdImporter implements ImporterInterface
 				$etat = false;
 				$alreadyExist= false;
 				
-                
-                if (isset($m[$enableAttribute][0]) && $employeeID) {
-					$etat = $m[$enableAttribute][0];
+                if ($etatUser  && $employeeID) {
 					$etabRatach = $m['entpersonstructrattach'][0];
-					if ($etat && $etabRatach ) {
+					if ($etabRatach ) {
 						$alreadyExists =$this->userHistoryExists($employeeID);
 						if ($alreadyExists || $addUser) {
 							if (preg_match('/ENTStructureSIREN=(\d+)/', $etabRatach, $grp)) { 
-								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etat, $date, $grp[1]);
+								$this->saveUserHistory($employeeID, $displayName, $alreadyExists, $addUser, $etatUser, $date, $grp[1]);
 							} else {
 								$this->logger->error("compte $employeeID sans siren de ratachement : $etabRatach \n");
 							}
 						}
 					} else {
 						if ($adduser) {
-							$this->logger->error("compte ajouté ($employeeID) sans etat ($etat)  ou structure de ratachement ($etabRatach). \n");
+							$this->logger->error("compte ajouté ($employeeID) sans structure de ratachement ($etabRatach). \n");
 						}
 					}
                 }
@@ -467,7 +471,7 @@ class AdImporter implements ImporterInterface
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
 				->set('eta', $qbHist->createNamedParameter($etat))
-				->set('isadd', $qbHist->createNamedParameter($isAdded ? : 0))
+				->set('isadd', $qbHist->createNamedParameter($isAdded ? 1: 0))
 				->set('dat', $qbHist->createNamedParameter($date))
 				->set('siren', $qbHist->createNamedParameter($siren))
 				->set('isdel', $qbHist->createNamedParameter($del))
@@ -630,7 +634,8 @@ class AdImporter implements ImporterInterface
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
         }
-        $this->logger->error("can't create etab; uai=$uai, name=$name,  siren=$siren");
+	$this->logger->error("addEtablissement sans nom (". $name . ") ou sans UAI (" . $uai . ") ni SIREN (" . $siren . ")");
+
         return null;
     }
 
