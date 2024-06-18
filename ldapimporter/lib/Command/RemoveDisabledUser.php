@@ -109,5 +109,6 @@ class RemoveDisabledUser extends Command
         } catch (\Exception $e) {
             $logger->critical("Fatal Error: " . $e->getMessage());
         }
+        return 0;
     }
 }
