@@ -162,7 +162,7 @@ class DeleteService
 
 		foreach ($dbIdUsers as $dbIdUser) {
 			if (!in_array($dbIdUser, $adminUids) && !$this->userExist($dbIdUser)) {
-				$this->disableUser($dbIdUser);
+				$this->disableUser($dbIdUser, 'DELETE_NOT_IN_LDAP');
 			} else {
 				$usersNotDeleted[] = $dbIdUser;
 			}
@@ -253,15 +253,22 @@ class DeleteService
         }
     }
     
-    protected function disableUser($idUser) {
+    protected function disableUser($idUser, $etat = false) {
 		$this->config->setUserValue($idUser, 'core', 'enabled', 'false');
 		$this->logger->info("ldap:disable-user, " . $idUser);
-		$this->markDelUserHistory($idUser, 2);
+		$this->markDelUserHistory($idUser, 2, $etat);
+		
 	}
 	
-	protected function markDelUserHistory($idUser, $value) {
+	protected function markDelUserHistory($idUser, $value, $etat=false) {
+		if ($etat) {
+			$query = "update oc_recia_user_history set dat = curdate(), isdel = ?, eta = ? where uid = ?";
+			$this->db->executeQuery($query , [$value, $etat, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR, IQueryBuilder::PARAM_STR]);
+		} else {
 		$query = "update oc_recia_user_history set dat = curdate(), isdel = ? where uid = ?";
 		$this->db->executeQuery($query , [$value, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR]);
+	}
+
 	}
 
     /**
@@ -526,7 +533,7 @@ class DeleteService
 
         $attributes = ldap_get_entries($this->ldapConnection, $results);
 
-        $this->logger->debug("AD attributes successfully retrieved.");
+        $this->logger->debug("AD attributes successfully retrieved. $groupCn, $filter");
 
         // Return attributes list
         if (isset($attributes[0])) return $attributes[0];

@@ -205,5 +205,6 @@ $logger->info(" " . implode(',' , array_slice($arguments, 0, 6)). "[" . implode(
 
             $logger->critical("Fatal Error: " . $e->getMessage());
         }
+        return 0;
     }
 }
