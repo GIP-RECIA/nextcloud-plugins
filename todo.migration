@@ -197,3 +197,35 @@ recherche de ObjectStoreStorage:
 cd nc.old ; grep -R ObjectStoreStorage . > ../../V26/grep.ObjectStoreStorage.25.0.9 ; cd -
 cd nextcloud ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.26.0.4 ; cd -
 meld grep.ObjectStoreStorage.*
+
+-------------------------------------------------------------------------
+passage de nc.26.0.4 à 26.0.13
+diff nc.26.0.4/core/css/variables.scss nc.26.0.13/core/css/variables.scss
+n'a pas changé
+
+diff nc.26.0.4/core/templates/layout.user.php nc.26.0.13/core/templates/layout.user.php
+à changé
+meld nc.26.0.4/core/templates/layout.user.php ncEnt/themes/esco/core/templates/layout.user.php nc.26.0.13/core/templates/layout.user.php
+fait
+
+find nc.26.0.4/ nc.26.0.13 ncEnt/ -name ObjectStoreStorage.php -ls
+	a changé a la marge :
+	mais la fonction stat que je réécris n'a pas changé donc on laisse comme ca pour voir.
+
+diff nc.26.0.4/lib/private/Files/ObjectStore/Mapper.php nc.26.0.13/lib/private/Files/ObjectStore/Mapper.php
+	Mapper n'a pas changé
+
+diff nc.26.0.4/lib/private/Files/ObjectStore/S3.php nc.26.0.13/lib/private/Files/ObjectStore/S3.php
+	s3 n'a pas changé
+
+find nc.26.0.4/ nc.26.0.13 ncEnt/ -name CardDavBackend.php -ls
+	n'a pas changé
+
+find nc.26.0.4/ nc.26.0.13 ncEnt/ -name RootMountProvider.php -ls
+	n'a pas changé
+
+recherche de l'usage de ObjectStoreStorage:
+cd nc.26.0.4; grep -R ObjectStoreStorage . > ../../V26/grep.ObjectStoreStorage.26.0.4; cd -
+cd nc.26.0.13 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.26.0.13 ; cd -
+meld grep.ObjectStoreStorage.*
+	a changé mais devrait etre bon !?
