@@ -229,3 +229,14 @@ cd nc.26.0.4; grep -R ObjectStoreStorage . > ../../V26/grep.ObjectStoreStorage.2
 cd nc.26.0.13 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.26.0.13 ; cd -
 meld grep.ObjectStoreStorage.*
 	a changé mais devrait etre bon !?
+
+----------------
+
+pour fille-sharing suivre la doc de Gregory
+apres avoir fait
+le npm run build
+copier tout apps/files_sharing dans files_sharing/app
+meld app ~/git/GITHUB/Nextcloud/server/apps/files_sharing
+
+et ~/git/GITHUB/Nextcloud/server/files_sharing-files_sharing_tab.js dans files_sharing/dist
+find dist -name files_sharing-files_sharing_tab'*' -exec cp \{\} ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent/files_sharing/dist \;
