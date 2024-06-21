@@ -322,7 +322,7 @@ OC.L10N.register(
     "sharing is disabled" : "le partage est désactivé",
     "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
     "Update" : "Mise à jour",
-    "Share with " : "Partager avec "
+    "Share with " : "Partager avec ",
 	"Search on :" : "Rechercher sur",
 	"Your establishments" : "Vos établissements",
 	"All platform" : "Tout le monde",
