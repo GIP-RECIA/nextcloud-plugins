@@ -299,6 +299,7 @@ class Push {
 		$language = $this->l10nFactory->getUserLanguage($user);
 		$this->printInfo('Language is set to ' . $language);
 
+		if (!$notification->isValidParsed()) {
 		try {
 			$this->notificationManager->setPreparingPushNotification(true);
 			$notification = $this->notificationManager->prepare($notification, $language);
@@ -306,6 +307,7 @@ class Push {
 			return;
 		} finally {
 			$this->notificationManager->setPreparingPushNotification(false);
+			}
 		}
 
 		$userKey = $this->keyManager->getKey($user);

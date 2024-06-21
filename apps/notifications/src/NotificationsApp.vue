@@ -501,7 +501,7 @@ export default {
 	overflow: auto;
 }
 
-::v-deep .empty-content {
+:deep(.empty-content) {
 	margin: 12vh 10px;
 
 	p {
