@@ -83,7 +83,7 @@ class OC_Theme {
 		return $css ? " not_embedded " . $css : " not_embedded " ;
 	}
 	public static function getContext($request) {
-		$ctx = explode($request->getRequestUri());
+		$ctx = explode('/', $request->getRequestUri());
 		return '/' . $ctx[1] ;
 	}
 	public static function getPortailLoginUrl($request) {
