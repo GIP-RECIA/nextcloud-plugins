@@ -47,7 +47,11 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path($_['appid'], 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 		<link rel="manifest" href="<?php print_unescaped(image_path($_['appid'], 'manifest.json')); ?>" crossorigin="use-credentials">
 		<?php emit_css_loading_tags($_); ?>
+		<?php emit_css_tag("/nextcloud/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
+
 		<?php emit_script_loading_tags($_); ?>
+		<?php   emit_script_tag("/nextcloud/themes/esco/js/recia.js?$cacheBuster"); ?>
+
 		<?php print_unescaped($_['headers']); ?>
 
 		<style>
@@ -171,10 +175,12 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		}
 	</style>
 	</head>
-	<body id="<?php p($_['bodyid']);?>" <?php foreach ($_['enabledThemes'] as $themeId) {
+	<body id="<?php p($_['bodyid']);?>"  class="<?php p(\OC_Theme::getCssClass($request)) ?>" >
+
+/*	<?php foreach ($_['enabledThemes'] as $themeId) {
 				p("data-theme-$themeId ");
 			}?> data-themes=<?php p(join(',', $_['enabledThemes'])) ?>>
-	<?php include 'layout.noscript.warning.php'; ?>
+*/	<?php include 'layout.noscript.warning.php'; ?>
 
 <div id="escoDiv" >
 	<header id="escoHeader" >
