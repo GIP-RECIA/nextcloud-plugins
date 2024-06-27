@@ -82,7 +82,10 @@ class OC_Theme {
 		$css =  self::$cssClass[$request->getServerHost()] ;
 		return $css ? " not_embedded " . $css : " not_embedded " ;
 	}
-	
+	public static function getContext($request) {
+		$ctx = explode($request->getRequestUri());
+		return '/' . $ctx[1] ;
+	}
 	public static function getPortailLoginUrl($request) {
 		$host = $request->getServerHost();
 //		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
