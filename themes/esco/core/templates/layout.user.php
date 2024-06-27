@@ -177,10 +177,10 @@ $getUserAvatar = static function (int $size) use ($_): string {
 	</head>
 	<body id="<?php p($_['bodyid']);?>"  class="<?php p(\OC_Theme::getCssClass($request)) ?>" >
 
-/*	<?php foreach ($_['enabledThemes'] as $themeId) {
+	<!--?php foreach ($_['enabledThemes'] as $themeId) {
 				p("data-theme-$themeId ");
-			}?> data-themes=<?php p(join(',', $_['enabledThemes'])) ?>>
-*/	<?php include 'layout.noscript.warning.php'; ?>
+			}?> data-themes=<?php p(join(',', $_['enabledThemes'])) ?> -->
+	<?php include 'layout.noscript.warning.php'; ?>
 
 <div id="escoDiv" >
 	<header id="escoHeader" >
