@@ -23,9 +23,9 @@ p($theme->getTitle());
 	<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path($_['appid'], 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 	<link rel="manifest" href="<?php print_unescaped(image_path($_['appid'], 'manifest.json')); ?>" crossorigin="use-credentials">
 	<?php emit_css_loading_tags($_); ?>
-	<?php emit_css_tag("/nextcloud/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
+	<?php emit_css_tag(\OC_Theme::getContext() ."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
 	<?php emit_script_loading_tags($_); ?>
-	<?php   emit_script_tag("/nextcloud/themes/esco/js/recia.js?$cacheBuster"); ?>
+	<?php   emit_script_tag(\OC_Theme::getContext() ."/themes/esco/js/recia.js?$cacheBuster"); ?>
 	<?php print_unescaped($_['headers']); ?>
 </head>
 <!-- public -->
