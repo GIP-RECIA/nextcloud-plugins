@@ -31,7 +31,7 @@ CSS=$(THEME_ESCO)/css
 ALLETAB=allEtab.txt
 defaut:
 	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH CONFIG USER_CAS RESTORE_FILES_SHARING NOTIFICATIONS
-	@echo user_cas a faire qu'a la 1er install du plugin (a vérifier)
+	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
 

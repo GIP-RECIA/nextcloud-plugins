@@ -23,10 +23,13 @@ p($theme->getTitle());
 	<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path($_['appid'], 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 	<link rel="manifest" href="<?php print_unescaped(image_path($_['appid'], 'manifest.json')); ?>" crossorigin="use-credentials">
 	<?php emit_css_loading_tags($_); ?>
+	<?php emit_css_tag("/nextcloud/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
 	<?php emit_script_loading_tags($_); ?>
+	<?php   emit_script_tag("/nextcloud/themes/esco/js/recia.js?$cacheBuster"); ?>
 	<?php print_unescaped($_['headers']); ?>
 </head>
-<body id="<?php p($_['bodyid']);?>">
+<!-- public -->
+<body id="<?php p($_['bodyid']);?>"  class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>" >
 <?php include('layout.noscript.warning.php'); ?>
 <?php foreach ($_['initialStates'] as $app => $initialState) { ?>
 	<input type="hidden" id="initial-state-<?php p($app); ?>" value="<?php p(base64_encode($initialState)); ?>">
