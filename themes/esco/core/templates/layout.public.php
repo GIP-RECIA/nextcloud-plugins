@@ -2,6 +2,9 @@
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 <head data-requesttoken="<?php p($_['requesttoken']); ?>">
 	<meta charset="utf-8">
+	<?php 
+			$request = \OC::$server->getRequest();
+	?>
 	<title>
 		<?php
 		p(!empty($_['application'])?$_['application'].' - ':'');
