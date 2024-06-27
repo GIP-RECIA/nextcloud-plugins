@@ -14,6 +14,7 @@
 		<?php emit_script_loading_tags($_); ?>
 		<?php print_unescaped($_['headers']); ?>
 	</head>
+	<!-- base -->
 	<body id="body-public" class="layout-base">
 		<?php include 'layout.noscript.warning.php'; ?>
 		<?php foreach ($_['initialStates'] as $app => $initialState) { ?>
