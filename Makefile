@@ -23,8 +23,9 @@ DIST = $(NEXTCLOUD_PATH)/dist
 APPS = $(NEXTCLOUD_PATH)/apps
 
 LOADER=cssjsloader
-SCSS=$(LOADER)/scss
-CSS=$(LOADER)/inputs/css
+THEME_ESCO=themes/esco
+SCSS=$(THEME_ESCO)/scss
+CSS=$(THEME_ESCO)/css
 
 
 ALLETAB=allEtab.txt

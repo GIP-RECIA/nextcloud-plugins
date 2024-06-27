@@ -80,7 +80,7 @@ class OC_Theme {
 //		error_log("get cssClass \n", 3, "/home/esco/logs/themes.esco.log" );
 		$host = $request->getServerHost();
 		$css =  self::$cssClass[$request->getServerHost()] ;
-		return $css ? " embedded " . $css : " not_embedded " ;
+		return $css ? " not_embedded " . $css : " not_embedded " ;
 	}
 	
 	public static function getPortailLoginUrl($request) {

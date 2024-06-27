@@ -124,7 +124,7 @@ body {
 		}
 	}
 }
-/* pour onlyoffice avec notre bandeau large */
+/* pour onlyoffice avec notre nabdeau large */
  div#content > div#app-content > iframe#onlyofficeFrame {
 	height: calc(100vh - 90px);
  }
@@ -162,7 +162,7 @@ body.embedded {
 		background-image: none;
 	}
 	& > div#escoDiv > header#escoHeader > extended-uportal-header {
-		--ext-header-tpl-primary-color: $couleur !important;
+		--ext-header-tpl-primary-color: #{$couleur !important};
 	}
 }
 
