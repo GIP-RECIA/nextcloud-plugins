@@ -1,5 +1,107 @@
 body {
 
+	&#body-user, &#body-settings {
+	/* le style venue de la mise en place du bandeau */
+
+		/* suppression des bords arrondis et recalcul de la hauteur et largeur */ 
+		& > main#content, & > div#content-vue.content {
+				height: calc(100% - 88px);
+				border-radius: 0;
+				margin-right: 0;
+				width: 100%;
+				margin-left: 0;
+			}
+
+		& > main#content {
+			div#app-navigation-vue {
+				padding-bottom: 10px ; /* pour l'aisser passer l'affichage des url */
+			}
+			div#app-content label#view-toggle.button {
+				opacity: 1;
+				border-radius: 0;
+				top: 0px;
+				right: 0px;
+			}
+		}
+		/* Style du bandeau ENT */
+		& > div#escoDiv  {
+
+			height: 38px;
+			&#escoDiv.content {
+				padding-top: 88px; // pour Applications
+			}
+			
+			& > #escoHeader {
+				position: fixed;
+				width: 100%;
+				z-index: 2100;
+			}
+			
+			div[slot=not-loaded] {
+				padding: 6px;
+				height:26px;
+				width: 100%;
+				background-color: #cccccc;
+			}
+			& > header#header.escoDivWrapper {
+				top : 38px !important;
+				height: 50px !important;
+
+				div.header-left {
+					overflow: hidden;
+				}
+				div.header-left ul li a {
+					height: 50px;
+					width: 50px;
+				}
+				.header-right {
+					& > div#settings >*,
+					& > div#contactsmenu >*,
+					&> div.notifications > .menu {
+						top: 50px;
+						max-height: calc(100vh - 63px * 4);
+					}
+					& > div > .menutoggle,
+					& > form > .menutoggle {
+						width: 50px;
+					}
+					& > div > div.header-menu__wrapper {
+						top: unset;
+					}
+				}
+			}
+		}
+	/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
+		main#content {
+			& > div#app-content > iframe#onlyofficeFrame {
+					height: calc(100vh - 30px);
+			}
+			&.app-onlyoffice > div#app > iframe {
+					height: calc(100vh - 88px);
+			}
+		}
+		&.onlyoffice-inline  main#content {
+				margin-bottom:0;
+				bottom: 0;
+				border-radius: 0;
+		}
+
+	/* fin OO */
+	/* pour MD */
+		main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
+			z-index: 3000 !important;
+		}
+	/* fin MD */
+	/* pour Notes */
+		div.content.app-notes div.app-navigation__content {
+			height: calc(100% - 35px);
+		}
+	/* fin notes */
+
+	}
+/* fin integration bandeau */
+
+
 /* les suppresions d'affichage */
 	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
 	&#body-settings div#content div#app-content div.section div.warning {
@@ -10,12 +112,7 @@ body {
 			/* on supprime dans les liens transmis public les liens de pub nextcloud */
 			display: none;
 		}
-		&.onlyoffice-inline main#content{
-			border-radius: 0;
-			margin-left:0;
-			width: 100%;
-			height: 100%;
-		}
+		
 	}
 
 	&#body-public.layout-base.embedded {
@@ -72,12 +169,12 @@ body {
 		&#phoneform, &#addressform, &#websiteform, &#twitterform {
 			display :none;
 		}
-		&#emailform > em {
+/*		&#emailform > em {
 			display : none;
 		}
-	
-		}
+*/	
 	}
+
 	
 	div#accessibility > p {
 		display : none;
@@ -89,14 +186,52 @@ body {
 	div#clientsbox + div.section {
 		display :none;
 	}
+
+}
 /* le dimentionnement */
+
+	/* pour les publics (par lien public) */
+&#body-public main#content {
+
+	height: calc(100vh - 50px);
+	border-radius: 0;
+	width: 100%;
+	margin-left: 0;
 	
+	iframe.onlyoffice-inline {
+		/* pour oo */
+		height: calc(100vh + 8px);
+		main#content{
+			border-radius: 0;
+			margin-left:0;
+			width: 100%;
+			height: 100%;
+		}
+	}
+	/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
+	
+			& > div#app-content > iframe#onlyofficeFrame {
+					height: calc(100vh + 8px);
+			}
+	/*		&.app-onlyoffice > div#app > iframe {
+					height: calc(100vh - 88px);
+			}
+		*/
+		&.onlyoffice-inline  main#content {
+				margin-bottom:0;
+				bottom: 0;
+				border-radius: 0;
+		}
+
+	/* fin OO */
+}
+
 	&.embedded .viewcontainer div#rich-workspace #editor {
 		max-height : 15em;
 	}
 
 	/* les redim des previews dans la colonne des partages pour plus de lisibilité */
-	.app-sidebar-header{
+	.app-sidebar-header {
 	&:not(.app-sidebar-header--compact){
 		.app-sidebar-header__figure {
 			height: 10vh !important;
@@ -124,26 +259,40 @@ body {
 		}
 	}
 }
-/* pour onlyoffice avec notre bandeau large */
+
+/* pour onlyoffice avec notre bandeau large
+ * ne doit plus être fonctionnel
  div#content > div#app-content > iframe#onlyofficeFrame {
 	height: calc(100vh - 90px);
  }
-/*
-@media only screen and (min-width: 1025px) {
-body {
-	&.embedded { 
-			height:auto; 
-			div#app-navigation {
-				position : static;
-				&:not(.hidden) + #app-content {
-					margin-left: 1%;
-				}
-			}
-		}
-		
+*/
+@media only screen and (min-width: 1024px) {
+	body > div#escoDiv > footer  {
+		position: fixed;
+		z-index:2000;
+		bottom: 0px;
+		width: 100vw;
+	}
+	body:hover > div#escoDiv > footer  {
+		//bottom: -46px;
+		bottom: -60px
+	}
+	body:hover > div#escoDiv:hover > footer {
+		bottom: 0px;
+	}
+	body  footer.escoDiv {
+		display: none;
 	}
 }
-*/
+@media only screen and (max-width: 1024px) {
+	body > footer.escoDiv {
+		display: block;
+		z-index:2000;
+	}
+	body > div#escoDiv > footer  {
+		display: none;
+	}
+}
 
 body.embedded {
 	li[data-id="logout"] {
@@ -165,7 +314,6 @@ body.embedded {
 		--ext-header-tpl-primary-color: #{$couleur !important};
 	}
 }
-
 
 body {
 	&.clg18.not_embedded {
