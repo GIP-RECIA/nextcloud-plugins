@@ -84,7 +84,10 @@ class OC_Theme {
 	}
 	public static function getContext($request) {
 		$ctx = explode('/', $request->getRequestUri());
-		return '/' . $ctx[1] ;
+		if (strtolower($ctx[1]) == 'nextcloud') {
+			return  '/' . $ctx[1] ;
+		}
+		return '';
 	}
 	public static function getPortailLoginUrl($request) {
 		$host = $request->getServerHost();
