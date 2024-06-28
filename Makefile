@@ -88,7 +88,7 @@ THEME:
 CONFIG: config/*.json
 	cp config/*.json $(NEXTCLOUD_PATH)/config/
 
-sass: $(CSS)/reciaStyle.css
+sass: --style compressed $(CSS)/reciaStyle.css
 
 $(CSS)/%.css: $(SCSS)/*.scss
 	sass  $(SCSS)/$*.scss $@
