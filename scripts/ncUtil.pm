@@ -33,9 +33,11 @@ $PARAM{'NC_WWW'} = $wwwRep;
 	open CONFIG, "$configFile" or die $!;
 
 	while (<CONFIG>)  {
-			if (/'(\w+)'\s*=>\s*'([^']+)'/) {
-					$PARAM{$1} = $2;
-			}
+		if (/'(\w+)'\s*=>\s*'([^']+)'/) {
+			$PARAM{$1} = $2;
+		} elsif (/^\s*'(objectstore_multibucket)'\s*=>/) {
+			$PARAM{$1} = 1;
+		}
 	}
 $PARAM{'NC_DATA'} = $PARAM{'datadirectory'};
 
