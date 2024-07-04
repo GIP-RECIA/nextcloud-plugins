@@ -166,14 +166,14 @@ while (<>) {
 	while (m/((\(\d+,$storage\,\'files(_versions|_trashbin)?$repertoire[^',]*\'\,([^,]*,){3})(?P<mime>\d+),([^,]*,){8}[^\)]*\))/g) {
 		if ($+{mime} == 4) {
 			# c'est un repertoire
-			print STDERR $1, "\n";
+			print STDERR $1, ",\n";
 			next;
 		} 
 		$ok = $1;
 		
 		for $num (@A) {
 			if ($ok =~ m/^\($num\,113924\,/) {
-				print $ok, "\n";
+				print $ok, ",\n";
 			}
 		}
 	}
