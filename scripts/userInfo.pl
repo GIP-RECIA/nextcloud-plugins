@@ -5,10 +5,11 @@
 =head1 NAME userInfo.pl
 	Donne les infos utiles d'un compte Nextcloud .
 
-=head1 SYNOPSIS userInfo.pl [ -a | -b | -f | -p ] [ uid | displayname | bucket | fileId ]
+=head1 SYNOPSIS userInfo.pl [ -a | -b [-m] | -f | -p ] [ uid | displayname | bucket | fileId ]
 avec
 	-a : toutes les infos
 	-b : affiche les buckets du compte
+	-m : affiche seulement les fichiers dans le bucket manquant  dans la base (va avec -b)
 	-f : les fichiers du compte
 	-p : les partages du compte
 	uid : uid du compte
@@ -27,8 +28,7 @@ use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 binmode STDOUT, ':encoding(UTF-8)';
 use Getopt::Long;
-
-#Getopt::Long::Configure ("bundling"); #permet les abréviations
+Getopt::Long::Configure ("bundling"); #permet les abréviations
 
 BEGIN { $Pod::Usage::Formatter = 'Pod::Text::Termcap'; }
 use Pod::Usage qw(pod2usage);
@@ -48,8 +48,9 @@ my $bucket = 0;
 my $file = 0;
 my $partage = 0;
 my $all;
+my $manquantSeulement = 0;
 
-unless (@ARGV and GetOptions ( "a" => \$all, "b" =>  \$bucket, "f" => \$file, "p" => \$partage)) {
+unless (@ARGV and GetOptions ( "a" => \$all, "b" =>  \$bucket, "m" => \$manquantSeulement,  "f" => \$file, "p" => \$partage)) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	$ENV{'MANPAGER'} = 'cat';
 	pod2usage(-verbose => 3, -exitval => 1 , -input => $myself, -noperldoc => 0);
@@ -308,19 +309,24 @@ if ($bucket) {
 		}
 		close S3;
 		open S3 , &lsCommande($bucketId) . "|"  || die "$!";
-
+		
+		print "Fichier dans le bucket manquants dans la base :\n" if $manquantSeulement;
 		while (<S3>) {
 			chop;
-			print ;
+			unless ($manquantSeulement) {
+				print;
+			}
 			if (/urn:oid:(\d+)$/) {
 				my $fileId = $1;
 				my $path = $allFiles{$fileId};
 				if ($path) {
-					print "\t$path";
+					print "\t$path" unless $manquantSeulement;
 					delete $allFiles{$fileId};
+				} else {
+					print $_, "\n" if $manquantSeulement;
 				}
 			}
-			print "\n";
+			print "\n" unless $manquantSeulement;
 		}
 		close S3;
 		print "\nFichier Nextcloud hors bucket\n";
