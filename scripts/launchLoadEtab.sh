@@ -53,7 +53,7 @@ grep -v 'was removed' $logClean
 
 date
 
-echo "\nsuppression définitive des comptes obsolètes"
-/usr/bin/nice $rcode/removeOldUser.pl -n 1000 -l 4 2>&1
+#echo "\nsuppression définitive des comptes obsolètes"
+#/usr/bin/nice $rcode/removeOldUser.pl -n 1500 -l 4 2>&1
 
-date
+#date
