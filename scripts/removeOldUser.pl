@@ -11,7 +11,7 @@
 
 	removeOldUser.pl -n nbCompteASupprimer [-l loglevel] [--force]
 
-	nbCompteASupprimer : nombre maximum de comptes à traiter.
+	nbCompteASupprimer : nombre maximum de comptes à traiter (<= 2000).
 	loglevel : 0 FATAL, 1 ERROR, 2 WARN, 3 INFO, 4 DEBUG, 5 TRACE; defaut = 4.
 	force :  force l'execution même s'il reste des partage depuis les comptes à supprimer,
 	         à n'utiliser que si on est sure que ces partages peuvent être perdu (genre par mail ).
@@ -50,14 +50,14 @@ if (@ARGV) {
 	§FATAL "Unknow ", @ARGV;
 }
 
-if ($nbRemovedUserMax > 1000) {
-	§FATAL "User Max to remove > 1000" ;
+if ($nbRemovedUserMax > 2000) {
+	§FATAL "User Max to remove > 2000" ;
 }
 
 my $jour = ( (localtime)[3] );
 my $logsFile = $FindBin::Script;
 
-$logsFile =~ s/\.pl$/\.$jour.log/;
+$logsFile =~ s/\.pl$/\/$jour.log/;
  $logsFile = $PARAM{'NC_LOG'} . "/" . $logsFile ;
 
 MyLogger->file('>>' . $logsFile);
@@ -111,7 +111,7 @@ sub expirePartage {
 
 # Marquer les comptes sans partage candidat a la suppression
 sub markToDelete {
-	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type != 4 and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
+	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4)term and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
@@ -145,74 +145,16 @@ sub deleteComptes{
 
 __END__
 
-begin;
-select share_with from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit 10;
-delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit 10;
-select share_with from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit 10;
-rollback;
-
-select uid, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
-
-begin;
-select uid, isDel, dat from  oc_recia_user_history where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
-update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
-select uid, isDel, dat from  oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit 10;
-select * from oc_recia_user_history where isDel = 3;
-rollback;
-
-
-update oc_share set expiration = unix_timestamp()
-select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime
-from oc_recia_user_history r , oc_share s
-where r.isDel = 3
-and s.uid_owner = r.uid
-and s.share_type = 3
-and s.expiration is null
-;
-
-update oc_share set expiration = now()
-where uid_owner in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60)
-and share_type = 3
-and (expiration is null or expiration > now())
-order by stime  limit 1000
-
-update oc_share set expiration = now()
-where uid_owner in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60)
-and share_type = 3
-and expiration > now()
-order by stime  limit 10
-
-select * from oc_share where uid_owner in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60)
-and share_type = 3
-and expiration > now()
-order by stime  limit 10
-
-requete pour voir qui va être enlevé a la  prochaine suppression 
-select * from oc_recia_user_history r , oc_users u where r.isDel = 3 and r.uid = u.uid;
-pour voir si il reste de partage  pour ceux qui doivent etre supprimé:
-
-select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, FROM_UNIXTIME(s.expiration), FROM_UNIXTIME(s.stime),
-    f.path
-from oc_recia_user_history r ,
-     oc_users u,
-     oc_share s,
-     oc_filecache f
-where r.isDel = 3
-and r.uid = u.uid
-and s.uid_owner = r.uid
-and s.item_source = f.fileid
-;
-
-
-
-
-select * from recia_partages where uid_owner in (select s.uid_owner from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = 3 and r.uid = u.uid and s.uid_owner = r.uid);
-
-select * from 
-oc_recia_user_history r,
-recia_partages p
-where r.isDel=3
-and p.uid_owner = r.uid
-;
-
-select uid_owner from oc_share where uid_owner is not null and share_type != 4 and (expiration is null or datedif(now(), expiration) > 60) 
+ select distinct share_type from oc_share; 
++------------+
+| share_type |
++------------+
+|          0 | -> a des personnes
+|          1 | -> a des groupes
+|          2 | -> a des personnes via un groupe dans ce cas le partage a un parent : le partage au groupe
+|          3 | -> partage public link
+|          4 | -> partage par mail
+|         12 | -> deck '/{DECK_PLACEHOLDER}' ressemble au 1 sauf le share_with est un numero 
+|         13 | -> deck a des personne ressemble au 2 avec de groupe a la deck et parent avec share_type 12
++------------+
+12 13 que sur ncgip pas sur ncprod
