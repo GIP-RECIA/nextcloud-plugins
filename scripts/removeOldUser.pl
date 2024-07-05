@@ -111,7 +111,7 @@ sub expirePartage {
 
 # Marquer les comptes sans partage candidat a la suppression
 sub markToDelete {
-	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4)term and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
+	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
