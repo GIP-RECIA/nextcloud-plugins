@@ -139,7 +139,21 @@ sub deleteComptes{
 	my $wwwRep = $PARAM{'NC_WWW'};
 	chdir $wwwRep;
 	my $nbSuppression;
-	§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ", OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;};
+	
+	my $nbErr = 0;
+		# attention a ne pas augmenter le nombre max de boucle
+		# sans revoir la valeur du sleep en debut de boucle
+		# avec 5 erreurs on aurra un sleep de 52mm  avec 6 on passe a 12h
+	while ($nbErr < 5) {
+		sleep $nbErr ** $nbErr if $nbErr++; 
+		my $isErr = 0;
+		§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
+				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
+				ERR => sub { $isErr = 1 if /\[critical\]\ Fatal\ Error\:/;} ;
+
+		last unless ($isErr);
+	}
+	if (--$nbErr ) { §ERROR "$nbErr d'execution !" ; }
 	§INFO "nombre de suppressions de compte : $nbSuppression";
 }
 
