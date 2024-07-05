@@ -240,3 +240,6 @@ meld app ~/git/GITHUB/Nextcloud/server/apps/files_sharing
 
 et ~/git/GITHUB/Nextcloud/server/files_sharing-files_sharing_tab.js dans files_sharing/dist
 find dist -name files_sharing-files_sharing_tab'*' -exec cp \{\} ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent/files_sharing/dist \;
+
+------------------------------------------------------------------------
+migration de nc26.0.13 à 27.1.11
