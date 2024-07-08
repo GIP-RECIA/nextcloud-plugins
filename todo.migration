@@ -267,3 +267,16 @@ find nc.27.1.11/ nc.26.0.13/ nc-ent/ -name CardDavBackend.php -ls
 
 find nc.27.1.11/ nc.26.0.13/ nc-ent/ -name RootMountProvider.php -ls
 	n'a pas changé
+
+recherche de l'usage de ObjectStoreStorage:
+cd nc.27.1.11; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.27.1.11; cd -
+cd nc.26.0.13 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.26.0.13 ; cd -
+meld grep.ObjectStoreStorage.*
+	n'a pas changé !?
+
+cd nc.27.1.11; grep -R getStorageId . > ../grep.getStorageId.27.1.11; cd -
+cd nc.26.0.13 ; grep -R getStorageId . > ../grep.getStorageId.26.0.13 ; cd -
+meld grep.getStorageId*
+	n'a pas channgé
+
+pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true

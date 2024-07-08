@@ -30,7 +30,7 @@ CSS=$(THEME_ESCO)/css
 
 ALLETAB=allEtab.txt
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB CSS THEME PATCH CONFIG USER_CAS RESTORE_FILES_SHARING NOTIFICATIONS
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB THEME PATCH CONFIG USER_CAS RESTORE_FILES_SHARING NOTIFICATIONS
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH) 
 
@@ -78,8 +78,6 @@ LIB:
 PATCH:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
-CSS: 
-	cp $(CSS)/reciaStyle.css $(APPS)/$(CSS)/
 
 THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
