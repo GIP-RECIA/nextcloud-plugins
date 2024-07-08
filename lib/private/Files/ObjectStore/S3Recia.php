@@ -53,7 +53,7 @@ class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload {
 		$upload = $this->getConnection()->createMultipartUpload([
 			'Bucket' => $this->bucket,
 			'Key' => $urn,
-		]);
+		] + $this->getSSECParameters());
 		$uploadId = $upload->get('UploadId');
 		if ($uploadId === null) {
 			throw new Exception('No upload id returned');
@@ -69,7 +69,7 @@ class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload {
 			'ContentLength' => $size,
 			'PartNumber' => $partId,
 			'UploadId' => $uploadId,
-		]);
+		] + $this->getSSECParameters());
 	}
 
 	public function getMultipartUploads(string $urn, string $uploadId): array {
@@ -84,7 +84,7 @@ class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload {
 				'UploadId' => $uploadId,
 				'MaxParts' => 1000,
 				'PartNumberMarker' => $partNumberMarker
-			]);
+			] + $this->getSSECParameters());
 			$parts = array_merge($parts, $result->get('Parts') ?? []);
 			$isTruncated = $result->get('IsTruncated');
 			$partNumberMarker = $result->get('NextPartNumberMarker');
@@ -99,11 +99,11 @@ class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload {
 			'Key' => $urn,
 			'UploadId' => $uploadId,
 			'MultipartUpload' => ['Parts' => $result],
-		]);
+		] + $this->getSSECParameters());
 		$stat = $this->getConnection()->headObject([
 			'Bucket' => $this->bucket,
 			'Key' => $urn,
-		]);
+		] + $this->getSSECParameters());
 		return (int)$stat->get('ContentLength');
 	}
 
