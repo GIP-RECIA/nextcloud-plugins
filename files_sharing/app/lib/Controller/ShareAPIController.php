@@ -71,7 +71,6 @@ use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IPreview;
 use OCP\IRequest;
-use OCP\IServerContainer;
 use OCP\IURLGenerator;
 use OCP\IUserManager;
 use OCP\Lock\ILockingProvider;
@@ -83,6 +82,7 @@ use OCP\Share\IManager;
 use OCP\Share\IShare;
 use OCP\UserStatus\IManager as IUserStatusManager;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -91,32 +91,9 @@ use Psr\Log\LoggerInterface;
  * @package OCA\Files_Sharing\API
  */
 class ShareAPIController extends OCSController {
-	/** @var IManager */
-	private $shareManager;
-	/** @var IGroupManager */
-	private $groupManager;
-	/** @var IUserManager */
-	private $userManager;
-	/** @var IRootFolder */
-	private $rootFolder;
-	/** @var IURLGenerator */
-	private $urlGenerator;
-	/** @var string */
-	private $currentUser;
-	/** @var IL10N */
-	private $l;
-	/** @var \OCP\Files\Node */
-	private $lockedNode;
-	/** @var IConfig */
-	private $config;
-	/** @var IAppManager */
-	private $appManager;
-	/** @var IServerContainer */
-	private $serverContainer;
-	/** @var IUserStatusManager */
-	private $userStatusManager;
-	/** @var IPreview */
-	private $previewManager;
+
+	private ?Node $lockedNode = null;
+	private string $currentUser;
 
 	/**
 	 * Share20OCS constructor.
@@ -124,35 +101,23 @@ class ShareAPIController extends OCSController {
 	public function __construct(
 		string $appName,
 		IRequest $request,
-		IManager $shareManager,
-		IGroupManager $groupManager,
-		IUserManager $userManager,
-		IRootFolder $rootFolder,
-		IURLGenerator $urlGenerator,
-		string $userId = null,
-		IL10N $l10n,
-		IConfig $config,
-		IAppManager $appManager,
-		IServerContainer $serverContainer,
-		IUserStatusManager $userStatusManager,
-		IPreview $previewManager,
+		private IManager $shareManager,
+		private IGroupManager $groupManager,
+		private IUserManager $userManager,
+		private IRootFolder $rootFolder,
+		private IURLGenerator $urlGenerator,
+		private IL10N $l,
+		private IConfig $config,
+		private IAppManager $appManager,
+		private ContainerInterface $serverContainer,
+		private IUserStatusManager $userStatusManager,
+		private IPreview $previewManager,
 		private IDateTimeZone $dateTimeZone,
+		private LoggerInterface $logger,
+		?string $userId = null
 	) {
 		parent::__construct($appName, $request);
-
-		$this->shareManager = $shareManager;
-		$this->userManager = $userManager;
-		$this->groupManager = $groupManager;
-		$this->request = $request;
-		$this->rootFolder = $rootFolder;
-		$this->urlGenerator = $urlGenerator;
 		$this->currentUser = $userId;
-		$this->l = $l10n;
-		$this->config = $config;
-		$this->appManager = $appManager;
-		$this->serverContainer = $serverContainer;
-		$this->userStatusManager = $userStatusManager;
-		$this->previewManager = $previewManager;
 	}
 
 	/**
@@ -253,6 +218,7 @@ class ShareAPIController extends OCSController {
 			$result['share_with'] = $share->getSharedWith();
 			$result['share_with_displayname'] = $group !== null ? $group->getDisplayName() : $share->getSharedWith();
 		} elseif ($share->getShareType() === IShare::TYPE_LINK) {
+
 			// "share_with" and "share_with_displayname" for passwords of link
 			// shares was deprecated in Nextcloud 15, use "password" instead.
 			$result['share_with'] = $share->getPassword();
@@ -353,7 +319,7 @@ class ShareAPIController extends OCSController {
 				'strict_search' => true,
 			]);
 		} catch (Exception $e) {
-			Server::get(LoggerInterface::class)->error(
+			$this->logger->error(
 				$e->getMessage(),
 				['exception' => $e]
 			);
@@ -435,7 +401,7 @@ class ShareAPIController extends OCSController {
 		try {
 			$slaveService = Server::get(\OCA\GlobalSiteSelector\Service\SlaveService::class);
 		} catch (\Throwable $e) {
-			Server::get(LoggerInterface::class)->error(
+			$this->logger->error(
 				$e->getMessage(),
 				['exception' => $e]
 			);
@@ -577,7 +543,7 @@ class ShareAPIController extends OCSController {
 		string $publicUpload = 'false',
 		string $password = '',
 		string $sendPasswordByTalk = null,
-		string $expireDate = '',
+		string $expireDate = null,
 		string $note = '',
 		string $label = '',
 		string $attributes = null
@@ -587,6 +553,7 @@ class ShareAPIController extends OCSController {
 		if ($permissions === null) {
 			if ($shareType === IShare::TYPE_LINK
 				|| $shareType === IShare::TYPE_EMAIL) {
+
 				// to keep legacy default behaviour, we ignore the setting below for link shares
 				$permissions = Constants::PERMISSION_READ;
 			} else {
@@ -650,6 +617,21 @@ class ShareAPIController extends OCSController {
 			$share = $this->setShareAttributes($share, $attributes);
 		}
 
+		if ($expireDate !== null) {
+			if ($expireDate !== '') {
+				try {
+					$expireDateTime = $this->parseDate($expireDate);
+					$share->setExpirationDate($expireDateTime);
+				} catch (\Exception $e) {
+					throw new OCSNotFoundException($this->l->t('Invalid date, date format must be YYYY-MM-DD'));
+				}
+			} else {
+				// Client sent empty string for expire date.
+				// Set noExpirationDate to true so overwrite is prevented.
+				$share->setNoExpirationDate(true);
+			}
+		}
+
 		$share->setSharedBy($this->currentUser);
 		$this->checkInheritedAttributes($share);
 
@@ -673,6 +655,7 @@ class ShareAPIController extends OCSController {
 			$share->setPermissions($permissions);
 		} elseif ($shareType === IShare::TYPE_LINK
 			|| $shareType === IShare::TYPE_EMAIL) {
+
 			// Can we even share links?
 			if (!$this->shareManager->shareApiAllowLinks()) {
 				throw new OCSNotFoundException($this->l->t('Public link sharing is disabled by the administrator'));
@@ -735,15 +718,6 @@ class ShareAPIController extends OCSController {
 
 			$share->setSharedWith($shareWith);
 			$share->setPermissions($permissions);
-			if ($expireDate !== '') {
-				try {
-					$expireDate = $this->parseDate($expireDate);
-					$share->setExpirationDate($expireDate);
-				} catch (\Exception $e) {
-					throw new OCSNotFoundException($this->l->t('Invalid date, date format must be YYYY-MM-DD'));
-				}
-			}
-
 			$share->setSharedWithDisplayName($this->getCachedFederatedDisplayName($shareWith, false));
 		} elseif ($shareType === IShare::TYPE_REMOTE_GROUP) {
 			if (!$this->shareManager->outgoingServer2ServerGroupSharesAllowed()) {
@@ -756,14 +730,6 @@ class ShareAPIController extends OCSController {
 
 			$share->setSharedWith($shareWith);
 			$share->setPermissions($permissions);
-			if ($expireDate !== '') {
-				try {
-					$expireDate = $this->parseDate($expireDate);
-					$share->setExpirationDate($expireDate);
-				} catch (\Exception $e) {
-					throw new OCSNotFoundException($this->l->t('Invalid date, date format must be YYYY-MM-DD'));
-				}
-			}
 		} elseif ($shareType === IShare::TYPE_CIRCLE) {
 			if (!\OC::$server->getAppManager()->isEnabledForUser('circles') || !class_exists('\OCA\Circles\ShareByCircleProvider')) {
 				throw new OCSNotFoundException($this->l->t('You cannot share to a Circle if the app is not enabled'));
@@ -779,34 +745,24 @@ class ShareAPIController extends OCSController {
 			$share->setPermissions($permissions);
 		} elseif ($shareType === IShare::TYPE_ROOM) {
 			try {
-				$this->getRoomShareHelper()->createShare($share, $shareWith, $permissions, $expireDate);
+				$this->getRoomShareHelper()->createShare($share, $shareWith, $permissions, $expireDate ?? '');
 			} catch (QueryException $e) {
 				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support room shares', [$node->getPath()]));
 			}
 		} elseif ($shareType === IShare::TYPE_DECK) {
 			try {
-				$this->getDeckShareHelper()->createShare($share, $shareWith, $permissions, $expireDate);
+				$this->getDeckShareHelper()->createShare($share, $shareWith, $permissions, $expireDate ?? '');
 			} catch (QueryException $e) {
 				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support room shares', [$node->getPath()]));
 			}
 		} elseif ($shareType === IShare::TYPE_SCIENCEMESH) {
 			try {
-				$this->getSciencemeshShareHelper()->createShare($share, $shareWith, $permissions, $expireDate);
+				$this->getSciencemeshShareHelper()->createShare($share, $shareWith, $permissions, $expireDate ?? '');
 			} catch (QueryException $e) {
-				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support sciencemesh shares', [$node->getPath()]));
+				throw new OCSForbiddenException($this->l->t('Sharing %s failed because the back end does not support ScienceMesh shares', [$node->getPath()]));
 			}
 		} else {
 			throw new OCSBadRequestException($this->l->t('Unknown share type'));
-		}
-
-		//Expire date
-		if ($expireDate !== '') {
-			try {
-				$expireDate = $this->parseDate($expireDate);
-				$share->setExpirationDate($expireDate);
-			} catch (\Exception $e) {
-				throw new OCSNotFoundException($this->l->t('Invalid date, date format must be YYYY-MM-DD'));
-			}
 		}
 
 		$share->setShareType($shareType);
@@ -818,11 +774,11 @@ class ShareAPIController extends OCSController {
 		try {
 			$share = $this->shareManager->createShare($share);
 		} catch (GenericShareException $e) {
-			\OC::$server->getLogger()->logException($e);
+			$this->logger->error($e->getMessage(), ['exception' => $e]);
 			$code = $e->getCode() === 0 ? 403 : $e->getCode();
 			throw new OCSException($e->getHint(), $code);
 		} catch (\Exception $e) {
-			\OC::$server->getLogger()->logException($e);
+			$this->logger->error($e->getMessage(), ['exception' => $e]);
 			throw new OCSForbiddenException($e->getMessage(), $e);
 		}
 
@@ -1089,6 +1045,7 @@ class ShareAPIController extends OCSController {
 	 * @throws SharingRightsException
 	 */
 	public function getInheritedShares(string $path): DataResponse {
+
 		// get Node from (string) path.
 		$userFolder = $this->rootFolder->getUserFolder($this->currentUser);
 		try {
@@ -1242,6 +1199,7 @@ class ShareAPIController extends OCSController {
 		 */
 		if ($share->getShareType() === IShare::TYPE_LINK
 			|| $share->getShareType() === IShare::TYPE_EMAIL) {
+
 			/**
 			 * We do not allow editing link shares that the current user
 			 * doesn't own. This is confusing and lead to errors when
@@ -2083,5 +2041,6 @@ class ShareAPIController extends OCSController {
 				}
 			}
 		}
+
 	}
 }

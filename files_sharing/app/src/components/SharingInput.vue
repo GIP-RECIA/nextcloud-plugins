@@ -24,7 +24,8 @@
 	<div class="sharing-search">
 		<label for="sharing-search-input">{{ t('files_sharing', 'Search for share recipients') }}</label>
 		<NcSelect ref="select"
-			id="sharing-search-input"
+			v-model="value"
+			input-id="sharing-search-input"
 			class="sharing-search__input"
 			:disabled="!canReshare"
 			:loading="loading"
@@ -33,10 +34,9 @@
 			:clear-search-on-blur="() => false"
 			:user-select="true"
 			:options="options"
-			v-model="value"
 			@open="handleOpen"
 			@search="asyncFind"
-			@option:selected="addShare">
+			@option:selected="openSharingDetails">
 			<template #no-options="{ search }">
 				{{ search ? noResultText : t('files_sharing', 'No recommendations. Start typing.') }}
 			</template>
@@ -52,11 +52,12 @@ import axios from '@nextcloud/axios'
 import debounce from 'debounce'
 import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
-import Config from '../services/ConfigService'
-import GeneratePassword from '../utils/GeneratePassword'
-import Share from '../models/Share'
-import ShareRequests from '../mixins/ShareRequests'
-import ShareTypes from '../mixins/ShareTypes'
+import Config from '../services/ConfigService.js'
+import GeneratePassword from '../utils/GeneratePassword.js'
+import Share from '../models/Share.js'
+import ShareRequests from '../mixins/ShareRequests.js'
+import ShareTypes from '../mixins/ShareTypes.js'
+import ShareDetails from '../mixins/ShareDetails.js'
 
 export default {
 	name: 'SharingInput',
@@ -65,7 +66,7 @@ export default {
 		NcSelect,
 	},
 
-	mixins: [ShareTypes, ShareRequests],
+	mixins: [ShareTypes, ShareRequests, ShareDetails],
 
 	props: {
 		shares: {
@@ -176,7 +177,7 @@ export default {
 		 * Get suggestions
 		 *
 		 * @param {string} search the search query
-		 * @param {boolean} [lookup=false] search on lookup server
+		 * @param {boolean} [lookup] search on lookup server
 		 */
 		async getSuggestions(search, lookup = false) {
 			this.loading = true
@@ -424,7 +425,7 @@ export default {
 			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
 				return {
 					icon: 'icon-sciencemesh',
-					iconTitle: t('files_sharing', 'Science Mesh'),
+					iconTitle: t('files_sharing', 'ScienceMesh'),
 				}
 			default:
 				return {}
@@ -452,7 +453,6 @@ export default {
 			}
 
 			return {
-				id: `${result.value.shareType}-${result.value.shareWith}`,
 				shareWith: result.value.shareWith,
 				shareType: result.value.shareType,
 				user: result.uuid || result.value.shareWith,
