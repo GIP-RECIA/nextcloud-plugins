@@ -67,7 +67,6 @@ class Storage extends DAV implements ISharedStorage, IDisableEncryptionStorage, 
 	private IClientService $httpClient;
 	private bool $updateChecked = false;
 	private ExternalShareManager $manager;
-	protected LoggerInterface $logger;
 
 	/**
 	 * @param array{HttpClientService: IClientService, manager: ExternalShareManager, cloudId: ICloudId, mountpoint: string, token: string, password: ?string}|array $options
