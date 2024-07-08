@@ -243,3 +243,15 @@ find dist -name files_sharing-files_sharing_tab'*' -exec cp \{\} ~/git/GITHUB/Ne
 
 ------------------------------------------------------------------------
 migration de nc26.0.13 à 27.1.11
+	ln -s ../V26/nc.26.0.13 nc.26.0.13
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+diff nc.27.1.11/core/css/variables.scss nc.26.0.13/core/css/variables.scss
+n'a pas changé
+
+meld nc.26.0.13/core/templates/layout.user.php nc.27.1.11/core/templates/layout.user.php nc-ent/themes/esco/core/templates/layout.user.php
+a chagé et fait
+
+find nc.27.1.11/ nc.26.0.13/  -name ObjectStoreStorage.php -ls
+meld nc.27.1.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.26.0.13/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+¡ La fonction stat a changé à faire ! il faut verifier reciaObjectStore?
