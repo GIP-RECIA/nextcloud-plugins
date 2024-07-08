@@ -255,3 +255,15 @@ a chagé et fait
 find nc.27.1.11/ nc.26.0.13/  -name ObjectStoreStorage.php -ls
 meld nc.27.1.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.26.0.13/lib/private/Files/ObjectStore/ObjectStoreStorage.php
 ¡ La fonction stat a changé à faire ! il faut verifier reciaObjectStore?
+
+diff nc.27.1.11/lib/private/Files/ObjectStore/Mapper.php nc.26.0.13/lib/private/Files/ObjectStore/Mapper.php
+	mapper n'a pas changé
+
+diff nc.27.1.11/lib/private/Files/ObjectStore/S3.php nc.26.0.13/lib/private/Files/ObjectStore/S3.php
+	a changé.
+
+find nc.27.1.11/ nc.26.0.13/ nc-ent/ -name CardDavBackend.php -ls
+	a changé, fait
+
+find nc.27.1.11/ nc.26.0.13/ nc-ent/ -name RootMountProvider.php -ls
+	n'a pas changé
