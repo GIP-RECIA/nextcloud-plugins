@@ -72,3 +72,24 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/o
 -------------
 migration de 27.0.4 a 27.0.7
 lib/private/Http/Client/DnsPinMiddleware.php ne doit pus être utile
+
+
+----
+migration de 27.1.7 à 27.1.10
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/l10n/fr.js* org/apps/richdocuments/l10n/
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php org/apps/richdocuments/lib/
+
+meld org/apps/richdocuments/l10n/fr.js.8.2.4 apps/richdocuments/l10n/fr.js org/apps/richdocuments/l10n/fr.js.8.2.10
+meld org/apps/richdocuments/l10n/fr.json.8.2.4 apps/richdocuments/l10n/fr.json org/apps/richdocuments/l10n/fr.json.8.2.10
+meld org/apps/richdocuments/lib/Capabilities.php.8.2.4 apps/richdocuments/lib/Capabilities.php org/apps/richdocuments/lib/Capabilities.php
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/onlyoffice/l10n/
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/AppConfig.php org/apps/onlyoffice/lib/
+meld org/apps/onlyoffice/l10n/fr.js.7.8.0 apps/onlyoffice/l10n/fr.js org/apps/onlyoffice/l10n/fr.js
+meld org/apps/onlyoffice/l10n/fr.json.7.8.0 apps/onlyoffice/l10n/fr.json org/apps/onlyoffice/l10n/fr.json
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/assets/document-templates/fr-FR/'*' apps/onlyoffice/assets/document-templates/fr-FR
+les templates ne sont pas comparable ont garde les notres
+
+---------
