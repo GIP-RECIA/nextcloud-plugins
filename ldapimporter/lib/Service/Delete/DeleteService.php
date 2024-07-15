@@ -137,7 +137,9 @@ class DeleteService
             if ($user->delete()) {
                 $this->logger->info('User with uid :' . $uidUser . ' was deleted');
                 $this->markDelUserHistory($uidUser, 4);
-            }
+            } else {
+				$this->logger->warning('Error delete user uid :' . $uidUser);
+			}
         }
     }
 
