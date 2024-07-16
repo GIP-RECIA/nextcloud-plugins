@@ -202,7 +202,7 @@ class AdImporter implements ImporterInterface
 
                 /* pl change */
                 $etatUser = isset($m[$enableAttribute][0]) ? $m[$enableAttribute][0] : false;
-				$etatUserOk = $etatUser && preg_match("/(DELETE|BLOQUE)/i"), $etatUser) ? false : true;
+				$etatUserOk = $etatUser && (preg_match("/(DELETE|BLOQUE)/i", $etatUser) ? false : true);
 				
                 if ($etatUserOk && isset($m[strtolower($groupsAttribute)][0])) {
 

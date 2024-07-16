@@ -93,3 +93,14 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/assets/document-templa
 les templates ne sont pas comparable ont garde les notres
 
 ---------
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/l10n/fr.js* org/apps/richdocuments/l10n/
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/richdocuments/lib/Capabilities.php org/apps/richdocuments/lib/
+
+meld org/apps/richdocuments/l10n/fr.js.8.2.10 apps/richdocuments/l10n/fr.js org/apps/richdocuments/l10n/fr.js.8.3.8
+meld org/apps/richdocuments/l10n/fr.json.8.2.10 apps/richdocuments/l10n/fr.json org/apps/richdocuments/l10n/fr.json.8.3.8
+
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/l10n/fr.js* org/apps/onlyoffice/l10n/
+scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/AppConfig.php org/apps/onlyoffice/lib/
+
+meld apps/onlyoffice/l10n/fr.js org/apps/onlyoffice/l10n/fr.js
+meld apps/onlyoffice/l10n/fr.json org/apps/onlyoffice/l10n/fr.json
