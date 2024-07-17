@@ -110,6 +110,8 @@ sub expirePartage {
 }
 
 # Marquer les comptes sans partage candidat a la suppression
+# isDel=2 => le compte est désactivé
+# isDel=3 => le compte peut être supprimer
 sub markToDelete {
 	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
 	§INFO "update oc_recia_user_history set isDel = 3 ...";
@@ -144,16 +146,18 @@ sub deleteComptes{
 		# attention a ne pas augmenter le nombre max de boucle
 		# sans revoir la valeur du sleep en debut de boucle
 		# avec 5 erreurs on aurra un sleep de 52mm  avec 6 on passe a 12h
-	while ($nbErr < 5) {
+	my $maxErr = 5;
+	while ($nbErr < $maxErr) {
 		sleep $nbErr ** $nbErr if $nbErr++; 
 		my $isErr = 0;
 		§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
 				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
-				ERR => sub { $isErr = 1 if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;} ;
+				ERR => sub { $isErr = 1 if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;}
+			and { $isErr = 1; $maxErr--; } # cas ou la commande termine en erreur
 
 		last unless ($isErr);
 	}
-	if (--$nbErr ) { §ERROR "$nbErr d'execution !" ; }
+	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
 	§INFO "nombre de suppressions de compte : $nbSuppression";
 }
 
