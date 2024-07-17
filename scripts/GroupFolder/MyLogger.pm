@@ -57,7 +57,7 @@ use IO::Select;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.2";
+my $version="9.3";
 
 package MyLogger;
 use Filter::Simple;
@@ -500,11 +500,12 @@ sub traceSystem {
 	&$printErr("$err\n") if $err;
 	
 	waitpid $pid, 0;
-	
+	my $child_signal = $? & 127;
 	my $child_exit_status = $? >> 8;
-	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status") if $child_exit_status;
+	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status, $child_signal") if $child_exit_status;
 	close $ERR;
 	close $COM;
+	return $child_exit_status;
 }
 
 sub printCodeFromParameter {
