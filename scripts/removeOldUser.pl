@@ -150,10 +150,13 @@ sub deleteComptes{
 	while ($nbErr < $maxErr) {
 		sleep $nbErr ** $nbErr if $nbErr++; 
 		my $isErr = 0;
-		§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
+		if (§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
 				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
 				ERR => sub { $isErr = 1 if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;}
-			and { $isErr = 1; $maxErr--; } # cas ou la commande termine en erreur
+			) {# cas ou la commande termine en erreur
+				$isErr = 1;
+				$maxErr--;
+		} 
 
 		last unless ($isErr);
 	}
