@@ -18,9 +18,8 @@ ifeq ($(NEXTCLOUD_GROUP), )
 	NEXTCLOUD_GROUP := ${USER}
 endif
 
+DIST = $(NEXTCLOUD_PATH)/dist
 APPS = $(NEXTCLOUD_PATH)/apps
-
-
 
 ALLETAB=allEtab_ncgip.txt
 
@@ -29,9 +28,6 @@ defaut:
 #   @echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS LIB
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
-	
-
-
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -41,7 +37,12 @@ SCRIPTS:
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
-
+FILES_SHARING:
+	cp -rv files_sharing/dist $(DIST)
+	cp -rv files_sharing/app $(APPS)/files_sharing
+	@echo ""
+	@echo Files to delete from dist ${DIST}
+	git log -n 1 --diff-filter=D --name-only --pretty=format:"" | grep -E "[0-9]{3,}-[0-9]{3,}\.js" | sed "s|^files_sharing/dist/||"
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
