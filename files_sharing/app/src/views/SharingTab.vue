@@ -440,6 +440,7 @@ export default {
 	}
 
 	&__information {
+		padding: 0 6px;
 		margin: 44px 0;
 	}
 
