@@ -70,7 +70,7 @@
 		</div>
 
 		<div v-show="!showSharingDetailsView"
-			class="sharingTab__information">
+			class="sharingTab__content sharingTab__additionalContent">
 			<div>{{ t('files_sharing', 'Users and groups with access') }}</div>
 
 			<!-- other shares list -->
@@ -437,11 +437,6 @@ export default {
 
 	&__content {
 		padding: 0 6px;
-	}
-
-	&__information {
-		padding: 0 6px;
-		margin: 44px 0;
 	}
 
 	&__additionalContent {

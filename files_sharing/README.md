@@ -228,7 +228,7 @@ files_sharing/
 +  </div>
 +
 +  <div v-show="!showSharingDetailsView"
-+   class="sharingTab__information">
++   class="sharingTab__content sharingTab__additionalContent">
 +   <div>{{ t('files_sharing', 'Users and groups with access') }}</div>
 +
    <!-- other shares list -->
@@ -270,29 +270,6 @@ files_sharing/
  </div>
 </template>
 ...
-<style scoped lang="scss">
-.emptyContentWithSections {
- margin: 1rem auto;
-}
-
-.sharingTab {
- position: relative;
- height: 100%;
-
- &__content {
-  padding: 0 6px;
- }
-
-+ &__information {
-+  padding: 0 6px;
-+  margin: 44px 0;
-+ }
-+
- &__additionalContent {
-  margin: 44px 0;
- }
-}
-</style>
 ```
 
 ## Packager les librairies Javascript
@@ -303,9 +280,8 @@ files_sharing/
 make build-js-production
 ```
 
-> ⚠️ La compilation génères des fichiers du type `9689-9689.js` `9689-9689.js.LICENSE.txt` `9689-9689.js.map` qui sont nécessaire au fonctionnement du plugin. Ces fichiers ne sont pas suivi par git => on peut facilement les trouver avec un `git status` ou `git ls-files --others --exclude-standard`.
+> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin. Ces fichiers ne sont pas suivi par git => on peut facilement les trouver avec un `git status` ou `git ls-files --others --exclude-standard`.
 
 1. Compiler le js.
-2. Supprimer les trois fichiers du type `xxxx-xxxx.js` du répertaoire `nextcloud-plugins/files_sharing/dist`.
-3. Fiare un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist`.
-4. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
+2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist` supprimer les anciens fichiers du type `xxxx-xxxx.js` et les remplacer par les nouveaux.
+3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
