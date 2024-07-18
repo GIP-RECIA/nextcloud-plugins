@@ -38,8 +38,8 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 FILES_SHARING:
-	cp -rv files_sharing/dist $(DIST)
-	cp -rv files_sharing/app $(APPS)/files_sharing
+	cp -rv files_sharing/dist/* $(DIST)
+	cp -rv files_sharing/app/l10n/* $(APPS)/files_sharing/l10n
 	@echo ""
 	@echo Files to delete from dist ${DIST}
 	git log -n 1 --diff-filter=D --name-only --pretty=format:"" | grep -E "[0-9]{3,}-[0-9]{3,}\.js" | sed "s|^files_sharing/dist/||"
