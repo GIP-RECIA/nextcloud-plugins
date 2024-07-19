@@ -157,11 +157,112 @@ sub deleteComptes{
 				$isErr = 1;
 				$maxErr--;
 		} 
-
+	
 		last unless ($isErr);
 	}
 	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
 	§INFO "nombre de suppressions de compte : $nbSuppression";
+}
+
+# Les comptes supprimé sans bucket mémorisé
+#  select * from oc_recia_user_history u left join recia_bucket_history b on u.uid = b.uid where b.uid is null limit 10;
+#  select * from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid left join recia_bucket_history bh on uh.uid = bh.uid where bh.uid is null limit 10;
+#  select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid left join recia_bucket_history bh on uh.uid = bh.uid where u.uid is null limit 10;
+# select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid left join recia_bucket_history bh on uh.uid = bh.uid where u.uid is null < ;
+# select * from oc_recia_user_history u left join recia_bucket_history b on u.uid = b.uid where b.uid is null limit 10;
+# select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid left join recia_bucket_history bh on uh.uid = bh.uid  left join oc_storages s on s.id = concat('object::user:', uh.uid ) where s.id is null and u.uid is null and  isDel >= 3 order by dat limit 10;
+
+sub deleteOldUsersBuckets {
+	my %bucketMultiUser;
+	my $sql = connectSql();
+	# recherche des buckets partagés par plusieurs utilisateur;
+	my $req = qq/select bucket, count(*) nb from recia_bucket_history where suppression is null group by bucket having nb > 1/;
+
+	my $sth = sql->prepare($req) or §FATAL $sql->errstr;
+	$sth->execute or §FATAL $sth->errstr;
+	
+	while ( my ($bucket, $nb) = $sth->fetchrow_array) {
+		$bucketMultiUser{$bucket} = $nb;
+	}
+
+	# recherche de tout les historiques qui ne sont pas dans oc_users , ni dans oc_storages avec isDel >=3 (donc plus d'acces dans NC)
+	$req = qq/select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket
+				from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid
+				left join recia_bucket_history bh on uh.uid = bh.uid
+				left join oc_storages s on s.id = concat('object::user:', uh.uid )
+				where s.id is null and u.uid is null and  isDel >= 3
+				order by dat limit ?/;
+
+	$sth = sql->prepare($req) or §FATAL $sql->errstr;
+	$sth->execute($nbRemovedUserMax) or §FATAL $sth->errstr;
+	while (my ($uid, $dat, $isDel, $name, $bucket) =  $sth->fetchrow_array) {
+		my $notDelete = 1;
+		if ($bucket) {
+			if ($bucket =~ /-\w{8,25}$/) { # le bucket n'est pas un bucket systeme
+				$notDelete = $bucketMultiUser{$bucket};
+				if ($notDelete) { #cas ou un bucket est partagé (ne devrait pas arriver)
+					$bucketMultiUser{$bucket}--;
+				} else {
+					$bucket = &getBucketName($bucket);
+				}
+			} 
+		} else {
+			$bucket = uid2bucket($uid);
+			$notDelete = 0;
+		}
+		my $s3cmd = getS3command();
+		my $isDeleted=0;
+		unless ($notDelete || !$bucket) {
+			$isDeleted = deleteBucket($bucket);
+ 		}
+ 		#pour les avatars
+ 		$bucket = &getBucketName('0' . lc($uid));
+ 		deleteBucket($bucket);
+
+ 		if ($isDeleted) {
+			# suppression des données dans nos tables recia_bucket_history et oc_recia_user_history
+			$bucket =~ s/^s3:\/\///;
+			$req = qq/delete from recia_bucket_history where bucket=? and uid = ?/;
+			$sth = sql->prepare($req) or §FATAL $sth->errstr;
+			$sth->execute($bucket, $uid) or §FATAL $sth->errstr;
+
+			$req = qq/delete from oc_recia_user_history where uid = ?/;
+			$sth = sql->prepare($req) or §FATAL $sth->errstr;
+			$sth->execute($uid) or §FATAL $sth->errstr;
+		}
+	}
+}
+
+# suppression d'un bucket avec son contenu sans controle
+# renvoie 0 si le bucket n'est pas supprimé , -1 s'il n'existait pas et 1 s'il a été supprimé
+sub deleteBucket {
+	my $bucket = shift;
+	my $nbDeleted;
+	my $lastErr = '';
+	my $nbErr;
+	my $s3cmd = getS3command();
+	if ($bucket =~ /\w{9,25}$/) { # on ne veut pas effacer les buckets du syle 's3://nc-recette-0' 
+		§SYSTEM "$s3cmd  del --force --recursive $bucket",
+			OUT => sub { $nbDeleted++ if /^delete/},
+			ERR => sub { if (/^ERROR[^\[]*\((\w+)\)/) {$lastErr = $1; $nbErr++;} };
+		§INFO "nombre d'objets supprimés : $nbDeleted";
+		if  ($nbErr) {
+			if ($lastErr =~ /NoSuchBucket/) {
+				return -1;
+			}
+			return 0;
+		} else {
+			§SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;} ;
+			if ($nbErr) {
+				return 0;
+			} 
+			§INFO "bucket supprimé : $bucket" unless ($nbErr);
+			return 1;
+		}
+	} else {
+		§WARN "Tentative de suppression du bucket : $bucket";
+		return 0;
+	}
 }
 
 __END__
