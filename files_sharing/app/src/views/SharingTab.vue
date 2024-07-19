@@ -41,7 +41,7 @@
 				</SharingEntrySimple>
 
 				<!-- add new share input -->
-			<!--
+				<!--
 				<SharingInput v-if="!loading"
 					:can-reshare="canReshare"
 					:file-info="fileInfo"
@@ -49,12 +49,14 @@
 					:reshare="reshare"
 					:shares="shares"
 					@open-sharing-details="toggleShareDetailsView" />
-			-->
-				<span>{{ t('files_sharing','Search on :') }}</span>
+				-->
+
+				<span>{{ t('files_sharing', 'Search on :') }}</span>
+
 				<!-- add seach choice -->
 				<SharingInputChoice v-if="!loading && canReshare"
-				:type="searchType"
-				@change="updateSearchType" />
+					:type="searchType"
+					@change="updateSearchType" />
 
 				<!-- add etab choice -->
 				<SharingInputEtab v-if="!loading && canReshare"
@@ -71,6 +73,7 @@
 					:search-type="searchType"
 					:search-etabs="selectedEtabs"
 					@add:share="addShare" />
+
 				<!-- link shares list -->
 				<SharingLinkList v-if="!loading"
 					ref="linkShareList"
@@ -131,7 +134,7 @@ import Share from '../models/Share.js'
 import ShareTypes from '../mixins/ShareTypes.js'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
-//import SharingInput from '../components/SharingInput.vue'
+// import SharingInput from '../components/SharingInput.vue'
 import SharingInputRecia from '../components/SharingInputRecia.vue'
 import SharingInputEtab from '../components/SharingInputEtab.vue'
 import SharingInputChoice from '../components/SharingInputChoice.vue'
@@ -425,6 +428,7 @@ export default {
 			}
 			this.showSharingDetailsView = !this.showSharingDetailsView
 		},
+
 		updateSearchType(type) {
 			this.searchType = type
 		},

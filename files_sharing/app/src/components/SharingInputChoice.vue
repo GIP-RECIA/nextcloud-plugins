@@ -47,7 +47,7 @@
 
 <script>
 
-import Config from '../services/ConfigService'
+import Config from '../services/ConfigService.js'
 
 export default {
 	name: 'SharingInputChoice',
