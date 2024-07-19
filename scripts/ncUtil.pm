@@ -1,3 +1,6 @@
+
+use Digest::MD5 qw(md5_hex);
+
 # fait la lecture de parametre depuis config.php
 # donne une connection a la base
 # place l'execution dans le HOME de l'utilisateur
@@ -196,5 +199,29 @@ sub toGiga {
 	}
 	return $unit ? "" : "0o";
 }
+
+
+sub uid2bucket {
+	my $uid = shift;
+	if ($uid) {
+		my $hash = hex md5_hex($uid);
+		
+#		no warnings;
+		return &getBucketName(base36($hash));
+	}
+	return 0;
+}
+
+sub base36 {
+  my ($val) = shift;
+  my $symbols = join '', '0'..'9', 'a'..'z';
+  my $b36 = '';
+  while ($val) {
+    $b36 = substr($symbols, $val % 36, 1) . $b36;
+    $val = int $val / 36;
+  }
+  return $b36 || '0';
+}
+
 
 1;
