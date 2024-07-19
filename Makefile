@@ -24,7 +24,7 @@ APPS = $(NEXTCLOUD_PATH)/apps
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA  SKELETON USER_CAS
+	@echo SCRIPTS LDAPIMPORTER COLLABORA FILES_SHARING SKELETON USER_CAS
 #   @echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS LIB
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
@@ -38,8 +38,9 @@ LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
 FILES_SHARING:
-	cp -rv files_sharing/dist/* $(DIST)
-	cp -rv files_sharing/app/l10n/* $(APPS)/files_sharing/l10n
+	rsync -av files_sharing/dist/* $(DIST)
+	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
+	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 	@echo ""
 	@echo Files to delete from dist ${DIST}
 	git log -n 1 --diff-filter=D --name-only --pretty=format:"" | grep -E "[0-9]{3,}-[0-9]{3,}\.js" | sed "s|^files_sharing/dist/||"
