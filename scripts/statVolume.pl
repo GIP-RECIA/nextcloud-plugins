@@ -105,6 +105,14 @@ my $resultatQuery = qq[
     and categorie = ?
 ];
 
+# suppression de recia_storage des comptes supprimés.
+my $deleteQuery = qq[
+	delete from recia_storage
+	where storage not in (select numeric_id from oc_storages)
+];
+
+
+
 #my $sqlQuery = qq(select storage , sum(size) from oc_filecache where mimetype != 4 and storage != 1 group by storage);
 
 
@@ -128,6 +136,9 @@ sub minutes {
 
 my $sqlStatement ;
 if ($calculStat) {
+
+	$sql->do($deleteQuery);
+	
 	if ($statEleve) {
 		&minutes;
 		print "Init des éleves en base: ";
