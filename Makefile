@@ -1,5 +1,4 @@
 
-
 NEXTCLOUD_PATH := ${NC_WWW}
 
 NEXTCLOUD_SCRIPTS := ${HOME}/scripts
@@ -27,13 +26,12 @@ THEME_ESCO=themes/esco
 SCSS=$(THEME_ESCO)/scss
 CSS=$(THEME_ESCO)/css
 
-
 ALLETAB=allEtab.txt
+
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB THEME PATCH CONFIG USER_CAS RESTORE_FILES_SHARING NOTIFICATIONS
+	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB THEME PATCH CONFIG USER_CAS NOTIFICATIONS
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH) 
-
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -43,23 +41,13 @@ SCRIPTS:
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
-
 CSSJSLOADER:
 	cp -rvT cssjsloader  $(APPS)/cssjsloader 
 
-
 FILES_SHARING:
-	mkdir -p ./backups
-	mkdir -p ./backups/files_sharing_app_last
-	mkdir -p ./backups/files_sharing_dist_last
-	rsync -v -a --delete $(APPS)/files_sharing/ ./backups/files_sharing_app_last/
-	rsync -v -a --delete --include='files_sharing-files_sharing_tab*' --exclude='*' $(DIST)/ ./backups/files_sharing_dist_last/
-	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/app/ $(APPS)/files_sharing/
-	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./files_sharing/dist/ $(DIST)/
-
-RESTORE_FILES_SHARING:
-	rsync -v -a --delete --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_app_last/ $(APPS)/files_sharing/
-	rsync -v -a --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) ./backups/files_sharing_dist_last/ $(DIST)/
+	rsync -av files_sharing/dist/* $(DIST)
+	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
+	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 
 NOTIFICATIONS:
 	cp -rv apps/notifications/* $(NEXTCLOUD_PATH)/apps/notifications
@@ -77,7 +65,6 @@ LIB:
 
 PATCH:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
-
 
 THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
