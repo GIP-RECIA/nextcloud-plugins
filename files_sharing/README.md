@@ -3,7 +3,8 @@
 - [Modifications du plugin files\_sharing](#modifications-du-plugin-files_sharing)
   - [Structure](#structure)
   - [Fichiers à modifier](#fichiers-à-modifier)
-  - [Packager les librairies Javascript](#packager-les-librairies-javascript)
+  - [Compilation](#compilation)
+    - [Packager les librairies Javascript](#packager-les-librairies-javascript)
 
 ## Structure
 
@@ -19,6 +20,11 @@ files_sharing/
 
 ```diff
 ...
+    "Password" : "Mot de passe",
+-   "Share link" : "Lien de partage",
++   "Share link" : "Lien de partage public",
+    "Copy to clipboard" : "Copier dans le presse-papiers",
+...
     "Add another link" : "Ajouter un autre lien",
 -   "Create a new share link" : "Créer un nouveau lien de partage",
 +   "Create a new share link" : "Créer un nouveau lien de partage public",
@@ -27,15 +33,14 @@ files_sharing/
     "Mail share ({label})" : "Partager par e-mail ({label}) ",
 -   "Share link ({label})" : "Lien de partage ({label})",
 -   "Share link ({index})" : "Lien de partage ({index})",
--   "Share link" : "Lien de partage",
 +   "Share link ({label})" : "Lien de partage public ({label})",
 +   "Share link ({index})" : "Lien de partage public ({index})",
-+   "Share link" : "Lien de partage public",
     "Actions for \"{title}\"" : "Actions pour \"{title}\"",
 ...
     "sharing is disabled" : "le partage est désactivé",
 -   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
 +   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
++   "Share with ": "Partager avec ",
 +   "Person or group": "Personne ou groupe",
 +   "Users and groups with access" : "Utilisateurs et groupes ayant accès"
 },
@@ -47,6 +52,11 @@ files_sharing/
 
 ```diff
 ...
+    "Password" : "Mot de passe",
+-   "Share link" : "Lien de partage",
++   "Share link" : "Lien de partage public",
+    "Copy to clipboard" : "Copier dans le presse-papiers",
+...
     "Add another link" : "Ajouter un autre lien",
 -   "Create a new share link" : "Créer un nouveau lien de partage",
 +   "Create a new share link" : "Créer un nouveau lien de partage public",
@@ -55,15 +65,14 @@ files_sharing/
     "Mail share ({label})" : "Partager par e-mail ({label}) ",
 -   "Share link ({label})" : "Lien de partage ({label})",
 -   "Share link ({index})" : "Lien de partage ({index})",
--   "Share link" : "Lien de partage",
 +   "Share link ({label})" : "Lien de partage public ({label})",
 +   "Share link ({index})" : "Lien de partage public ({index})",
-+   "Share link" : "Lien de partage public",
     "Actions for \"{title}\"" : "Actions pour \"{title}\"",
 ...
     "sharing is disabled" : "le partage est désactivé",
 -   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
 +   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
++   "Share with ": "Partager avec ",
 +   "Person or group": "Personne ou groupe",
 +   "Users and groups with access" : "Utilisateurs et groupes ayant accès"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
@@ -272,16 +281,18 @@ files_sharing/
 ...
 ```
 
-## Packager les librairies Javascript
+## Compilation
 
-> Revenir à la racine de nextcloud
+1. [Packager les librairies Javascript](#packager-les-librairies-javascript).
+2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist` (⚠️ ne pas oublier de supprimer les anciens fichiers du type `xxxx-xxxx.js` et les remplacer par les nouveaux).
+3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
+
+### Packager les librairies Javascript
+
+> A la racine de nextcloud
 
 ```shell
 make build-js-production
 ```
 
 > ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin. Ces fichiers ne sont pas suivi par git => on peut facilement les trouver avec un `git status` ou `git ls-files --others --exclude-standard`.
-
-1. Compiler le js.
-2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist` supprimer les anciens fichiers du type `xxxx-xxxx.js` et les remplacer par les nouveaux.
-3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
