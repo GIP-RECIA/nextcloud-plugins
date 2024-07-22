@@ -27,7 +27,7 @@ use FindBin;
 use lib $FindBin::Bin;
 use lib $FindBin::Bin . "/GroupFolder";
 #use ncUtil;
-use MyLogger 'DEBUG';
+use MyLogger ; # 'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Pod::Usage qw(pod2usage);
@@ -74,6 +74,9 @@ if (!$force && &isDelPartage(3) > 0) {
 	# si il reste des partages pour les isDel=3 on s'arrete:
 	§FATAL "Il reste des partages pour les comptes a supprimer!";
 }
+
+# suppression des buckets obsolets
+&deleteOldUsersBuckets;
 
 # suppression des comptes déjà marqué à supprimer.
 &deleteComptes;
@@ -178,7 +181,7 @@ sub deleteOldUsersBuckets {
 	# recherche des buckets partagés par plusieurs utilisateur;
 	my $req = qq/select bucket, count(*) nb from recia_bucket_history where suppression is null group by bucket having nb > 1/;
 
-	my $sth = sql->prepare($req) or §FATAL $sql->errstr;
+	my $sth = $sql->prepare($req) or §FATAL $sql->errstr;
 	$sth->execute or §FATAL $sth->errstr;
 	
 	while ( my ($bucket, $nb) = $sth->fetchrow_array) {
@@ -193,41 +196,49 @@ sub deleteOldUsersBuckets {
 				where s.id is null and u.uid is null and  isDel >= 3
 				order by dat limit ?/;
 
-	$sth = sql->prepare($req) or §FATAL $sql->errstr;
+	$sth = $sql->prepare($req) or §FATAL $sql->errstr;
 	$sth->execute($nbRemovedUserMax) or §FATAL $sth->errstr;
 	while (my ($uid, $dat, $isDel, $name, $bucket) =  $sth->fetchrow_array) {
+		#§DEBUG "bucket a supprimer ($bucket, $uid)"; 
 		my $notDelete = 1;
 		if ($bucket) {
-			if ($bucket =~ /-\w{8,25}$/) { # le bucket n'est pas un bucket systeme
+			if ($bucket =~ /\-\w{8,25}$/) {
+				#§DEBUG "le bucket n'est pas un bucket systeme";
 				$notDelete = $bucketMultiUser{$bucket};
-				if ($notDelete) { #cas ou un bucket est partagé (ne devrait pas arriver)
+				if ($notDelete) {
+					#§DEBUG "le bucket est partagé (ne devrait pas arriver)";
 					$bucketMultiUser{$bucket}--;
 				} else {
+					#§DEBUG "le bucket n'est pas partagé";
 					$bucket = &getBucketName($bucket);
 				}
 			} 
 		} else {
+			#§DEBUG "calcul du bucket manquand";
 			$bucket = uid2bucket($uid);
 			$notDelete = 0;
 		}
 		my $s3cmd = getS3command();
 		my $isDeleted=0;
 		unless ($notDelete || !$bucket) {
+			#§DEBUG "Delete $bucket";
 			$isDeleted = deleteBucket($bucket);
  		}
- 		#pour les avatars
+ 		
  		$bucket = &getBucketName('0' . lc($uid));
+ 		#§DEBUG "Delete bucket des avatars $bucket";
  		deleteBucket($bucket);
 
  		if ($isDeleted) {
-			# suppression des données dans nos tables recia_bucket_history et oc_recia_user_history
+			#§DEBUG "Suppression dans la table recia_bucket_history";
 			$bucket =~ s/^s3:\/\///;
-			$req = qq/delete from recia_bucket_history where bucket=? and uid = ?/;
-			$sth = sql->prepare($req) or §FATAL $sth->errstr;
+			my $req = qq/delete from recia_bucket_history where bucket=? and uid = ?/;
+			my $sth = $sql->prepare($req) or §FATAL $sth->errstr;
 			$sth->execute($bucket, $uid) or §FATAL $sth->errstr;
 
+			#§DEBUG "Suppression dans la table oc_recia_user_history";
 			$req = qq/delete from oc_recia_user_history where uid = ?/;
-			$sth = sql->prepare($req) or §FATAL $sth->errstr;
+			$sth = $sql->prepare($req) or §FATAL $sth->errstr;
 			$sth->execute($uid) or §FATAL $sth->errstr;
 		}
 	}
