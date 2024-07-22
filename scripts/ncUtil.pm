@@ -93,8 +93,9 @@ sub getBucketName(){
 	if ($name =~ m{^($defautBucket([^/]*))}) {
 		if ($2) {
 			$name = $2;
+		} else {
+			$name = "0";
 		}
-		$name = "0";
 	}
 	return $prefixBucket . $name;
 }
