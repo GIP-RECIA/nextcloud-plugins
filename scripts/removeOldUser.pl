@@ -198,6 +198,9 @@ sub deleteOldUsersBuckets {
 
 	$sth = $sql->prepare($req) or §FATAL $sql->errstr;
 	$sth->execute($nbRemovedUserMax) or §FATAL $sth->errstr;
+	my $nbDeletedBucket:
+	my $nbDeletedObject;
+	my $nbDeletedObjectTotal;
 	while (my ($uid, $dat, $isDel, $name, $bucket) =  $sth->fetchrow_array) {
 		#§DEBUG "bucket a supprimer ($bucket, $uid)"; 
 		my $notDelete = 1;
@@ -222,12 +225,16 @@ sub deleteOldUsersBuckets {
 		my $isDeleted=0;
 		unless ($notDelete || !$bucket) {
 			#§DEBUG "Delete $bucket";
-			$isDeleted = deleteBucket($bucket);
+			($isDeleted, $nbDeleteObject) = deleteBucket($bucket);
+			$nbDeletedBucket++ if $isDeleted > 0;
+			$nbDeletedObjectTotal += $nbDeleteObject;
  		}
  		
  		$bucket = &getBucketName('0' . lc($uid));
  		#§DEBUG "Delete bucket des avatars $bucket";
- 		deleteBucket($bucket);
+ 		my @del = deleteBucket($bucket);
+ 		$nbDeletedBucket++ if $del[0] > 0;
+ 		$nbDeletedObjectTotal += $del[1];
 
  		if ($isDeleted) {
 			#§DEBUG "Suppression dans la table recia_bucket_history";
@@ -242,10 +249,13 @@ sub deleteOldUsersBuckets {
 			$sth->execute($uid) or §FATAL $sth->errstr;
 		}
 	}
+	§INFO "objects supprimés : $nbDeletedObjectTotal";
+	$INFO "buckets supprimés : $nbDeletedBucket";
 }
 
 # suppression d'un bucket avec son contenu sans controle
 # renvoie 0 si le bucket n'est pas supprimé , -1 s'il n'existait pas et 1 s'il a été supprimé
+# renvoie en 2ieme valeur le nombre d'objet supprimés
 sub deleteBucket {
 	my $bucket = shift;
 	my $nbDeleted;
@@ -259,20 +269,20 @@ sub deleteBucket {
 		§INFO "nombre d'objets supprimés : $nbDeleted";
 		if  ($nbErr) {
 			if ($lastErr =~ /NoSuchBucket/) {
-				return -1;
+				return (-1, $nbDeleted);
 			}
-			return 0;
+			return (0, $nbDeleted);
 		} else {
 			§SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;} ;
 			if ($nbErr) {
-				return 0;
+				return (0, $nbDeleted);
 			} 
 			§INFO "bucket supprimé : $bucket" unless ($nbErr);
-			return 1;
+			return (1, $nbDeleted);
 		}
 	} else {
 		§WARN "Tentative de suppression du bucket : $bucket";
-		return 0;
+		return (0, $nbDeleted);
 	}
 }
 
