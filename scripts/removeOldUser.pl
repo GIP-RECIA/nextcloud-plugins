@@ -198,7 +198,7 @@ sub deleteOldUsersBuckets {
 
 	$sth = $sql->prepare($req) or §FATAL $sql->errstr;
 	$sth->execute($nbRemovedUserMax) or §FATAL $sth->errstr;
-	my $nbDeletedBucket:
+	my $nbDeletedBucket;
 	my $nbDeletedObject;
 	my $nbDeletedObjectTotal;
 	while (my ($uid, $dat, $isDel, $name, $bucket) =  $sth->fetchrow_array) {
@@ -225,9 +225,9 @@ sub deleteOldUsersBuckets {
 		my $isDeleted=0;
 		unless ($notDelete || !$bucket) {
 			#§DEBUG "Delete $bucket";
-			($isDeleted, $nbDeleteObject) = deleteBucket($bucket);
+			($isDeleted, $nbDeletedObject) = deleteBucket($bucket);
 			$nbDeletedBucket++ if $isDeleted > 0;
-			$nbDeletedObjectTotal += $nbDeleteObject;
+			$nbDeletedObjectTotal += $nbDeletedObject;
  		}
  		
  		$bucket = &getBucketName('0' . lc($uid));
@@ -250,7 +250,7 @@ sub deleteOldUsersBuckets {
 		}
 	}
 	§INFO "objects supprimés : $nbDeletedObjectTotal";
-	$INFO "buckets supprimés : $nbDeletedBucket";
+	§INFO "buckets supprimés : $nbDeletedBucket";
 }
 
 # suppression d'un bucket avec son contenu sans controle
