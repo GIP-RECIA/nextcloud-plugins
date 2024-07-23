@@ -1,5 +1,5 @@
-NEXTCLOUD_VERSION = 28
-NEXTCLOUD_DOCKER = ../../nextcloud-docker-dev/workspace/stable${NEXTCLOUD_VERSION}
+NEXTCLOUD_VERSION=28
+NEXTCLOUD_DOCKER=../../nextcloud-docker-dev/workspace/stable${NEXTCLOUD_VERSION}
 
 $(info You are currently working on ${NEXTCLOUD_DOCKER})
 $(info )
@@ -8,13 +8,9 @@ defaut:
 	@echo "Availables commands: meld meld-app meld-dist sync-dist"
 
 meld:
-	meld \
-	--diff app/l10n/fr.js ${NEXTCLOUD_DOCKER}/apps/files_sharing/l10n/fr.js \
-	--diff app/l10n/fr.json ${NEXTCLOUD_DOCKER}/apps/files_sharing/l10n/fr.json \
-	--diff app/src/components/SharingEntryInternal.vue ${NEXTCLOUD_DOCKER}/apps/files_sharing/src/components/SharingEntryInternal.vue \
-	--diff app/src/components/SharingEntryLink.vue ${NEXTCLOUD_DOCKER}/apps/files_sharing/src/components/SharingEntryLink.vue \
-	--diff app/src/components/SharingInput.vue ${NEXTCLOUD_DOCKER}/apps/files_sharing/src/components/SharingInput.vue \
-	--diff app/src/views/SharingTab.vue ${NEXTCLOUD_DOCKER}/apps/files_sharing/src/views/SharingTab.vue
+	@find app/ -type f | while read FILE; do \
+		echo "--diff $${FILE} ${NEXTCLOUD_DOCKER}/apps/files_sharing/$${FILE#app/}"; \
+	done | xargs meld
 
 meld-app:
 	meld app/ ${NEXTCLOUD_DOCKER}/apps/files_sharing/
