@@ -2,9 +2,8 @@
 
 - [Modifications du plugin files\_sharing](#modifications-du-plugin-files_sharing)
   - [Structure](#structure)
-  - [Fichiers à modifier](#fichiers-à-modifier)
-  - [Compilation](#compilation)
-    - [Packager les librairies Javascript](#packager-les-librairies-javascript)
+  - [Mise à jour](#mise-à-jour)
+    - [Fichiers modifiés](#fichiers-modifiés)
 
 ## Structure
 
@@ -14,7 +13,36 @@ files_sharing/
 └── dist        # fichiers compilés
 ```
 
-## Fichiers à modifier
+## Mise à jour
+
+> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable28`
+
+2. Initialisez le projet `make dev-setup`.
+
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable28/apps/files_sharing` et inversement.
+
+4. Compilez le projet: `make build-js-production`.
+
+5. Assurez vous que tout fonction correctement dans le docker ([stable28.local](stable28.local)).
+
+6. Récuperez les fichiers compilés et générez le fichier de suivi des modifications du dossier `dist`.
+
+```bash
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable28
+nextcloud-docker-dev/workspace/stable28$ git checkout v28.0.8
+nextcloud-docker-dev/workspace/stable28$ docker compose up -d stable28
+nextcloud-docker-dev/workspace/stable28$ make dev-setup
+nextcloud-docker-dev/workspace/stable28$ cd -
+nextcloud-plugins/files_sharing$ make meld
+nextcloud-plugins/files_sharing$ cd -
+nextcloud-docker-dev/workspace/stable28$ make build-js-production
+nextcloud-docker-dev/workspace/stable28$ cd - 
+nextcloud-plugins/files_sharing$ make sync-dist
+```
+
+### Fichiers modifiés
 
 **l10n/fr.js**
 
@@ -278,33 +306,4 @@ files_sharing/
  </div>
 </template>
 ...
-```
-
-## Compilation
-
-1. [Packager les librairies Javascript](#packager-les-librairies-javascript).
-2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist`.
-3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
-
-### Packager les librairies Javascript
-
-> A la racine de nextcloud
-
-```shell
-make dev-setup
-make build-js-production
-```
-
-**OU**
-
-```shell
-make all
-```
-
-> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
-
-Lister les fichiers compilés à supprimer et ceux a ajouter dans le fichier `nextcloud-plugins/files_sharing/dist_changes.txt`.
-
-```shell
-git status --porcelain | grep -E "[0-9]{3,}-[0-9]{3,}" > ../../../nextcloud-plugins/files_sharing/dist_changes.txt
 ```
