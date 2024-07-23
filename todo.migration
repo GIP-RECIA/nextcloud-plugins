@@ -104,3 +104,12 @@ scp esco@nextcloud-gip:/var/www/nextcloud/apps/onlyoffice/lib/AppConfig.php org/
 
 meld apps/onlyoffice/l10n/fr.js org/apps/onlyoffice/l10n/fr.js
 meld apps/onlyoffice/l10n/fr.json org/apps/onlyoffice/l10n/fr.json
+
+----------------------
+migration 28.0.7 à 28.0.8
+pas de changement notable (correction de bug d'affichage)
+onlyoffice d'origine 9.3.0
+nextcloud office 8.3.8
+
+Attention a partir de cette version on a n'a des patchs sur files_sharing
+voir Quentin
