@@ -45,7 +45,6 @@ files_sharing/
 +   "Users and groups with access" : "Utilisateurs et groupes ayant accès"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
-...
 ```
 
 **l10n/fr.json**
@@ -284,7 +283,7 @@ files_sharing/
 ## Compilation
 
 1. [Packager les librairies Javascript](#packager-les-librairies-javascript).
-2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist` (⚠️ ne pas oublier de supprimer les anciens fichiers du type `xxxx-xxxx.js` et les remplacer par les nouveaux).
+2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist`.
 3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
 
 ### Packager les librairies Javascript
@@ -292,7 +291,20 @@ files_sharing/
 > A la racine de nextcloud
 
 ```shell
+make dev-setup
 make build-js-production
 ```
 
-> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin. Ces fichiers ne sont pas suivi par git => on peut facilement les trouver avec un `git status` ou `git ls-files --others --exclude-standard`.
+**OU**
+
+```shell
+make all
+```
+
+> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+
+Lister les fichiers compilés à supprimer et ceux a ajouter dans le fichier `nextcloud-plugins/files_sharing/dist_changes.txt`.
+
+```shell
+git status --porcelain | grep -E "[0-9]{3,}-[0-9]{3,}" > ../../../nextcloud-plugins/files_sharing/dist_changes.txt
+```
