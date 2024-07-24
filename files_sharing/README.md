@@ -2,11 +2,9 @@
 
 - [Modifications du plugin files\_sharing](#modifications-du-plugin-files_sharing)
   - [Structure](#structure)
-  - [Fichiers à ajouter](#fichiers-à-ajouter)
-  - [Fichiers à modifier](#fichiers-à-modifier)
-  - [Compilation](#compilation)
-    - [Mettre à jour l'autoloader php](#mettre-à-jour-lautoloader-php)
-    - [Packager les librairies Javascript](#packager-les-librairies-javascript)
+  - [Mise à jour](#mise-à-jour)
+    - [Fichiers ajouteés](#fichiers-ajouteés)
+    - [Fichiers modifieés](#fichiers-modifieés)
 
 ## Structure
 
@@ -16,7 +14,42 @@ files_sharing/
 └── dist        # fichiers compilés
 ```
 
-## Fichiers à ajouter
+## Mise à jour
+
+> Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable27`
+
+2. Initialisez le projet `make dev-setup`.
+
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable27/apps/files_sharing` et inversement.
+
+4. Mettez à jour l'autoloader php : `composer install`.
+
+5. Compilez le projet : `make build-js-production`.
+
+6. Assurez vous que tout fonction correctement dans le docker ([stable27.local](stable27.local)).
+
+7. Récuperez les fichiers compilés et le dossier `composer` : `make sync`.
+
+```bash
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable27/
+nextcloud-docker-dev/workspace/stable27$ git checkout v27.1.11
+nextcloud-docker-dev/workspace/stable27$ docker compose up -d stable27
+nextcloud-docker-dev/workspace/stable27$ make dev-setup
+nextcloud-docker-dev/workspace/stable27$ cd -
+nextcloud-plugins/files_sharing$ make add
+nextcloud-plugins/files_sharing$ make meld
+nextcloud-plugins/files_sharing$ cd -
+nextcloud-docker-dev/workspace/stable27$ make build-js-production
+nextcloud-docker-dev/workspace/stable27$ cd apps/files_sharing/composer/
+nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ composer install
+nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ cd -
+nextcloud-docker-dev/workspace/stable27$ cd ../../nextcloud-plugins/files_sharing/
+nextcloud-plugins/files_sharing$ make sync
+```
+
+### Fichiers ajouteés
 
 ```bash
 files_sharing/
@@ -36,7 +69,7 @@ files_sharing/
         └── MultiselectMixin.js
 ```
 
-## Fichiers à modifier
+### Fichiers modifieés
 
 **appinfo/routes.php**
 
@@ -199,27 +232,4 @@ import SharingLinkList from './SharingLinkList.vue'
  },
 }
 </script>
-```
-
-## Compilation
-
-1. [Mettre à jour l'autoloader php](#mettre-à-jour-lautoloader-php) et [packager les librairies Javascript](#packager-les-librairies-javascript).
-2. Faire un meld entre `nextcloud-plugins/files_sharing/dist` et le serveur Nextcloud `server/dist`.
-3. Faire un meld entre `nextcloud-plugins/files_sharing/app` et le serveur Nextcloud `server/apps/files_sharing`.
-
-### Mettre à jour l'autoloader php
-
-> Dans le dossier `files_sharing`
-
-```shell
-cd ./composer
-composer install
-```
-
-### Packager les librairies Javascript
-
-> A la racine de Nextcloud
-
-```shell
-make build-js-production
 ```
