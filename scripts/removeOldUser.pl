@@ -12,7 +12,11 @@
 	removeOldUser.pl -n nbCompteASupprimer [-l loglevel] [--force]
 
 	nbCompteASupprimer : nombre maximum de comptes à traiter (<= 2000).
-	loglevel : 0 FATAL, 1 ERROR, 2 WARN, 3 INFO, 4 DEBUG, 5 TRACE; defaut = 4.
+	loglevel : 0x FATAL, 1x ERROR, 2x WARN, 3x INFO, 4x DEBUG, 5x TRACE; defaut = 42.
+			si  x = 0 les logs ne vont que dans le fichier
+				x = 1 on affiche les FATAL, ERROR et WARN
+				x = 2 on affiche en plus les INFO
+				x = 3 on ajoute les DEBUG et TRACE
 	force :  force l'execution même s'il reste des partage depuis les comptes à supprimer,
 	         à n'utiliser que si on est sure que ces partages peuvent être perdu (genre par mail ).
 
@@ -63,7 +67,12 @@ $logsFile =~ s/\.pl$/\/$jour.log/;
 MyLogger->file('>>' . $logsFile);
 
 if ($loglevel) {
-		MyLogger->level($loglevel, 2);
+	my $mode = 2;
+	if ($loglevel >= 10) {
+		$mode = $loglevel % 10;
+		$loglevel = int $loglevel / 10;
+	}
+	MyLogger->level($loglevel, $mode);
 }
 
 §INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel";
@@ -258,7 +267,7 @@ sub deleteOldUsersBuckets {
 # renvoie en 2ieme valeur le nombre d'objet supprimés
 sub deleteBucket {
 	my $bucket = shift;
-	my $nbDeleted;
+	my $nbDeleted =0;
 	my $lastErr = '';
 	my $nbErr;
 	my $s3cmd = getS3command();
