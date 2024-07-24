@@ -249,7 +249,7 @@ sub deleteOldUsersBuckets {
 			#§DEBUG "Suppression dans la table recia_bucket_history";
 			$bucket =~ s/^s3:\/\///;
 			my $req = qq/delete from recia_bucket_history where bucket=? and uid = ?/;
-			my $sth = $sql->prepare($req) or §FATAL $sth->errstr;
+			my $sth = $sql->prepare($req) or §FATAL $sql->errstr;
 			$sth->execute($bucket, $uid) or §FATAL $sth->errstr;
 
 			#§DEBUG "Suppression dans la table oc_recia_user_history";
@@ -278,12 +278,15 @@ sub deleteBucket {
 		§INFO "nombre d'objets supprimés : $nbDeleted";
 		if  ($nbErr) {
 			if ($lastErr =~ /NoSuchBucket/) {
+				$DEBUG "bucket inexistant";
 				return (-1, $nbDeleted);
 			}
+			$DEBUG "erreur de suppresion d'objet : $lastErr";
 			return (0, $nbDeleted);
 		} else {
 			§SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;} ;
 			if ($nbErr) {
+				$DEBUG "erreur de suppresion de bucket :";
 				return (0, $nbDeleted);
 			} 
 			§INFO "bucket supprimé : $bucket" unless ($nbErr);
