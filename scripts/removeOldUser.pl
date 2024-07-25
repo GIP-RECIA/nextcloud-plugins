@@ -279,21 +279,21 @@ sub deleteBucket {
 		if ($status && $status != 12) {
 			§ERROR "$s3cmd  del --force --recursive $bucket : error $status"; 
 		}
-		§INFO "nombre d'objets supprimés : $nbDeleted";
+		§DEBUG "nombre d'objets supprimés : $nbDeleted";
 		if  ($nbErr) {
 			if ($lastErr =~ /NoSuchBucket/) {
 				§DEBUG "bucket inexistant";
 				return (-1, $nbDeleted);
 			}
-			§DEBUG "erreur de suppresion d'objet : $lastErr";
+			§DEBUG "erreur de suppression d'objet : $lastErr";
 			return (0, $nbDeleted);
 		} else {
-			§SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;} ;
-			if ($nbErr) {
-				§DEBUG "erreur de suppresion de bucket :";
+			$status = §SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;}, MOD => 0 ;
+			if (!$status || $nbErr) {
+				§ERROR "Suppression de bucket $bucket  en erreur : (status, nberr) = ($status, $nbErr) ";
 				return (0, $nbDeleted);
 			} 
-			§INFO "bucket supprimé : $bucket" unless ($nbErr);
+			§INFO "bucket supprimé : $bucket ($nbDeleted)" ;
 			return (1, $nbDeleted);
 		}
 	} else {
