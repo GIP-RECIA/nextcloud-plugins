@@ -446,8 +446,10 @@ sub traceSystem {
 	my $commande = shift;
 	my %params = @_; 
 
-	my $mod = $params{'MOD'};
-	unless ($mod) {
+	my $mod ;
+	if (exists $params{'MOD'}) {
+		$mod = $params{'MOD'};
+	} else {
 		$mod = $defautLog->{MOD};
 	}
 	unless ($fileName or $line) {
