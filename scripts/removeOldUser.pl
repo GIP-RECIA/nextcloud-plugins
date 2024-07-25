@@ -258,8 +258,8 @@ sub deleteOldUsersBuckets {
 			$sth->execute($uid) or §FATAL $sth->errstr;
 		}
 	}
-	§INFO "objects supprimés : $nbDeletedObjectTotal";
-	§INFO "buckets supprimés : $nbDeletedBucket";
+	print "objects supprimés : $nbDeletedObjectTotal\n";
+	print "buckets supprimés : $nbDeletedBucket\n";
 }
 
 # suppression d'un bucket avec son contenu sans controle
