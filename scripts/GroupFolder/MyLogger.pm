@@ -371,11 +371,15 @@ sub _info {
 }
 
 sub info {
+	info_($defautLog->{MOD}, @_);
+}
+sub info_ {
+	my $mod = shift;
 	my $fileName = lastname (shift) . ' (' . shift . '): ';
 
 	if ($defautLog->{FILE}) {
 		logger ('INFO: ', $fileName, @_);
-		if ($defautLog->{MOD} > 1) {
+		if ($mod > 1) {
 			print STDERR '  INFO: ', @_,"\n";
 		}
 	} else {
@@ -474,7 +478,7 @@ sub traceSystem {
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 
-	info ($fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
+	info_ ($mod, $fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
 
 	$select->add($COM, $ERR);
 
