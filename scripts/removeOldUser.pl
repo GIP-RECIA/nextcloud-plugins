@@ -207,9 +207,9 @@ sub deleteOldUsersBuckets {
 
 	$sth = $sql->prepare($req) or §FATAL $sql->errstr;
 	$sth->execute($nbRemovedUserMax) or §FATAL $sth->errstr;
-	my $nbDeletedBucket;
-	my $nbDeletedObject;
-	my $nbDeletedObjectTotal;
+	my $nbDeletedBucket = 0;
+	my $nbDeletedObject = 0;
+	my $nbDeletedObjectTotal =0;
 	while (my ($uid, $dat, $isDel, $name, $bucket) =  $sth->fetchrow_array) {
 		#§DEBUG "bucket a supprimer ($bucket, $uid)"; 
 		my $notDelete = 1;
@@ -269,7 +269,7 @@ sub deleteBucket {
 	my $bucket = shift;
 	my $nbDeleted =0;
 	my $lastErr = '';
-	my $nbErr;
+	my $nbErr = 0 ;
 	my $s3cmd = getS3command();
 	if ($bucket =~ /\w{9,25}$/) { # on ne veut pas effacer les buckets du syle 's3://nc-recette-0' 
 		my $status = §SYSTEM "$s3cmd  del --force --recursive $bucket",
@@ -289,7 +289,7 @@ sub deleteBucket {
 			return (0, $nbDeleted);
 		} else {
 			$status = §SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;}, MOD => 0 ;
-			if (!$status || $nbErr) {
+			if ( $status || $nbErr) {
 				§ERROR "Suppression de bucket $bucket  en erreur : (status, nberr) = ($status, $nbErr) ";
 				return (0, $nbDeleted);
 			} 
