@@ -272,21 +272,25 @@ sub deleteBucket {
 	my $nbErr;
 	my $s3cmd = getS3command();
 	if ($bucket =~ /\w{9,25}$/) { # on ne veut pas effacer les buckets du syle 's3://nc-recette-0' 
-		§SYSTEM "$s3cmd  del --force --recursive $bucket",
+		my $status = §SYSTEM "$s3cmd  del --force --recursive $bucket",
 			OUT => sub { $nbDeleted++ if /^delete/},
-			ERR => sub { if (/^ERROR[^\[]*\((\w+)\)/) {$lastErr = $1; $nbErr++;} };
+			ERR => sub { if (/^ERROR[^\[]*\((\w+)\)/) {$lastErr = $1; $nbErr++;} },
+			MOD => 0;
+		if ($status && $status != 12) {
+			§ERROR "$s3cmd  del --force --recursive $bucket : error $status"; 
+		}
 		§INFO "nombre d'objets supprimés : $nbDeleted";
 		if  ($nbErr) {
 			if ($lastErr =~ /NoSuchBucket/) {
-				$DEBUG "bucket inexistant";
+				§DEBUG "bucket inexistant";
 				return (-1, $nbDeleted);
 			}
-			$DEBUG "erreur de suppresion d'objet : $lastErr";
+			§DEBUG "erreur de suppresion d'objet : $lastErr";
 			return (0, $nbDeleted);
 		} else {
 			§SYSTEM "$s3cmd  rb $bucket" , ERR => sub {$nbErr++ if /^ERROR/;} ;
 			if ($nbErr) {
-				$DEBUG "erreur de suppresion de bucket :";
+				§DEBUG "erreur de suppresion de bucket :";
 				return (0, $nbDeleted);
 			} 
 			§INFO "bucket supprimé : $bucket" unless ($nbErr);
