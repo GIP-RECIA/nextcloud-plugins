@@ -312,16 +312,22 @@ sub _trace {
 	local $::defautLog = shift;
 	trace (@_);
 }
-sub trace {
+
+sub trace_ {
+	my $mod = shift;
 	if ($defautLog->{FILE}) {
 		print {$defautLog->{FILE}} @_;
-		if ($defautLog->{MOD} >  2) {
+		if ($mod >  2) {
 			print STDERR @_;
 		}
 	} else {
 		print STDERR @_;
 	}
 }
+sub trace {
+	trace_($defautLog->{MOD}, @_);
+}
+
 
 sub _logger {
 	my $self = shift;
@@ -343,10 +349,15 @@ sub _debug {
 }
 
 sub debug {
+	debug_($defautLog->{MOD}, @_);
+}
+
+sub debug_ {
+	my $mod = shift;
 	unshift (@_, lastname (shift) . ' (', shift . '): ');
 	if ($defautLog->{FILE}) {
 		logger ('DEBUG: ', @_);
-		if ($defautLog->{MOD} > 2) {
+		if ($mod > 2) {
 			print STDERR ' DEBUG: ', @_, "\n";
 		}
 	} else {
@@ -378,12 +389,16 @@ sub _erreur {
 }
 
 sub erreur {
+	erreur_($defautLog->{MOD}, @_);
+}
+sub erreur_ {
+	my $mod = shift;
 	my $type = shift;
 	my $fileName = lastname(shift). ' (' . shift . '): ';
 
 	if ($defautLog->{FILE}) {
 		logger $type, $fileName, @_;
-		if ($defautLog->{MOD} > 0) {
+		if ($mod > 0) {
 			print STDERR  '> ', $type, $fileName, @_, "\n";
 		} 
 	} else {
@@ -430,14 +445,18 @@ sub traceSystem {
 	my $line = shift;
 	my $commande = shift;
 	my %params = @_; 
-	
+
+	my $mod = $params{'MOD'};
+	unless ($mod) {
+		$mod = $defautLog->{MOD};
+	}
 	unless ($fileName or $line) {
 		($fileName, $line) = (caller())[1,2];
 		erreur ( 'WARN : ', $fileName, $line, '§SYSTEM appelé avec un indice ne permetant pas de déterminer le fichier et la ligne de d\'appèle' );
 	}
 	# les parametres optionnels donnés par name => valeur
-	my $printOut = printCodeFromParameter($fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
-	my $printErr = printCodeFromParameter($fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
+	my $printOut = printCodeFromParameter($mod, $fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
+	my $printErr = printCodeFromParameter($mod, $fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
 
 	my $bufSize = $params{'bufferSize'}; #taille du buffer de lecture
 
@@ -475,7 +494,7 @@ sub traceSystem {
 				if ($fh == $COM) {
 					$out .= $buf;
 					unless ($flagC) {
-						if ( $defautLog->{LEVEL} >= 4) { debug ($fileName, $line, " STDOUT :"); }
+						if ( $defautLog->{LEVEL} >= 4) { debug_ ($mod, $fileName, $line, " STDOUT :"); }
 						$flagC = 1;
 					}
 					while ($out =~ s/^(.*\n)//) {
@@ -484,7 +503,7 @@ sub traceSystem {
 				} elsif ($fh == $ERR) {
 					$err .= $buf;
 					unless ($flagE) {
-						if ($defautLog->{LEVEL} >= 1) { erreur ( 'trace : ', $fileName, $line, 'STDERR :'); }
+						if ($defautLog->{LEVEL} >= 1) { erreur_ ($mod,  'trace : ', $fileName, $line, 'STDERR :'); }
 						$flagE = 1;
 					}
 					while ($err =~ s/^(.*\n)//) {
@@ -502,13 +521,14 @@ sub traceSystem {
 	waitpid $pid, 0;
 	my $child_signal = $? & 127;
 	my $child_exit_status = $? >> 8;
-	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status, $child_signal") if $child_exit_status;
+	erreur_ ($mod, "ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status, $child_signal") if $child_exit_status;
 	close $ERR;
 	close $COM;
 	return $child_exit_status;
 }
 
 sub printCodeFromParameter {
+	my $mod = shift;
 	my $fileName = shift;
 	my $line = shift;
 	my $level = shift;
@@ -522,19 +542,19 @@ sub printCodeFromParameter {
 		if ($2) {
 			return sub {
 				local $_ = shift;
-				if ($defautLog->{LEVEL} >=  $level) { trace($tab, $_); }
+				if ($defautLog->{LEVEL} >=  $level) { trace_($mod,$tab, $_); }
 				&$code;
 			}
 		}
 		return sub {
 			my $line = shift;
-			if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
+			if ($defautLog->{LEVEL} >=  $level) { trace_($mod, $tab, $line); }
 			push @$code, $_[0];
 		}
 	}
 	return sub {
 		my $line = shift;
-		if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
+		if ($defautLog->{LEVEL} >=  $level) { trace_($mod, $tab, $line); }
 	}
 }
 
