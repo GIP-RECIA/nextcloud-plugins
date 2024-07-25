@@ -205,9 +205,9 @@ sub toGiga {
 sub uid2bucket {
 	my $uid = shift;
 	if ($uid) {
+		no warnings;
 		my $hash = hex md5_hex($uid);
 		
-#		no warnings;
 		return &getBucketName(base36($hash));
 	}
 	return 0;
