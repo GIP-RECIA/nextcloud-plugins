@@ -48,8 +48,6 @@ $PARAM{'NC_DATA'} = $PARAM{'datadirectory'};
 # ex: 'nc-recette-'
 my $defautBucket = $PARAM{'bucket'};
 
-# ex: s3://nc-recette-
-my $prefixBucket = "s3://$defautBucket";
 
 my $s3command = "/usr/bin/s3cmd ";
 
@@ -97,7 +95,7 @@ sub getBucketName(){
 			$name = "0";
 		}
 	}
-	return $prefixBucket . $name;
+    return "s3://".$defautBucket.$name;
 }
 
 # 

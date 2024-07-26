@@ -40,9 +40,24 @@
 
 	§SYSTEM est une macro pour logger les appels système ie stderr et stdin seront logger en fonction du niveau fixé.
 	Exemple:
-	§SYSTEM "tar -czf monfichier.tgz monrep"; # exécute la commande tar et met les erreurs dans  le fichier de log ou stderr suivant le niveau et le mode
-	si on veut traiter la sortie de la commande ou peut passer une closure, $_ donne chaque ligne renvoyée par la commande.
-	§SYSTEM "tar -cvzf monfichier.tgz monrep", sub {print $_;}; # affichera la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+	§SYSTEM "tar -czf monfichier.tgz monrep";
+		# exécute la commande tar et met les erreurs dans  le fichier de log ou stderr suivant le niveau et le mode
+
+	Les dernier parametres  facultatif (syntaxe des hash): OUT, ERR, MOD
+	Si on veut traiter les sorties de la commande ou peut passer des closure dans les parametres OUT ou ERR,
+	$_ donne chaque ligne renvoyée par la commande.
+	Exemple:
+	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => sub {print $_;}, ERR => sub { $nbErr++ ; $lastErr = $_}, MOD => 0;
+				# OUT affiche la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+				# ERR compte le nombre d'erreurs et mémorise la dernière.
+				# MOD change le mod du logger dans SYSTEM, avec 0 on affiche rien dans STDERR, on ne log que dans le fichier.
+
+	Dans OUT et ERR, au lieux de closure on peut mettre la réference à un tableaux qui contiendra les lignes produites par la commande:
+	exemple:
+	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => \@sortieTar, MOD => 1;
+		# @sortieTar contiendra les sorties STDOUT produites par la commande;
+		# MOD 1 donne dans  STDERR les FATAL, ERROR et WARN .
+		
 	Si la commande ne peut pas se lancer un §FATAL est exécuté et le programme finit.
 
 =cut
@@ -80,7 +95,7 @@ FILTER {
 		s/\#§DEBUG\b/rewrite4log('#DEBUG')/ge;
 	}
 
-	s/§(FATAL|ERROR|WARN|INFO|DEBUG|TRACE|SYSTEM|LOG)\b(?:\s*\[(\d+)\])?(?:\s*\[(\$\w+)])?/rewrite4log($1, $2, $3)/ge;
+	s/§(FATAL|ERROR|WARN|INFO|DEBUG|TRACE|SYSTEM|PRINT|LOG)\b(?:\s*\[(\d+)\])?(?:\s*\[(\$\w+)])?/rewrite4log($1, $2, $3)/ge;
 
 	my $out;
 	my $nbParam = -1;
@@ -170,6 +185,7 @@ my %ParamLogger = (
 		ERROR => ['erreur ',	1, 1, "'ERROR: ',"],
 		WARN => ['erreur ',		2, 1, "'WARN: ',"],
 		INFO => ['info ',		3, 1],
+		PRINT => ['printInfo ',		0, 0],
 		DEBUG => ['debug ', 	4, 1],
 		TRACE => ['trace ', 	5, 0],
 		SYSTEM => ['traceSystem ',0, 1],
@@ -185,8 +201,10 @@ sub rewrite4log {
 #	print "$name, $call, $logger; $function, $level, $call, $text\n";
 	my $caller = $call ? sprintf('@{[(caller(%d))]}[1,2]', $call-1 ) : '__FILE__, __LINE__';
 
-	unless ($text) {
-		$text = '';
+	if ($text) {
+		$text = " $text ";
+	} else {
+		$text = " ";
 	}
 	
 	my $test;
@@ -203,19 +221,19 @@ sub rewrite4log {
 	
 	if ($iscall) {
 		if ($level > 0) {
-			return $test . $level . ") and " . $function . " $text " . $caller . ", "; 
+			return $test . $level . ") and " . $function . $text . $caller . ", "; 
 		} elsif ($level < 0) { # on test l'existance d'un fichier
-			return   $testFile. $function . " $text " . $caller . ","; 
+			return   $testFile. $function . $text . $caller . ","; 
 		} else {
-			return $function . " $text " . $caller . ","; 
+			return $function . $text . $caller . ","; 
 		}
 	} else {
 		if ($level > 0) {
-			return $test . $level . ") and " . $function . " $text ";
+			return $test . $level . ") and " . $function . $text;
 		} elsif ($level < 0) {
-			return $testFile . $function . " $text ";
+			return $testFile . $function . $text;
 		}
-		return $function . " $text "; 
+		return $function . $text; 
 	}
 }
 
@@ -373,15 +391,26 @@ sub _info {
 sub info {
 	info_($defautLog->{MOD}, @_);
 }
+
+sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le fichier de log 
+	
+	if ($defautLog->{LEVEL} > 1 && $defautLog->{FILE}) {
+		my ($fileName, $line) = (caller())[1,2];
+		logger ('INFO: ', "$fileName ($line)" , @_);
+	}
+	print (@_, "\n");
+}
+
+
 sub info_ {
 	my $mod = shift;
 	my $fileName = lastname (shift) . ' (' . shift . '): ';
-
+	
 	if ($defautLog->{FILE}) {
 		logger ('INFO: ', $fileName, @_);
 		if ($mod > 1) {
 			print STDERR '  INFO: ', @_,"\n";
-		}
+		} 
 	} else {
 		print STDERR '  INFO: ', $fileName, @_, "\n";
 	}
