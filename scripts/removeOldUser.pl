@@ -32,7 +32,7 @@ use lib $FindBin::Bin;
 use lib $FindBin::Bin . "/GroupFolder";
 #use ncUtil;
 use MyLogger ; # 'DEBUG';
-use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Pod::Usage qw(pod2usage);
 use Getopt::Long;
@@ -262,7 +262,7 @@ sub deleteOldUsersBuckets {
 			$sth->execute($uid) or §FATAL $sth->errstr;
 		}
 	}
-	§PRINT "objects supprimés : $nbDeletedObjectTotal\n";
+	§PRINT "objects supprimés : $nbDeletedObjectTotal";
 	§PRINT "buckets supprimés : $nbDeletedBucket\n";
 }
 
