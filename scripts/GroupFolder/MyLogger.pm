@@ -27,16 +27,20 @@
 
 	Tous les loggers affiche l'heure, le fichier et la ligne sauf §TRACE .
 	Si le nom du logger est suivi d'un chiffre entre crochets [n] ; il affichera le fichier et la ligne de la énième procédure appelante dans la trace d'exécution, utile dans une lib pour indiquer l'erreur dans la procédure appelante et pas dans la lib.
-	Le logger §LOG écrit dans le fichier de log sans condition de niveau, si pas de fichier ne fait rien.
+
+	§LOG écrit dans le fichier de log sans condition de niveau, si pas de fichier ne fait rien.
+	§PRINT est comme §INFO sauf qu'il écrit sysématiquement dans STDOUT sans condition de level ou mod, ne tiens pas compte des params entre [].
 	
 	Exemples : les macros seront remplacées par le code ad hoc les arguments suivants resteront tels quel à la suite, donc ne pas mettre de () et finir par, le 1er argument est obligatoire ;  
 	§DEBUG "un message ", "de debug" ;
 	open ('myfile') or §FATAL "erreur de lecture du fichier ", 'myfile ' , $!; # §FATAL termine le processus (die).
 	§INFO " myfile ouvert en lecture ! " ;
 
-	§WARN1 "paramètre vide " unless ($param) ; # la ligne et le fichier seront sur l'appel de la fonction qui contient ce code.
+	§WARN[1] "paramètre vide " unless ($param) ; # la ligne et le fichier seront sur l'appel de la fonction qui contient ce code.
 
 	§LOG "une info pour le fichier de log ", " seulement" ;
+
+	§PRINT "ecrit dans STDOUT comme print et dans le fichier de log comme §INFO"; 
 
 	§SYSTEM est une macro pour logger les appels système ie stderr et stdin seront logger en fonction du niveau fixé.
 	Exemple:
