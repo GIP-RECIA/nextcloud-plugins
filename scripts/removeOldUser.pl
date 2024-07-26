@@ -32,7 +32,7 @@ use lib $FindBin::Bin;
 use lib $FindBin::Bin . "/GroupFolder";
 #use ncUtil;
 use MyLogger ; # 'DEBUG';
-#use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
+use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
 use Pod::Usage qw(pod2usage);
 use Getopt::Long;
@@ -103,22 +103,24 @@ if (!$force && &isDelPartage(3) > 0) {
 sub delPartage {
 	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
 
-	§INFO "delete from oc_share ";
+	§PRINT "delete from oc_share ";
 	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
 
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
-	§INFO "\t", 0 + $nbLines, " suppressions";
+	§PRINT "\t", 0 + $nbLines, " suppressions";
 }
 
 # expiration des partages des comptes obsolètes
 sub expirePartage {
-	my $req = q/update oc_share set expiration = now() where share_type in (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
-	§INFO "update oc_share set expiration";
+
+	my $req = q/update oc_share set expiration = now() where share_type = (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
+	§PRINT "update oc_share set expiration";
+
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
 	my $nbLines = $sta->execute($nbRemovedUserMax) or §FATAL $sta->errstr;
 
-	§INFO "\t", 0 + $nbLines, " updates";
+	§PRINT "\t", 0 + $nbLines, " updates";
 }
 
 # Marquer les comptes sans partage candidat a la suppression
@@ -126,11 +128,11 @@ sub expirePartage {
 # isDel=3 => le compte peut être supprimer
 sub markToDelete {
 	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
-	§INFO "update oc_recia_user_history set isDel = 3 ...";
+	§PRINT "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
-	§INFO "\t", 0 + $nbLines, " mise à jours";
-	§INFO "Nombre de partages restants  : ", isDelPartage(3);
+	§PRINT "\t", 0 + $nbLines, " mise à jours";
+	§PRINT "Nombre de partages restants  : ", isDelPartage(3);
 }
 
 #donne les partages des comptes en fonction de la valeurs de isDel 
@@ -173,7 +175,7 @@ sub deleteComptes{
 		last unless ($isErr);
 	}
 	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
-	§INFO "nombre de suppressions de compte : $nbSuppression";
+	§PRINT "nombre de suppressions de compte : $nbSuppression";
 }
 
 # Les comptes supprimé sans bucket mémorisé
@@ -185,6 +187,8 @@ sub deleteComptes{
 # select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid left join recia_bucket_history bh on uh.uid = bh.uid  left join oc_storages s on s.id = concat('object::user:', uh.uid ) where s.id is null and u.uid is null and  isDel >= 3 order by dat limit 10;
 
 sub deleteOldUsersBuckets {
+
+	§PRINT "suppression des buckets des anciens utilisateurs ";
 	my %bucketMultiUser;
 	my $sql = connectSql();
 	# recherche des buckets partagés par plusieurs utilisateur;
@@ -258,8 +262,8 @@ sub deleteOldUsersBuckets {
 			$sth->execute($uid) or §FATAL $sth->errstr;
 		}
 	}
-	print "objects supprimés : $nbDeletedObjectTotal\n";
-	print "buckets supprimés : $nbDeletedBucket\n";
+	§PRINT "objects supprimés : $nbDeletedObjectTotal\n";
+	§PRINT "buckets supprimés : $nbDeletedBucket\n";
 }
 
 # suppression d'un bucket avec son contenu sans controle
