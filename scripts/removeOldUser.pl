@@ -113,7 +113,7 @@ sub delPartage {
 
 # expiration des partages des comptes obsolètes
 sub expirePartage {
-	my $req = q/update oc_share set expiration = now() where share_type = 3 and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
+	my $req = q/update oc_share set expiration = now() where share_type in (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
 	§INFO "update oc_share set expiration";
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
 	my $nbLines = $sta->execute($nbRemovedUserMax) or §FATAL $sta->errstr;
@@ -138,7 +138,7 @@ sub isDelPartage {
 	my $isDel = shift;
 	$isDel = 3 unless $isDel;
 	§DEBUG "Compte partage isDel = $isDel";
-	my $req= q/select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid/;
+	my $req= q/select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid and (s.expiration is null or s.expiration > now())/;
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
