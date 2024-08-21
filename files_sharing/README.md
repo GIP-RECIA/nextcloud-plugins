@@ -31,7 +31,7 @@ files_sharing/
 
 ```bash
 nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable28
-nextcloud-docker-dev/workspace/stable28$ git checkout v28.0.8
+nextcloud-docker-dev/workspace/stable28$ git checkout v28.0.9 -b v28.0.9
 nextcloud-docker-dev/workspace/stable28$ docker compose up -d stable28
 nextcloud-docker-dev/workspace/stable28$ make dev-setup
 nextcloud-docker-dev/workspace/stable28$ cd -
@@ -48,24 +48,18 @@ nextcloud-plugins/files_sharing$ make sync-dist
 
 ```diff
 ...
-    "Password" : "Mot de passe",
 -   "Share link" : "Lien de partage",
 +   "Share link" : "Lien de partage public",
-    "Copy to clipboard" : "Copier dans le presse-papiers",
 ...
-    "Add another link" : "Ajouter un autre lien",
 -   "Create a new share link" : "Créer un nouveau lien de partage",
 +   "Create a new share link" : "Créer un nouveau lien de partage public",
-    "{shareWith} by {initiator}" : "{shareWith} par {initiator}",
-    "Shared via link by {initiator}" : "Partagé par lien par {initiator}",
-    "Mail share ({label})" : "Partager par e-mail ({label}) ",
--   "Share link ({label})" : "Lien de partage ({label})",
--   "Share link ({index})" : "Lien de partage ({index})",
-+   "Share link ({label})" : "Lien de partage public ({label})",
-+   "Share link ({index})" : "Lien de partage public ({index})",
-    "Actions for \"{title}\"" : "Actions pour \"{title}\"",
 ...
-    "sharing is disabled" : "le partage est désactivé",
+-   "Share link ({label})" : "Lien de partage ({label})",
++   "Share link ({label})" : "Lien de partage public ({label})",
+...
+-   "Share link ({index})" : "Lien de partage ({index})",
++   "Share link ({index})" : "Lien de partage public ({index})",
+...
 -   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
 +   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
 +   "Share with ": "Partager avec ",
@@ -79,24 +73,18 @@ nextcloud-plugins/files_sharing$ make sync-dist
 
 ```diff
 ...
-    "Password" : "Mot de passe",
 -   "Share link" : "Lien de partage",
 +   "Share link" : "Lien de partage public",
-    "Copy to clipboard" : "Copier dans le presse-papiers",
 ...
-    "Add another link" : "Ajouter un autre lien",
 -   "Create a new share link" : "Créer un nouveau lien de partage",
 +   "Create a new share link" : "Créer un nouveau lien de partage public",
-    "{shareWith} by {initiator}" : "{shareWith} par {initiator}",
-    "Shared via link by {initiator}" : "Partagé par lien par {initiator}",
-    "Mail share ({label})" : "Partager par e-mail ({label}) ",
--   "Share link ({label})" : "Lien de partage ({label})",
--   "Share link ({index})" : "Lien de partage ({index})",
-+   "Share link ({label})" : "Lien de partage public ({label})",
-+   "Share link ({index})" : "Lien de partage public ({index})",
-    "Actions for \"{title}\"" : "Actions pour \"{title}\"",
 ...
-    "sharing is disabled" : "le partage est désactivé",
+-   "Share link ({label})" : "Lien de partage ({label})",
++   "Share link ({label})" : "Lien de partage public ({label})",
+...
+-   "Share link ({index})" : "Lien de partage ({index})",
++   "Share link ({index})" : "Lien de partage public ({index})",
+...
 -   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
 +   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
 +   "Share with ": "Partager avec ",
