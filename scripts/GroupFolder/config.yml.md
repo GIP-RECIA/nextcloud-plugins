@@ -73,10 +73,11 @@ Dans l'ordre d'utilisation (avec la bonne indentation):
 		Permet de sortir des traitements suivants un groupe ne respectant la **regex**.
 
 		- **groups**: liste des groupes NC à créer ssi la **regex** match le groupe Grouper.  
-			- **group**: Format (à la printf du C) pour déduire le nom du groupe NC à créer, à partir des groupements de la **regex** qui match le groupe Grouper. 
+			- **group**: Format (à la printf du C) pour déduire le nom du groupe NC à créer, à partir des groupements de la **regex** qui match le groupe Grouper.
 
 			- **folders**: liste des GroupFolder à créer associés aux groupes NC donnés par **group**.
 				- **folder**: Format (à la printf du C) pour déduire le nom du GroupFolder à créer (point de montage).
+						si c'est un tableau le nom du GF sera la concaténation de chaque élement séparé par un '/'. 
 
 				- **permF**: liste des permisions du groupe NC sur le GF;  
 						3 valeurs possibles:

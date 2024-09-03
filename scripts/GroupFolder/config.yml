@@ -14,12 +14,13 @@ etabs:
   - nom: CD18-CHER
     siren: 22180001400013
     ldapFilterList:
-      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Evaluations professionelles:Managers)'
-        regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Evaluations professionelles:Managers$'
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Managers)'
+						  
+        regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Echanges etablissements:Managers$'
         last: ifMatch
-        group: &group18 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-        folder: &folder18 'entretiens pro ATTEE18' # création du folder 'entretiens pro ATTEE18'
-        permF: # droit du groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Évaluations pro ATTE18'
+        group: &group18 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
+        folder: &folder18 'Échanges CD18-établissements' # création du folder 'Échanges CD18-établissements'
+        permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
           - write
           - share
           - delete
@@ -34,17 +35,17 @@ etabs:
             groups: &groupsEtab18
               - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
                 folders:
-                  - folder: *folder18
+                  - folder: *folder18 # droit du groupe est lecture sur Échanges CD18-établissements
                     permF: []
-                  - folder: &folderEtab18 # création des folders: 'Évaluations pro ATTE18/nomEtab_uai'
+                  - folder: &folderEtab18 # création des folders: 'Échanges CD18-établissements/nomEtab_uai'
                       - *folder18
                       - '%1$s'
                     quotaF: 50
-                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Évaluations pro ATTE18/nomEtab_uai'
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/nomEtab_uai'
                       - write
                       - delete
-              - group: *group18 # donne au groupe 'Evaluations professionelles.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: *folderEtab18 # les droits sur les folders 'Évaluations pro ATTE18/nomEtab_uai'
+              - group: *group18 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: *folderEtab18 # les droits sur les folders 'changes CD18-établissements/nomEtab_uai'
                 permF:
                   - write
                   - delete

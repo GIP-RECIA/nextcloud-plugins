@@ -1,0 +1,91 @@
+php occ groupfolders
+
+       
+  Command "groupfolders" is not defined.  
+       
+  Did you mean one of these?       
+      groupfolders:create   
+      groupfolders:delete   
+      groupfolders:expire   
+      groupfolders:group    
+      groupfolders:list     
+      groupfolders:permissions     
+      groupfolders:quota    
+      groupfolders:rename   
+      groupfolders:scan     
+      groupfolders:trashbin:cleanup       
+
+apres modif ne pas oublier de changer la conf des groupes dans 'securité'
+
+php occ  groupfolders:rename  1  'Échanges CD18-établissements'
+
+php occ  groupfolders:rename  4  'Échanges CD18-établissements/VOLTAIRE_0180028H'
+           
+php occ  groupfolders:rename  7  'Échanges CD18-établissements/AXEL KAHN_0180013S'   
+             
+php occ  groupfolders:rename  10 'Échanges CD18-établissements/GEORGE SAND_0180004G'
+             
+             
+php occ  groupfolders:rename  13 'Échanges CD18-établissements/JEAN MOULIN_0180769N'
+             
+             
+php occ  groupfolders:rename  16 'Échanges CD18-établissements/JEAN RENOIR_0180777X'
+             
+             
+php occ  groupfolders:rename  19 'Échanges CD18-établissements/JULES VERNE_0180673J'
+             
+php occ  groupfolders:rename  22 'Échanges CD18-établissements/VICTOR HUGO_0180593X'
+             
+             
+php occ  groupfolders:rename  25 'Échanges CD18-établissements/ALBERT CAMUS_0180592W'
+             
+             
+php occ  groupfolders:rename  28 'Échanges CD18-établissements/EMILE LITTRE_0180721L'
+             
+php occ  groupfolders:rename  31 'Échanges CD18-établissements/JEAN ROSTAND_0180732Y'
+             
+php occ  groupfolders:rename 34 'Échanges CD18-établissements/JEAN VALETTE_0180646E'
+             
+             
+php occ  groupfolders:rename 37 'Échanges CD18-établissements/JULIEN DUMAS_0180023C'
+             
+php occ  groupfolders:rename 40 'Échanges CD18-établissements/LOUIS ARMAND_0180643B'
+             
+             
+php occ  groupfolders:rename 43 'Échanges CD18-établissements/BETHUNE-SULLY_0180019Y'
+             
+             
+php occ  groupfolders:rename 46 'Échanges CD18-établissements/FERNAND LEGER_0180644C'
+             
+             
+php occ  groupfolders:rename 49 'Échanges CD18-établissements/FRANCINE LECA_0180031L'
+             
+             
+php occ  groupfolders:rename 52 'Échanges CD18-établissements/SAINT-EXUPERY_0180591V'
+             
+php occ  groupfolders:rename 55 'Échanges CD18-établissements/CLAUDE DEBUSSY_0180710Z'
+             
+             
+php occ  groupfolders:rename 58 'Échanges CD18-établissements/GERARD PHILIPE_0180002E'
+             
+             
+php occ  groupfolders:rename 61 'Échanges CD18-établissements/EDOUARD VAILLANT_0180037T'
+             
+php occ  groupfolders:rename 64 'Échanges CD18-établissements/LE GRAND MEAULNES_0180766K'
+             
+php occ  groupfolders:rename 67 'Échanges CD18-établissements/MARGUERITE AUDOUX_0180033N'
+             
+             
+php occ  groupfolders:rename 70 'Échanges CD18-établissements/IRENE JOLIOT-CURIE_0180586P'
+             
+             
+php occ  groupfolders:rename 73 'Échanges CD18-établissements/PHILIBERT LAUTISSIER_0180020Z'
+             
+             
+php occ  groupfolders:rename 76 'Échanges CD18-établissements/ROGER MARTIN DU GARD_0180745M'
+             
+             
+php occ  groupfolders:rename 79 'Échanges CD18-établissements/LE COLOMBIER_0180736C'
+             
+             
+php occ  groupfolders:rename 82 'Échanges CD18-établissements/FICTIF CLG 18_0180000A'
