@@ -195,7 +195,7 @@ sub executeWithLogFilter {
 	print $LOG "$commande \n"; 
 		
 		# voir avec open3 et IO::Select pour filtrer les erreurs 
-	open3(undef,  $COM , $ERR, $commande );
+	my $pid = open3(undef,  $COM , $ERR, $commande );
 	
 	$select->add($ERR);
 	
@@ -228,9 +228,14 @@ sub executeWithLogFilter {
 			print STDERR &heure(time), " $etab ", $_;
 		}
 	}
+	waitpid( $pid, 0 );
+	my $exit_status = $? >> 8;
+	if ($exit_status) {
+		print $LOG "$commande \n\t TERMINÉ en ERROR : $exit_status\n";
+	}
 	close $ERR;
 	close $COM;
-	return @res;
+	return ($exit_status, @res);
 }
 
 
@@ -271,21 +276,22 @@ sub traitementEtab() {
 	my $disable = 0;
 	my $create = 0;
 	my $update = 0;
+	my $exit_status = 0;
 	
 	if ($filtre) {
 		$filtre = sprintf($filtre, $etab);
 		if ($timeStamp) {
 			$filtre = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtre, $timeStamp);
 		}
-		($create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
+		($exit_status, $create, $update) = &executeWithLogFilter("$commande --ldap-filter='$filtre'", $etab, $LOG, qr/ldap:create-user/, qr/ldap:update-user/);
 	}
 	
 	if ($typeKey) { # Desctivation des comptes supprimés:
-		($disable) = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
+		($exit_status, $disable) = &executeWithLogFilter("$commandeDel --$typeKey $etab", $etab, $LOG, qr/ldap:disable-user/);
 	} else { 
 		unless ($filtre) {
 			# on est dans le cas HORS_ETAB
-			($disable) = &executeWithLogFilter("$commandeDel", $etab, $LOG, qr/ldap:disable-user/);
+			($exit_status, $disable) = &executeWithLogFilter("$commandeDel", $etab, $LOG, qr/ldap:disable-user/);
 		}
 	}
 	my $fin = time;
@@ -300,8 +306,9 @@ sub traitementEtab() {
 	close $LOG;
 	system "/bin/gzip -f $logFileName" unless ($debug) ;
 	print "\n", &heure(time), " $etab $nbuser",  $disable ? " - $disable\n" : "\n";
-	
-	return $nbuser ? 0 : 1;
+
+	# return 0 si il y a des compte modifier et pas d'erreur
+	return $nbuser ? $exit_status : 1;
 }
 
 sub oneThread(){
