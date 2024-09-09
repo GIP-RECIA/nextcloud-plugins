@@ -201,7 +201,7 @@ class AdImporter implements ImporterInterface
 
                 /* pl change */
                 $etatUser = isset($m[$enableAttribute][0]) ? $m[$enableAttribute][0] : false;
-				$etatUserOk = $etatUser && preg_match("/(DELETE|BLOQUE)/i", $etatUser) ? false : true;
+				$etatUserOk = $etatUser && (preg_match("/(DELETE|BLOQUE)/i", $etatUser) ? false : true);
 				
                 if ($etatUserOk && isset($m[strtolower($groupsAttribute)][0])) {
 
@@ -305,7 +305,7 @@ class AdImporter implements ImporterInterface
                                         }
                                     }
                                     else {
-                                        $this->logger->debug("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
+                                  //      $this->logger->debug("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
                                     }
                                 }
                             }
@@ -384,7 +384,7 @@ class AdImporter implements ImporterInterface
 									}
 								}
 								else {
-									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
+//									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
 								}
 							}
 						}

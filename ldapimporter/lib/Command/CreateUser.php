@@ -192,6 +192,7 @@ class CreateUser extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+	//	$output->writeln("begin create user " . $user->getUID() ); /* pl no commit */
 		$logger = new ConsoleLogger($output);
         $uid = $input->getArgument('uid');
         if ($this->userManager->userExists($uid)) {
@@ -227,6 +228,7 @@ class CreateUser extends Command
 
             //$output->writeln('<error>An error occurred while creating the user</error>');
             $logger->error("An error occurred while creating the user $uid");
+            
             return 1;
         }
 
@@ -235,14 +237,18 @@ class CreateUser extends Command
 
             $user->setDisplayName($input->getOption('display-name'));
             $output->writeln('Display name set to "' . $user->getDisplayName() . '"');
-        }
+        } else {
+			$output->writeln('no display-name');
+		}
 
         # Set email if supplied & valid
         if ($email !== null) {
 
             $user->setEMailAddress($email);
             $output->writeln('Email address set to "' . $user->getEMailAddress() . '"');
-        }
+        } else {
+			$output->writeln('no Email address');
+		}
 
         # Set Groups
         $groups = (array)$input->getOption('group');
@@ -251,7 +257,9 @@ class CreateUser extends Command
 
             $this->userService->updateGroups($user, $groups, $this->config->getAppValue('ldapimporter', 'cas_protected_groups'), TRUE);
             $output->writeln('Groups have been set.');
-        }
+        } else {
+			$output->writeln('no Groups');
+		}
 
         # Set Quota
         $quota = $input->getOption('quota');
@@ -274,7 +282,9 @@ class CreateUser extends Command
 
             $user->setQuota($newQuota);
             $output->writeln('Quota set to "' . $user->getQuota() . '"');
-        }
+        } else {
+			$output->writeln('no Quota');
+		}
 
         # Set enabled
         $enabled = $input->getOption('enabled');
