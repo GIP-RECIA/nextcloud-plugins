@@ -198,7 +198,8 @@ sub executeWithLogFilter {
 	my $pid = open3(undef,  $COM , $ERR, $commande );
 	
 	$select->add($ERR);
-	
+
+	my $lastErr='';
 	while (<$COM>) {
 		for (my $i=0; $i < @regexes; $i++){
 			if (/$regexes[$i]/) {
@@ -211,6 +212,7 @@ sub executeWithLogFilter {
 			chop $err;
 			if ($err) {
 				print STDERR &heure(time), " $etab ", $err;
+				$lastErr  $err;
 			} 
 			print STDERR "\n";
 			
@@ -223,15 +225,18 @@ sub executeWithLogFilter {
 			}
 		}
 	}
+	
 	if ($select->can_read(0)) {
 		while (<$ERR>) {
 			print STDERR &heure(time), " $etab ", $_;
+			$lastErr  $_;
+			
 		}
 	}
 	waitpid( $pid, 0 );
 	my $exit_status = $? >> 8;
 	if ($exit_status) {
-		print $LOG "$commande \n\t TERMINÉ en ERROR : $exit_status\n";
+		print $LOG "$commande \n\t TERMINÉ en ERROR : $exit_status, ", join(", ", @res), "; $lastErr\n";
 	}
 	close $ERR;
 	close $COM;

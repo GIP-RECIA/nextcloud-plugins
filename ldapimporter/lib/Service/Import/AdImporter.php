@@ -672,9 +672,13 @@ class AdImporter implements ImporterInterface
 					->from('etablissements')
 					->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
 				$result = $qb->execute();
-            
-				$idEtabs = $result->fetchAll()[0];
-				return $idEtabs["id"];
+				$etabAll  = $result->fetchAll();
+				if ($etabAll) {
+					$idEtabs = $etabAll[0];
+					return $idEtabs["id"];
+				}
+				// $this->logger->error("getIdEtablissementFromSiren  [Siren = $siren] return null "); 
+				return null;
 			} catch (\Exception $e) {
 				$this->logger->error(print_r($e, TRUE) . "  [Siren = $siren] ");
 			}
