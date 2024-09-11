@@ -153,7 +153,7 @@ if ($ARGV[0] eq 'all' ) {
 	}
 } else {
 		# traitement que d'un etab ou un groupe si on a pas son timestamp (ou si --force) on traite entierement
-	if (@ARGV[0] eq 'force') {
+	if ($ARGV[0] eq 'force') {
 		shift;
 		$force = 1;
 	} 
