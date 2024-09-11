@@ -204,6 +204,7 @@ $logger->info(" " . implode(',' , array_slice($arguments, 0, 6)). "[" . implode(
         } catch (\Exception $e) {
 
             $logger->critical("Fatal Error: " . $e->getMessage());
+            return 1;
         }
         return 0;
     }
