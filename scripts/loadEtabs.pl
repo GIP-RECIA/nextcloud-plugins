@@ -48,7 +48,7 @@ unless (@ARGV) {
 	print STDERR "manque d'argument\n" ;
 	print "usage : $0 all \n\t\t recharge tout les établissements tient compte du timestamp.\n\n";
 	print "\t $0 all PATTERN \n\t\t recharge les membres des groupes matchant le PATTERN ldap pour tous les etab \n\t\t le PATTERN doit contenir %UAI% (sera remplacé par tous les uais)\n\t\t Ne tient pas comptes des timestamps.\n\n";  
-	print "\t $0 [UAI ...] [SIREN ...] [UID...] [GROUPE...] \n\t\trecharge que les UAI SIREN UID ou GROUPE donnés , tient compte du timestamp si prédéfinit.\n";
+	print "\t $0 [force] [UAI ...] [SIREN ...] [UID...] [GROUPE...] \n\t\trecharge que les UAI SIREN UID ou GROUPE donnés , si pas force tient compte du timestamp si prédéfinit.\n";
 	exit 1;
 }
 
@@ -63,6 +63,8 @@ unless (-d $dataRep) {
         #0180006J 0281047L 0371418R 0371418R 0410017W 0360019A 0451483T 0450064A 0450786K 0370769K 0371159J 0370024A  
 
 my %etabATraiter; # ensembles des etabs a traiter pour ne pas en oublier
+
+my $force = 0; # si 1 ne considére pas les timesStamps. 
 
 	# lecture du fichier contenant les timestamps;   
 if (-r $allEtabFile) {
@@ -150,7 +152,11 @@ if ($ARGV[0] eq 'all' ) {
 		push @allEtab , keys %etabATraiter;
 	}
 } else {
-		# traitement que d'un etab ou un groupe si on a pas son timestamp on traite entierement
+		# traitement que d'un etab ou un groupe si on a pas son timestamp (ou si --force) on traite entierement
+	if (@ARGV[0] eq 'force') {
+		shift;
+		$force = 1;
+	} 
 	@allEtab = @ARGV;
 	$debug = 1; # on passe en mode debug
 }
@@ -212,7 +218,7 @@ sub executeWithLogFilter {
 			chop $err;
 			if ($err) {
 				print STDERR &heure(time), " $etab ", $err;
-				$lastErr  $err;
+				$lastErr = $err;
 			} 
 			print STDERR "\n";
 			
@@ -229,7 +235,7 @@ sub executeWithLogFilter {
 	if ($select->can_read(0)) {
 		while (<$ERR>) {
 			print STDERR &heure(time), " $etab ", $_;
-			$lastErr  $_;
+			$lastErr = $_;
 			
 		}
 	}
@@ -342,7 +348,7 @@ sub updateTimeStamp() {
 
 foreach my $etab (@allEtab) {
 	my $pid;
-	my $etabTS = $etabTimestamp{$etab};
+	my $etabTS = $force ? 0 : $etabTimestamp{$etab};
 	if ( $pid = fork ) { 
 		$pid2etab{$pid} = $etab;
 	} else {
@@ -352,7 +358,7 @@ foreach my $etab (@allEtab) {
 	if ( $noThread >= $nbThread) {
 		$pid = wait;
 		
-		&updateTimeStamp($pid, $? );
+		&updateTimeStamp($pid, $? ) unless $force;
 	} else {
 		$noThread++;
 		sleep $delai;
@@ -361,7 +367,12 @@ foreach my $etab (@allEtab) {
 
 while () {
 	my $pid = wait;
-	last unless &updateTimeStamp($pid, $?) > 0;
+	if ($pid > 0) {
+		&updateTimeStamp($pid, $?) unless $force;
+	} else {
+		last;
+	}
+	print $pid, "\n";
 }
 
 if ($saveTimestamp) {
