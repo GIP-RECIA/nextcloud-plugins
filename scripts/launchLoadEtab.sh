@@ -56,6 +56,8 @@ date
 echo "\nVerification que loadEtab soit  terminé sans erreur:\n ";
 gunzip -c rlog/Loader/*.log.gz | $rcode/uidKo.pl
 
+date
+
 #echo "\nsuppression définitive des comptes obsolètes"
 #/usr/bin/nice $rcode/removeOldUser.pl -n 1500 -l 4 2>&1
 

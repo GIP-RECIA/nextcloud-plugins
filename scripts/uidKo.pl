@@ -31,9 +31,9 @@ while (<>) {
 	if (/Users have been retrieved : (\d+)/) {
 		my $nbAttendue = $1;
 		if ($nbAttendue != $nbUser) {
-			say "WARN: $nbUser / $nbAttendue comptes à traiter";
+			say "> WARN: $nbUser / $nbAttendue comptes à traiter";
 		} else {
-			say "INFO $nbUser comptes à traiter";
+		#	say "INFO $nbUser comptes à traiter";
 		}
 		next;
 	}
