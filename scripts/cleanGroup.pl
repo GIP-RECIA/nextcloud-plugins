@@ -21,7 +21,7 @@ use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
 binmode STDOUT, ':encoding(UTF-8)';
-
+binmode STDERR, ':encoding(UTF-8)';
 
 BEGIN { $Pod::Usage::Formatter = 'Pod::Text::Termcap'; }
 use Pod::Usage qw(pod2usage);
