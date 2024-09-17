@@ -255,20 +255,46 @@ sub cleanAllFolder {
 	foreach (values %folderInBase) { $_->cleanFolder }
 }
 
+
 sub diffBaseDisque {
 	my $folder = shift;
 	my $repData = ${util::PARAM}{'NC_DATA'};
 	my %pathInBase;
 	my @pathNotInBase;
+	my @pathNotInObject;
 	
-	unless (util->isObjectStore) {
-		my $fid = $folder->idBase;
-		my $folderPath = "__groupfolders/$fid";
-		my $sqlRes = util->executeSql(q"select path, mimetype from oc_filecache where path like ? ", "$folderPath/%") ;
-		while (my ($path, $type) =  $sqlRes->fetchrow_array()) {
-			$pathInBase{$path} = $type;
-		}
+	my $fid = $folder->idBase;
+	my $folderPath = "__groupfolders/$fid";
 
+	my $isStockageObject = util->isObjectStore;
+	
+	my $sqlRes = util->executeSql(q"
+			with recursive repertoires as (
+				select fileid from  oc_filecache where path = ? and storage = 1
+				union
+				select f.fileid  from  oc_filecache f, repertoires r where f.mimetype = 4 and f.parent = r.fileId 
+			) select f.fileid, f.path, f.mimetype from oc_filecache f, repertoires r where r.fileid = f.parent
+		", $folderPath);
+
+	while (my ($fileid $path, $mimetype) =  $sqlRes->fetchrow_array()) {
+		unless ($isStockageObject && $mimetype eq 4) {
+			$pathInBase{$path} = $fileid;
+		}
+	}
+	
+	if ($isStockageObject) {
+		my $s3command = util->lsCommande(util->getBucketName());
+		my %pathInObject;
+		while (my ($path, $fileid) = each %pathInBase) {
+			§SYSTEM "$s3command/$fileid", OUT => sub { $pathInObject{$path} = $fileid if /\:$fileid\ \(object\):$/ };
+		}
+		for my $path (keys %pathInBase) {
+			unless (exists $pathInObject{$path}) {
+				push @pathNotInObject, $path;
+			}
+		}
+		return ([],  [sort @pathNotInObject], [sort keys %pathInBase]);
+	} else {
 		§SYSTEM "cd $repData; find '$folderPath'",
 			OUT => sub{
 					chop $_;
@@ -283,7 +309,7 @@ sub diffBaseDisque {
 						}
 					}
 				};
-		return ([sort @pathNotInBase], [sort keys %pathInBase]);
+		return ([sort @pathNotInBase], [sort keys %pathInBase], []);
 	}
 }
 1;
@@ -295,3 +321,24 @@ groupfolders:group [-d|--delete] [--output [OUTPUT]] [--] <folder_id> <group> [<
 occ groupfolders:permissions <folder_id> --enable
 groupfolders:permissions [-e|--enable] [-d|--disable] [-m|--manage-add] [-r|--manage-remove] [-u|--user USER] [-g|--group GROUP] [-t|--test] [--output [OUTPUT]] [--] <folder_id> [<path> [<permissions>...]]
 <folder_id> [[-m|--manage-add] | [-r|--manage-remove]] [[-u|--user <user_id>] | [-g|--group <group_id>]].
+
+
+with recursive fileInfolder as (
+	select fileid, storage, path, name from  oc_filecache where path = '__groupfolders/79'
+	union
+	select f.fileid, f.storage, f.path, f.name from  oc_filecache f, fileInfolder ff where f.parent = ff.fileId
+) select * from fileInfolder;
+
+with recursive repertoires as (
+	select fileid from  oc_filecache where path = '__groupfolders/79' and storage = 1
+	union
+	select f.fileid  from  oc_filecache f, repertoires r where f.mimetype = 4 and f.parent = r.fileId 
+) select f.* from oc_filecache f, repertoires r where r.fileid = f.parent  ;
+
+
+| oc_group_folders            |
+| oc_group_folders_acl        |
+| oc_group_folders_groups     |
+| oc_group_folders_manage     |
+| oc_group_folders_trash      |
+| oc_group_folders_versions   |

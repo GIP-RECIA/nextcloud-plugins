@@ -39,6 +39,7 @@ our %PARAM;
 $PARAM{'NC_LOG'} = $logRep;
 $PARAM{'NC_WWW'} = $wwwRep;
 $PARAM{'NC_SCRIPTS'} = $scriptRep;
+my $defautBucket = $PARAM{'bucket'};
 	
 	# lecture des paramatres de conf
 
@@ -58,6 +59,8 @@ my $sqlUsr=$PARAM{'dbuser'};
 my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
+
+my $s3command = "/usr/bin/s3cmd ";
 
 # les infos ldap seront récupérées dans la base nextcloud.
 my $ldapHost;
@@ -238,6 +241,32 @@ sub toGiga {
 		}
 	}
 	return $unit ? "" : "0o";
+}
+
+# si $name == nc-recette-name/... => s3://nc-recette-name
+# si $name != null =>  s3://nc-recette-name
+# sinon  => s3://nc-recette-0
+sub getBucketName {
+	my $name = shift;
+	unless ($name) {
+		$name = "0";
+	}
+	if ($name =~ m{^($defautBucket([^/]*))}) {
+		if ($2) {
+			$name = $2;
+		} else {
+			$name = "0";
+		}
+	}
+    return "s3://".$defautBucket.$name;
+}
+
+sub getObjectName {
+	return "urn:oid:". shift;
+}
+
+sub lsCommande {
+	return "$s3command ls ".shift;
 }
 
 1;
