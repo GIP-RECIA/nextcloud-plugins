@@ -267,9 +267,9 @@ sub getObjectName {
 	return "urn:oid:". shift;
 }
 
-sub lsCommande {
+sub infoCommande {
 	my $class = shift;
-	return "$s3command ls ".shift;
+	return "$s3command info ".shift;
 }
 
 1;
