@@ -107,7 +107,7 @@ sub diffGf {
 	if (@{$inBase}) {
 		print "$mount:\nPath in base and filesystem:\n";
 		$mount='';
-		resumeList($notInBase, $resume);
+		resumeList($inBase, $resume);
 	}
 	if (@{$notInDisque}) {
 		print "$mount:\nPath not in filesystem :\n";
