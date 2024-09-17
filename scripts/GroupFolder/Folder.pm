@@ -276,7 +276,7 @@ sub diffBaseDisque {
 			) select f.fileid, f.path, f.mimetype from oc_filecache f, repertoires r where r.fileid = f.parent
 		", $folderPath);
 
-	while (my ($fileid $path, $mimetype) =  $sqlRes->fetchrow_array()) {
+	while (my ($fileid, $path, $mimetype) =  $sqlRes->fetchrow_array()) {
 		unless ($isStockageObject && $mimetype eq 4) {
 			$pathInBase{$path} = $fileid;
 		}
@@ -330,7 +330,7 @@ with recursive fileInfolder as (
 ) select * from fileInfolder;
 
 with recursive repertoires as (
-	select fileid from  oc_filecache where path = '__groupfolders/79' and storage = 1
+	select fileid from  oc_filecache where path = '__groupfolders' and storage = 1
 	union
 	select f.fileid  from  oc_filecache f, repertoires r where f.mimetype = 4 and f.parent = r.fileId 
 ) select f.* from oc_filecache f, repertoires r where r.fileid = f.parent  ;
