@@ -289,6 +289,7 @@ sub diffBaseDisque {
 			§SYSTEM "$s3command/$fileid", OUT => sub { $pathInObject{$path} = $fileid if /\:$fileid\ \(object\):$/ };
 		}
 		for my $path (keys %pathInBase) {
+			#§DEBUG "$path";
 			unless (exists $pathInObject{$path}) {
 				push @pathNotInObject, $path;
 			}
