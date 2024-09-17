@@ -283,7 +283,7 @@ sub diffBaseDisque {
 	}
 	
 	if ($isStockageObject) {
-		my $s3command = util->lsCommande(util->getBucketName());
+		my $s3command = util->infoCommande(util->getBucketName());
 		my %pathInObject;
 		while (my ($path, $fileid) = each %pathInBase) {
 			§SYSTEM "$s3command/$fileid", OUT => sub { $pathInObject{$path} = $fileid if /\:$fileid\ \(object\):$/ };
