@@ -26,6 +26,7 @@ etabs:
         quotaF: 50
       - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                               (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
                            )'
         regexes:
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
@@ -48,7 +49,7 @@ etabs:
                 permF:
                   - write
                   - delete
-          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE)$'
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
             last: ifMatch
             uai: '%2$s'
             groups: *groupsEtab18 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
