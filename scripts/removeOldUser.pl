@@ -167,6 +167,7 @@ sub deleteComptes{
 		if (§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
 				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
 				ERR => sub { $isErr = 1 if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;}
+				MOD => 0;
 			) {# cas ou la commande termine en erreur
 				$isErr = 1;
 				$maxErr--;
