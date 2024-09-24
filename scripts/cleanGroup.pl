@@ -16,16 +16,21 @@ avec
 
 use strict;
 use utf8;
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
+
 use DBI();
 use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
+use lib $FindBin::Bin . "/GroupFolder";
+use MyLogger ; # 'DEBUG';
 use ncUtil;
-binmode STDOUT, ':encoding(UTF-8)';
-binmode STDERR, ':encoding(UTF-8)';
 
 BEGIN { $Pod::Usage::Formatter = 'Pod::Text::Termcap'; }
 use Pod::Usage qw(pod2usage);
 my $delGroupCommande= "/usr/bin/php occ group:removeuser '%s' '%s'";
+
+MyLogger->level(3);
 
 my $test = 0;
 my $all = 0;
@@ -88,16 +93,17 @@ if ($uai) {
 					and configvalue = 'false'
 					limit 20000/;
 }
-my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-$sqlStatement->execute() or die $sqlStatement->errstr;
+my $sqlStatement = $sql->prepare($sqlQuery) or §FATAL $sql->errstr;
+$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
+
 while (my @tuple =  $sqlStatement->fetchrow_array) {
 	my $commande = sprintf($delGroupCommande , @tuple) ;
 
 	if ($test) {
-		print STDERR $commande, "\n";
+		§PRINT $commande;
 	} else {
-		system ($commande ) == 0 or die "$commande\t$!";
-		print STDERR  join ("\t" , @tuple), " was removed\n";
+		§SYSTEM $commande ;
+		§INFO  join ("\t" , @tuple), " was removed";
 	}
 
 	$cpt++;
@@ -112,7 +118,7 @@ my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * fro
 if ($all) {
 	my $nb = 0;
 	foreach $sqlQuery (@sqlQueries) {
-		$nb += $sql->do($sqlQuery) or die $!;
+		$nb += $sql->do($sqlQuery) or §FATAL "$!: ", $sql->errstr;
 	}
 	print "$nb lignes supprimés dans oc_asso_uai_user_group \n";
 }

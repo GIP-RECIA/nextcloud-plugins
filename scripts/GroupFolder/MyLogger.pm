@@ -9,6 +9,7 @@
 	Le paramétrage des logs
 	
 	use MyLogger [(DEBUG|TRACE)];   si DEBUG ou TRACE sont en paramètre les loggers commentés correspondants seront décommantés ie #§DEBUG et #§TRACE seront réécrits en §DEBUG ou §TRACE
+	
 	MyLogger->file(filename [, autoflush]); définit le fichier de log, si autoflush=true alors les logs seront écrits (flush) à chaque fois immédiatement.
 	MyLogger->level(); retourne le level et mode utilisé.
 	MyLogger->level(level); fix le niveau de log :
@@ -25,6 +26,7 @@
 		mod = 3 => on sort en plus les DEBUG et TRACE
 		si l'on n'a pas de fichier de log, mod ne sert pas, tout va sur STDERR.
 
+	Par defaut le niveau de logs est 2.1.
 	Tous les loggers affiche l'heure, le fichier et la ligne sauf §TRACE .
 	Si le nom du logger est suivi d'un chiffre entre crochets [n] ; il affichera le fichier et la ligne de la énième procédure appelante dans la trace d'exécution, utile dans une lib pour indiquer l'erreur dans la procédure appelante et pas dans la lib.
 
