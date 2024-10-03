@@ -40,7 +40,7 @@ echo "\nsuppression des comptes désactivés dans les groupes"
 
 echo "/usr/bin/nice $rcode/cleanGroup.pl all" > $logClean
 /usr/bin/nice $rcode/cleanGroup.pl all >> $logClean 2>&1
-grep -v 'was removed' $logClean
+grep -v 'INFO' $logClean
 
 date
 logClean=$rlog/deleteGroupeVide.`date +'%d'`.log

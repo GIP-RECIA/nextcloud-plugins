@@ -176,7 +176,7 @@ sub deleteComptes{
 		last unless ($isErr);
 	}
 	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
-	§PRINT "nombre de suppressions de compte : $nbSuppression";
+	§PRINT " nombre de suppressions de compte : $nbSuppression";
 }
 
 # Les comptes supprimé sans bucket mémorisé

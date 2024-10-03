@@ -120,7 +120,7 @@ if ($all) {
 	foreach $sqlQuery (@sqlQueries) {
 		$nb += $sql->do($sqlQuery) or §FATAL "$!: ", $sql->errstr;
 	}
-	print "$nb lignes supprimés dans oc_asso_uai_user_group \n";
+	print "$nb lignes supprimées dans oc_asso_uai_user_group\n";
 }
 
 __END__
