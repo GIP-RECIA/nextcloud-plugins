@@ -3,8 +3,12 @@
 =encoding utf8
 
 =head1 NAME infoGF.pl
-	¡version pour ncgip pas encore utilisable dans ncprod!
 	Donne des info sur les GroupFolders
+	affiche le nom puis le contenue des GF
+	en 3 categories:
+		'Path in base and filesystem: ' ce qui est ok
+		'Path not in filesystem: ': ce qui manque sur le disque
+		'Path not in base: ' ce qui manque en base (pas possible en stockage object)
 
 =head1 VERSION 1.0.1
 
@@ -18,7 +22,7 @@
 	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
 		 si tmp.file n'existe pas il le crée;
 	-l : fixe le log level,  1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
-  
+
 =cut
 
 use strict;
@@ -64,13 +68,13 @@ my $folderById = Folder->readNC;
 
 if  (@ARGV) {
 	my $fid = shift;
-	
+
 	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
 	 my $folder = $$folderById{$fid};
 
 	§ERROR "$fid n'existe pas en base" unless $folder;
 	diffGf($fid, $folder);
-	 
+
 } else {
 	#~ while (my ($fid, $folder) = each %{$folderById}) {
 		#~ diffGf ($fid, $folder);
@@ -88,7 +92,7 @@ if  (@ARGV) {
 			system "diff $diffFileOld $diffFileOld".'.new';
 		} else {
 			open $diffFileNew , "<:encoding(UTF-8)", $diffFileOld.'.new' or §FATAL $diffFileOld.'.new ', $!;
-			while (<$diffFileNew>) {print }; 
+			while (<$diffFileNew>) {print };
 			rename $diffFileOld.'.new', $diffFileOld or §FATAL "mv $diffFileOld".'.new ', $diffFileOld, " ", $!;
 		}
 	}
@@ -114,7 +118,7 @@ sub diffGf {
 		resumeList($notInDisque, $resume);
 	}
 
-	
+
 }
 
 sub resumeList {
