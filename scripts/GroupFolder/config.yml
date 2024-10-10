@@ -64,7 +64,7 @@ etabs:
       - regex: ^coll:Applications:Nextcloud_GIP-RECIA:([^:]+):([^:]+):([^:]+)$'
         last: ifMatch
         group: '%3$s.%1$s.%2$s'
-      - regex: ^coll:Applications:Nextcloud_(GIP-RECIA):([^:]+):([^:]+):([^:]+)$'
+      - regex: ^coll:Applications:Nextcloud_(GIP-RECIA):([^:]+):([^:]+)$'
         last: ifMatch
         group: '%2$s.%3$s'
 #     - regex: '^coll:admin:central$'
