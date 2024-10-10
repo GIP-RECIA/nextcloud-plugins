@@ -3,62 +3,68 @@ rlog=$HOME/logs-esco
 fdata=$HOME/data
 rcode=$HOME/scripts
 
-find $rlog \( -name '*.log' -o -name '*.log.*gz' \) -a -ctime +7 -delete
+
+	find $rlog \( -name '*.log' -o -name '*.log.*gz' \) -a -ctime +7 -delete
 
 
-/bin/tar -czf $rlog/Loader/loadEtab.log.`date +'%d.%Hh'`.tgz $rlog/Loader/*.log.gz $fdata/allEtab.*
+	/bin/tar -czf $rlog/Loader/loadEtab.log.`date +'%d.%Hh'`.tgz $rlog/Loader/*.log.gz $fdata/allEtab.*
 
-#echo Arret des chargements Nextcloud
-#exit 1
-/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -l 3 up 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
-/usr/bin/nice $rcode/loadEtabs.pl all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
+#pour poser des verrous empechant l'execution  des cron NC. Si le process termine tardivement
+lock=$HOME/logs-esco/NCcron/lock
 
-$rcode/diffEtab.pl
+(flock -x 7 ; flock -x 8 ; flock -x 9;
 
-date
+	/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -l 3 up 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
+	/usr/bin/nice $rcode/loadEtabs.pl all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 
-$rcode/saveBucketId.pl
+) 7>${lock}7 8>${lock}8 9>${lock}9
 
-/bin/gzip $rlog/*.log 
+	$rcode/diffEtab.pl
 
-logClean=$rlog/cleanBucket.`date +'%d'`.log
+	date
 
-echo "\nnettoyage de nc-prod-0"
-/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
+	$rcode/saveBucketId.pl
 
-tail -1 $logClean
+	/bin/gzip $rlog/*.log 
 
-echo "\nnettoyage de nc-prod-corbeille"
-/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
+	logClean=$rlog/cleanBucket.`date +'%d'`.log
 
-tail -1 $logClean
+	echo "\nnettoyage de nc-prod-0"
+	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
 
-date
-logClean=$rlog/cleanGroup.`date +'%d'`.log
+	tail -1 $logClean
 
-echo "\nsuppression des comptes désactivés dans les groupes"
+	echo "\nnettoyage de nc-prod-corbeille"
+	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
 
-echo "/usr/bin/nice $rcode/cleanGroup.pl all" > $logClean
-/usr/bin/nice $rcode/cleanGroup.pl all >> $logClean 2>&1
-grep -v 'INFO' $logClean
+	tail -1 $logClean
 
-date
-logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
+	date
+	logClean=$rlog/cleanGroup.`date +'%d'`.log
 
-echo "\nsuppression des groupes vides"
-echo "/usr/bin/nice $rcode/deleteGroupeVide.pl all" >  $logClean 
-/usr/bin/nice $rcode/deleteGroupeVide.pl all 2>&1  >>  $logClean 
+	echo "\nsuppression des comptes désactivés dans les groupes"
 
-grep -v 'was removed' $logClean
+	echo "/usr/bin/nice $rcode/cleanGroup.pl all" > $logClean
+	/usr/bin/nice $rcode/cleanGroup.pl all >> $logClean 2>&1
+	grep -v 'INFO' $logClean
 
-date
+	date
+	logClean=$rlog/deleteGroupeVide.`date +'%d'`.log
 
-echo "\nVerification que loadEtab soit  terminé sans erreur:\n ";
-gunzip -c rlog/Loader/*.log.gz | $rcode/uidKo.pl
+	echo "\nsuppression des groupes vides"
+	echo "/usr/bin/nice $rcode/deleteGroupeVide.pl all" >  $logClean 
+	/usr/bin/nice $rcode/deleteGroupeVide.pl all 2>&1  >>  $logClean 
 
-date
+	grep -v 'was removed' $logClean
 
-#echo "\nsuppression définitive des comptes obsolètes"
-#/usr/bin/nice $rcode/removeOldUser.pl -n 1500 -l 4 2>&1
+	date
 
-#date
+	echo "\nVerification que loadEtab soit  terminé sans erreur:\n ";
+	gunzip -c rlog/Loader/*.log.gz | $rcode/uidKo.pl
+
+	date
+
+	#echo "\nsuppression définitive des comptes obsolètes"
+	#/usr/bin/nice $rcode/removeOldUser.pl -n 1500 -l 4 2>&1
+
+	#date
