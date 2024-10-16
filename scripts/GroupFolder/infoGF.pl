@@ -9,12 +9,13 @@
 
 =head1 SYNOPSIS
 
-	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid|uid]
+	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid|uid|TEXT]
 
 	gfid: groupFolder id;
 	-r : résume les listes de résultats (par défaut si pas de gfid);
 	-a : ne résume pas les listes par défaut si gfid not null; donne aussi les groupes et permissions;
 		si uid la liste de GF concernant la personne avec groupes et permissions.
+		si TEXT affiche les GF contenant le TEXT  
 	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
 		 si tmp.file n'existe pas il le crée;
 	-l : fixe le log level,  1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
@@ -69,7 +70,7 @@ if  (@ARGV) {
 	if ($fid =~ /^F\w{7}$/) {
 		# $fid est en fait un uid
 		util->occ("groupfolders:list -u $fid", sub {print ;});
-	} else {
+	} elsif ($fid =~ /^\d+/) {
 		if ($all) {
 			util->occ("groupfolders:list", sub {if (/^(\+|\| F|\|\s$fid)/) {print ;}} );
 		}
@@ -82,6 +83,8 @@ if  (@ARGV) {
 		if ($mount) {
 			print "$mount ($fid): ok\n";
 		}
+	} elsif ($all) {
+		util->occ("groupfolders:list", sub {if (/(^\+|^\| F|$fid)/) {print ;}} );
 	}
 } else {
 	#~ while (my ($fid, $folder) = each %{$folderById}) {
