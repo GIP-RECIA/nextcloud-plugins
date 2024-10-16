@@ -9,11 +9,12 @@
 
 =head1 SYNOPSIS
 
-	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid]
+	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid|uid]
 
 	gfid: groupFolder id;
 	-r : résume les listes de résultats (par défaut si pas de gfid);
-	-a : ne résume pas les listes par défaut si gfid not null;
+	-a : ne résume pas les listes par défaut si gfid not null; donne aussi les groupes et permissions;
+		si uid la liste de GF concernant la personne avec groupes et permissions.
 	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
 		 si tmp.file n'existe pas il le crée;
 	-l : fixe le log level,  1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
@@ -61,20 +62,35 @@ if ($diffFileOld) {
 }
 my $folderById = Folder->readNC;
 
+
+
 if  (@ARGV) {
 	my $fid = shift;
-	
-	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
-	 my $folder = $$folderById{$fid};
+	if ($fid =~ /^F\w{7}$/) {
+		# $fid est en fait un uid
+		util->occ("groupfolders:list -u $fid", sub {print ;});
+	} else {
+		if ($all) {
+			util->occ("groupfolders:list", sub {if (/^(\+|\| F|\|\s$fid)/) {print ;}} );
+		}
 
-	§ERROR "$fid n'existe pas en base" unless $folder;
-	diffGf($fid, $folder);
-	 
+		§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
+		 my $folder = $$folderById{$fid};
+
+		§ERROR "$fid n'existe pas en base" unless $folder;
+		my $mount = diffGf($fid, $folder);
+		if ($mount) {
+			print "$mount ($fid): ok\n";
+		}
+	}
 } else {
 	#~ while (my ($fid, $folder) = each %{$folderById}) {
 		#~ diffGf ($fid, $folder);
 	#~ }
 		# le trie permet la comparaison des résultats
+	if ($all) {
+		util->occ("groupfolders:list", sub {print ;});
+	}
 	for my $fid (sort keys %{$folderById}) {
 		diffGf ($fid, $$folderById{$fid});
 	}
@@ -99,14 +115,16 @@ sub diffGf {
 
 	my $mount = $folder->mount;
 	if (@{$notInBase}) {
-		print "$mount:\nPath not in base :\n";
+		print "$mount ($fid):\nPath not in base :\n";
 		$mount = '';
 		resumeList($notInBase, $resume);
 	}
 	if (@{$notInDisque}) {
-		print "$mount:\nPath not in filesystem :\n";
+		print "$mount ($fid):\nPath not in filesystem :\n";
+		$mount = '';
 		resumeList($notInDisque, $resume);
 	}
+	return $mount;
 }
 
 sub resumeList {
