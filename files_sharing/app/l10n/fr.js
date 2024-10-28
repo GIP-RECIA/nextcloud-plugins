@@ -315,11 +315,11 @@ OC.L10N.register(
     "the link expired" : "le lien a expiré",
     "sharing is disabled" : "le partage est désactivé",
     "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
-	"Search on :" : "Rechercher sur",
-	"Your establishments" : "Vos établissements",
-	"All platform" : "Tout le monde",
-	"Establishments" : "Etablissements",
-	"Select all" : "Tous",
-	"Select none" : "Aucun"
+    "Search on :" : "Rechercher sur",
+    "Your establishments" : "Vos établissements",
+    "All platform" : "Tout le monde",
+    "Establishments" : "Etablissements",
+    "Select all" : "Tous",
+    "Select none" : "Aucun"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

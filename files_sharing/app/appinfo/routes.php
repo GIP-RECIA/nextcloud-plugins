@@ -203,8 +203,8 @@ return [
 			'verb' => 'DELETE',
 		],
 		/*
-		* Recia Sharee API
-		*/
+		 * Recia Sharee API
+		 */
 		[
 			'name' => 'ReciaRechercheAPI#search',
 			'url' => '/api/v1/recia_search',

@@ -19,7 +19,7 @@ declare(strict_types=1);
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License, version 3,
- * along with this program. If not, see <http://www.gnu.org/licenses/>
+ * along with this program. if  not, see <http://www.gnu.org/licenses/>
  *
  */
 
@@ -92,7 +92,7 @@ class ReciaRechercheAPIController extends OCSController {
 		IRequest $request,
 		IConfig $config,
 		IManager $shareManager,
-        IDBConnection $db,
+		IDBConnection $db,
 		EtablissementMapper $etabMapper,
 		SearchDB $searchDB,
 		IGroupManager $groupManager,
@@ -121,24 +121,24 @@ class ReciaRechercheAPIController extends OCSController {
 	 * @throws OCSBadRequestException
 	 */
 	public function listUserEtabs():DataResponse{
-		if($this->debug)$result['debug']['user'] = $this->userId;
-		if($this->isAdmin()){
+		if ($this->debug) $result['debug']['user'] = $this->userId;
+		if ($this->isAdmin()) {
 			$result['data'] = $this->etabMapper->findAll();
-			if($this->debug)$result['debug']['isadmin'] = true;
-		}else{
+			if ($this->debug)$result['debug']['isadmin'] = true;
+		} else {
 			$result['data'] = $this->etabMapper->findAllByUser($this->userId);
-			if($this->debug)$result['debug']['isadmin'] = false;
+			if ($this->debug)$result['debug']['isadmin'] = false;
 		}
-		if($result['data'] && count($result['data'])>=1){
+		if ($result['data'] && count($result['data'])>=1) {
 			$currentEtabSiren = $this->getCurrentSirenSchool();
 			$selected = false;
 			array_walk($result['data'],function($etab) use ($currentEtabSiren,&$selected){
-				if ($etab->getSiren() == $currentEtabSiren){
+				if ($etab->getSiren() == $currentEtabSiren) {
 					$etab->setSelected(true);
 					$selected = true;
 				}
 			});
-			if(!$selected)$result['data'][0]->setSelected(true);
+			if (!$selected)$result['data'][0]->setSelected(true);
 		}
 		return new DataResponse($result);
 	}
@@ -154,13 +154,13 @@ class ReciaRechercheAPIController extends OCSController {
 	 */
 	public function search(string $search,array $etabs = [], string $itemType = null, int $page = 1, int $perPage = 200):DataResponse{
 
-		// only search if there is an etab
-		if(empty($etabs)){
+		// only search if  there is an etab
+		if (empty($etabs)){
 			return new DataResponse($this->result);
 		}
 
 		// only search for string larger than a given threshold
-		$threshold = (int)$this->config->getSystemValue('sharing.minSearchStringLength', 0);
+		$threshold = (int) $this->config->getSystemValue('sharing.minSearchStringLength', 0);
 		if (strlen($search) < $threshold) {
 			return new DataResponse($this->result);
 		}
@@ -204,60 +204,61 @@ class ReciaRechercheAPIController extends OCSController {
 	private function isAdmin() {
 		return $this->groupManager->isAdmin($this->userId);
 	}
+
 	/**
 	 * Renvoie l'établissement courrant de l'utilisateur
 	 *
 	 * @return string siren de l'établissement courrant
 	 */
 	private function getCurrentSirenSchool() {
-    	//return '19450042700035';
+		//return '19450042700035';
 		try {
-            $currentSchool = null;
+			$currentSchool = null;
 
-            $host = $this->config->getAppValue('ldapimporter', 'cas_import_ad_host');
+			$host = $this->config->getAppValue('ldapimporter', 'cas_import_ad_host');
 
-            $ldapConnection = ldap_connect($this->config->getAppValue('ldapimporter', 'cas_import_ad_protocol') . $host . ":" . $this->config->getAppValue('ldapimporter', 'cas_import_ad_port')) or die("Could not connect to " . $host);
+			$ldapConnection = ldap_connect($this->config->getAppValue('ldapimporter', 'cas_import_ad_protocol') . $host . ":" . $this->config->getAppValue('ldapimporter', 'cas_import_ad_port')) or die("Could not connect to " . $host);
 
-            ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
-            ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);
-            ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 10);
+			ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
+			ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);
+			ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 10);
 
-            if ($ldapConnection) {
-                $ldapIsBound = ldap_bind($ldapConnection, $this->config->getAppValue('ldapimporter', 'cas_import_ad_user'), $this->config->getAppValue('ldapimporter', 'cas_import_ad_password'));
-                if (!$ldapIsBound) {
-                    throw new \Exception("LDAP bind failed. Error: " . ldap_error($ldapConnection));
-                }
+			if ($ldapConnection) {
+				$ldapIsBound = ldap_bind($ldapConnection, $this->config->getAppValue('ldapimporter', 'cas_import_ad_user'), $this->config->getAppValue('ldapimporter', 'cas_import_ad_password'));
+				if (!$ldapIsBound) {
+					throw new \Exception("LDAP bind failed. Error: " . ldap_error($ldapConnection));
+				}
 
-                // Disable pagination setting, not needed for individual attribute queries
-                //ldap_control_paged_result($ldapConnection, 1); //DEPRECATED PHP>=8.0
+				// Disable pagination setting, not needed for individual attribute queries
+				//ldap_control_paged_result($ldapConnection, 1); //DEPRECATED PHP>=8.0
 
-                // Query user attributes
-                $results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
-                if (ldap_error($ldapConnection) == "No such object") {
-                    return [];
-                }
-                elseif (ldap_error($ldapConnection) != "Success") {
-                    throw new \Exception('Error searching LDAP: ' . ldap_error($ldapConnection));
-                }
+				// Query user attributes
+				$results = ldap_search($ldapConnection, 'uid=' . $this->userId . ',ou=people,dc=esco-centre,dc=fr', 'objectClass=*', ["ESCOSIRENCourant"]);
+				if (ldap_error($ldapConnection) == "No such object") {
+					return [];
+				}
+				elseif (ldap_error($ldapConnection) != "Success") {
+					throw new \Exception('Error searching LDAP: ' . ldap_error($ldapConnection));
+				}
 
-                $attributes = ldap_get_entries($ldapConnection, $results);
+				$attributes = ldap_get_entries($ldapConnection, $results);
 
-                // Return attributes list
-                if (isset($attributes[0]) && array_key_exists('escosirencourant', $attributes[0]) && isset($attributes[0]['escosirencourant'][0])) {
-                    $currentSchool = $attributes[0]['escosirencourant'][0];
-                }
-                else {
-                    $currentSchool = null;
-                }
-            }
+				// Return attributes list
+				if (isset($attributes[0]) && array_key_exists('escosirencourant', $attributes[0]) && isset($attributes[0]['escosirencourant'][0])) {
+					$currentSchool = $attributes[0]['escosirencourant'][0];
+				}
+				else {
+					$currentSchool = null;
+				}
+			}
 
-        } catch (\Throwable $t) {
-            $currentSchool = null;
-        }
-        if(isset($ldapConnection)) {
-            ldap_close($ldapConnection);
-        }
-        return $currentSchool;
+		} catch (\Throwable $t) {
+			$currentSchool = null;
+		}
+		if (isset($ldapConnection)) {
+			ldap_close($ldapConnection);
+		}
+		return $currentSchool;
 
 	}
 
