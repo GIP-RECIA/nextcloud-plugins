@@ -118,7 +118,7 @@ my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * fro
 if ($all) {
 	my $nb = 0;
 	foreach $sqlQuery (@sqlQueries) {
-		$nb += $sql->do($sqlQuery) or §FATAL "$!: ", $sql->errstr;
+		$nb += $sql->do($sqlQuery) or §FATAL "$!: ", $sql->errstr, " $sqlQuery";
 	}
 	print "$nb lignes supprimées dans oc_asso_uai_user_group\n";
 }

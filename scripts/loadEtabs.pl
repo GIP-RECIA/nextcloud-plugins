@@ -422,6 +422,9 @@ unless (isObjectStore()) {
 	}
 }
 
+#TODO changer le display name des groupes tronqués par NC et on corrige le gid dans notre table oc_assos...
+q/update oc_groups g, oc_asso_uai_user_group a  set g.displayName = a.user_group , a.user_group = g.gid where g.displayName like '%…' and a.user_group like replace(g.gid, '…', '%')/
+
 
 __END__
 attribut ldap de detection des changement modifytimestamp>=20080601070000

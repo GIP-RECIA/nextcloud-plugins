@@ -35,8 +35,12 @@ unless ($grpPattern) {
 	print "Error: manque le patterne de groupe\n";
 	exit 1;
 }
-
-my $sqlGroup = "select gid from  oc_groups where gid like ?";
+ #"select gid from  oc_groups where gid like ?";
+my $sqlGroup = q/	select g.gid, e.uai, e.siren, e.name
+					from  oc_groups g
+					left join oc_asso_uai_user_group a on (a.user_group = g.gid)
+					left join oc_etablissements e on (a.id_etablissement = e.id)
+					where g.gid like ?/;
 
 my %uid2name;
 
@@ -51,17 +55,28 @@ my @allGroups;
 while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $gid = $tuple->{'gid'};
 	push @allGroups, $gid;
+	unless ($withUser || $withPartage) {
+		my $name = $tuple->{'name'};
+		if ($name) {
+			my $uai = $tuple->{'uai'};
+			my $siren = $tuple->{'siren'};
+			print "$gid\n\t\t $name; ", $uai ? $uai : $siren, "\n\n";
+		} else {
+			print "$gid\n\t\t etab not in oc_asso_uai_user_group\n\n";
+		}
+	}
 }
 
-
-if (@allGroups) {
-	foreach my $gid (@allGroups) {
-		print "$gid : \n";
-		if ($withUser) {
-			&printMembers ($gid);
-		}
-		if ($withPartage) {
-			printPartage($gid);
+if ($withUser || $withPartage) {
+	if (@allGroups) {
+		foreach my $gid (@allGroups) {
+			print "$gid : \n";
+			if ($withUser) {
+				&printMembers ($gid);
+			}
+			if ($withPartage) {
+				printPartage($gid);
+			}
 		}
 	}
 }
