@@ -2,7 +2,7 @@
 	<NcHeaderMenu v-if="!shutdown"
 		id="notifications"
 		class="notifications-button"
-		exclude-click-outside-classes="popover"
+		:exclude-click-outside-selectors="['.popover']"
 		:open.sync="open"
 		:aria-label="t('notifications', 'Notifications')"
 		@open="onOpen">
@@ -69,7 +69,7 @@
 
 				<!-- No notifications -->
 				<NcEmptyContent v-else
-					:title="emptyContentMessage"
+					:name="emptyContentMessage"
 					:description="emptyContentDescription">
 					<template #icon>
 						<Bell v-if="!hasThrottledPushNotifications" />
@@ -135,7 +135,7 @@ export default {
 			hasNotifyPush: false,
 			shutdown: false,
 			theming: getCapabilities()?.theming || {},
-			// loadState('notifications', 'throttled_push_notifications'),
+			// hasThrottledPushNotifications: loadState('notifications', 'throttled_push_notifications'),
 			hasThrottledPushNotifications: false,
 			notifications: [],
 			lastETag: null,
@@ -526,7 +526,7 @@ export default {
 				if (this.showBrowserNotifications && this.webNotificationsThresholdId < notification.notificationId) {
 					createWebNotification(notification)
 				}
-				})
+			})
 		},
 	},
 }
@@ -543,7 +543,7 @@ export default {
 	overflow: auto;
 }
 
-:deep(.empty-content) {
+::v-deep .empty-content {
 	margin: 12vh 10px;
 
 	p {
