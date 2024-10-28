@@ -21,38 +21,48 @@
   -->
 
 <template>
-	<NcMultiselect ref="multiselect"
-		class="sharing-input"
-		:clear-on-select="true"
-		:disabled="!canReshare"
-		:hide-selected="true"
-		:internal-search="false"
-		:loading="loading"
-		:options="options"
-		:placeholder="inputPlaceholder"
-		:preselect-first="true"
-		:preserve-search="true"
-		:searchable="true"
-		:user-select="true"
-		open-direction="below"
-		label="displayName"
-		track-by="id"
-		@search-change="asyncFind"
-		@select="addShare">
-		<template slot="beforeList" v-if="!this.isValidQuery">
-			<li>
-				<span>
-					{{ t('files_sharing', 'Recommendations :') }}
-				</span>
-			</li>
-		</template>
-		<template #noOptions>
-			{{ t('files_sharing', 'No recommendations. Start typing.') }}
-		</template>
-		<template #noResult>
-			{{ noResultText }}
-		</template>
-	</NcMultiselect>
+	<div>
+		<span>{{ t('files_sharing', 'Search on :') }}</span>
+
+		<SharingInputChoice :type="searchType"
+			@change="updateSearchType" />
+
+		<SharingInputEtab v-show="searchType === 'etab'"
+			@change="updateSelectedEtabs" />
+
+		<NcMultiselect ref="multiselect"
+			class="sharing-input"
+			:clear-on-select="true"
+			:disabled="!canReshare"
+			:hide-selected="true"
+			:internal-search="false"
+			:loading="loading"
+			:options="options"
+			:placeholder="inputPlaceholder"
+			:preselect-first="true"
+			:preserve-search="true"
+			:searchable="true"
+			:user-select="true"
+			open-direction="below"
+			label="displayName"
+			track-by="id"
+			@search-change="asyncFind"
+			@select="addShare">
+			<template slot="beforeList" v-if="!this.isValidQuery">
+				<li>
+					<span>
+						{{ t('files_sharing', 'Recommendations :') }}
+					</span>
+				</li>
+			</template>
+			<template #noOptions>
+				{{ t('files_sharing', 'No recommendations. Start typing.') }}
+			</template>
+			<template #noResult>
+				{{ noResultText }}
+			</template>
+		</NcMultiselect>
+	</div>
 </template>
 
 <script>
@@ -60,14 +70,17 @@ import { generateOcsUrl } from '@nextcloud/router'
 import { getCurrentUser } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
 import debounce from 'debounce'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect'
-import MultiselectMixin from '../mixins/MultiselectMixin'
+import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
+import MultiselectMixin from '../mixins/MultiselectMixin.js'
 
-import Config from '../services/ConfigService'
-import GeneratePassword from '../utils/GeneratePassword'
-import Share from '../models/Share'
-import ShareRequests from '../mixins/ShareRequests'
-import ShareTypes from '../mixins/ShareTypes'
+import Config from '../services/ConfigService.js'
+import GeneratePassword from '../utils/GeneratePassword.js'
+import Share from '../models/Share.js'
+import ShareRequests from '../mixins/ShareRequests.js'
+import ShareTypes from '../mixins/ShareTypes.js'
+
+import SharingInputEtab from './SharingInputEtab.vue'
+import SharingInputChoice from './SharingInputChoice.vue'
 
 const CancelToken = axios.CancelToken
 let searchCancelSource = null
@@ -77,6 +90,8 @@ export default {
 
 	components: {
 		NcMultiselect,
+		SharingInputEtab,
+		SharingInputChoice,
 	},
 
 	mixins: [ShareTypes, ShareRequests, MultiselectMixin],
@@ -105,16 +120,6 @@ export default {
 			type: Boolean,
 			required: true,
 		},
-		searchType: {
-			type: String,
-			required: true,
-			validator: searchType => ['all', 'etab'].includes(searchType),
-		},
-		searchEtabs: {
-			type: Array,
-			default: () => [],
-			required: true,
-		},
 	},
 
 	data() {
@@ -126,6 +131,8 @@ export default {
 			ShareSearch: OCA.Sharing.ShareSearch.state,
 			suggestions: [],
 			value: null,
+			searchType: 'etab',
+			selectedEtabs: [],
 		}
 	},
 
@@ -684,6 +691,14 @@ export default {
 			this.query = ''
 			this.resetSearch()
 			this.suggestions = []
+		},
+
+		updateSearchType(type) {
+			this.searchType = type
+		},
+
+		updateSelectedEtabs(etabs) {
+			this.selectedEtabs = etabs
 		},
 	},
 }

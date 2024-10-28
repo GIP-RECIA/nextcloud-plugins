@@ -30,7 +30,7 @@
 			value="etab"
 			@change="change">
 		<label for="search-type-etab">
-			{{ t('files_sharing','Your establishments') }}
+			{{ t('files_sharing', 'Your establishments') }}
 		</label>
 		<input id="search-type-all"
 			v-model="searchType"
@@ -40,7 +40,7 @@
 			value="all"
 			@change="change">
 		<label for="search-type-all">
-			{{ t('files_sharing','All platform') }}
+			{{ t('files_sharing', 'All platform') }}
 		</label>
 	</div>
 </template>
