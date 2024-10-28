@@ -51,18 +51,6 @@
 					@open-sharing-details="toggleShareDetailsView" />
 				-->
 
-				<span>{{ t('files_sharing', 'Search on :') }}</span>
-
-				<!-- add seach choice -->
-				<SharingInputChoice v-if="!loading && canReshare"
-					:type="searchType"
-					@change="updateSearchType" />
-
-				<!-- add etab choice -->
-				<SharingInputEtab v-if="!loading && canReshare"
-					v-show="searchType==='etab'"
-					@change="updateSelectedEtabs" />
-
 				<!-- add new share input -->
 				<SharingInputRecia v-if="!loading"
 					:can-reshare="canReshare"
@@ -70,8 +58,6 @@
 					:link-shares="linkShares"
 					:reshare="reshare"
 					:shares="shares"
-					:search-type="searchType"
-					:search-etabs="selectedEtabs"
 					@add:share="addShare" />
 
 				<!-- link shares list -->
@@ -136,8 +122,6 @@ import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
 // import SharingInput from '../components/SharingInput.vue'
 import SharingInputRecia from '../components/SharingInputRecia.vue'
-import SharingInputEtab from '../components/SharingInputEtab.vue'
-import SharingInputChoice from '../components/SharingInputChoice.vue'
 
 import SharingInherited from './SharingInherited.vue'
 import SharingLinkList from './SharingLinkList.vue'
@@ -155,8 +139,6 @@ export default {
 		SharingInherited,
 		// SharingInput,
 		SharingInputRecia,
-		SharingInputEtab,
-		SharingInputChoice,
 		SharingLinkList,
 		SharingList,
 		SharingDetailsTab,
@@ -179,9 +161,6 @@ export default {
 			sharedWithMe: {},
 			shares: [],
 			linkShares: [],
-
-			searchType: 'etab',
-			selectedEtabs: [],
 
 			sections: OCA.Sharing.ShareTabSections.getSections(),
 			projectsEnabled: loadState('core', 'projects_enabled', false),
@@ -427,14 +406,6 @@ export default {
 				this.shareDetailsData = eventData
 			}
 			this.showSharingDetailsView = !this.showSharingDetailsView
-		},
-
-		updateSearchType(type) {
-			this.searchType = type
-		},
-
-		updateSelectedEtabs(etabs) {
-			this.selectedEtabs = etabs
 		},
 	},
 }
