@@ -128,7 +128,7 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			<?php if ($_['id-app-navigation'] !== null) { ?><a href="<?php p($_['id-app-navigation']); ?>" class="button primary skip-navigation"><?php p($l->t('Skip to navigation of app')); ?></a><?php } ?>
 		</div>
 
-		<header role="banner" id="header" class="escoDivWrapper">
+		<header id="header" class="escoDivWrapper">
 			<div class="header-left">
 				<a href="<?php print_unescaped($_['logoUrl'] ?: link_to('', 'index.php')); ?>"
 					aria-label="<?php p($l->t('Go to %s', [$_['logoUrl'] ?: $_['defaultAppName']])); ?>"
@@ -159,7 +159,10 @@ $getUserAvatar = static function (int $size) use ($_): string {
 
 		<main id="content" class="app-<?php p($_['appid']) ?>">
 			<h1 class="hidden-visually" id="page-heading-level-1">
-				<?php p(!empty($_['pageTitle'])?$_['pageTitle']:$theme->getName()); ?>
+				<?php p((!empty($_['application']) && !empty($_['pageTitle']) && $_['application'] != $_['pageTitle'])
+					? $_['application'].': '.$_['pageTitle']
+					: (!empty($_['pageTitle']) ? $_['pageTitle'] : $theme->getName())
+				); ?>
 			</h1>
 			<?php print_unescaped($_['content']); ?>
 		</main>
