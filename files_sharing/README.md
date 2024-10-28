@@ -1,177 +1,235 @@
 # Modifications du plugin files_sharing
-## Fichiers à ajouter :
-``` files
-+-- .
-+-- lib
-|	+-- Controller
-|	|	+-- ReciaRechercheAPIController.php
-|	+-- Db
-|	|	+-- Etablissement.php
-|	|	+-- EtablissementMapper.php
-|	|	+-- SearchDB.php
-+-- src
-|	+-- components
-|	|	+-- SharingInputChoice.vue
-|	|	+-- SharingInputEtab.vue
-|	|	+-- SharingInputRecia.vue
-|	+-- mixins
-|	|	+-- MultiselectMixin.js
+
+- [Modifications du plugin files\_sharing](#modifications-du-plugin-files_sharing)
+  - [Structure](#structure)
+  - [Mise à jour](#mise-à-jour)
+    - [Fichiers ajouteés](#fichiers-ajouteés)
+    - [Fichiers modifieés](#fichiers-modifieés)
+
+## Structure
+
+```bash
+files_sharing/
+├── app         # code source modifié
+└── dist        # fichiers compilés
 ```
 
-## Fichiers à modifier :
-**/appinfo/routes.php**
-``` php
-/** Ajouter les routes suivantes **/
-...
-/*
-* Recia Sharee API
-*/
-[
-  'name' => 'ReciaRechercheAPI#search',
-  'url' => '/api/v1/recia_search',
-  'verb' => 'GET',
-],
-[
-  'name' => 'ReciaRechercheAPI#listUserEtabs',
-  'url' => '/api/v1/recia_list_etabs',
-  'verb' => 'GET',
-],
-...
+## Mise à jour
+
+> Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable27`
+
+2. Initialisez le projet `make dev-setup`.
+
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable27/apps/files_sharing` et inversement.
+
+4. Mettez à jour l'autoloader php : `composer install`.
+
+5. Compilez le projet : `make build-js-production`.
+
+6. Assurez vous que tout fonction correctement dans le docker ([stable27.local](stable27.local)).
+
+7. Récuperez les fichiers compilés et le dossier `composer` : `make sync`.
+
+```bash
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable27/
+nextcloud-docker-dev/workspace/stable27$ git checkout v27.1.11
+nextcloud-docker-dev/workspace/stable27$ docker compose up -d stable27
+nextcloud-docker-dev/workspace/stable27$ make dev-setup
+nextcloud-docker-dev/workspace/stable27$ cd -
+nextcloud-plugins/files_sharing$ make add
+nextcloud-plugins/files_sharing$ make meld
+nextcloud-plugins/files_sharing$ cd -
+nextcloud-docker-dev/workspace/stable27$ make build-js-production
+nextcloud-docker-dev/workspace/stable27$ cd apps/files_sharing/composer/
+nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ composer install
+nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ cd -
+nextcloud-docker-dev/workspace/stable27$ cd ../../nextcloud-plugins/files_sharing/
+nextcloud-plugins/files_sharing$ make sync
 ```
-**/l10n/fr.js**
-``` javascript
-/** Ajouter à la fin **/
-	...
-	"Search on :" : "Rechercher sur",
-	"Your establishments" : "Vos établissements",
-	"All platform" : "Tout le monde",
-	"Establishments" : "Etablissements"
+
+### Fichiers ajouteés
+
+```bash
+files_sharing/
+├── lib
+│   ├── Controller
+│   │   └── ReciaRechercheAPIController.php
+│   └── Db
+│       ├── EtablissementMapper.php
+│       ├── Etablissement.php
+│       └── SearchDB.php
+└── src
+    ├── components
+    │   ├── SharingInputChoice.vue
+    │   ├── SharingInputEtab.vue
+    │   └── SharingInputRecia.vue
+    └── mixins
+        └── MultiselectMixin.js
+```
+
+### Fichiers modifieés
+
+**appinfo/routes.php**
+
+```diff
+...
+  [
+   'name' => 'Remote#unshare',
+   'url' => '/api/v1/remote_shares/{id}',
+   'verb' => 'DELETE',
+  ],
++  /*
++   * Recia Sharee API
++   */
++  [
++   'name' => 'ReciaRechercheAPI#search',
++   'url' => '/api/v1/recia_search',
++   'verb' => 'GET',
++  ],
++  [
++   'name' => 'ReciaRechercheAPI#listUserEtabs',
++   'url' => '/api/v1/recia_list_etabs',
++   'verb' => 'GET',
++  ],
+ ],
+];
+```
+
+**l10n/fr.js**
+
+```diff
+...
+    "sharing is disabled" : "le partage est désactivé",
+-   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
++   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
++   "Search on :" : "Rechercher sur",
++   "Your establishments" : "Vos établissements",
++   "All platform" : "Tout le monde",
++   "Establishments" : "Etablissements",
++   "Select all" : "Tous",
++   "Select none" : "Aucun"
 },
-"nplurals=2; plural=(n > 1);");
+"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
 ```
-**/l10n/fr.json**
-``` json
-/** Ajouter à la fin **/
-	...
-	"Search on :" : "Rechercher sur",
-	"Your establishments" : "Vos établissements",
-	"All platform" : "Tout le monde",
-	"Establishments" : "Etablissements"
-},"pluralForm" :"nplurals=2; plural=(n > 1);"
+
+**l10n/fr.json**
+
+```diff
+...
+    "sharing is disabled" : "le partage est désactivé",
+-   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
++   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
++   "Search on :" : "Rechercher sur",
++   "Your establishments" : "Vos établissements",
++   "All platform" : "Tout le monde",
++   "Establishments" : "Etablissements",
++   "Select all" : "Tous",
++   "Select none" : "Aucun"
+},"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
 ```
-**/src/views/SharingTab.vue**
-``` javascript
+
+**src/views/SharingTab.vue**
+
+```diff
 ...
-/** Commenter le composant SharingInput par les nouveaux composants**/
-<!--
-<SharingInput v-if="!loading"
-	:can-reshare="canReshare"
-	:file-info="fileInfo"
-	:link-shares="linkShares"
-	:reshare="reshare"
-	:shares="shares"
-	@add:share="addShare" />
--->
-<span>{{ t('files_sharing','Search on :') }}</span>
-<!-- add seach choice -->
-<SharingInputChoice v-if="!loading && canReshare"
-	:type="searchType"
-	@change="updateSearchType" />
+    <!-- add new share input -->
++   <!--
+    <SharingInput v-if="!loading"
+      :can-reshare="canReshare"
+      :file-info="fileInfo"
+      :link-shares="linkShares"
+      :reshare="reshare"
+      :shares="shares"
+      @open-sharing-details="toggleShareDetailsView" />
++    -->
++
++    <span>{{ t('files_sharing', 'Search on :') }}</span>
++
++    <!-- add seach choice -->
++    <SharingInputChoice v-if="!loading && canReshare"
++      :type="searchType"
++     @change="updateSearchType" />
++
++    <!-- add etab choice -->
++    <SharingInputEtab v-if="!loading && canReshare"
++      v-show="searchType==='etab'"
++      @change="updateSelectedEtabs" />
++
++    <!-- add new share input -->
++    <SharingInputRecia v-if="!loading"
++      :can-reshare="canReshare"
++      :file-info="fileInfo"
++      :link-shares="linkShares"
++      :reshare="reshare"
++      :shares="shares"
++      :search-type="searchType"
++      :search-etabs="selectedEtabs"
++      @add:share="addShare" />
 
-<!-- add etab choice -->
-<SharingInputEtab v-if="!loading && canReshare"
-	v-show="searchType==='etab'"
-	@change="updateSelectedEtabs" />
+     <!-- link shares list -->
+...
+<script>
+...
+import ShareTypes from '../mixins/ShareTypes.js'
+import SharingEntryInternal from '../components/SharingEntryInternal.vue'
+import SharingEntrySimple from '../components/SharingEntrySimple.vue'
+-import SharingInput from '../components/SharingInput.vue'
++// import SharingInput from '../components/SharingInput.vue'
++import SharingInputRecia from '../components/SharingInputRecia.vue'
++import SharingInputEtab from '../components/SharingInputEtab.vue'
++import SharingInputChoice from '../components/SharingInputChoice.vue'
 
-<!-- add new share input -->
-<SharingInputRecia v-if="!loading"
-	:can-reshare="canReshare"
-	:file-info="fileInfo"
-	:link-shares="linkShares"
-	:reshare="reshare"
-	:shares="shares"
-	:search-type="searchType"
-	:search-etabs="selectedEtabs"
-	@add:share="addShare" />
+import SharingInherited from './SharingInherited.vue'
+import SharingLinkList from './SharingLinkList.vue'
+...
+  SharingEntryInternal,
+  SharingEntrySimple,
+  SharingInherited,
+- SharingInput,
++ // SharingInput,
+  SharingInputRecia,
+  SharingInputEtab,
+  SharingInputChoice,
+  SharingLinkList,
+  SharingList,
+  SharingDetailsTab,
+...
+ data() {
+  return {
+...
+   // reshare Share object
+   reshare: null,
+   sharedWithMe: {},
+   shares: [],
+   linkShares: [],
+
++   searchType: 'etab',
++   selectedEtabs: [],
++
+   sections: OCA.Sharing.ShareTabSections.getSections(),
+   projectsEnabled: loadState('core', 'projects_enabled', false),
+   showSharingDetailsView: false,
+...
+  }
+ },
+
+ computed: {
+...
+    })
+   }
+  },
++
++  updateSearchType(type) {
++   this.searchType = type
++  },
++
++  updateSelectedEtabs(etabs) {
++   this.selectedEtabs = etabs
++  },
+ },
 }
-...
-/** Remplacer l'import de SharingInput par celui des nouveaux composants **/
-// import SharingInput from '../components/SharingInput'
-import SharingInputRecia from '../components/SharingInputRecia'
-import SharingInputEtab from '../components/SharingInputEtab'
-import SharingInputChoice from '../components/SharingInputChoice'
-...
-/** Remplacer la declaration SharingInput par celle des nouveaux composants dans la vue **/
-components: {
-	Avatar,
-	CollectionList,
-	SharingEntryInternal,
-	SharingEntrySimple,
-	SharingInherited,
-	/*SharingInput,*/
-	SharingInputRecia,
-	SharingInputEtab,
-	SharingInputChoice,
-	SharingLinkList,
-	SharingList,
-},
-...
-/** Ajouter les propriété inernes **/
-data() {
-	return {
-		config: new Config(),
-
-		error: '',
-		expirationInterval: null,
-		loading: true,
-
-		fileInfo: null,
-
-		// reshare Share object
-		reshare: null,
-		sharedWithMe: {},
-		shares: [],
-		linkShares: [],
-
-		searchType: 'etab',
-		selectedEtabs: [],
-
-		sections: OCA.Sharing.ShareTabSections.getSections(),
-	}
-},
-...
-/** Ajouter les méthodes **/
-methods: {
-	...
-
-	updateSearchType(type) {
-		this.searchType = type
-	},
-
-	updateSelectedEtabs(etabs) {
-		this.selectedEtabs = etabs
-	},
-},
+</script>
 ```
-## Mettre à jour l'autoloader php
-``` shell
-$ cd ./composer
-$ composer install
-```
-_**!!! IMPORTANT !!! :** composer doit être installé_
-
-[<img src="https://getcomposer.org/img/logo-composer-transparent3.png" width="75px"/>](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
-
-## Packager les librairies Javascript
-``` shell
-$ npm run dev
-```
-_**!!! IMPORTANT !!! :** npm & nodejs doivent être installés_
-
-[<img src="https://github.com/npm/logos/blob/master/npm%20logo/npm-logo-red.png?raw=true" width="75px"/>](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-
-**[NVM](https://github.com/nvm-sh/nvm)**
-
-
-	

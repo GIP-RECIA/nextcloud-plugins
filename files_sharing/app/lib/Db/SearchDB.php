@@ -29,12 +29,11 @@ use OCP\Share\IShare;
 class SearchDB {
 	private $db;
 
-	public function __construct(IDBConnection $db)
-	{
+	public function __construct(IDBConnection $db) {
 		$this->db = $db;
 	}
 
-	public function searchAll($search, $etabs, $limit, $offset){
+	public function searchAll($search, $etabs, $limit, $offset) {
 		$result = [
 			'exact' => [
 				'users' => [],
@@ -43,11 +42,11 @@ class SearchDB {
 			'users' => [],
 			'groups' => [],
 		];
-		list($result['users'],$hasMoreUsers)=$this->searchUsers($search, $etabs, $limit, $offset);
+		list($result['users'],$hasMoreUsers) = $this->searchUsers($search, $etabs, $limit, $offset);
 		/*$result['exact']['users']=array_filter($result['users'],function($user) use ($search){
 			return $user['label'] == $search || $user['shareWithDisplayNameUnique'] == $search;
 		});*/
-		list($result['groups'],$hasMoreGroups)=$this->searchGroups($search, $etabs, $limit, $offset);
+		list($result['groups'],$hasMoreGroups) = $this->searchGroups($search, $etabs, $limit, $offset);
 		/*$result['exact']['groups']=array_filter($result['groups'],function($groups) use ($search){
 			return $groups['label'] == $search;
 		});*/
@@ -55,7 +54,7 @@ class SearchDB {
 	}
 
 	protected function searchUsers($search, $etabs, $limit, $offset):array {
-		$hasMore=false;
+		$hasMore = false;
 
 		$qb = $this->db->getQueryBuilder();
 
@@ -88,7 +87,7 @@ class SearchDB {
 
 		$usersFetched = $qb->execute()->fetchAll();
 
-		if(count($usersFetched)>$limit){
+		if (count($usersFetched) > $limit){
 			$hasMore = true;
 			array_pop($usersFetched);
 		}
@@ -102,17 +101,17 @@ class SearchDB {
 					'shareType' => IShare::TYPE_USER,
 					'shareWith' => $user['uid'],
 				],
-				'shareWithDisplayNameUnique' =>  $user['email'],
+				'shareWithDisplayNameUnique' => $user['email'],
 				'status' => []
 			];
 			return $formattedUser;
-		},$usersFetched);
-		return [$formattedUsers??[],$hasMore];
+		}, $usersFetched);
+		return [$formattedUsers ?? [], $hasMore];
 
 	}
 
 	protected function searchGroups($search, $etabs, $limit, $offset) {
-		$hasMore=false;
+		$hasMore = false;
 
 		$qb = $this->db->getQueryBuilder();
 
@@ -134,14 +133,14 @@ class SearchDB {
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
 		$groupsFetched = $qb->execute()->fetchAll();
-		if(count($groupsFetched)>$limit){
+		if (count($groupsFetched) > $limit) {
 			$hasMore = true;
 			array_pop($groupsFetched);
 		}
 
-		$formattedGroups = array_map(function($group){
+		$formattedGroups = array_map(function($group) {
 			$formattedGroup = [
-				'label' => $group['displayname']??$group['gid'],
+				'label' => $group['displayname'] ?? $group['gid'],
 				'subline' => '',
 				'icon' => 'icon-group',
 				'value' => [
@@ -150,7 +149,7 @@ class SearchDB {
 				]
 			];
 			return $formattedGroup;
-		},$groupsFetched);
-		return [$formattedGroups??[],$hasMore];
+		}, $groupsFetched);
+		return [$formattedGroups ?? [], $hasMore];
 	}
 }
