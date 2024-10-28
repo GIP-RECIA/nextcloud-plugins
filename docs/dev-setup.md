@@ -5,14 +5,16 @@ Structure des projets git :
 ```bash
 .
 ├── nextcloud-docker-dev
-└── nextcloud-plugins
+├── nextcloud-plugins
+└── notifications
 ```
 
-Utilisez [nextcloud-docker-dev](https://github.com/juliushaertl/nextcloud-docker-dev) avec un version stable.
+Utilisez [nextcloud-docker-dev](https://github.com/juliusknorr/nextcloud-docker-dev) avec un version stable.
 
 ```bash
 cd ..
-git clone https://github.com/juliushaertl/nextcloud-docker-dev
+git clone https://github.com/nextcloud/notifications.git
+git clone https://github.com/juliusknorr/nextcloud-docker-dev.git
 cd nextcloud-docker-dev
 ./bootstrap.sh --full-clone
 cd workspace/server
