@@ -25,7 +25,7 @@
 	<div>
 		<NcSelect v-model="selected"
 			:loading="loading"
-			:options="formatedEtabs"
+			:options="etabs"
 			:placeholder="t('files_sharing', 'Establishments')"
 			:close-on-select="false"
 			multiple
@@ -107,13 +107,6 @@ export default {
 			}
 			return t('files_sharing', 'No elements found.')
 		},
-		formatedEtabs() {
-			return this.etabs.map(etab => {
-				const label = `${etab.name} ${etab.uai ?? ''}`
-
-				return { ...etab, label }
-			})
-		}
 	},
 
 	mounted() {
@@ -139,9 +132,13 @@ export default {
 				return
 			}
 
-			this.etabs = request.data.ocs.data.data
+			this.etabs = request.data.ocs.data.data.map(etab => {
+				const label = `${etab.name} ${etab.uai ?? ''}`
 
-			this.selected = this.formatedEtabs.filter(etab => etab.selected)
+				return { ...etab, label }
+			})
+
+			this.selected = this.etabs.filter(etab => etab.selected)
 			this.selected.length >= 1 && this.change()
 
 			this.loading = false
@@ -176,7 +173,7 @@ export default {
 		isChanging() {
 			const sirenList = this.selected.map(etab => etab.siren)
 			this.$emit('change', sirenList)
-			this.formatedEtabs.sort((etab1, etab2) => {
+			this.etabs.sort((etab1, etab2) => {
 				etab1.selected = sirenList.includes(etab1.siren)
 				etab2.selected = sirenList.includes(etab2.siren)
 				if (etab1.selected && etab2.selected) {
