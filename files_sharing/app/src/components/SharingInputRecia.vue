@@ -21,53 +21,68 @@
   -->
 
 <template>
-	<NcMultiselect ref="multiselect"
-		class="sharing-input"
-		:clear-on-select="true"
-		:disabled="!canReshare"
-		:hide-selected="true"
-		:internal-search="false"
-		:loading="loading"
-		:options="options"
-		:placeholder="inputPlaceholder"
-		:preselect-first="true"
-		:preserve-search="true"
-		:searchable="true"
-		:user-select="true"
-		open-direction="below"
-		label="displayName"
-		track-by="id"
-		@search-change="asyncFind"
-		@select="addShare">
-		<template slot="beforeList" v-if="!this.isValidQuery">
-			<li>
-				<span>
-					{{ t('files_sharing', 'Recommendations :') }}
-				</span>
-			</li>
-		</template>
-		<template #noOptions>
-			{{ t('files_sharing', 'No recommendations. Start typing.') }}
-		</template>
-		<template #noResult>
-			{{ noResultText }}
-		</template>
-	</NcMultiselect>
+	<div class="sharing-search-recia">
+		<label>{{ t('files_sharing', 'Search on :') }}</label>
+
+		<div class="sharing-input-choice">
+			<input id="search-type-etab"
+				v-model="searchType"
+				class="radio"
+				type="radio"
+				name="search-type"
+				value="etab">
+			<label for="search-type-etab">
+				{{ t('files_sharing', 'Your establishments') }}
+			</label>
+			<input id="search-type-all"
+				v-model="searchType"
+				class="radio"
+				type="radio"
+				name="search-type"
+				value="all">
+			<label for="search-type-all">
+				{{ t('files_sharing', 'All platform') }}
+			</label>
+		</div>
+
+		<SharingInputEtab v-show="searchType === 'etab'"
+			@change="updateSelectedEtabs" />
+
+		<NcSelect ref="select"
+			v-model="value"
+			input-id="sharing-search-input"
+			class="sharing-search__input"
+			:disabled="!canReshare"
+			:loading="loading"
+			:filterable="false"
+			:placeholder="inputPlaceholder"
+			:clear-search-on-blur="() => false"
+			:user-select="true"
+			:options="options"
+			@search="asyncFind"
+			@option:selected="onSelected">
+			<template #no-options="{ search }">
+				{{ search ? noResultText : t('files_sharing', 'No recommendations. Start typing.') }}
+			</template>
+		</NcSelect>
+	</div>
 </template>
 
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
 import { getCurrentUser } from '@nextcloud/auth'
+import { getCapabilities } from '@nextcloud/capabilities'
 import axios from '@nextcloud/axios'
 import debounce from 'debounce'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect'
-import MultiselectMixin from '../mixins/MultiselectMixin'
+import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
-import Config from '../services/ConfigService'
-import GeneratePassword from '../utils/GeneratePassword'
-import Share from '../models/Share'
-import ShareRequests from '../mixins/ShareRequests'
-import ShareTypes from '../mixins/ShareTypes'
+import Config from '../services/ConfigService.js'
+import Share from '../models/Share.js'
+import ShareRequests from '../mixins/ShareRequests.js'
+import ShareTypes from '../mixins/ShareTypes.js'
+import ShareDetails from '../mixins/ShareDetails.js'
+
+import SharingInputEtab from './SharingInputEtab.vue'
 
 const CancelToken = axios.CancelToken
 let searchCancelSource = null
@@ -76,10 +91,11 @@ export default {
 	name: 'SharingInputRecia',
 
 	components: {
-		NcMultiselect,
+		NcSelect,
+		SharingInputEtab,
 	},
 
-	mixins: [ShareTypes, ShareRequests, MultiselectMixin],
+	mixins: [ShareTypes, ShareRequests, ShareDetails],
 
 	props: {
 		shares: {
@@ -105,16 +121,6 @@ export default {
 			type: Boolean,
 			required: true,
 		},
-		searchType: {
-			type: String,
-			required: true,
-			validator: searchType => ['all', 'etab'].includes(searchType),
-		},
-		searchEtabs: {
-			type: Array,
-			default: () => [],
-			required: true,
-		},
 	},
 
 	data() {
@@ -126,6 +132,8 @@ export default {
 			ShareSearch: OCA.Sharing.ShareSearch.state,
 			suggestions: [],
 			value: null,
+			searchType: 'etab',
+			selectedEtabs: [],
 		}
 	},
 
@@ -175,10 +183,11 @@ export default {
 	},
 
 	watch: {
-		searchType(val, oldval) {
-			this.reset()
+		searchType() {
+			this.query = ''
+			this.suggestions = []
 		},
-		searchEtabs(val, oldval) {
+		selectedEtabs() {
 			this.asyncFind(this.query)
 		},
 	},
@@ -188,6 +197,11 @@ export default {
 	},
 
 	methods: {
+		onSelected(option) {
+			this.value = null // Reset selected option
+			this.openSharingDetails(option)
+		},
+
 		async asyncFind(query) {
 			// save current query to check if we display
 			// recommendations or search results
@@ -196,11 +210,7 @@ export default {
 				// start loading now to have proper ux feedback
 				// during the debounce
 				this.loading = true
-				if (this.searchType === 'etab' && this.searchEtabs.filter(i => i).length >= 1) {
-					await this.debounceGetReciaSuggestions(query)
-				} else {
-					await this.debounceGetSuggestions(query)
-				}
+				await this.debounceGetSuggestions(query)
 			}
 		},
 
@@ -208,12 +218,12 @@ export default {
 		 * Get suggestions
 		 *
 		 * @param {string} search the search query
-		 * @param {boolean} [lookup=false] search on lookup server
+		 * @param {boolean} [lookup] search on lookup server
 		 */
 		async getSuggestions(search, lookup = false) {
 			this.loading = true
 
-			if (OC.getCapabilities().files_sharing.sharee.query_lookup_default === true) {
+			if (getCapabilities().files_sharing.sharee.query_lookup_default === true) {
 				lookup = true
 			}
 
@@ -229,35 +239,53 @@ export default {
 				this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH,
 			]
 
-			if (OC.getCapabilities().files_sharing.public.enabled === true) {
+			if (getCapabilities().files_sharing.public.enabled === true) {
 				shareType.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL)
 			}
 
 			if (searchCancelSource) {
 				searchCancelSource.cancel('Canceled')
 			}
+
 			searchCancelSource = CancelToken.source()
 
 			let request = null
-			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/sharees'), {
-					cancelToken: searchCancelSource.token,
-					params: {
-						format: 'json',
-						itemType: this.fileInfo.type === 'dir' ? 'folder' : 'file',
-						search,
-						lookup,
-						perPage: this.config.maxAutocompleteResults,
-						shareType,
-					},
-				})
-			} catch (error) {
-				if (error.message === 'Canceled') {
-					console.debug('Cancel fetching suggestions', error)
-				} else {
-					console.error('Error fetching suggestions', error)
+			if (this.searchType === 'etab' && this.selectedEtabs.length >= 1) {
+				try {
+					request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/recia_search'), {
+						cancelToken: searchCancelSource.token,
+						params: {
+							format: 'json',
+							itemType: this.fileInfo.type === 'dir' ? 'folder' : 'file',
+							search,
+							etabs: this.selectedEtabs,
+						},
+					})
+				} catch (error) {
+					if (error.message === 'Canceled') {
+						console.debug('Cancel fetching suggestions', error)
+					} else {
+						console.error('Error fetching suggestions', error)
+					}
+					return
 				}
-				return
+			} else {
+				try {
+					request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/sharees'), {
+						cancelToken: searchCancelSource.token,
+						params: {
+							format: 'json',
+							itemType: this.fileInfo.type === 'dir' ? 'folder' : 'file',
+							search,
+							lookup,
+							perPage: this.config.maxAutocompleteResults,
+							shareType,
+						},
+					})
+				} catch (error) {
+					console.error('Error fetching suggestions', error)
+					return
+				}
 			}
 
 			const data = request.data.ocs.data
@@ -281,7 +309,6 @@ export default {
 			// lookup clickable entry
 			// show if enabled and not already requested
 			const lookupEntry = []
-			/*
 			if (data.lookupEnabled && !lookup) {
 				lookupEntry.push({
 					id: 'global-lookup',
@@ -290,14 +317,13 @@ export default {
 					lookup: true,
 				})
 			}
-			*/
 
 			// if there is a condition specified, filter it
 			const externalResults = this.externalResults.filter(result => !result.condition || result.condition(this))
 
 			const allSuggestions = exactSuggestions.concat(suggestions).concat(externalResults).concat(lookupEntry)
 
-			// Count occurences of display names in order to provide a distinguishable description if needed
+			// Count occurrences of display names in order to provide a distinguishable description if needed
 			const nameCounts = allSuggestions.reduce((nameCounts, result) => {
 				if (!result.displayName) {
 					return nameCounts
@@ -328,96 +354,7 @@ export default {
 		 */
 		debounceGetSuggestions: debounce(function(...args) {
 			this.getSuggestions(...args)
-		}, 500),
-
-		/**
-		 * Get suggestions
-		 *
-		 * @param {string} search the search query
-		 */
-		async getReciaSuggestions(search) {
-			this.loading = true
-
-			if (searchCancelSource) {
-				searchCancelSource.cancel('Canceled')
-			}
-
-			searchCancelSource = CancelToken.source()
-
-			let request = null
-			try {
-				request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1/recia_search'), {
-					cancelToken: searchCancelSource.token,
-					params: {
-						format: 'json',
-						itemType: this.fileInfo.type === 'dir' ? 'folder' : 'file',
-						search,
-						etabs: this.searchEtabs,
-					},
-				})
-			} catch (error) {
-				if (error.message === 'Canceled') {
-					console.debug('Cancel fetching suggestions', error)
-				} else {
-					console.error('Error fetching suggestions', error)
-				}
-				return
-			}
-
-			const data = request.data.ocs.data
-			const exact = request.data.ocs.data.exact
-			data.exact = [] // removing exact from general results
-
-			// flatten array of arrays
-			const rawExactSuggestions = Object.values(exact).reduce((arr, elem) => arr.concat(elem), [])
-			const rawSuggestions = Object.values(data).reduce((arr, elem) => arr.concat(elem), [])
-
-			// remove invalid data and format to user-select layout
-			const exactSuggestions = this.filterOutExistingShares(rawExactSuggestions)
-				.map(share => this.formatForMultiselect(share))
-				// sort by type so we can get user&groups first...
-				.sort((a, b) => a.shareType - b.shareType)
-			const suggestions = this.filterOutExistingShares(rawSuggestions)
-				.map(share => this.formatForMultiselect(share))
-				// sort by type so we can get user&groups first...
-				.sort((a, b) => a.shareType - b.shareType)
-
-			// if there is a condition specified, filter it
-			const externalResults = this.externalResults.filter(result => !result.condition || result.condition(this))
-
-			const allSuggestions = exactSuggestions.concat(suggestions).concat(externalResults)
-
-			// Count occurances of display names in order to provide a distinguishable description if needed
-			const nameCounts = allSuggestions.reduce((nameCounts, result) => {
-				if (!result.displayName) {
-					return nameCounts
-				}
-				if (!nameCounts[result.displayName]) {
-					nameCounts[result.displayName] = 0
-				}
-				nameCounts[result.displayName]++
-				return nameCounts
-			}, {})
-
-			this.suggestions = allSuggestions.map(item => {
-				// Make sure that items with duplicate displayName get the shareWith applied as a description
-				if (nameCounts[item.displayName] > 1 && !item.desc) {
-					return { ...item, desc: item.shareWithDisplayNameUnique }
-				}
-				return item
-			})
-
-			this.loading = false
-		},
-
-		/**
-		 * Debounce getSuggestions
-		 *
-		 * @param {...*} args the arguments
-		 */
-		debounceGetReciaSuggestions: debounce(function(...args) {
-			this.getReciaSuggestions(...args)
-		}, 500),
+		}, 300),
 
 		/**
 		 * Get the sharing recommendations
@@ -557,7 +494,7 @@ export default {
 			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
 				return {
 					icon: 'icon-sciencemesh',
-					iconTitle: t('files_sharing', 'Science Mesh'),
+					iconTitle: t('files_sharing', 'ScienceMesh'),
 				}
 			default:
 				return {}
@@ -571,147 +508,51 @@ export default {
 		 * @return {object}
 		 */
 		formatForMultiselect(result) {
-			let subtitle
+			let subname
 			if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_USER && this.config.shouldAlwaysShowUnique) {
-				subtitle = result.shareWithDisplayNameUnique ?? ''
+				subname = result.shareWithDisplayNameUnique ?? ''
 			} else if ((result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE
 					|| result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP
 			) && result.value.server) {
-				subtitle = t('files_sharing', 'on {server}', { server: result.value.server })
+				subname = t('files_sharing', 'on {server}', { server: result.value.server })
 			} else if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
-				subtitle = result.value.shareWith
+				subname = result.value.shareWith
 			} else {
-				subtitle = result.shareWithDescription ?? ''
+				subname = result.shareWithDescription ?? ''
 			}
 
 			return {
-				id: `${result.value.shareType}-${result.value.shareWith}`,
 				shareWith: result.value.shareWith,
 				shareType: result.value.shareType,
 				user: result.uuid || result.value.shareWith,
 				isNoUser: result.value.shareType !== this.SHARE_TYPES.SHARE_TYPE_USER,
 				displayName: result.name || result.label,
-				subtitle,
+				subname,
 				shareWithDisplayNameUnique: result.shareWithDisplayNameUnique || '',
 				...this.shareTypeToIcon(result.value.shareType),
 			}
 		},
 
-		/**
-		 * Process the new share request
-		 *
-		 * @param {object} value the multiselect option
-		 */
-		async addShare(value) {
-			this.value = null
-			if (value.lookup) {
-				await this.getSuggestions(this.query, true)
-
-				// focus the input again
-				this.$nextTick(() => {
-					this.$refs.multiselect.$el.querySelector('.multiselect__input').focus()
-				})
-				return true
-			}
-
-			// TODO: reset the search string when done
-			// https://github.com/shentao/vue-multiselect/issues/633
-
-			// handle externalResults from OCA.Sharing.ShareSearch
-			if (value.handler) {
-				const share = await value.handler(this)
-				this.$emit('add:share', new Share(share))
-				return true
-			}
-
-			this.loading = true
-			console.debug('Adding a new share from the input for', value)
-			try {
-				let password = null
-
-				if (this.config.enforcePasswordForPublicLink
-					&& value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
-					password = await GeneratePassword()
-				}
-
-				const path = (this.fileInfo.path + '/' + this.fileInfo.name).replace('//', '/')
-				const share = await this.createShare({
-					path,
-					shareType: value.shareType,
-					shareWith: value.shareWith,
-					password,
-					permissions: this.fileInfo.sharePermissions & OC.getCapabilities().files_sharing.default_permissions,
-					attributes: JSON.stringify(this.fileInfo.shareAttributes),
-				})
-
-				// If we had a password, we need to show it to the user as it was generated
-				if (password) {
-					share.newPassword = password
-					// Wait for the newly added share
-					const component = await new Promise(resolve => {
-						this.$emit('add:share', share, resolve)
-					})
-
-					// open the menu on the
-					// freshly created share component
-					component.open = true
-				} else {
-					// Else we just add it normally
-					this.$emit('add:share', share)
-				}
-
-				// reset the search string when done
-				// FIXME: https://github.com/shentao/vue-multiselect/issues/633
-				if (this.$refs.multiselect?.$refs?.VueMultiselect?.search) {
-					this.$refs.multiselect.$refs.VueMultiselect.search = ''
-				}
-
-				await this.getRecommendations()
-			} catch (error) {
-				// focus back if any error
-				const input = this.$refs.multiselect.$el.querySelector('input')
-				if (input) {
-					input.focus()
-				}
-				this.query = value.shareWith
-				console.error('Error while adding new share', error)
-			} finally {
-				this.loading = false
-			}
-		},
-
-		reset() {
-			this.query = ''
-			this.resetSearch()
-			this.suggestions = []
+		updateSelectedEtabs(etabs) {
+			this.selectedEtabs = etabs
 		},
 	},
 }
 </script>
 
 <style lang="scss">
-.sharing-input {
-	width: 100%;
-	margin: 10px 0;
+.sharing-search-recia {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 4px;
 
-	// properly style the lookup entry
-	.multiselect__option {
-		span[lookup] {
-			.avatardiv {
-				background-image: var(--icon-search-fff);
-				background-repeat: no-repeat;
-				background-position: center;
-				background-color: var(--color-text-maxcontrast) !important;
-				div {
-					display: none;
-				}
-			}
-		}
+	> .sharing-input-choice {
+		margin-bottom: 2px;
 	}
 
-	.list_header{
-		padding: 5px;
-		color: var(--color-text-lighter);
+	&__input {
+		width: 100%;
+		margin: 10px 0;
 	}
 }
 </style>
