@@ -23,64 +23,60 @@
 
 <template>
 	<div>
-		<NcMultiselect ref="multiselect"
-			v-model="selected"
-			class="sharing-input-etab"
-			track-by="id"
-			label="name"
-			:limit="3"
-			:custom-label="searchLabel"
+		<NcSelect v-model="selected"
 			:loading="loading"
-			:options="etabs"
-			:placeholder="inputPlaceholder"
-			:multiple="true"
-			:clear-on-select="true"
-			open-direction="below"
+			:options="formatedEtabs"
+			:placeholder="t('files_sharing', 'Establishments')"
+			:close-on-select="false"
+			multiple
+			deselect-from-dropdown
+			class="sharing-input-etab"
 			@input="change"
-			@search-change="saveQuery">
-			<template slot="option" slot-scope="etab">
-				<div class="option__desc">
-					<span class="option__name" v-html="highlight(etab.option.name)" />
-					<span class="option__uai" v-html="highlight(etab.option.uai)" />
-				</div>
-			</template>
-			<template slot="beforeList">
+			@search="saveQuery">
+			<template #list-header>
 				<li>
 					<div class="option__selectall">
-						<span id="btnSelectAll"
-							tabindex="0"
-							role="button"
-							@click="selectAll">{{ t('files_sharing', 'Select all') }}</span>
-						<span id="btnSelectNone"
-							tabindex="0"
-							role="button"
-							@click="deselectAll">{{ t('files_sharing', 'Select none') }}</span>
+						<NcButton type="tertiary"
+							size="small"
+							:aria-label="t('files_sharing', 'Select all')"
+							@click="selectAll">
+							{{ t('files_sharing', 'Select all') }}
+						</NcButton>
+						<NcButton type="tertiary"
+							size="small"
+							:aria-label="t('files_sharing', 'Select none')"
+							@click="deselectAll">
+							{{ t('files_sharing', 'Select none') }}
+						</NcButton>
 					</div>
 				</li>
 			</template>
-			<template slot="afterList">
-				<li>
-					<div class="option__close">
-						<span id="btnClose"
-							tabindex="0"
-							role="button"
-							@click="toggle">{{ closeBtnTitle }}</span>
-					</div>
-				</li>
-			</template>
-			<template #noResult>
+			<template #no-options>
 				{{ noResultText }}
 			</template>
-		</NcMultiselect>
+			<template #option="{ name, uai }">
+				<div class="option__container">
+					<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
+					<div class="option__desc">
+						<span class="option__name" v-html="highlight(name)" />
+						<span class="option__uai" v-html="highlight(uai)" />
+					</div>
+				</div>
+			</template>
+			<template #selected-option-container="{ option }">
+				<div class="vs__selected">{{ option.name }}</div>
+			</template>
+		</NcSelect>
 	</div>
 </template>
 
 <script>
+import { mdiCheck } from '@mdi/js'
 import { generateOcsUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
-
-import MultiselectMixin from '../mixins/MultiselectMixin.js'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcIconSvgWrapper from '@nextcloud/vue/dist/Components/NcIconSvgWrapper.js'
+import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
 import Config from '../services/ConfigService.js'
 
@@ -88,10 +84,10 @@ export default {
 	name: 'SharingInputEtab',
 
 	components: {
-		NcMultiselect,
+		NcButton,
+		NcIconSvgWrapper,
+		NcSelect,
 	},
-
-	mixins: [MultiselectMixin],
 
 	data() {
 		return {
@@ -100,39 +96,24 @@ export default {
 			query: '',
 			etabs: [],
 			selected: [],
+			mdiCheck,
 		}
 	},
 
 	computed: {
-		inputPlaceholder() {
-			const allowRemoteSharing = this.config.isRemoteShareAllowed
-
-			// We can always search with email addresses for users too
-			if (!allowRemoteSharing) {
-				return t('files_sharing', 'Establishments')
-			}
-
-			return t('files_sharing', 'Establishments')
-		},
-
 		noResultText() {
 			if (this.loading) {
 				return t('files_sharing', 'Searching …')
 			}
 			return t('files_sharing', 'No elements found.')
 		},
+		formatedEtabs() {
+			return this.etabs.map(etab => {
+				const label = `${etab.name} ${etab.uai ?? ''}`
 
-		closeBtnTitle() {
-			return t('files_sharing', 'Close')
-		},
-
-		selectallBtnTitle() {
-			if (this.selected.length === this.etabs.length) {
-				return t('files_sharing', 'Unselect all')
-			} else {
-				return t('files_sharing', 'Select all')
-			}
-		},
+				return { ...etab, label }
+			})
+		}
 	},
 
 	mounted() {
@@ -160,14 +141,13 @@ export default {
 
 			this.etabs = request.data.ocs.data.data
 
-			this.selected = this.etabs.filter(etab => etab.selected)
+			this.selected = this.formatedEtabs.filter(etab => etab.selected)
 			this.selected.length >= 1 && this.change()
 
 			this.loading = false
 		},
 
 		change() {
-			this.isOpen && this.toggle()
 			this.isChanging()
 		},
 
@@ -183,30 +163,20 @@ export default {
 			})
 		},
 
-		searchLabel(etab) {
-			return `${etab.name} ${etab.uai ?? ''}`
-		},
-
-		showLabel(etab) {
-			return `${etab.name}`
-		},
-
 		selectAll() {
 			this.selected = this.etabs
 			this.isChanging()
-			this.toggle()
 		},
 
 		deselectAll() {
 			this.selected = []
 			this.isChanging()
-			this.toggle()
 		},
 
 		isChanging() {
 			const sirenList = this.selected.map(etab => etab.siren)
 			this.$emit('change', sirenList)
-			this.etabs.sort((etab1, etab2) => {
+			this.formatedEtabs.sort((etab1, etab2) => {
 				etab1.selected = sirenList.includes(etab1.siren)
 				etab2.selected = sirenList.includes(etab2.siren)
 				if (etab1.selected && etab2.selected) {
@@ -228,65 +198,78 @@ export default {
 .sharing-input-etab {
 	width: 100%;
 	margin: 10px 0;
-	.multiselect__content-wrapper{
-		min-height:150px;
+
+	.vs__selected {
+		padding-inline: 12px !important;
 	}
-	.option__desc{
+}
+
+.vs__dropdown-menu {
+	.option__selectall{
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		min-width: 0;
-		.option__name, .option__uai{
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
+		padding-bottom: 6px;
+		column-gap: 4px;
+
+		button {
+			flex: 1;
 		}
-		.option__name{
-			color: var(--color-text-light);
-		}
-		.option__uai{
-			font-size:smaller;
+	}
+
+	.vs__dropdown-option {
+		.option__container {
+			position: relative;
+			display: flex;
+			cursor: pointer;
+
+			.option__icon {
+				margin-right: 8px;
+				visibility: hidden;
+			}
+	
+			.option__desc {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				min-width: 0;
+	
+				.option__name,
+				.option__uai {
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+	
+				.option__uai {
+					font-size: smaller;
+					opacity: 0.5;
+				}
+			}
 		}
 
-	}
-	.multiselect__option--highlight{
-		&:not(.multiselect__option--selected){
-			&:before{
-				visibility:hidden !important;
+		// &.vs__dropdown-option--highlight {
+		// 	.option__container:after {
+		// 		position: absolute;
+		// 		bottom: 0;
+		// 		right: 0;
+		// 		opacity: 0.5;
+		// 		content: 'Selectionner';
+		// 	}
+		// }
+
+		&.vs__dropdown-option--selected {
+			--vs-dropdown-option--deselect-bg: var(--vs-dropdown-option--active-bg);
+			--vs-dropdown-option--deselect-color: var(--vs-dropdown-option--active-color);
+
+			.option__icon {
+				visibility: unset !important;
 			}
 		}
-		&:after{
-			position: absolute;
-			bottom: 5px;
-			right:5px;
-			content: 'Selectionner';
-			opacity: 0.5;
-		}
-		&.multiselect__option--selected{
-			&:after{
-				content: 'Déselectionner';
-			}
-		}
-	}
-	.option__close, .option__selectall{
-		display: flex;
-		flex-wrap: wrap;
-		width: 100%;
-		font-weight: 700;
-		text-align: center;
-		padding: 8px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		height: auto;
-		min-height: 1em;
-		background-color: transparent;
-		span{
-			flex:1;
-			color: var(--color-text-lighter);
-			&:hover{
-				color: var(--color-text);
-			}
-		}
+
+		// &.vs__dropdown-option--highlight.vs__dropdown-option--selected {
+		// 	.option__container:after {
+		// 		content: 'Déselectionner';
+		// 	}
+		// }
 	}
 }
 </style>

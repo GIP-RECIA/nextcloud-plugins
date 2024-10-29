@@ -18,34 +18,34 @@ files_sharing/
 
 > Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
 
-1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable27`
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable28`
 
-2. Initialisez le projet `make dev-setup`.
+2. Initialisez le projet : `make dev-setup`.
 
-3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable27/apps/files_sharing` et inversement.
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable28/apps/files_sharing` et inversement.
 
 4. Mettez à jour l'autoloader php : `composer install`.
 
 5. Compilez le projet : `make build-js-production`.
 
-6. Assurez vous que tout fonction correctement dans le docker ([stable27.local](stable27.local)).
+6. Assurez vous que tout fonction correctement dans le docker ([stable28.local](stable28.local)).
 
 7. Récuperez les fichiers compilés et le dossier `composer` : `make sync`.
 
 ```bash
-nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable27/
-nextcloud-docker-dev/workspace/stable27$ git checkout v27.1.11
-nextcloud-docker-dev/workspace/stable27$ docker compose up -d stable27
-nextcloud-docker-dev/workspace/stable27$ make dev-setup
-nextcloud-docker-dev/workspace/stable27$ cd -
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable28/
+nextcloud-docker-dev/workspace/stable28$ git checkout v28.0.11 -b v28.0.11
+nextcloud-docker-dev/workspace/stable28$ docker compose up -d stable28
+nextcloud-docker-dev/workspace/stable28$ make dev-setup
+nextcloud-docker-dev/workspace/stable28$ cd -
 nextcloud-plugins/files_sharing$ make add
 nextcloud-plugins/files_sharing$ make meld
 nextcloud-plugins/files_sharing$ cd -
-nextcloud-docker-dev/workspace/stable27$ make build-js-production
-nextcloud-docker-dev/workspace/stable27$ cd apps/files_sharing/composer/
-nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ composer install
-nextcloud-docker-dev/workspace/stable27/apps/files_sharing/composer$ cd -
-nextcloud-docker-dev/workspace/stable27$ cd ../../nextcloud-plugins/files_sharing/
+nextcloud-docker-dev/workspace/stable28$ make build-js-production
+nextcloud-docker-dev/workspace/stable28$ cd apps/files_sharing/composer/
+nextcloud-docker-dev/workspace/stable28/apps/files_sharing/composer$ composer install
+nextcloud-docker-dev/workspace/stable28/apps/files_sharing/composer$ cd -
+nextcloud-docker-dev/workspace/stable28$ cd ../../nextcloud-plugins/files_sharing/
 nextcloud-plugins/files_sharing$ make sync
 ```
 
@@ -97,38 +97,19 @@ files_sharing/
 ];
 ```
 
-**l10n/fr.js**
+**l10n/fr.js** et **l10n/fr.json**
+
+- Ajouter les lignes ci-dessous à la fin des fichiers
 
 ```diff
 ...
-    "sharing is disabled" : "le partage est désactivé",
--   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
-+   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
 +   "Search on :" : "Rechercher sur",
 +   "Your establishments" : "Vos établissements",
 +   "All platform" : "Tout le monde",
 +   "Establishments" : "Etablissements",
 +   "Select all" : "Tous",
 +   "Select none" : "Aucun"
-},
-"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
-```
-
-**l10n/fr.json**
-
-```diff
 ...
-    "sharing is disabled" : "le partage est désactivé",
--   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien."
-+   "For more info, please ask the person who sent this link." : "Pour plus d'informations, veuillez contacter la personne qui vous a envoyé ce lien.",
-+   "Search on :" : "Rechercher sur",
-+   "Your establishments" : "Vos établissements",
-+   "All platform" : "Tout le monde",
-+   "Establishments" : "Etablissements",
-+   "Select all" : "Tous",
-+   "Select none" : "Aucun"
-},"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
-}
 ```
 
 **src/views/SharingTab.vue**
