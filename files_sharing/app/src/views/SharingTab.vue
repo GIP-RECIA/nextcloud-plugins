@@ -28,10 +28,11 @@
 			<h2>{{ error }}</h2>
 		</div>
 
-		<template v-if="!showSharingDetailsView">
-			<!-- shares content -->
-			<div class="sharingTab__content">
-				<!-- shared with me information -->
+		<!-- shares content -->
+		<div v-show="!showSharingDetailsView"
+			class="sharingTab__content">
+			<!-- shared with me information -->
+			<ul>
 				<SharingEntrySimple v-if="isSharedWithMe" v-bind="sharedWithMe" class="sharing-entry__reshare">
 					<template #avatar>
 						<NcAvatar :user="sharedWithMe.user"
@@ -39,80 +40,56 @@
 							class="sharing-entry__avatar" />
 					</template>
 				</SharingEntrySimple>
+			</ul>
 
-				<!-- add new share input -->
-				<!--
-				<SharingInput v-if="!loading"
-					:can-reshare="canReshare"
-					:file-info="fileInfo"
-					:link-shares="linkShares"
-					:reshare="reshare"
-					:shares="shares"
-					@open-sharing-details="toggleShareDetailsView" />
-				-->
+			<!-- add new share input -->
+			<SharingInputRecia v-if="!loading"
+				:can-reshare="canReshare"
+				:file-info="fileInfo"
+				:link-shares="linkShares"
+				:reshare="reshare"
+				:shares="shares"
+				@open-sharing-details="toggleShareDetailsView" />
 
-				<span>{{ t('files_sharing', 'Search on :') }}</span>
+			<!-- link shares list -->
+			<SharingLinkList v-if="!loading"
+				ref="linkShareList"
+				:can-reshare="canReshare"
+				:file-info="fileInfo"
+				:shares="linkShares"
+				@open-sharing-details="toggleShareDetailsView" />
 
-				<!-- add seach choice -->
-				<SharingInputChoice v-if="!loading && canReshare"
-					:type="searchType"
-					@change="updateSearchType" />
+			<!-- other shares list -->
+			<SharingList v-if="!loading"
+				ref="shareList"
+				:shares="shares"
+				:file-info="fileInfo"
+				@open-sharing-details="toggleShareDetailsView" />
 
-				<!-- add etab choice -->
-				<SharingInputEtab v-if="!loading && canReshare"
-					v-show="searchType==='etab'"
-					@change="updateSelectedEtabs" />
+			<!-- inherited shares -->
+			<SharingInherited v-if="canReshare && !loading" :file-info="fileInfo" />
 
-				<!-- add new share input -->
-				<SharingInputRecia v-if="!loading"
-					:can-reshare="canReshare"
-					:file-info="fileInfo"
-					:link-shares="linkShares"
-					:reshare="reshare"
-					:shares="shares"
-					:search-type="searchType"
-					:search-etabs="selectedEtabs"
-					@add:share="addShare" />
+			<!-- internal link copy -->
+			<SharingEntryInternal :file-info="fileInfo" />
 
-				<!-- link shares list -->
-				<SharingLinkList v-if="!loading"
-					ref="linkShareList"
-					:can-reshare="canReshare"
-					:file-info="fileInfo"
-					:shares="linkShares"
-					@open-sharing-details="toggleShareDetailsView" />
+			<!-- projects -->
+			<CollectionList v-if="projectsEnabled && fileInfo"
+				:id="`${fileInfo.id}`"
+				type="file"
+				:name="fileInfo.name" />
+		</div>
 
-				<!-- other shares list -->
-				<SharingList v-if="!loading"
-					ref="shareList"
-					:shares="shares"
-					:file-info="fileInfo"
-					@open-sharing-details="toggleShareDetailsView" />
-
-				<!-- inherited shares -->
-				<SharingInherited v-if="canReshare && !loading" :file-info="fileInfo" />
-
-				<!-- internal link copy -->
-				<SharingEntryInternal :file-info="fileInfo" />
-
-				<!-- projects -->
-				<CollectionList v-if="projectsEnabled && fileInfo"
-					:id="`${fileInfo.id}`"
-					type="file"
-					:name="fileInfo.name" />
-			</div>
-
-			<!-- additional entries, use it with cautious -->
-			<div v-for="(section, index) in sections"
-				:ref="'section-' + index"
-				:key="index"
-				class="sharingTab__additionalContent">
-				<component :is="section($refs['section-'+index], fileInfo)" :file-info="fileInfo" />
-			</div>
-		</template>
+		<!-- additional entries, use it with cautious -->
+		<div v-for="(section, index) in sections"
+			v-show="!showSharingDetailsView"
+			:ref="'section-' + index"
+			:key="index"
+			class="sharingTab__additionalContent">
+			<component :is="section($refs['section-'+index], fileInfo)" :file-info="fileInfo" />
+		</div>
 
 		<!-- share details -->
-		<SharingDetailsTab v-else
+		<SharingDetailsTab v-if="showSharingDetailsView"
 			:file-info="shareDetailsData.fileInfo"
 			:share="shareDetailsData.share"
 			@close-sharing-details="toggleShareDetailsView"
@@ -134,10 +111,7 @@ import Share from '../models/Share.js'
 import ShareTypes from '../mixins/ShareTypes.js'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
-// import SharingInput from '../components/SharingInput.vue'
 import SharingInputRecia from '../components/SharingInputRecia.vue'
-import SharingInputEtab from '../components/SharingInputEtab.vue'
-import SharingInputChoice from '../components/SharingInputChoice.vue'
 
 import SharingInherited from './SharingInherited.vue'
 import SharingLinkList from './SharingLinkList.vue'
@@ -153,10 +127,7 @@ export default {
 		SharingEntryInternal,
 		SharingEntrySimple,
 		SharingInherited,
-		// SharingInput,
 		SharingInputRecia,
-		SharingInputEtab,
-		SharingInputChoice,
 		SharingLinkList,
 		SharingList,
 		SharingDetailsTab,
@@ -180,13 +151,11 @@ export default {
 			shares: [],
 			linkShares: [],
 
-			searchType: 'etab',
-			selectedEtabs: [],
-
 			sections: OCA.Sharing.ShareTabSections.getSections(),
 			projectsEnabled: loadState('core', 'projects_enabled', false),
 			showSharingDetailsView: false,
 			shareDetailsData: {},
+			returnFocusElement: null,
 		}
 	},
 
@@ -422,19 +391,31 @@ export default {
 				}
 			})
 		},
+
 		toggleShareDetailsView(eventData) {
+			if (!this.showSharingDetailsView) {
+				const isAction = Array.from(document.activeElement.classList)
+					.some(className => className.startsWith('action-'))
+				if (isAction) {
+					const menuId = document.activeElement.closest('[role="menu"]')?.id
+					this.returnFocusElement = document.querySelector(`[aria-controls="${menuId}"]`)
+				} else {
+					this.returnFocusElement = document.activeElement
+				}
+			}
+
 			if (eventData) {
 				this.shareDetailsData = eventData
 			}
+
 			this.showSharingDetailsView = !this.showSharingDetailsView
-		},
 
-		updateSearchType(type) {
-			this.searchType = type
-		},
-
-		updateSelectedEtabs(etabs) {
-			this.selectedEtabs = etabs
+			if (!this.showSharingDetailsView) {
+				this.$nextTick(() => { // Wait for next tick as the element must be visible to be focused
+					this.returnFocusElement?.focus()
+					this.returnFocusElement = null
+				})
+			}
 		},
 	},
 }

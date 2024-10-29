@@ -1,11 +1,11 @@
-NEXTCLOUD_VERSION=27
+NEXTCLOUD_VERSION=28
 NEXTCLOUD_DOCKER=../../nextcloud-docker-dev/workspace/stable${NEXTCLOUD_VERSION}
 
 $(info You are currently working on ${NEXTCLOUD_DOCKER})
 $(info )
 
 defaut:
-	@echo "Availables commands: add-app meld meld-app meld-dist sync sync-dist sync-composer"
+	@echo "Availables commands: add meld meld-app meld-dist sync sync-dist sync-composer"
 
 add:
 	rsync -av --include='lib/***' --include='src/' --include='src/components/***' --include='src/mixins/***' \
