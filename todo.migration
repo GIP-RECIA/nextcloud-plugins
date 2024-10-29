@@ -250,7 +250,7 @@ diff nc.27.1.11/core/css/variables.scss nc.26.0.13/core/css/variables.scss
 n'a pas changé
 
 meld nc.26.0.13/core/templates/layout.user.php nc.27.1.11/core/templates/layout.user.php nc-ent/themes/esco/core/templates/layout.user.php
-a chagé et fait
+a changé et fait
 
 find nc.27.1.11/ nc.26.0.13/  -name ObjectStoreStorage.php -ls
 meld nc.27.1.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.26.0.13/lib/private/Files/ObjectStore/ObjectStoreStorage.php
@@ -279,4 +279,70 @@ cd nc.26.0.13 ; grep -R getStorageId . > ../grep.getStorageId.26.0.13 ; cd -
 meld grep.getStorageId*
 	n'a pas channgé
 
+pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true
+
+--------------------------
+migration de  27.1.11 à 28.0.11
+	ln -s ../V27/nc.27.1.11 nc.27.1.11
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+	diff nc.27.1.11/core/css/variables.scss nc.28.0.11/core/css/variables.scss
+a changé
+	meld nc.27.1.11/core/css/variables.scss nc-ent/core/css/variables.scss nc.28.0.11/core/css/variables.scss
+fait
+	cp nc.28.0.11/core/css/variables.scss nc-ent/org/core/css/variables.scss
+
+
+diff nc.28.0.11/core/templates/layout.user.php nc.27.1.11/core/templates/layout.user.php
+59c59
+< 		<header id="header">
+---
+> 		<header role="banner" id="header">
+90,93c90
+< 				<?php p((!empty($_['application']) && !empty($_['pageTitle']) && $_['application'] != $_['pageTitle'])
+< 					? $_['application'].': '.$_['pageTitle']
+< 					: (!empty($_['pageTitle']) ? $_['pageTitle'] : $theme->getName())
+< 				); ?>
+---
+> 				<?php p(!empty($_['pageTitle'])?$_['pageTitle']:$theme->getName()); ?>
+a changé
+	meld nc.27.1.11/core/templates/layout.user.php nvEnt/core/templates/layout.user.php nc.28.0.11/core/templates/layout.user.php
+fait
+
+	find nc.27.1.11/ nc.28.0.11/  -name ObjectStoreStorage.php -ls
+	diff  nc.27.1.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+70a71,73	90a94	204c208,210	 	236c242,244		481,487c489,492		516a522,525		606a616,682		653a730,733		732a813,816
+a pas mal changé
+	meld  nc.27.1.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php  nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+ajout de moveFromStorage a validé en recette
+
+diff nc.27.1.11/lib/private/Files/ObjectStore/Mapper.php nc.28.0.11/lib/private/Files/ObjectStore/Mapper.php
+	mapper n'a pas changé
+
+diff nc.27.1.11/lib/private/Files/ObjectStore/S3.php nc.28.0.11/lib/private/Files/ObjectStore/S3.php
+	n'a pas changé.
+
+find nc.27.1.11/ nc.28.0.11/ nc-ent/ -name CardDavBackend.php -ls
+	diff nc.27.1.11/apps/dav/lib/CardDAV/CardDavBackend.php nc.28.0.11/apps/dav/lib/CardDAV/CardDavBackend.php
+	a changé , juste un return nul a ajouter
+	meld nc.27.1.11/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/apps/dav/lib/CardDAV/CardDavBackend.php nc.28.0.11/apps/dav/lib/CardDAV/CardDavBackend.php
+	cp nc.28.0.11/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/org/apps/dav/lib/CardDAV/CardDavBackend.php
+
+find nc.27.1.11/ nc.28.0.11/ nc-ent/ -name RootMountProvider.php -ls
+	a changé
+meld nc.27.1.11/lib/private/Files/Mount/RootMountProvider.php nc-ent/lib/private/Files/Mount/RootMountProvider.php nc.28.0.11/lib/private/Files/Mount/RootMountProvider.php
+fait
+	cp nc.28.0.11/lib/private/Files/Mount/RootMountProvider.php nc-ent/org/lib/private/Files/Mount/RootMountProvider.php
+
+
+recherche de l'usage de ObjectStoreStorage:
+cd nc.27.1.11; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.27.1.11; cd -
+cd nc.28.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.28.0.11 ; cd -
+meld grep.ObjectStoreStorage.*
+	n'a pas changé !?
+
+cd nc.27.1.11; grep -R getStorageId . > ../grep.getStorageId.27.1.11; cd -
+cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
+meld grep.getStorageId*
+	n'a pas channgé
 pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true
