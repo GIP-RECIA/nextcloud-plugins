@@ -29,10 +29,10 @@ sync: sync-dist sync-composer
 sync-dist:
 	rm -r dist/*
 	rsync -av --include='files_sharing-files_sharing_tab*' --exclude='*' ${NEXTCLOUD_DOCKER}/dist/ dist/
-	# cd ${NEXTCLOUD_DOCKER} && git status --porcelain | grep -E "[0-9]{3,}-[0-9]{3,}" > dist_changes.txt
-	# mv ${NEXTCLOUD_DOCKER}/dist_changes.txt dist_changes.txt
-	# cat dist_changes.txt
-	# @grep '^??' dist_changes.txt | awk '{print $$2}' | xargs -I {} cp ${NEXTCLOUD_DOCKER}/{} dist/
+	cd ${NEXTCLOUD_DOCKER} && git status --porcelain | grep -E "[0-9]{3,}-[0-9]{3,}" > dist_changes.txt
+	mv ${NEXTCLOUD_DOCKER}/dist_changes.txt dist_changes.txt
+	cat dist_changes.txt
+	@grep '^??' dist_changes.txt | awk '{print $$2}' | xargs -I {} cp ${NEXTCLOUD_DOCKER}/{} dist/
 
 sync-composer:
 	rsync -av ${NEXTCLOUD_DOCKER}/apps/files_sharing/composer/ app/composer/
