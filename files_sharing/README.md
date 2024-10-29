@@ -61,12 +61,9 @@ files_sharing/
 │       ├── Etablissement.php
 │       └── SearchDB.php
 └── src
-    ├── components
-    │   ├── SharingInputChoice.vue
-    │   ├── SharingInputEtab.vue
-    │   └── SharingInputRecia.vue
-    └── mixins
-        └── MultiselectMixin.js
+    └── components
+        ├── SharingInputEtab.vue
+        └── SharingInputRecia.vue
 ```
 
 ### Fichiers modifieés
@@ -117,38 +114,14 @@ files_sharing/
 ```diff
 ...
     <!-- add new share input -->
-+   <!--
-    <SharingInput v-if="!loading"
+-   <SharingInput v-if="!loading"
++   <SharingInputRecia v-if="!loading"
       :can-reshare="canReshare"
       :file-info="fileInfo"
       :link-shares="linkShares"
       :reshare="reshare"
       :shares="shares"
       @open-sharing-details="toggleShareDetailsView" />
-+    -->
-+
-+    <span>{{ t('files_sharing', 'Search on :') }}</span>
-+
-+    <!-- add seach choice -->
-+    <SharingInputChoice v-if="!loading && canReshare"
-+      :type="searchType"
-+     @change="updateSearchType" />
-+
-+    <!-- add etab choice -->
-+    <SharingInputEtab v-if="!loading && canReshare"
-+      v-show="searchType==='etab'"
-+      @change="updateSelectedEtabs" />
-+
-+    <!-- add new share input -->
-+    <SharingInputRecia v-if="!loading"
-+      :can-reshare="canReshare"
-+      :file-info="fileInfo"
-+      :link-shares="linkShares"
-+      :reshare="reshare"
-+      :shares="shares"
-+      :search-type="searchType"
-+      :search-etabs="selectedEtabs"
-+      @add:share="addShare" />
 
      <!-- link shares list -->
 ...
@@ -158,10 +131,7 @@ import ShareTypes from '../mixins/ShareTypes.js'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
 -import SharingInput from '../components/SharingInput.vue'
-+// import SharingInput from '../components/SharingInput.vue'
 +import SharingInputRecia from '../components/SharingInputRecia.vue'
-+import SharingInputEtab from '../components/SharingInputEtab.vue'
-+import SharingInputChoice from '../components/SharingInputChoice.vue'
 
 import SharingInherited from './SharingInherited.vue'
 import SharingLinkList from './SharingLinkList.vue'
@@ -170,47 +140,12 @@ import SharingLinkList from './SharingLinkList.vue'
   SharingEntrySimple,
   SharingInherited,
 - SharingInput,
-+ // SharingInput,
-  SharingInputRecia,
++ SharingInputRecia,
   SharingInputEtab,
   SharingInputChoice,
   SharingLinkList,
   SharingList,
   SharingDetailsTab,
 ...
- data() {
-  return {
-...
-   // reshare Share object
-   reshare: null,
-   sharedWithMe: {},
-   shares: [],
-   linkShares: [],
-
-+   searchType: 'etab',
-+   selectedEtabs: [],
-+
-   sections: OCA.Sharing.ShareTabSections.getSections(),
-   projectsEnabled: loadState('core', 'projects_enabled', false),
-   showSharingDetailsView: false,
-...
-  }
- },
-
- computed: {
-...
-    })
-   }
-  },
-+
-+  updateSearchType(type) {
-+   this.searchType = type
-+  },
-+
-+  updateSelectedEtabs(etabs) {
-+   this.selectedEtabs = etabs
-+  },
- },
-}
 </script>
 ```
