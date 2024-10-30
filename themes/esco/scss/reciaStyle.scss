@@ -6,6 +6,9 @@
 }
 body {
 
+	&#body-public div#content > #app > iframe {
+			height: calc(100vh - 88px);
+		}
 	&#body-user, &#body-settings {
 	/* le style venue de la mise en place du bandeau */
 
@@ -78,7 +81,12 @@ body {
 			}
 		}
 	/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
+
+		iframe#onlyofficeFrame {
+				height:calc(100vh - 30px)
+		}
 		main#content {
+			
 			& > div#app-content > iframe#onlyofficeFrame {
 					height: calc(100vh - 30px);
 			}
@@ -86,7 +94,9 @@ body {
 					height: calc(100vh - 88px);
 			}
 		}
-		&.onlyoffice-inline  main#content {
+		
+/*		
+*/		&.onlyoffice-inline  main#content {
 				margin-bottom:0;
 				bottom: 0;
 				border-radius: 0;
