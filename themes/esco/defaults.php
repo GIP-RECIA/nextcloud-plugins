@@ -35,6 +35,13 @@ class OC_Theme {
 		'nc.e-college.indre.fr' => 'e-college.indre.fr',
 		'nc-ent.recia.fr' => 'ent.recia.fr',
 		'nc.colleges-eureliens.fr' => 'www.colleges-eureliens.fr',
+		'nc.lycees.test.recia.dev' => 'lycees.test.recia.dev',
+		'nc.clg18.test.recia.dev' => 'clg18.test.recia.dev',
+	    'nc.clg28.test.recia.dev' => 'clg28.test.recia.dev',
+		'nc.clg36.test.recia.dev'=> 'clg36.test.recia.dev',
+		'nc.clg37.test.recia.dev' => 'clg37.test.recia.dev',
+		'nc.clg41.test.recia.dev' => 'clg41.test.recia.dev',
+		'nc.clg45.test.recia.dev' => 'clg45.test.recia.dev',
 	);
 	public static $cssClass = array (
 		'maquette-lycees.netocentre.fr' => 'esco',
@@ -50,6 +57,13 @@ class OC_Theme {
 		'nc.e-college.indre.fr' =>  'clg36',
 		'nc-ent.recia.fr' =>  'esco',
 		'nc.colleges-eureliens.fr' =>  'clg28',
+		'nc.lycees.test.recia.dev' => 'esco',
+		'nc.clg18.test.recia.dev' => 'clg18',
+	    'nc.clg28.test.recia.dev' => 'clg28',
+		'nc.clg36.test.recia.dev'=> 'clg36',
+		'nc.clg37.test.recia.dev' => 'clg37',
+		'nc.clg41.test.recia.dev' => 'clg41',
+		'nc.clg45.test.recia.dev' => 'clg45',
 	);
 /*
 	public function __construct() {
@@ -94,7 +108,7 @@ class OC_Theme {
 //		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
 		$domain = self::domain($host);
 		if ($domain) {
-			$cas = (strpos($host, 'nc' ) === 0) ? "ent.netocentre.fr" : "secure.giprecia.net";
+			$cas = (strpos($host, 'test' ) == false) ? "ent.netocentre.fr" : "auth.test.recia.dev";
 			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
 			//https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
 			//$portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
