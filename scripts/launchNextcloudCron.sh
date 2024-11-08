@@ -7,12 +7,18 @@ log=$path/$day.log
 
 lock=$path/lock
 
-lck=7
-
-(flock -n $lck || flock -n $((++lck)) || flock -n $((++lck)) || exit 1;
-	log=$path/$day.$lck.log
+function executeCron {
+	log=$path/$day.$1.log
 	date '+%F %T' >> $log
         php  -f $HOME/web/cron.php 2>&1 | tee -a  $log
     date '+%T' >> $log
+    return 0
+}
 
-) 7>${lock}7 8>${lock}8 9>${lock}9
+for i in 1 2 3
+do
+(flock -n 9  &&  executeCron $i
+) 9>${lock}$i && exit 0
+done
+
+exit 1

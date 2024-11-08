@@ -17,7 +17,7 @@ lock=$HOME/logs-esco/NCcron/lock
 	/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -l 3 up 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 	/usr/bin/nice $rcode/loadEtabs.pl all 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
 
-) 7>${lock}7 8>${lock}8 9>${lock}9
+) 7>${lock}1 8>${lock}2 9>${lock}3
 
 	$rcode/diffEtab.pl
 
