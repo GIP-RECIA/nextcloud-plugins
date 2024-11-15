@@ -79,6 +79,14 @@ if ($loglevel) {
 my $sql = connectSql;
 
 
+
+# suppression des partages vers des comptes obsolètes.
+&delPartage;
+
+# expiration des partages public;
+&expirePartage;
+
+
 if (!$force && &isDelPartage(3) > 0) {
 	# si il reste des partages pour les isDel=3 on s'arrete:
 	§FATAL "Il reste des partages pour les comptes a supprimer!";
@@ -90,11 +98,6 @@ if (!$force && &isDelPartage(3) > 0) {
 # suppression des comptes déjà marqué à supprimer.
 &deleteComptes;
 
-# suppression des partages vers des comptes obsolètes.
-&delPartage;
-
-# expiration des partages public;
-&expirePartage;
 
 # marque les comptes que l'on peut supprimer. 
 &markToDelete;
@@ -140,7 +143,14 @@ sub isDelPartage {
 	my $isDel = shift;
 	$isDel = 3 unless $isDel;
 	§DEBUG "Compte partage isDel = $isDel";
-	my $req= q/select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime from oc_recia_user_history r , oc_users u, oc_share s where r.isDel = ? and r.uid = u.uid and s.uid_owner = r.uid and (s.expiration is null or s.expiration > now())/;
+	my $req= q/	select s.id, s.share_type, s.share_with, s.uid_owner, s.item_source, s.item_type, s.file_target, s.expiration, s.stime
+				from oc_recia_user_history r , oc_users u, oc_share s
+				where r.isDel = ?
+				and r.uid = u.uid
+				and s.uid_owner = r.uid
+				and (s.expiration is null
+					or s.expiration > now()
+				)/;
 	my $sta = $sql->prepare($req) or §FATAL $sql->errstr;
 	my $nb = $sta->execute($isDel) or §FATAL $sta->errstr;
 	while (my @tuple =  $sta->fetchrow_array) {
