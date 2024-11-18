@@ -57,7 +57,7 @@ etabs:
   - nom: CD45-LOIRET
     siren: 22450001700013
     ldapFilterList:
-      - ldapFilterGroups: '(coll:Collectivites:CONSEIL DEPARTEMENTAL DU LOIRET:groupes_locaux:Echanges etablissements:Managers)'
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU LOIRET:groupes_locaux:Echanges etablissements:Managers)'
         regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU LOIRET):groupes_locaux:Echanges etablissements:Managers$'
         last: ifMatch
         group: &group45 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET'
