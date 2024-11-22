@@ -1,104 +1,85 @@
-#### Adaptation a nextcloud pour le gip recia (Projet Neto centre)
+**Adaptation a Nextcloud pour le GIP RECIA (Projet Neto centre)**
 
-Le recia à deux déploiements de NC sur la même architecture une pour les
-ENT dans lycées et collèges (nc-ent) et l'autre pour le gip lui-même et les collectivités (nc-gip, gip.nextcloud.recia.aquaray.com) 
-
-
-
+Le recia à deux déploiements de NC sur la même architecture une pour les ENT dans lycées et collèges (nc-ent) et l'autre pour le GIP lui-même et les collectivités (nc-gip).
 
 Les modifications portent principalement sur :
-- la gestion des groupes (ldap importer):
-Données les droits (quota) et créer les groupes NC à partir des groupes LDAP.
 
-- La recherche de groupe et personne pour le partage (file_sharing):
-uniquement pour 'nc-ent'.
+- La gestion des groupes (ldap importer): Données les droits (quota) et créer les groupes NC à partir des groupes LDAP.
+- La recherche de groupe et personne pour le partage (file_sharing) : uniquement pour 'nc-ent'.
+- La gestion des buckets (nc-ent uniquement) : n'avoir qu'un bucket par compte, par avatar et vignette.
+- Un plugin de chargement de js et css particulier (uniquement nc-ent cssjsLoader)
+- Les fichiers par défauts : suppression modification du repertoire skeleton
 
-- gestion des buckets (nc-ent uniquement):
-n'avoir qu'un bucket par compte , par avatar et vignette.
+Branches:
 
-- un plugin de chargement de js et css particulier (uniquement nc-ent cssjsLoader)
-
-- les fichiers par défauts (uniquement nc-ent):
-suppression modification du repertoire skeleton
-
+- [ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent)
+- [GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip)
 
 # LDAP Importer
 
-Plugin LDAP Importer
-Permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP.
-On en déduit leurs groupes NC et leurs quota.
-Les filtres sont paramètrés avec des regexs dans "Paramètres -> sécurité -> Import Users -> Filtre & nomage de groupe"
+Le plugin LDAP Importer permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP. On en déduit leurs groupes NC et leurs quota. Les filtres sont paramètrés avec des regexs dans "Paramètres -> sécurité -> Import Users -> Filtre & nomage de groupe".
 
 - Une première serie de regex permet de deduire les noms des établissement (pour NC) à partir des groupes LDAP.
-- La deuxième définit les groupes NC à partir des groupes LDAP (fixe le quota minimum),
-sans groupe de cette serie un user LDAP ne sera pas importer dans NC.
-
-- La troisièmes définit les groupes NC à partir des groupes pédagogiques de l'utilisateur, ce ne sont pas des groupes fonctionnels, ils  ne sont pas dans le isMemberOf du LDAP.
-Il faut donc définir l'attribut LDAP approprié. 
+- La deuxième définit les groupes NC à partir des groupes LDAP (fixe le quota minimum), sans groupe de cette serie un user LDAP ne sera pas importer dans NC.
+- La troisièmes définit les groupes NC à partir des groupes pédagogiques de l'utilisateur, ce ne sont pas des groupes fonctionnels, ils  ne sont pas dans le isMemberOf du LDAP. Il faut donc définir l'attribut LDAP approprié.
   
-Tester sous nextcloud version 24
+Tester sous Nextcloud version 24\
 Tester avec le plugin "CAS Authentication backend" version : 1.10
 
 ## Installation
 
-A placer dans le dossier apps/ de nextcloud
+A placer dans le dossier `apps/` de Nextcloud
 
 ## Utilisation
 
 La commande pour importer les utilisateurs du LDAP à la BDD :
 
-```
+```sh
 sudo -u www-data php occ ldap:import-users-ad
 ```
 
 # File Sharing
 
-Remplacement du plugin nextcloud File Sharing
+Remplacement du plugin Nextcloud File Sharing
 
-Tester sous nextcloud version 24
+Tester sous Nextcloud version 24
 
 ## Installation
 
-Remplacer TOTALEMENT le dossier files_sharing dans le dossier apps/ à la racine du projet.
+Remplacer TOTALEMENT le dossier `files_sharing` dans le dossier `apps/` à la racine du projet.
 
+# Gestion des buckets (S3)
+
+Remplacer `./lib/private/Files/objectStore/Mapper.php` et `./lib/private/Files/Mount/RootMountProvider.php` par nos versions
+et ajouter dans `./lib/private/Files/ObjectStore` : `ReciaObjectStoreStorage.php` et `S3Recia.php`.
+
+`Mapper.php` distribut un bucket par user (c'est un hash donc quasiment un bucket par user).\
+`ReciaObjectStoreStorage.php` et `S3Recia.php` permetent de na pas stocker tous les avatars et préview dans le même bucket system (bucket 0).
 
 # CSS JS Loader
 
-Plugin pour nextcloud CSSJSLoader qui surcharge le css et le js de toutes les pages
+Plugin pour Nextcloud CSSJSLoader qui surcharge le css et le js de toutes les pages
 
-Tester sous nextcloud version 24
+Tester sous Nextcloud version 24
 
 ## Installation
 
-A placer dans le dossier apps/ de nextcloud
+A placer dans le dossier `apps/` de Nextcloud
 
 ## Utilisation
 
 - Placer les ficher js dans le dossier `apps/cssjsloader/inputs/js`
 - Placer les ficher css dans le dossier `apps/cssjsloader/inputs/css`
 
-
 # Skeleton
 
-Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
-À recopie dans core/skeleton
-
-
-# s3 gestion des buckets:
-remplacer  	./lib/private/Files/objectStore/Mapper.php
-			./lib/private/Files/Mount/RootMountProvider.php
-par nos versions
-et  ajouter dans ./lib/private/Files/ObjectStore:
-	ReciaObjectStoreStorage.php  S3Recia.php
-
-Mapper.php distribut un bucket par user (c'est un hash donc quasiment un bucket par user).
-ReciaObjectStoreStorage.php  S3Recia.php permetent de na pas stocker tous les avatars et préview dans le même bucket system (bucket 0).
+Répertoire contenant le document par défaut à la creation d'un l'utilisateur.\
+À recopier dans `core/skeleton`.
 
 # Scripts
+
 Ensemble des scripts utiles à l'exploitation:
 
 - loadEtabs.pl: creation des comptes et groupes à partir de LDAP.
-
 - userFile.pl donne les fichiers et info d'un compte.
-
 - groupFinder.pl donne les membres d'un groupe.
