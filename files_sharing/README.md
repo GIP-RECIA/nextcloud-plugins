@@ -40,12 +40,10 @@ nextcloud-docker-dev/workspace/stable28$ make dev-setup
 nextcloud-docker-dev/workspace/stable28$ cd -
 nextcloud-plugins/files_sharing$ make add
 nextcloud-plugins/files_sharing$ make meld
+nextcloud-plugins/files_sharing$ make update-composer
 nextcloud-plugins/files_sharing$ cd -
 nextcloud-docker-dev/workspace/stable28$ make build-js-production
-nextcloud-docker-dev/workspace/stable28$ cd apps/files_sharing/composer/
-nextcloud-docker-dev/workspace/stable28/apps/files_sharing/composer$ composer install
-nextcloud-docker-dev/workspace/stable28/apps/files_sharing/composer$ cd -
-nextcloud-docker-dev/workspace/stable28$ cd ../../nextcloud-plugins/files_sharing/
+nextcloud-docker-dev/workspace/stable28$ cd -
 nextcloud-plugins/files_sharing$ make sync
 ```
 
