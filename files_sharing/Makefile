@@ -5,7 +5,7 @@ $(info You are currently working on ${NEXTCLOUD_DOCKER})
 $(info )
 
 defaut:
-	@echo "Availables commands: add meld meld-app meld-dist sync sync-dist sync-composer"
+	@echo "Availables commands: add meld meld-app meld-dist update-composer sync sync-dist sync-composer"
 
 add:
 	rsync -av --include='lib/***' --include='src/' --include='src/components/***' --include='src/mixins/***' \
@@ -23,6 +23,9 @@ meld-app:
 
 meld-dist:
 	meld dist/ ${NEXTCLOUD_DOCKER}/dist/
+
+update-composer:
+	cd ${NEXTCLOUD_DOCKER}/apps/files_sharing/composer/ && composer install
 
 sync: sync-dist sync-composer
 
