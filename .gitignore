@@ -226,3 +226,5 @@ util.sh
 ### Latex VSCODE
 **/*.fdb_latexmk
 **/*.fls
+
+workspace
