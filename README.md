@@ -78,7 +78,7 @@ Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
 
 Le plugin est le même pour les deux branches :
 
-Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/skeleton) | [Vbranche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/skeleton)
+Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/skeleton) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/skeleton)
 
 # Scripts
 
