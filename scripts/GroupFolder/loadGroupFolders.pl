@@ -122,6 +122,9 @@ unless ($useTimeStamp) {
 }
 
 §LOG "-------- Start $0 " , join(" ", @ARGV), ' --------';
+if ($sirenList) {
+	§INFO "tient compte que des sirens : $sirenList";
+}
 §INFO "configFile= ", $configFile;
 §INFO "logsFile= ", $logsFile;
 
@@ -400,7 +403,7 @@ sub traitementEtab {
 	if ($siren) { 
 		my $etabNC = Etab->readNC($siren);
 
-		if (! $useTimeStamp && $sirenList && ! $sirenList =~ /$siren/) {
+		if (!$useTimeStamp && $sirenList && !($sirenList=~ m/$siren/)) {
 			return 0;
 		}
 
