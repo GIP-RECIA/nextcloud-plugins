@@ -10,6 +10,8 @@ Les modifications portent principalement sur :
 - Un plugin de chargement de js et css particulier (CSS JS Loader).
 - Les fichiers par défauts (Skeleton) : suppression modification du repertoire skeleton.
 
+[Présentation de juin 2023 au ESUP DAYS](Presentation_ESUP_DAYS_06.2023/presentation.pdf)
+
 Aller sur la branche [ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent) | [GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip)
 
 # LDAP Importer
