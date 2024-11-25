@@ -15,7 +15,7 @@
 
 	- 'ldapimporter' : ajout des uid et groupes créés
 	- 'LoadGroupFolder' : ajout des groupes créés
-	- 'cleanGroup.pl' : suppresion des uid desactivé et des groupes vide
+	- 'cleanGroup.pl' : suppression des uid desactivé et des groupes vide
 
 - oc_recia_user_history :
 
