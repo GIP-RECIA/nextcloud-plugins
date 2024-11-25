@@ -90,7 +90,7 @@ sub etabNCbyUai {
 sub readNC {
 	my $class = shift;
 	my $siren = shift;
-	§DEBUG '->readNC $siren';
+	§DEBUG "->readNC $siren";
 	
 	my $etab = $etabInBase{$siren};
 

@@ -154,7 +154,7 @@ sub updateOrCreateFolder {
 		}
 		return $folder
 	}
-	my @RES;
+	my @RES = ();
 	if ($quotaG) {
 		util->occ("groupfolders:create '$mountPoint'", \@RES);
 		if (util->isTestMode) {
@@ -165,10 +165,12 @@ sub updateOrCreateFolder {
 			$folderInBase{$mountPoint} = $folder;
 			util->occ('groupfolders:quota ' . $folder->idBase . ' ' . $quotaG .'G');
 		} else {
-			§FATAL "erreur de creation du folder : $mountPoint";
+			§DEBUG Dumper(@RES);
+			§FATAL "erreur de creation du folder : $mountPoint"; 
+			
 		}
 	} else {
-		§INFO "folder $mountPoint non créé quota null !";
+		§INFO "folder '$mountPoint' non créé quota null !";
 		return 0;
 	}
 	return $folder;
