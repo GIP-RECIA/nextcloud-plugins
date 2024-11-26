@@ -24,8 +24,7 @@ APPS = $(NEXTCLOUD_PATH)/apps
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER COLLABORA FILES_SHARING SKELETON USER_CAS
-#   @echo SCRIPTS LDAPIMPORTER COLLABORA OOPATCH SKELETON USER_CAS LIB
+	@echo SCRIPTS LDAPIMPORTER FILES_SHARING COLLABORA SKELETON USER_CAS
 	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
 	@echo ${USER} $(NEXTCLOUD_PATH)
 
@@ -41,9 +40,6 @@ FILES_SHARING:
 	rsync -av files_sharing/dist/* $(DIST)
 	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
 	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
-	@echo ""
-	@echo Files to delete from dist ${DIST}
-	git log -n 1 --diff-filter=D --name-only --pretty=format:"" | grep -E "[0-9]{3,}-[0-9]{3,}\.js" | sed "s|^files_sharing/dist/||"
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
@@ -54,6 +50,3 @@ SKELETON:
 
 USER_CAS:
 	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
-
-#LIB: 
-#	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
