@@ -58,13 +58,15 @@
 				<div class="option__container">
 					<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
 					<div class="option__desc">
-						<span class="option__name" v-html="highlight(name)" />
-						<span class="option__uai" v-html="highlight(uai)" />
+						<NcHighlight class="option__name" :text="name" :search="query" />
+						<NcHighlight class="option__uai" :text="uai" :search="query" />
 					</div>
 				</div>
 			</template>
 			<template #selected-option-container="{ option }">
-				<div class="vs__selected">{{ option.name }}</div>
+				<div class="vs__selected">
+					{{ option.name }}
+				</div>
 			</template>
 		</NcSelect>
 	</div>
@@ -75,6 +77,7 @@ import { mdiCheck } from '@mdi/js'
 import { generateOcsUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcHighlight from '@nextcloud/vue/dist/Components/NcHighlight.js'
 import NcIconSvgWrapper from '@nextcloud/vue/dist/Components/NcIconSvgWrapper.js'
 import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
@@ -85,6 +88,7 @@ export default {
 
 	components: {
 		NcButton,
+		NcHighlight,
 		NcIconSvgWrapper,
 		NcSelect,
 	},
@@ -150,14 +154,6 @@ export default {
 
 		saveQuery(searchQuery) {
 			this.query = searchQuery.trim()
-		},
-
-		highlight(text) {
-			if (text === null) return ''
-			if (!this.query.length) return text
-			return text.replace(new RegExp(this.query, 'gi'), function(match) {
-				return '<strong>' + match + '</strong>'
-			})
 		},
 
 		selectAll() {
