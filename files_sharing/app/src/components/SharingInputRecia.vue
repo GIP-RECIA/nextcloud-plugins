@@ -51,7 +51,7 @@
 		<NcSelect ref="select"
 			v-model="value"
 			input-id="sharing-search-input"
-			class="sharing-search__input"
+			class="sharing-search-recia__input"
 			:disabled="!canReshare"
 			:loading="loading"
 			:filterable="false"
@@ -546,13 +546,35 @@ export default {
 	flex-direction: column;
 	margin-bottom: 4px;
 
-	> .sharing-input-choice {
-		margin-bottom: 2px;
-	}
-
 	&__input {
 		width: 100%;
-		margin: 10px 0;
+	}
+
+	> .sharing-input-choice {
+		margin-bottom: 4px;
+
+		> label {
+			margin-inline-end: 4px;
+
+			&::before {
+				margin-inline-end: 2px !important;
+			}
+		}
+	}
+}
+
+.vs__dropdown-menu {
+	// properly style the lookup entry
+	span[lookup] {
+		.avatardiv {
+			background-image: var(--icon-search-white);
+			background-repeat: no-repeat;
+			background-position: center;
+			background-color: var(--color-text-maxcontrast) !important;
+			.avatardiv__initials-wrapper {
+				display: none;
+			}
+		}
 	}
 }
 </style>
