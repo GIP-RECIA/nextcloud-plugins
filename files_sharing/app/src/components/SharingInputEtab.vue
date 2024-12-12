@@ -22,52 +22,52 @@
   -->
 
 <template>
-	<div>
-		<NcSelect v-model="selected"
-			:loading="loading"
-			:options="etabs"
-			:placeholder="t('files_sharing', 'Establishments')"
-			:close-on-select="false"
-			multiple
-			deselect-from-dropdown
-			class="sharing-input-etab"
-			@input="change"
-			@search="saveQuery">
-			<template #list-header>
-				<li>
-					<div class="option__selectall">
-						<NcButton type="tertiary"
-							size="small"
-							:aria-label="t('files_sharing', 'Select all')"
-							@click="selectAll">
-							{{ t('files_sharing', 'Select all') }}
-						</NcButton>
-						<NcButton type="tertiary"
-							size="small"
-							:aria-label="t('files_sharing', 'Select none')"
-							@click="deselectAll">
-							{{ t('files_sharing', 'Select none') }}
-						</NcButton>
-					</div>
-				</li>
-			</template>
-			<template #no-options>
-				{{ noResultText }}
-			</template>
-			<template #option="{ name, uai }">
-				<div class="option__container">
-					<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
-					<div class="option__desc">
-						<span class="option__name" v-html="highlight(name)" />
-						<span class="option__uai" v-html="highlight(uai)" />
-					</div>
+	<NcSelect v-model="selected"
+		:loading="loading"
+		:options="etabs"
+		:placeholder="t('files_sharing', 'Establishments')"
+		:close-on-select="false"
+		multiple
+		deselect-from-dropdown
+		class="sharing-input-etab"
+		@input="change"
+		@search="saveQuery">
+		<template #list-header>
+			<li>
+				<div class="option__selectall">
+					<NcButton type="tertiary"
+						size="small"
+						:aria-label="t('files_sharing', 'Select all')"
+						@click="selectAll">
+						{{ t('files_sharing', 'Select all') }}
+					</NcButton>
+					<NcButton type="tertiary"
+						size="small"
+						:aria-label="t('files_sharing', 'Select none')"
+						@click="deselectAll">
+						{{ t('files_sharing', 'Select none') }}
+					</NcButton>
 				</div>
-			</template>
-			<template #selected-option-container="{ option }">
-				<div class="vs__selected">{{ option.name }}</div>
-			</template>
-		</NcSelect>
-	</div>
+			</li>
+		</template>
+		<template #no-options>
+			{{ noResultText }}
+		</template>
+		<template #option="{ name, uai }">
+			<div class="option__container">
+				<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
+				<div class="option__desc">
+					<NcHighlight class="option__name" :text="name" :search="query" />
+					<NcHighlight class="option__uai" :text="uai" :search="query" />
+				</div>
+			</div>
+		</template>
+		<template #selected-option-container="{ option }">
+			<div class="vs__selected">
+				{{ option.name }}
+			</div>
+		</template>
+	</NcSelect>
 </template>
 
 <script>
@@ -75,6 +75,7 @@ import { mdiCheck } from '@mdi/js'
 import { generateOcsUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcHighlight from '@nextcloud/vue/dist/Components/NcHighlight.js'
 import NcIconSvgWrapper from '@nextcloud/vue/dist/Components/NcIconSvgWrapper.js'
 import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
@@ -85,6 +86,7 @@ export default {
 
 	components: {
 		NcButton,
+		NcHighlight,
 		NcIconSvgWrapper,
 		NcSelect,
 	},
@@ -152,14 +154,6 @@ export default {
 			this.query = searchQuery.trim()
 		},
 
-		highlight(text) {
-			if (text === null) return ''
-			if (!this.query.length) return text
-			return text.replace(new RegExp(this.query, 'gi'), function(match) {
-				return '<strong>' + match + '</strong>'
-			})
-		},
-
 		selectAll() {
 			this.selected = this.etabs
 			this.isChanging()
@@ -194,7 +188,6 @@ export default {
 <style lang="scss">
 .sharing-input-etab {
 	width: 100%;
-	margin: 10px 0;
 
 	.vs__selected {
 		padding-inline: 12px !important;
@@ -222,24 +215,33 @@ export default {
 				margin-right: 8px;
 				visibility: hidden;
 			}
-	
+
 			.option__desc {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
 				min-width: 0;
-	
+
 				.option__name,
 				.option__uai {
 					overflow: hidden;
 					white-space: nowrap;
 					text-overflow: ellipsis;
 				}
-	
+
 				.option__uai {
 					font-size: smaller;
 					opacity: 0.5;
 				}
+			}
+		}
+
+		&.vs__dropdown-option--selected {
+			--vs-dropdown-option--deselect-bg: var(--vs-dropdown-option--active-bg);
+			--vs-dropdown-option--deselect-color: var(--vs-dropdown-option--active-color);
+
+			.option__icon {
+				visibility: unset !important;
 			}
 		}
 
@@ -251,20 +253,11 @@ export default {
 		// 		opacity: 0.5;
 		// 		content: 'Selectionner';
 		// 	}
-		// }
 
-		&.vs__dropdown-option--selected {
-			--vs-dropdown-option--deselect-bg: var(--vs-dropdown-option--active-bg);
-			--vs-dropdown-option--deselect-color: var(--vs-dropdown-option--active-color);
-
-			.option__icon {
-				visibility: unset !important;
-			}
-		}
-
-		// &.vs__dropdown-option--highlight.vs__dropdown-option--selected {
-		// 	.option__container:after {
-		// 		content: 'Déselectionner';
+		// 	&.vs__dropdown-option--selected {
+		// 		.option__container:after {
+		// 			content: 'Déselectionner';
+		// 		}
 		// 	}
 		// }
 	}
