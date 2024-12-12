@@ -102,8 +102,8 @@ if (!$force && &isDelPartage(3) > 0) {
 # marque les comptes que l'on peut supprimer. 
 &markToDelete;
 
-# suppression des partages vers des comptes obsolètes
 sub delPartage {
+	# suppression de partage vers des comptes obsolète
 	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
 
 	§PRINT "delete from oc_share ";
@@ -111,6 +111,18 @@ sub delPartage {
 
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
+	# suppresssion des partages vers des groupses n'existant plus et parent d'aucun autre partage  
+	$delShareRequete = q/delete from oc_share
+						where id in (
+							select s.id from  oc_share s
+							left join oc_share s2 on s2.parent = s.id
+							left join  oc_groups g on g.gid = s.share_with
+							where g.gid is null
+							and s2.id is null
+							and s.share_type = 1
+						)/;
+	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
+	$nbLines += $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§PRINT "\t", 0 + $nbLines, " suppressions";
 }
 
