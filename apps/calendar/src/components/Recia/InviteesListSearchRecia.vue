@@ -209,7 +209,12 @@ export default {
 		async findAttendeesFromFilesSharing(query) {
 			let results
 			try {
-				results = await findShareesFromFilesSharing(this.searchType, this.selectedEtabs, query, [], [])
+				results = await findShareesFromFilesSharing(
+					this.searchType,
+					this.selectedEtabs,
+					query,
+					[],
+				)
 			} catch (error) {
 				console.debug(error)
 				return []
