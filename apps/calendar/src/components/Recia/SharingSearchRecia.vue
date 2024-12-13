@@ -163,7 +163,6 @@ export default {
 						this.selectedEtabs,
 						query,
 						hiddenPrincipalSchemes,
-						[],
 					)
 				} catch (error) {
 					console.debug(error)

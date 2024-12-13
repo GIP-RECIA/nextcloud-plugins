@@ -31,10 +31,9 @@ let searchCancelSource = null
  * @param {[]} selectedEtabs A list of selected
  * @param {string} query The search query
  * @param {string[]} hiddenPrincipals A list of principals to exclude from search results
- * @param {string[]} hiddenUrls A list of urls to exclude from search results
  * @return {Promise<object[]>}
  */
-const findShareesFromFilesSharing = async (searchType = 'etabs', selectedEtabs = [], query, hiddenPrincipals, hiddenUrls) => {
+const findShareesFromFilesSharing = async (searchType = 'etabs', selectedEtabs = [], query, hiddenPrincipals) => {
 	let results
 
 	if (searchCancelSource) {
