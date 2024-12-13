@@ -246,6 +246,10 @@ export default {
 </script>
 
 <style lang="scss">
+.invitees-list {
+	margin-top: 0 !important;
+}
+
 .invitees-list-search-recia {
 	display: flex;
 	flex-direction: column;
