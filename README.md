@@ -3,6 +3,7 @@
 ```bash
 .
 ├── apps
+│   ├── calendar
 │   ├── dav
 │   ├── notifications
 │   ├── settings
