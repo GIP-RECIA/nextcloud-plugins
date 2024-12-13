@@ -115,7 +115,7 @@ sub delPartage {
 	§PRINT "\t", 0 + $nbLines, " suppressions ";
 	
 	$sql->do(
-		  q/CREATE TEMPORARY TABLE recia_share_to_delete_temp
+		  q/CREATE TEMPORARY TABLE  recia_share_to_delete_temp (id bigint PRIMARY KEY)
 			select s.id from oc_share s
 			left join oc_share s2 on s2.parent = s.id
 			left join  oc_groups g on g.gid = s.share_with
