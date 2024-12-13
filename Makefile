@@ -45,6 +45,7 @@ defaut:
 	@echo " SETTINGS"
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
+	@echo " CALENDAR"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -96,3 +97,6 @@ FILES_SHARING:
 	rsync -av files_sharing/dist/* $(DIST)
 	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
 	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
+
+CALENDAR:
+	rsync -av apps/calendar/* $(APPS)/calendar --exclude src
