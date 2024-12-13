@@ -74,13 +74,8 @@
 
 <script>
 import { NcSelect } from '@nextcloud/vue'
-import { principalPropertySearchByDisplaynameOrEmail } from '../../services/caldavService.js'
 import { findShareesFromFilesSharing } from '../../services/filesSharingService.js'
-import HttpClient from '@nextcloud/axios'
 import debounce from 'debounce'
-import { generateOcsUrl } from '@nextcloud/router'
-import { urldecode } from '../../utils/url.js'
-
 import SharingInputEtab from './SharingInputEtab.vue'
 
 export default {
@@ -181,107 +176,6 @@ export default {
 				this.isLoading = false
 			}
 		}, 500),
-		/**
-		 *
-		 * @param {string} query The search query
-		 * @param {string[]} hiddenPrincipals A list of principals to exclude from search results
-		 * @param {string[]} hiddenUrls A list of urls to exclude from search results
-		 * @return {Promise<object[]>}
-		 */
-		async findShareesFromDav(query, hiddenPrincipals, hiddenUrls) {
-			let results
-			try {
-				results = await principalPropertySearchByDisplaynameOrEmail(query)
-			} catch (error) {
-				return []
-			}
-
-			return results.reduce((list, result) => {
-				if (['ROOM', 'RESOURCE'].includes(result.calendarUserType)) {
-					return list
-				}
-
-				const isGroup = result.calendarUserType === 'GROUP'
-
-				// TODO: Why do we have to decode those two values?
-				const user = urldecode(result[isGroup ? 'groupId' : 'userId'])
-				const decodedPrincipalScheme = urldecode(result.principalScheme)
-
-				if (hiddenPrincipals.includes(decodedPrincipalScheme)) {
-					return list
-				}
-				if (hiddenUrls.includes(result.url)) {
-					return list
-				}
-
-				// Don't show resources and rooms
-				if (!['GROUP', 'INDIVIDUAL'].includes(result.calendarUserType)) {
-					return list
-				}
-
-				list.push({
-					user,
-					displayName: result.displayname,
-					uri: decodedPrincipalScheme,
-					isGroup,
-					isCircle: false,
-					isNoUser: isGroup,
-					search: query,
-				})
-				return list
-			}, [])
-		},
-		/**
-		 *
-		 * @param {string} query The search query
-		 * @param {string[]} hiddenPrincipals A list of principals to exclude from search results
-		 * @param {string[]} hiddenUrls A list of urls to exclude from search results
-		 * @return {Promise<object[]>}
-		 */
-		async findShareesFromCircles(query, hiddenPrincipals, hiddenUrls) {
-			let results
-			try {
-				results = await HttpClient.get(generateOcsUrl('apps/files_sharing/api/v1/') + 'sharees', {
-					params: {
-						format: 'json',
-						search: query,
-						perPage: 200,
-						itemType: 'principals',
-					},
-				})
-			} catch (error) {
-				return []
-			}
-
-			if (results.data.ocs.meta.status === 'failure') {
-				return []
-			}
-
-			let circles = []
-			if (Array.isArray(results.data.ocs.data.circles)) {
-				circles = circles.concat(results.data.ocs.data.circles)
-			}
-			if (Array.isArray(results.data.ocs.data.exact.circles)) {
-				circles = circles.concat(results.data.ocs.data.exact.circles)
-			}
-
-			if (circles.length === 0) {
-				return []
-			}
-
-			return circles.filter((circle) => {
-				return !hiddenPrincipals.includes('principal:principals/circles/' + circle.value.shareWith)
-			}).map(circle => ({
-				user: circle.label,
-				displayName: circle.label,
-				icon: 'icon-circle',
-				uri: 'principal:principals/circles/' + circle.value.shareWith,
-				isGroup: false,
-				isCircle: true,
-				isNoUser: true,
-				search: query,
-			}))
-		},
 
 		updateSelectedEtabs(etabs) {
 			this.selectedEtabs = etabs
