@@ -77,40 +77,46 @@ const findShareesFromFilesSharing = async (searchType = 'etabs', selectedEtabs =
 		return []
 	}
 
+	const users = results.data.ocs.data.users
+		.filter((usr) => !hiddenPrincipals.includes(`principal:principals/users/${usr.value.shareWith}`))
+		.map((usr) => {
+			const user = usr.value.shareWith
+			const uri = `principal:principals/users/${user}`
+			const email = typeof usr.shareWithDisplayNameUnique === 'string' && usr.shareWithDisplayNameUnique.startsWith('\"')
+				? usr.shareWithDisplayNameUnique.replaceAll('\"', '')
+				: usr.shareWithDisplayNameUnique
+
+			return {
+				displayName: usr.label,
+				isCircle: false,
+				isGroup: false,
+				isNoUser: false,
+				search: query,
+				uri,
+				user,
+				email,
+			}
+		})
+	const groups = results.data.ocs.data.groups
+		.filter((group) => !hiddenPrincipals.includes(`principal:principals/groups/${group.label.replaceAll(' ', '+')}`))
+		.map((group) => {
+			const user = group.label.replaceAll(' ', '+')
+			const uri = `principal:principals/groups/${user}`
+
+			return {
+				displayName: group.label,
+				isCircle: false,
+				isGroup: true,
+				isNoUser: true,
+				search: query,
+				uri,
+				user,
+			}
+		})
+
 	return [
-		...results.data.ocs.data.users
-			.filter((usr) => !hiddenPrincipals.includes(`principal:principals/users/${usr.value.shareWith}`))
-			.map((usr) => {
-				const user = usr.value.shareWith
-				const uri = `principal:principals/users/${user}`
-
-				return {
-					displayName: usr.label,
-					isCircle: false,
-					isGroup: false,
-					isNoUser: false,
-					search: query,
-					uri,
-					user,
-					email: JSON.parse(usr.shareWithDisplayNameUnique),
-				}
-			}),
-		...results.data.ocs.data.groups
-			.filter((group) => !hiddenPrincipals.includes(`principal:principals/groups/${group.label.replace(' ', '+')}`))
-			.map((group) => {
-				const user = group.label.replace(' ', '+')
-				const uri = `principal:principals/groups/${user}`
-
-				return {
-					displayName: group.label,
-					isCircle: false,
-					isGroup: true,
-					isNoUser: true,
-					search: query,
-					uri,
-					user,
-				}
-			}),
+		...users,
+		...groups,
 	]
 }
 
