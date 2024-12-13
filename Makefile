@@ -99,4 +99,7 @@ FILES_SHARING:
 	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 
 CALENDAR:
-	rsync -av apps/calendar/* $(APPS)/calendar --exclude src
+	rsync -av \
+	--include='js/***' \
+	--include='l10n/***' \
+	--exclude='*' apps/calendar/* $(APPS)/calendar
