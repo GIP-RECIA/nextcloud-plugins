@@ -16,7 +16,6 @@ meld:
 	--diff l10n/fr.js ${PLUGIN}/l10n/fr.js \
 	--diff l10n/fr.json ${PLUGIN}/l10n/fr.json \
 	--diff src/components/AppNavigation/EditCalendarModal.vue  ${PLUGIN}/src/components/AppNavigation/EditCalendarModal.vue \
-	--diff src/components/Editor/FreeBusy/FreeBusy.vue  ${PLUGIN}/src/components/Editor/FreeBusy/FreeBusy.vue \
 	--diff src/components/Editor/Invitees/InviteesList.vue  ${PLUGIN}/src/components/Editor/Invitees/InviteesList.vue \
 	--diff src/views/Calendar.vue  ${PLUGIN}/src/views/Calendar.vue
 
