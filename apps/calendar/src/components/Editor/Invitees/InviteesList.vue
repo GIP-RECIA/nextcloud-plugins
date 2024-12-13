@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { NcButton } from '@nextcloud/vue'
+// import { NcButton } from '@nextcloud/vue'
 import { mapState } from 'vuex'
 import InviteesListSearchRecia from '../../Recia/InviteesListSearchRecia.vue'
 import InviteesListItem from './InviteesListItem.vue'
@@ -94,7 +94,7 @@ import OrganizerListItem from './OrganizerListItem.vue'
 import NoAttendeesView from '../NoAttendeesView.vue'
 import OrganizerNoEmailError from '../OrganizerNoEmailError.vue'
 import { createTalkRoom, doesContainTalkLink } from '../../../services/talkService.js'
-import FreeBusy from '../FreeBusy/FreeBusy.vue'
+// import FreeBusy from '../FreeBusy/FreeBusy.vue'
 import {
 	showSuccess,
 	showError,
@@ -105,8 +105,8 @@ import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue'
 export default {
 	name: 'InviteesList',
 	components: {
-		NcButton,
-		FreeBusy,
+		// NcButton,
+		// FreeBusy,
 		OrganizerNoEmailError,
 		NoAttendeesView,
 		InviteesListItem,
