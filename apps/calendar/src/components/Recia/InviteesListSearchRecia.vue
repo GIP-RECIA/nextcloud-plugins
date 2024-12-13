@@ -28,22 +28,22 @@
 		<label>{{ t('calendar', 'Search on :') }}</label>
 
 		<div class="sharing-input-choice">
-			<input id="search-type-etab"
+			<input id="invitees-search-type-etab"
 				v-model="searchType"
 				class="radio"
 				type="radio"
-				name="search-type"
+				name="invitees-search-type"
 				value="etab">
-			<label for="search-type-etab">
+			<label for="invitees-search-type-etab">
 				{{ t('calendar', 'Your establishments') }}
 			</label>
-			<input id="search-type-all"
+			<input id="invitees-search-type-all"
 				v-model="searchType"
 				class="radio"
 				type="radio"
-				name="search-type"
+				name="invitees-search-type"
 				value="all">
-			<label for="search-type-all">
+			<label for="invitees-search-type-all">
 				{{ t('calendar', 'All platform') }}
 			</label>
 		</div>
