@@ -107,12 +107,13 @@ sub delPartage {
 	# suppression de partage vers des comptes obsolète
 	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
 
-	§PRINT "delete from oc_share ";
+	§PRINT "delete from oc_share where share_with like 'F_____'" ;
 	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	$sql->commit() or §FATAL $sqlStatement->errstr;;
-
+	PRINT "\t", 0 + $nbLines, " suppressions ";
+	
 	$sql->do(
 		  q/CREATE TEMPORARY TABLE recia_share_to_delete_temp
 			select s.id from oc_share s
@@ -124,16 +125,17 @@ sub delPartage {
 		) or §FATAL $sql->errstr;
 
 	# suppresssion des partages vers des groupses n'existant plus et parent d'aucun autre partage  
-	$delShareRequete = q/delete from oc_share where id in ( select id from recia_share_to_delete_temp) limit ?/;
+	$delShareRequete = q/delete from oc_share where share_type = 1 and id  in ( select id from recia_share_to_delete_temp) limit ?/;
 
+	§PRINT "delete from oc_share where share_type = 1 " ;
 	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
 
-	my $rows = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
-	$nbLines += rows; # obligé de passer via $rows car si nbline est null et rows aussi le += sera 0 et declenchera le FATAL 
+	$nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	$sql->commit() or §FATAL $sqlStatement->errstr; ;
 
 	§PRINT "\t", 0 + $nbLines, " suppressions";
+
 	$sql->disconnect();
 }
 
