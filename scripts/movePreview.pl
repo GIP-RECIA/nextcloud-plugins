@@ -92,7 +92,7 @@ my $numProc = '';
 #__END__
 
 sub oneThread {
-	my $sql = newConnectSql();
+	my $sql = newConnectSql(1);
 	my $sqlQuery = "select fileId , path from oc_filecache where path like '${prefixPath}${numProc}%' ";
 	print "$numProc : $sqlQuery\n";
 

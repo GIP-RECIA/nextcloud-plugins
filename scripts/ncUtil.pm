@@ -58,21 +58,28 @@ my $sqlPass=$PARAM{'dbpassword'};
 my $sqlDataSource = "DBI:mysql:database=$sqlDatabase;host=$sqlHost";
 my $SQL_CONNEXION;
 
-
+# si autoCommit = 0 => transactionel ...
 sub newConnectSql {
+	my $autoCommit = shift;
 	print "connexion sql: $sqlDataSource, $sqlUsr, ...:\n";
-	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass) || die $!;
+	my %attr = (RaiseError=>1,  
+				AutoCommit=>$autoCommit
+			);
+	my $sql_connexion = DBI->connect($sqlDataSource, $sqlUsr, $sqlPass, \%attr) || die $!;
 	print " OK \n";
 	$sql_connexion->{'mysql_auto_reconnect'} = 1;
 	$sql_connexion->{'mysql_enable_utf8'} = 1;
 	$sql_connexion->do('SET NAMES utf8');
 	return $sql_connexion ;
 }
+
+
 sub connectSql {
+	# une conection autocommit permanente
 	if ($SQL_CONNEXION) {
 		return $SQL_CONNEXION;
 	}
-	$SQL_CONNEXION = newConnectSql();
+	$SQL_CONNEXION = newConnectSql(1);
 	return $SQL_CONNEXION ;
 }
 
