@@ -220,16 +220,23 @@ export default {
 				return []
 			}
 
-			return results.map((userOrGroup) => {
-				return {
-					calendarUserType: userOrGroup.isGroup ? 'GROUP' : 'INDIVIDUAL',
-					commonName: userOrGroup.displayName,
-					email: userOrGroup.email,
-					isUser: !userOrGroup.isGroup,
-					avatar: userOrGroup.user,
-					dropdownName: userOrGroup.email ? [userOrGroup.displayName, userOrGroup.email].join(' ') : userOrGroup.displayName,
-				}
-			})
+			const organizerMail = this.organizer.uri.replace('mailto:', '')
+			const filterAttendees = this.alreadyInvitedEmails && this.alreadyInvitedEmails.length > 0
+			return results
+				.filter((userOrGroup) => !userOrGroup.isGroup
+					&& userOrGroup.email !== organizerMail
+					&& (filterAttendees ? !this.alreadyInvitedEmails.includes(userOrGroup.email) : true)
+				)
+				.map((userOrGroup) => {
+					return {
+						calendarUserType: userOrGroup.isGroup ? 'GROUP' : 'INDIVIDUAL',
+						commonName: userOrGroup.displayName,
+						email: userOrGroup.email,
+						isUser: !userOrGroup.isGroup,
+						avatar: userOrGroup.user,
+						dropdownName: userOrGroup.email ? [userOrGroup.displayName, userOrGroup.email].join(' ') : userOrGroup.displayName,
+					}
+				})
 		},
 		updateSelectedEtabs(etabs) {
 			this.selectedEtabs = etabs
