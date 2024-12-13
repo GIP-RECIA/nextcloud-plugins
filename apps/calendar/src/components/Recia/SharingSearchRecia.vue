@@ -142,15 +142,15 @@ export default {
 		 */
 		findSharee: debounce(async function(query) {
 			const hiddenPrincipalSchemes = []
-			const hiddenUrls = []
 			this.calendar.shares.forEach((share) => {
 				hiddenPrincipalSchemes.push(share.uri)
 			})
 			if (this.$store.getters.getCurrentUserPrincipal) {
-				hiddenUrls.push(this.$store.getters.getCurrentUserPrincipal.url)
+				hiddenPrincipalSchemes.push(this.$store.getters.getCurrentUserPrincipal.principalScheme)
 			}
 			if (this.calendar.owner) {
-				hiddenUrls.push(this.calendar.owner)
+				const uid = this.calendar.owner.split('/').filter((split) => split.trim().length > 2).slice(-1)
+				hiddenPrincipalSchemes.push(`principal:principals/users/${uid}`)
 			}
 
 			this.isLoading = true
@@ -163,7 +163,7 @@ export default {
 						this.selectedEtabs,
 						query,
 						hiddenPrincipalSchemes,
-						hiddenUrls,
+						[],
 					)
 				} catch (error) {
 					console.debug(error)
