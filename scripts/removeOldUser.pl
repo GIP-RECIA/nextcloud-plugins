@@ -120,7 +120,7 @@ sub delPartage {
 							where g.gid is null
 							and s2.id is null
 							and s.share_type = 1
-						)/;
+						) limit ?/;
 	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
 	$nbLines += $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§PRINT "\t", 0 + $nbLines, " suppressions";
