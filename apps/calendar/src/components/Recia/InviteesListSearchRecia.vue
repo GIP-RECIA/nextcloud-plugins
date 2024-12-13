@@ -220,12 +220,12 @@ export default {
 				return []
 			}
 
-			const organizerMail = this.organizer.uri.replace('mailto:', '')
+			const organizerMail = this.organizer ? this.organizer.uri.replace('mailto:', '') : undefined
 			const filterAttendees = this.alreadyInvitedEmails && this.alreadyInvitedEmails.length > 0
 			return results
 				.filter((userOrGroup) => !userOrGroup.isGroup
-					&& userOrGroup.email !== organizerMail
-					&& (filterAttendees ? !this.alreadyInvitedEmails.includes(userOrGroup.email) : true)
+					&& (organizerMail ? userOrGroup.email !== organizerMail : true)
+					&& (filterAttendees ? !this.alreadyInvitedEmails.includes(userOrGroup.email) : true),
 				)
 				.map((userOrGroup) => {
 					return {
