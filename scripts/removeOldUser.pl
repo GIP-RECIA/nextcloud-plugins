@@ -112,7 +112,7 @@ sub delPartage {
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	$sql->commit() or §FATAL $sqlStatement->errstr;;
-	PRINT "\t", 0 + $nbLines, " suppressions ";
+	§PRINT "\t", 0 + $nbLines, " suppressions ";
 	
 	$sql->do(
 		  q/CREATE TEMPORARY TABLE recia_share_to_delete_temp
