@@ -109,7 +109,6 @@ sub delPartage {
 
 	§PRINT "delete from oc_share ";
 	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
-
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	$sql->commit() or §FATAL $sqlStatement->errstr;;
@@ -122,13 +121,15 @@ sub delPartage {
 			where g.gid is null
 			and s2.id is null
 			and s.share_type = 1/
-		) or $FATAL $sql->errstr;
+		) or §FATAL $sql->errstr;
 
 	# suppresssion des partages vers des groupses n'existant plus et parent d'aucun autre partage  
-	$delShareRequete = q/delete from oc_share where id in ( select id from recia_share_to_delete_temp)) limit ?/;
+	$delShareRequete = q/delete from oc_share where id in ( select id from recia_share_to_delete_temp) limit ?/;
 
 	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
-	$nbLines += $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+
+	my $rows = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	$nbLines += rows; # obligé de passer via $rows car si nbline est null et rows aussi le += sera 0 et declenchera le FATAL 
 
 	$sql->commit() or §FATAL $sqlStatement->errstr; ;
 
