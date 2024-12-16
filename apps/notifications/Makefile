@@ -1,15 +1,12 @@
-NOTIFICATIONS=../../../notifications
+PLUGIN=../../../notifications
 
 defaut:
-	@echo "Availables commands: meld meld-app sync"
+	@echo "Availables commands: meld sync"
 
 meld:
 	meld \
-	--diff lib/Push.php ${NOTIFICATIONS}/lib/Push.php \
-	--diff src/NotificationsApp.vue  ${NOTIFICATIONS}/src/NotificationsApp.vue 
-
-meld-app:
-	meld . ${NOTIFICATIONS}
+	--diff lib/Push.php ${PLUGIN}/lib/Push.php \
+	--diff src/NotificationsApp.vue  ${PLUGIN}/src/NotificationsApp.vue 
 
 sync:
-	rsync -av ${NOTIFICATIONS}/js .
+	rsync -av ${PLUGIN}/js .
