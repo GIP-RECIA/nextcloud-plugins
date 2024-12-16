@@ -8,7 +8,11 @@ defaut:
 	@echo "Availables commands: add meld meld-app meld-dist update-composer sync sync-dist sync-composer"
 
 add:
-	rsync -av --include='lib/***' --include='src/' --include='src/components/***' --include='src/mixins/***' \
+	rsync -av \
+	--include='lib/***' \
+	--include='src/' \
+	--include='src/components/***' \
+	--include='src/mixins/***' \
 	--exclude='*' app/ ${NEXTCLOUD_DOCKER}/apps/files_sharing/
 
 meld:
@@ -31,7 +35,9 @@ sync: sync-dist sync-composer
 
 sync-dist:
 	rm -r dist/*
-	rsync -av --include='files_sharing-files_sharing_tab*' --exclude='*' ${NEXTCLOUD_DOCKER}/dist/ dist/
+	rsync -av \
+	--include='files_sharing-files_sharing_tab*' \
+	--exclude='*' ${NEXTCLOUD_DOCKER}/dist/ dist/
 	cd ${NEXTCLOUD_DOCKER} && git status --porcelain | grep -E "[0-9]{3,}-[0-9]{3,}" > dist_changes.txt
 	mv ${NEXTCLOUD_DOCKER}/dist_changes.txt dist_changes.txt
 	cat dist_changes.txt
