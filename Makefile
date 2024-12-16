@@ -50,7 +50,10 @@ FILES_SHARING:
 	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 
 NOTIFICATIONS:
-	cp -rv apps/notifications/* $(NEXTCLOUD_PATH)/apps/notifications
+	rsync -av \
+	--include='js/***' \
+	--include='lib/***' \
+	--exclude='*' apps/notifications/* $(APPS)/notifications
 
 SETTINGS_APP:
 	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
