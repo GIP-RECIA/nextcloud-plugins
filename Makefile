@@ -24,14 +24,29 @@ APPS = $(NEXTCLOUD_PATH)/apps
 ALLETAB=allEtab_ncgip.txt
 
 defaut:
-	@echo SCRIPTS LDAPIMPORTER FILES_SHARING COLLABORA SKELETON USER_CAS
-	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
-	@echo ${USER} $(NEXTCLOUD_PATH)
+	@echo "USER:\t\t${USER}\nNEXTCLOUD_PATH:\t$(NEXTCLOUD_PATH)"
+	@echo ""
+	@echo "Availables commands:"
+	@echo " SCRIPTS"
+	@echo " SKELETON"
+	@echo "### Plugins ###"
+	@echo " USER_CAS\tonly on first install (to check)"
+	@echo " LDAPIMPORTER"
+	@echo " FILES_SHARING"
+	@echo " COLLABORA"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
 	cp -uv $(ALLETAB) $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
+
+SKELETON:
+	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
+
+# Plugins
+
+USER_CAS:
+	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
@@ -44,9 +59,3 @@ FILES_SHARING:
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
 	find apps/onlyoffice -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
-
-SKELETON:
-	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
-
-USER_CAS:
-	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
