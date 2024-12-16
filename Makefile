@@ -29,25 +29,62 @@ CSS=$(THEME_ESCO)/css
 ALLETAB=allEtab.txt
 
 defaut:
-	@echo SCRIPTS CSSJSLOADER FILES_SHARING LDAPIMPORTER SKELETON LIB THEME PATCH CONFIG USER_CAS NOTIFICATIONS
-	@echo "user_cas a faire qu'a la 1er install du plugin (a vérifier)"
-	@echo ${USER} $(NEXTCLOUD_PATH) 
+	@echo "USER:\t\t${USER}\nNEXTCLOUD_PATH:\t$(NEXTCLOUD_PATH)"
+	@echo ""
+	@echo "Availables commands:"
+	@echo " SCRIPTS"
+	@echo " CONFIG"
+	@echo " LIB"
+	@echo " THEME"
+	@echo " SKELETON"
+	@echo "### Plugins ###"
+	@echo " USER_CAS\tonly on first install (to check)"
+	@echo " LDAPIMPORTER"
+	@echo " DAV"
+	@echo " CSSJSLOADER"
+	@echo " SETTINGS"
+	@echo " NOTIFICATIONS"
+	@echo " FILES_SHARING"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
 	cp -uv $(ALLETAB) $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 
+CONFIG: config/*.json
+	cp config/*.json $(NEXTCLOUD_PATH)/config/
+
+LIB: 
+	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
+
+THEME:
+	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
+	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
+
+sass: --style compressed $(CSS)/reciaStyle.css
+
+$(CSS)/%.css: $(SCSS)/*.scss
+	sass $(SCSS)/$*.scss $@
+
+SKELETON:
+	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
+
+# Plugins
+
+USER_CAS:
+	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
+
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
 
-CSSJSLOADER:
-	cp -rvT cssjsloader  $(APPS)/cssjsloader 
+DAV:
+	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
-FILES_SHARING:
-	rsync -av files_sharing/dist/* $(DIST)
-	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
-	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
+CSSJSLOADER:
+	cp -rvT cssjsloader $(APPS)/cssjsloader
+
+SETTINGS:
+	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
 
 NOTIFICATIONS:
 	rsync -av \
@@ -55,28 +92,7 @@ NOTIFICATIONS:
 	--include='lib/***' \
 	--exclude='*' apps/notifications/* $(APPS)/notifications
 
-SETTINGS_APP:
-	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
-
-SKELETON:
-	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
-
-USER_CAS:
-	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
-LIB: 
-	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
-
-PATCH:
-	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
-
-THEME:
-	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
-	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
-
-CONFIG: config/*.json
-	cp config/*.json $(NEXTCLOUD_PATH)/config/
-
-sass: --style compressed $(CSS)/reciaStyle.css
-
-$(CSS)/%.css: $(SCSS)/*.scss
-	sass  $(SCSS)/$*.scss $@
+FILES_SHARING:
+	rsync -av files_sharing/dist/* $(DIST)
+	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
+	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
