@@ -78,16 +78,14 @@ A placer dans le dossier `apps/` de Nextcloud
 Répertoire contenant le document par défaut à la creation d'un l'utilisateur.\
 À recopier dans `core/skeleton`.
 
-Le plugin est le même pour les deux branches :
-
-Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/skeleton) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/skeleton)
+Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/skeleton) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/skeleton) (même skleton pour les deux branches)
 
 # Scripts
 
 Ensemble des scripts utiles à l'exploitation:
 
-- loadEtabs.pl: creation des comptes et groupes à partir de LDAP.
-- userFile.pl donne les fichiers et info d'un compte.
-- groupFinder.pl donne les membres d'un groupe.
+- `loadEtabs.pl` : creation des comptes et groupes à partir de LDAP.
+- `userFile.pl` : donne les fichiers et info d'un compte.
+- `groupFinder.pl` : donne les membres d'un groupe.
 
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/scripts) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/scripts)
