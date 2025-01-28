@@ -153,6 +153,8 @@ order by h.dat  limit 2000
 	pour tout les comptes initialisés dans
 					recia_init_nopartage_temp
 	utilise aussi : recia_direct_partages.
+
+	Fait un parcour bottom up 
 */
 create or replace view recia_rep_avec_partage as
 with recursive repwithpartage as (
@@ -164,7 +166,7 @@ with recursive repwithpartage as (
 	from repwithpartage p , oc_filecache f
 	where p.parent = f.fileid
 ) select * from repwithpartage where fileid is not null  order by storage, path
-
+;
 
 /* 	Une vue qui donne les repertoires ne contenant pas de partage
 	pour tout les comptes initialisés dans
@@ -181,13 +183,18 @@ and r.fileid is null
 order by f.storage, f.path;
 
 
-
-create or replace view recia_nopartage_vue as 
+/* 	Vue qui donne les fichiers et repertoires non partagés ayant un path = 'files/...'
+	Ils ne doivent pas être dans un répertoire partagé.
+	Attention un répertoire non partagé peut contenir des partages.
+	Fait donc un parcour top down. 
+*/
+create or replace view recia_files_non_partage as 
 with recursive nopartage as (
     select  f.fileid, f.storage , f.path, f.mimetype = r.mimetype isrep, f.mimetype
     from  recia_init_nopartage_temp r, oc_filecache f left join recia_direct_partages p on f.fileid = p.fileid
     where r.storage = f.storage
     and (f.parent = r.fileid or f.parent = -1)
+    and f.path = 'files'
     and p.fileid is null 
     union 
     select f.fileid, f.storage , f.path, f.mimetype = n.mimetype isrep, f.mimetype
@@ -195,4 +202,4 @@ with recursive nopartage as (
     where f.storage = n.storage
     and f.parent = n.fileid
     and p.fileid is null
-    ) select fileid, storage , isrep, path from nopartage;
+    ) select fileid, storage , isrep, path from nopartage order by storage, path ;
