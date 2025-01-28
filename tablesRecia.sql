@@ -106,12 +106,93 @@ where rs.storage = st.storage;
 |          3 | -> partage public link
 |          4 | -> partage par mail
 |         12 | -> deck '/{DECK_PLACEHOLDER}' ressemble au 1 sauf le share_with est un numero 
-|         13 | -> deck a des personne resemble au 2 avec de groupe a la deck et parent avec share_type 12
+|         13 | -> deck a des personne ressemble au 2 avec un groupe a la deck et parent avec share_type 12
 +------------+
 */ 
+
 create or replace view recia_direct_partages as (
-	select f.fileid, f.path, p.uid_owner, (p.item_type = 'folder') isFolder, f.mimetype, regexp_substr(f.path, '(?<=__groupfolders/)\\d+') gfid, share_type
+	select f.fileid, f.storage,  f.parent, f.path, p.uid_owner, (p.item_type = 'folder') isFolder, f.mimetype, regexp_substr(f.path, '(?<=__groupfolders/)\\d+') gfid, share_type
 	from oc_share p, oc_filecache f
-	where f.fileid = item_source
+	where f.fileid = file_source
 	and share_type in (0, 2, 13)
 );
+
+/* une table pour initialiser le calcul, des fichiers partagés ou non.
+	Utilisé dans les vues: recia_rep_with_partage, 
+	la table doit contenir pour chaque uid
+	le storage (numerique id)
+	le fileid de la racine de l'arbre des fichiers pour le compte (uid)
+	et le mimetype de cette racine (depend des instances de NC)
+*/
+create  table recia_init_nopartage_temp (
+storage bigint primary key  ,
+fileid bigint unique,
+uid char(8) unique,
+mimetype bigint
+);
+
+/* un exemple d'init de la table
+
+insert into recia_init_nopartage_temp (
+select s.numeric_id, f.fileid, h.uid, f.mimetype 
+from  oc_recia_user_history h, oc_storages s, oc_filecache f
+where isDel = 2 and datediff(now(), dat) > 60
+and s.id = concat('object::user:', h.uid)
+and f.storage = s.numeric_id
+and f.parent = -1
+and f.path = ''
+and s.numeric_id is not null
+order by h.dat  limit 2000
+);
+
+*/
+
+/* Les vues utilisées pour LA SUPPRESSION DES REPERTOIRE UTILISATEUR */
+
+/* 	Une vue qui donne les repertoires contenant des partages
+	pour tout les comptes initialisés dans
+					recia_init_nopartage_temp
+	utilise aussi : recia_direct_partages.
+*/
+create or replace view recia_rep_avec_partage as
+with recursive repwithpartage as (
+	select distinct t.storage,  if(p.isFolder = 1, p.fileid, null) fileid, p.parent , if(p.isFolder = 1, p.path, REGEXP_replace(p.path, '/[^/]+$', '')) path
+	from recia_init_nopartage_temp t , recia_direct_partages p
+	where p.storage = t.storage
+	union
+	select p.storage,  f.fileid, f.parent, f.path
+	from repwithpartage p , oc_filecache f
+	where p.parent = f.fileid
+) select * from repwithpartage where fileid is not null  order by storage, path
+
+
+/* 	Une vue qui donne les repertoires ne contenant pas de partage
+	pour tout les comptes initialisés dans
+					recia_init_nopartage_temp
+	utilise aussi : recia_direct_partages,
+					recia_rep_avec_partage.
+*/
+create or replace view recia_rep_sans_partage as
+select  f.storage, f.fileid, f.parent, f.path
+from recia_init_nopartage_temp t, oc_filecache f left join recia_rep_avec_partage r on f.fileid = r.fileid
+where t.storage = f.storage
+and f.mimetype = t.mimetype
+and r.fileid is null
+order by f.storage, f.path;
+
+
+
+create or replace view recia_nopartage_vue as 
+with recursive nopartage as (
+    select  f.fileid, f.storage , f.path, f.mimetype = r.mimetype isrep, f.mimetype
+    from  recia_init_nopartage_temp r, oc_filecache f left join recia_direct_partages p on f.fileid = p.fileid
+    where r.storage = f.storage
+    and (f.parent = r.fileid or f.parent = -1)
+    and p.fileid is null 
+    union 
+    select f.fileid, f.storage , f.path, f.mimetype = n.mimetype isrep, f.mimetype
+    from  nopartage n, oc_filecache f left join recia_direct_partages p on f.fileid = p.fileid 
+    where f.storage = n.storage
+    and f.parent = n.fileid
+    and p.fileid is null
+    ) select fileid, storage , isrep, path from nopartage;
