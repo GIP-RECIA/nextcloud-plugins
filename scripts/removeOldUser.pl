@@ -40,7 +40,7 @@ use ncUtil;
 
 
 my $nbRemovedUserMax;
-my $nbJourDelay = 60;
+my $nbJourDelay = 20;
 my $loglevel = 4;
 my $force = '';
 
@@ -75,7 +75,7 @@ if ($loglevel) {
 	MyLogger->level($loglevel, $mode);
 }
 
-§INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel";
+§INFO $FindBin::Script, " -n $nbRemovedUserMax -l $loglevel$mode";
 my $sql = connectSql;
 
 
@@ -105,11 +105,11 @@ if (!$force && &isDelPartage(3) > 0) {
 sub delPartage {
 	my $sql = newConnectSql(0);
 	# suppression de partage vers des comptes obsolète
-	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel >= 2 and datediff(now(), dat) > 60) limit ?/;
+	my $delShareRequete = q/delete from oc_share where share_with like 'F_______' and share_with in (select uid from oc_recia_user_history u where u.isDel = 2 and datediff(now(), dat) > ?) limit ?/;
 
 	§PRINT "delete from oc_share where share_with like 'F_____'" ;
 	my $sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
-	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	my $nbLines = $sqlStatement->execute($nbJourDelay, $nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	$sql->commit() or §FATAL $sqlStatement->errstr;;
 	§PRINT "\t", 0 + $nbLines, " suppressions ";
@@ -124,7 +124,7 @@ sub delPartage {
 			and s.share_type = 1/
 		) or §FATAL $sql->errstr;
 
-	# suppresssion des partages vers des groupses n'existant plus et parent d'aucun autre partage  
+	# suppression des partages vers des groupes n'existant plus et parent d'aucun autre partage  
 	$delShareRequete = q/delete from oc_share where share_type = 1 and id  in ( select id from recia_share_to_delete_temp) limit ?/;
 
 	§PRINT "delete from oc_share where share_type = 1 " ;
@@ -142,11 +142,11 @@ sub delPartage {
 # expiration des partages des comptes obsolètes
 sub expirePartage {
 
-	my $req = q/update oc_share set expiration = now() where share_type in (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel >= 2 and datediff(now(), dat) > 60 order by dat) limit ?/;
+	my $req = q/update oc_share set expiration = now() where share_type in (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel = 2 and datediff(now(), dat) > ? order by dat) limit ?/;
 	§PRINT "update oc_share set expiration";
 
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
-	my $nbLines = $sta->execute($nbRemovedUserMax) or §FATAL $sta->errstr;
+	my $nbLines = $sta->execute($nbJourDelay, $nbRemovedUserMax) or §FATAL $sta->errstr;
 
 	§PRINT "\t", 0 + $nbLines, " updates";
 }
@@ -155,10 +155,12 @@ sub expirePartage {
 # isDel=2 => le compte est désactivé
 # isDel=3 => le compte peut être supprimer
 sub markToDelete {
-	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(expiration, now()) > -60 )) order by dat  limit ?/;
+	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3
+		where isDel = 2 and datediff(now(), dat) > ?
+		and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(now(), expiration) > ? )) order by dat  limit ?/;
 	§PRINT "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
-	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	my $nbLines = $sqlStatement->execute($nbJourDelay,$nbJourDelay,$nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§PRINT "\t", 0 + $nbLines, " mise à jours";
 	§PRINT "Nombre de partages restants  : ", isDelPartage(3);
 }
