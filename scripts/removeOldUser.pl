@@ -61,13 +61,13 @@ if ($nbRemovedUserMax > 2000) {
 my $jour = ( (localtime)[3] );
 my $logsFile = $FindBin::Script;
 
-$logsFile =~ s/\.pl$/\/$jour.log/;
+$logsFile =~ s/(_dev)?\.pl$/\/$jour$1.log/;
  $logsFile = $PARAM{'NC_LOG'} . "/" . $logsFile ;
 
 MyLogger->file('>>' . $logsFile);
 
+my $mode = 2;
 if ($loglevel) {
-	my $mode = 2;
 	if ($loglevel >= 10) {
 		$mode = $loglevel % 10;
 		$loglevel = int $loglevel / 10;
@@ -101,6 +101,10 @@ if (!$force && &isDelPartage(3) > 0) {
 
 # marque les comptes que l'on peut supprimer. 
 &markToDelete;
+
+# suppression des fichiers non partagés, des comptes obsolètes
+$nbRemovedUserMax /= 10;
+&deleteFile;
 
 sub delPartage {
 	my $sql = newConnectSql(0);
@@ -342,6 +346,157 @@ sub deleteBucket {
 		§WARN "Tentative de suppression du bucket : $bucket";
 		return (0, $nbDeleted);
 	}
+}
+
+
+# suppression des fichiers non partagés, des comptes obsolètes. 
+sub deleteFile {
+	§PRINT "Suppression des fichiers non partagés, des comptes obsolètes.";
+	my %NbError;
+	my %storage2uid;
+	
+	my $occ = '/usr/bin/php '. $PARAM{'NC_WWW'} . '/occ';
+	
+	my $sql = newConnectSql(1);
+
+	# initialisation de la tables des comptes à traiter
+	$sql->do( q/truncate recia_init_nopartage_temp/)  or §FATAL $sql->errstr;
+
+	my $prefixStorage = isObjectStore() ? 'object::user:' : 'home::'; 
+
+		# on initialise avec le sommet de l'arborescence de chaque compte 
+	my $sqlStatement = $sql->prepare(q/
+			insert into recia_init_nopartage_temp (
+				select s.numeric_id, f.fileid, h.uid, f.mimetype 
+				from  oc_recia_user_history h, oc_storages s, oc_filecache f
+				where isDel = 2 and datediff(now(), dat) > ?
+				and s.id = concat( ? , h.uid)
+				and f.storage = s.numeric_id
+				and f.parent = -1
+				and f.path = ''
+				and s.numeric_id is not null
+				order by h.dat  limit ?
+			) 
+		/) or §FATAL $sql->errstr;
+		
+	my $nbLines = $sqlStatement->execute( $nbJourDelay, $prefixStorage, $nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+
+#	$sql->commit() or §FATAL $sqlStatement->errstr;
+
+	§PRINT "\tprepare delete no shared files: ", 0 + $nbLines, " comptes";
+	return unless $nbLines; # on s'arrete si il n'y a rien
+	
+	
+	
+	# suppressions de leurs corbeilles et versions
+
+	$sqlStatement = $sql->prepare(q/select uid, storage from recia_init_nopartage_temp/) or §FATAL $sqlStatement->errstr;
+
+	my $status;
+	my $seconde = 1;
+	my $cpt;  # on boucle jusqu'a retrouver les lignes inserées (pb avec le cluster sql de synchro entre ecriture et lecture)
+	while ($nbLines > $cpt && $seconde < 60) {
+		sleep($seconde);
+		$seconde *= 2;
+		$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
+		$cpt = 0;
+		while (my ($uid, $storage) =  $sqlStatement->fetchrow_array) {
+			$cpt++;
+			§DEBUG $uid, " ", $storage;
+			$NbError{$uid} = 0;
+			$storage2uid{$storage} = $uid;
+			$status = §SYSTEM "$occ trashbin:cleanup -n $uid", MOD => 1;
+			$status += §SYSTEM "$occ versions:cleanup -n $uid", MOD => 1;
+			if ($status) {
+				$NbError{$uid} = 1;
+			}
+		}
+		§DEBUG "select uid, storage from recia_init_nopartage_temp ", $cpt;
+	}
+
+	§FATAL "Mauvaise init de recia_init_nopartage_temp: ", $sqlStatement->errstr unless ($cpt > 0 );
+	§PRINT "Compte à traiter : $cpt";
+
+
+	# suppressions des répertoires sans partage.
+	my %repStatus; 	# pour indexer le repertoire déjà traiter (supprimer) avec réussite ou non
+					# la requête donne tous les répertoires sans partage et les ordonnes par path, on ne supprime un répertoire que si son parent n'est pas lui même déjà supprimer
+	$sqlStatement = $sql->prepare(q(select storage, fileid, parent, path from recia_rep_sans_partage where parent != -1 and path like 'files/%' order by storage, path)) or §FATAL $sqlStatement->errstr;
+	$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
+
+	§PRINT "Suppression des repertoires sans partage";
+	my $lastRepDeleted;
+	while (my ($storage, $repId, $parentId, $path) =  $sqlStatement->fetchrow_array  ) {
+		if (exists $repStatus{$parentId}) {
+			$repStatus{$repId} = 0;
+		} else {
+			§DEBUG "delete rep $path";
+			$status = §SYSTEM "$occ files:delete -f -vv $repId", MOD => 1;
+			if ($status) {
+				$NbError{$storage2uid{$storage}}++;
+				§DEBUG "delete rep error parent = $parentId ";
+				$repStatus{$repId} = 0;
+			} else {
+				$repStatus{$repId} = 1;
+				$lastRepDeleted=$repId;
+			}
+		}
+	}
+	§PRINT "Nombre de répertoire supprimés : ", scalar keys %repStatus;
+	if ($lastRepDeleted) {
+		# on a des répertoires supprimés
+		$sqlStatement = $sql->prepare(q(select storage, fileid from oc_filecache where path like 'files_trashbin/%' and fileid = ? ));
+		$seconde = 1;
+		while ($seconde < 60) {
+			sleep($seconde); $seconde *= 2; #on temporise jusqu'a ce que le dernier répertoire supprimé soit dans la corbeille
+			
+			$sqlStatement->execute($lastRepDeleted) or §FATAL $sqlStatement->errstr;
+			if (my ($storage, $repId) = $sqlStatement->fetchrow_array) {
+				§DEBUG "$repId supprimé en $seconde";
+				# ok il est dans la corbeille
+				$lastRepDeleted = '';
+				last;
+			}
+			
+			§DEBUG $seconde;
+		}
+
+		§FATAL "Suppression de répertoire mal teminée : $lastRepDeleted" if $lastRepDeleted;
+	}
+	
+	§PRINT "Suppression des fichiers restant non partagés";
+
+	$sqlStatement = $sql->prepare(q(select fileid, storage, path from recia_files_non_partage where !isrep and path like 'files/%' order by storage, path)) or §FATAL $sqlStatement->errstr;
+	$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
+
+	$cpt = 0;
+	while (my ($fileId , $storage, $path) =  $sqlStatement->fetchrow_array  ) {
+		§DEBUG "delete file $path";
+		$status = §SYSTEM "$occ files:delete -f -vv $fileId", MOD => 1;
+		if ($status) {
+			$NbError{$storage2uid{$storage}}++;
+		} else {
+			$cpt++;
+		}
+	}
+
+	§PRINT "Nombre de fichiers supprimés : $cpt";
+
+	$cpt = 0;
+	§LOG "Les uids en erreur :";
+	while (my ($uid, $nbErr) = each %NbError) {
+		if ($nbErr) {
+			$cpt++;
+			§LOG "\t$uid $nbErr";
+		}
+	}
+	§WARN "Nombre d'uids en erreur : $cpt" if $cpt;
+
+	$sqlStatement = $sql->prepare(q/update oc_recia_user_history h, recia_init_nopartage_temp t  set h.dat = now() where t.uid = h.uid/) or §FATAL $sqlStatement->errstr;
+	$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
+
+	$sql->disconnect();
+	
 }
 
 __END__
