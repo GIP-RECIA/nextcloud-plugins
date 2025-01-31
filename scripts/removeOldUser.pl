@@ -152,7 +152,29 @@ sub expirePartage {
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
 	my $nbLines = $sta->execute($nbJourDelay, $nbRemovedUserMax) or §FATAL $sta->errstr;
 
-	§PRINT "\t", 0 + $nbLines, " updates";
+	§PRINT "\t", 0 + $nbLines, " updates des partages liens";
+
+		# Expiration des partages de comptes obsolètes vers des comptes d'élèves
+	$req = q/update oc_share s, recia_storage r, oc_recia_user_history u
+				set s.expiration = now()
+			where s.share_with = r.uid
+			and s.expiration is null
+			and r.categorie = 'E'
+			and u.uid = s.uid_owner
+			and u.isdel = 2
+			and datediff(now(), u.dat) > ?/ ;
+#	$sta =$sql->prepare($req) or §FATAL $sql->errstr;
+	
+#	$nbLines = $sta->execute($nbJourDelay) or §FATAL $sta->errstr;
+
+#	§PRINT "\t", 0 + $nbLines, " updates partage vers élèves";
+
+	#TODO Expiration des partages de comptes obsolètes vers des répertoires vide
+#	$req = q/update oc_share s, oc_recia_user_history u set s.expiration = now()
+#			where u.uid = s.uid_owner
+#			and u.isdel = 2
+#			and datediff(now(), u.dat) > ?
+#			and s.file_source not in select .../
 }
 
 # Marquer les comptes sans partage candidat a la suppression
@@ -161,13 +183,14 @@ sub expirePartage {
 sub markToDelete {
 	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3
 		where isDel = 2 and datediff(now(), dat) > ?
-		and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(now(), expiration) > ? )) order by dat  limit ?/;
+		and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(now() , expiration)  < ? )) order by dat  limit ?/;
 	§PRINT "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbJourDelay,$nbJourDelay,$nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§PRINT "\t", 0 + $nbLines, " mise à jours";
 	§PRINT "Nombre de partages restants  : ", isDelPartage(3);
 }
+
 
 #donne les partages des comptes en fonction de la valeurs de isDel 
 sub isDelPartage {
