@@ -266,12 +266,12 @@ sub deleteOldUsersBuckets {
 		$bucketMultiUser{$bucket} = $nb;
 	}
 
-	# recherche de tout les historiques qui ne sont pas dans oc_users , ni dans oc_storages avec isDel >=3 (donc plus d'acces dans NC)
+	# recherche de tout les historiques qui ne sont pas dans oc_users , ni dans oc_storages avec isDel >3 (donc plus d'acces dans NC)
 	$req = qq/select uh.uid, uh.dat , uh.isDel, uh.name, bh.bucket
 				from oc_recia_user_history uh left join oc_users u on u.uid= uh.uid
 				left join recia_bucket_history bh on uh.uid = bh.uid
 				left join oc_storages s on s.id = concat('object::user:', uh.uid )
-				where s.id is null and u.uid is null and  isDel >= 3
+				where s.id is null and u.uid is null and  isDel > 3
 				order by dat limit ?/;
 
 	$sth = $sql->prepare($req) or §FATAL $sql->errstr;
