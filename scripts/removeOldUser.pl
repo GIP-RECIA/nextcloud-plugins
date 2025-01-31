@@ -283,7 +283,7 @@ sub deleteOldUsersBuckets {
 		#§DEBUG "bucket a supprimer ($bucket, $uid)"; 
 		my $notDelete = 1;
 		if ($bucket) {
-			if ($bucket =~ /\-\w{8,25}$/) {
+			if ($bucket =~ /\-\w{9,}$/) {
 				#§DEBUG "le bucket n'est pas un bucket systeme";
 				$notDelete = $bucketMultiUser{$bucket};
 				if ($notDelete) {
@@ -307,12 +307,6 @@ sub deleteOldUsersBuckets {
 			$nbDeletedBucket++ if $isDeleted > 0;
 			$nbDeletedObjectTotal += $nbDeletedObject;
  		}
- 		
- 		$bucket = &getBucketName('0' . lc($uid));
- 		#§DEBUG "Delete bucket des avatars $bucket";
- 		my @del = deleteBucket($bucket);
- 		$nbDeletedBucket++ if $del[0] > 0;
- 		$nbDeletedObjectTotal += $del[1];
 
  		if ($isDeleted) {
 			#§DEBUG "Suppression dans la table recia_bucket_history";
@@ -325,6 +319,12 @@ sub deleteOldUsersBuckets {
 			$req = qq/delete from oc_recia_user_history where uid = ?/;
 			$sth = $sql->prepare($req) or §FATAL $sth->errstr;
 			$sth->execute($uid) or §FATAL $sth->errstr;
+
+			my $bucketAvatar = &getBucketName('0' . lc($uid));
+			#§DEBUG "Delete bucket des avatars $bucket";
+			my @del = deleteBucket($bucketAvatar);
+			$nbDeletedBucket++ if $del[0] > 0;
+			$nbDeletedObjectTotal += $del[1];
 		}
 	}
 	§PRINT "objects supprimés : $nbDeletedObjectTotal";
@@ -340,7 +340,7 @@ sub deleteBucket {
 	my $lastErr = '';
 	my $nbErr = 0 ;
 	my $s3cmd = getS3command();
-	if ($bucket =~ /\w{9,25}$/) { # on ne veut pas effacer les buckets du syle 's3://nc-recette-0' 
+	if ($bucket =~ /\-\w{9,}$/) { # on ne veut pas effacer les buckets du syle 's3://nc-recette-0' 
 		my $status = §SYSTEM "$s3cmd  del --force --recursive $bucket",
 			OUT => sub { $nbDeleted++ if /^delete/},
 			ERR => sub { if (/^ERROR[^\[]*\((\w+)\)/) {$lastErr = $1; $nbErr++;} },
