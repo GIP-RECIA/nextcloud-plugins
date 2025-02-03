@@ -103,8 +103,7 @@ if (!$force && &isDelPartage(3) > 0) {
 &markToDelete;
 
 # suppression des fichiers non partagés, des comptes obsolètes
-$nbRemovedUserMax /= 10;
-&deleteFile;
+&deleteFile(int(4 * $nbRemovedUserMax / 10));
 
 sub delPartage {
 	my $sql = newConnectSql(0);
@@ -374,6 +373,7 @@ sub deleteBucket {
 
 # suppression des fichiers non partagés, des comptes obsolètes. 
 sub deleteFile {
+	my $maxCount = shift;
 	§PRINT "Suppression des fichiers non partagés, des comptes obsolètes.";
 	my %NbError;
 	my %storage2uid;
@@ -402,7 +402,7 @@ sub deleteFile {
 			) 
 		/) or §FATAL $sql->errstr;
 		
-	my $nbLines = $sqlStatement->execute( $nbJourDelay, $prefixStorage, $nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	my $nbLines = $sqlStatement->execute( $nbJourDelay, $prefixStorage, $maxCount) or §FATAL $sqlStatement->errstr;
 
 #	$sql->commit() or §FATAL $sqlStatement->errstr;
 
