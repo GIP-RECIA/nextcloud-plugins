@@ -346,3 +346,5 @@ cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
 meld grep.getStorageId*
 	n'a pas channgé
 pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true
+---------------------------
+migration de  28.0.11 à 28.0.14
