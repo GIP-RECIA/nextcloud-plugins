@@ -402,7 +402,7 @@ sub deleteFile {
 			) 
 		/) or §FATAL $sql->errstr;
 		
-	my $nbLines = $sqlStatement->execute( $nbJourDelay, $prefixStorage, $maxCount) or §FATAL $sqlStatement->errstr;
+	my $nbLines = $sqlStatement->execute( $nbJourDelay+1, $prefixStorage, $maxCount) or §FATAL $sqlStatement->errstr;
 
 #	$sql->commit() or §FATAL $sqlStatement->errstr;
 
