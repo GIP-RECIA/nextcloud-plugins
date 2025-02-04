@@ -346,5 +346,64 @@ cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
 meld grep.getStorageId*
 	n'a pas channgé
 pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true
+
 ---------------------------
+
 migration de  28.0.11 à 28.0.14
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+	diff nc.28.0.11/core/css/variables.scss nc.28.0.14/core/css/variables.scss
+pas changé
+
+	diff nc.28.0.11/core/templates/layout.user.php nc.28.0.14/core/templates/layout.user.php
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/  -name ObjectStoreStorage.php -ls
+	diff nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+	618,622d617
+	< 		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class) && $sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
+	< 			$this->getCache()->moveFromCache($sourceCache, $sourceInternalPath, $targetInternalPath);
+	< 			// Do not import any data when source and target bucket are identical.
+	< 			return true;
+	< 		}
+a changé
+
+	meld nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+???? a voir plus tard apres la recherche de l'usage
+
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/Mapper.php nc.28.0.11/lib/private/Files/ObjectStore/Mapper.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/S3.php nc.28.0.11/lib/private/Files/ObjectStore/S3.php
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/  -name CardDavBackend.php -ls
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/ nc-ent/ -name RootMountProvider.php -ls
+pas changé
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.28.0.14; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.28.0.14; cd -
+	cd nc.28.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.28.0.11 ; cd -
+	diff grep.ObjectStoreStorage.*
+a changé que dans ObjectStoreStorage.php déjà signalé au dessus et a traiter
+
+	cd nc.28.0.14; grep -R getStorageId . > ../grep.getStorageId.28.0.14; cd -
+	cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
+	meld grep.getStorageId*
+a changé que dans ObjectStoreStorage.php déjà signalé au dessus et a traiter
+
+--------------------------
+migration de 28.0.14 à 29.0.11
+	diff nc.28.0.14/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+pas changé
+
+	diff nc.29.0.11/core/templates/layout.user.php nc.28.0.14/core/templates/layout.user.php
+a changé
+
+ meld nc.29.0.11/core/templates/layout.guest.php nc.28.0.14/core/templates/layout.guest.php nc-ent/themes/esco/core/templates/layout.guest.php
+a changé
+
+	layout.public.php à changé
