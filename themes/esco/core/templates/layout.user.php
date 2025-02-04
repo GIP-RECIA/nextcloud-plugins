@@ -26,8 +26,8 @@ $getUserAvatar = static function (int $size) use ($_): string {
 		?>
 		<title>
 			<?php
-				p(!empty($_['pageTitle'])?$_['pageTitle'].' - ':'');
-				p(!empty($_['application'])?$_['application'].' - ':'');
+				p(!empty($_['pageTitle']) && $_['pageTitle'] !== $_['application'] ? $_['pageTitle'].' - ' : '');
+p(!empty($_['application']) ? $_['application'].' - ' : '');
 				p($theme->getTitle());
 			?>
 		</title>
@@ -147,15 +147,6 @@ $getUserAvatar = static function (int $size) use ($_): string {
 			</div>
 		</header>
 </div>
-		<div id="sudo-login-background" class="hidden"></div>
-		<form id="sudo-login-form" class="hidden" method="POST">
-			<label>
-				<?php p($l->t('This action requires you to confirm your password')); ?><br/>
-				<input type="password" class="question" autocomplete="new-password" name="question" value=" <?php /* Hack against browsers ignoring autocomplete="off" */ ?>"
-				placeholder="<?php p($l->t('Confirm your password')); ?>" />
-			</label>
-			<input class="confirm" value="<?php p($l->t('Confirm')); ?>" type="submit">
-		</form>
 
 		<main id="content" class="app-<?php p($_['appid']) ?>">
 			<h1 class="hidden-visually" id="page-heading-level-1">
