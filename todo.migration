@@ -401,9 +401,44 @@ migration de 28.0.14 à 29.0.11
 pas changé
 
 	diff nc.29.0.11/core/templates/layout.user.php nc.28.0.14/core/templates/layout.user.php
-a changé
+a changé => fait
 
- meld nc.29.0.11/core/templates/layout.guest.php nc.28.0.14/core/templates/layout.guest.php nc-ent/themes/esco/core/templates/layout.guest.php
-a changé
+	core/templates/layout.base.php
+pas changé
 
-	layout.public.php à changé
+     core/templates/layout.guest.php
+pas changé
+
+	core/templates/layout.public.php
+	meld nc.28.0.14/core/templates/layout.public.php nc.29.0.11/core/templates/layout.public.php /home/legay/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent/themes/esco/core/templates/layout.public.php
+a changé => fait 
+
+	core/templates/layout.noscript.warning.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.29.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+a changé mais doit aller
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.29.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.29.0.11 ; cd -
+	diff grep.ObjectStoreStorage.29.0.11 ../V28/grep.ObjectStoreStorage.28.0.14
+12,14c12,14
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/AppdataPreviewObjectStoreStorage.php": "7ed13a01c8ee54bc8b37470f5ab38c264ad229d6ab13d6611d8f530a83a2d5ba015b8bf6cb8417d0109aa380278bdbed37b8ee74e304eec415632ce9e1849f44",
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/HomeObjectStoreStorage.php": "c020b8a03960df62903a5025db899ba5fa892a852ea33a5196fbe55caa1afbb4dc35829f49381332187775c4ecf42e9c3f990ed377ea4224b1fdcb28747089c4",
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/ObjectStoreStorage.php": "ebfa9ffb3496268ccb2435018652712d68c543fa5d63a25800d7137e09a4f848e340738f8c0ffe0be0ef6c0a7393447a5b7cfd5218b751de7d1b162f563ed387",
+---
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/AppdataPreviewObjectStoreStorage.php": "089cf2c70cc33822dd90851a0c5e0aa115b8c64ea0be57681aa28731a1b8fbdc3ffc0c4af4b5b8a4488ed166aa914d06cfd70ccbde3223c86fee1f4a2500ad05",
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/HomeObjectStoreStorage.php": "c8c9c2c0cecdc43cc0300f05d345f0e031e959ced79c8343e9775034046afab2c6444fe44812a74e2140874560ab5fca9fcb4813b4acade7aff693b12b8a537a",
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/ObjectStoreStorage.php": "7ae93f40d48e87705873eaca28b9c9f6d6937ba7551442b321d91936465bc49eb8b31039335f6dd21fe51ed3e70ff226b1d9fd735360edca15baad481baa252d",
+49c49
+< ./lib/private/Files/ObjectStore/HomeObjectStoreStorage.php:class HomeObjectStoreStorage extends ObjectStoreStorage implements IHomeStorage {
+---
+> ./lib/private/Files/ObjectStore/HomeObjectStoreStorage.php:class HomeObjectStoreStorage extends ObjectStoreStorage implements \OCP\Files\IHomeStorage {
+changement non significatif
+
+	cd nc.29.0.11 ; grep -R getStorageId . > ../grep.getStorageId.29.0.11 ; cd -
+	diff grep.getStorageId.29.0.11 ../V28/grep.getStorageId.28.0.14
+3a4
+> ./apps/files_sharing/lib/SharedStorage.php:			$mount = $mountManager->findByNumericId($node->getStorageId());
+?? a voir
+--------------
