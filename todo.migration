@@ -452,17 +452,22 @@ migration de 29.0.11 à 30.0.5
 	diff nc.30.0.5/core/css/variables.scss nc.29.0.11/core/css/variables.scss
 seul le copyright a changé
 
-	diff nc.29.0.11/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php
+	meld nc.29.0.11/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php nc-ent/themes/esco/core/templates/layout.user.php
 a changé
+fait :  cp nc.30.0.5/core/templates/layout.user.php nc-ent/org/core/templates/layout.user.php 
 
-	diff nc.29.0.11/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.php
+	meld nc.29.0.11/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.php nc-ent/themes/esco/core/templates/layout.base.php
 a changé
+fait : cp nc.30.0.5/core/templates/layout.base.php nc-ent/org/core/templates/layout.base.php 
 
-	diff nc.29.0.11/core/templates/layout.guest.php nc.30.0.5/core/templates/layout.guest.php
+	meld  nc.29.0.11/core/templates/layout.guest.php nc.30.0.5/core/templates/layout.guest.php nc-ent/themes/esco/core/templates/layout.guest.php
 a changé
+fait:  cp nc.30.0.5/core/templates/layout.guest.php nc-ent/org/core/templates/layout.guest.php 
 
-	diff nc.29.0.11/core/templates/layout.public.php nc.30.0.5/core/templates/layout.public.php
+	meld  nc.29.0.11/core/templates/layout.public.php nc.30.0.5/core/templates/layout.public.php nc-ent/themes/esco/core/templates/layout.public.php 
 a changé
+fait : cp nc.30.0.5/core/templates/layout.public.php nc-ent/org/core/templates/layout.public.php
 
-	diff nc.29.0.11/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php
+	meld nc.29.0.11/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/themes/esco/core/templates/layout.noscript.warning.php
 a changé
+fait : cp nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/org/core/templates/layout.noscript.warning.php
