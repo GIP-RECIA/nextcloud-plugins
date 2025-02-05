@@ -441,6 +441,19 @@ changement non significatif
 3a4
 > ./apps/files_sharing/lib/SharedStorage.php:			$mount = $mountManager->findByNumericId($node->getStorageId());
 ?? a voir
+
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/Mapper.php nc.29.0.11/lib/private/Files/ObjectStore/Mapper.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/S3.php nc.29.0.11/lib/private/Files/ObjectStore/S3.php
+pas changé
+
+	find nc.28.0.14/ nc.29.0.11/  -name CardDavBackend.php -ls
+à changé : pas fait mais fait sur la version 30.0.5
+
+	find nc.28.0.14/ nc.29.0.11/ nc-ent/ -name RootMountProvider.php -ls
+pas changé
 --------------
 migration de 29.0.11 à 30.0.5
 
@@ -471,3 +484,30 @@ fait : cp nc.30.0.5/core/templates/layout.public.php nc-ent/org/core/templates/l
 	meld nc.29.0.11/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/themes/esco/core/templates/layout.noscript.warning.php
 a changé
 fait : cp nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/org/core/templates/layout.noscript.warning.php
+
+
+	meld nc.30.0.5/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.29.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+changé doit aller n'a pas changé la fonction stat
+
+	meld  nc.30.0.5/lib/private/Files/ObjectStore/Mapper.php nc.29.0.11/lib/private/Files/ObjectStore/Mapper.php
+à changé copyright on fait rien
+
+
+	diff nc.30.0.5/lib/private/Files/ObjectStore/S3.php nc.29.0.11/lib/private/Files/ObjectStore/S3.php
+à changé copyright on ne fait rien
+
+	find nc.28.0.14/ nc.29.0.11/ nc-ent/ -name CardDavBackend.php -ls
+	 meld nc.29.0.11/apps/dav/lib/CardDAV/CardDavBackend.php nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/apps/dav/lib/CardDAV/CardDavBackend.php
+à changé que de commentaire mais on traite: cp nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/org/apps/dav/lib/CardDAV/CardDavBackend.php
+
+	find nc.30.0.5/ nc.29.0.11/ nc-ent/ -name RootMountProvider.php -ls
+	meld nc.29.0.11/lib/private/Files/Mount/RootMountProvider.php nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc-ent/lib/private/Files/Mount/RootMountProvider.php
+à changé que le copyright mais on traite : cp nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc-ent/org/lib/private/Files/Mount/RootMountProvider.php
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.30.0.5 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.30.0.5 ; cd -
+	diff ../V29/grep.ObjectStoreStorage.29.0.11 grep.ObjectStoreStorage.30.0.5
+a changé mais devrait aller !! a voir
+
+	cd nc.30.0.5 ; grep -R getStorageId . > ../grep.getStorageId.30.0.5 ; cd -
+	diff ../V29/grep.getStorageId.29.0.11 grep.getStorageId.30.0.5
