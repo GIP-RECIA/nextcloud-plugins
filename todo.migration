@@ -442,3 +442,27 @@ changement non significatif
 > ./apps/files_sharing/lib/SharedStorage.php:			$mount = $mountManager->findByNumericId($node->getStorageId());
 ?? a voir
 --------------
+migration de 29.0.11 à 30.0.5
+
+	cd V30; tar -xvjf nextcloud-30.0.5.tar.bz2
+	mv nextcloud nc.30.0.5
+	ln -s ../V29/nc.29.0.11 nc.29.0.11
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+	diff nc.30.0.5/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+seul le copyright a changé
+
+	diff nc.29.0.11/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php
+a changé
+
+	diff nc.29.0.11/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.php
+a changé
+
+	diff nc.29.0.11/core/templates/layout.guest.php nc.30.0.5/core/templates/layout.guest.php
+a changé
+
+	diff nc.29.0.11/core/templates/layout.public.php nc.30.0.5/core/templates/layout.public.php
+a changé
+
+	diff nc.29.0.11/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php
+a changé
