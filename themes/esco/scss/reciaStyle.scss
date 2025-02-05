@@ -162,48 +162,25 @@ body {
 		display:none;
 	}
 
-	div#content.app-settings div#app-content {
-		div.personal-settings-section {
-			display: none;
+/* panel information personnelles à supprimer */
+	div#personal-settings div.personal-settings-setting-box {
+		&:has(input, textarea) {
+			display:none;
 		}
-		div#personal-settings div.profile-settings-container div.personal-settings-setting-box {
-			display: none;
+		&:has(input#account-property-displayname) {
+			display:inline;
 		}
 	}
-	
-	.personal-settings-container {
-		.personal-settings-setting-box:nth-child(n+3) {
-			display: none;
-		}
-
-		.personal-settings-setting-box form {
-			&#displaynameform , &#emailform {
-				div.federation-menu {
-					display :none;
-				}
-			}
-		&#phoneform, &#addressform, &#websiteform, &#twitterform {
-			display :none;
-		}
-/*		&#emailform > em {
-			display : none;
-		}
-*/	
+	div.personal-settings-section {
+		display:none;
 	}
 
-	
-	div#accessibility > p {
-		display : none;
-	}
-	
-	div#fileSharingSettings.section {
-		display : none;
-	}
-	div#clientsbox + div.section {
-		display :none;
+/* panel securité à supprimer */
+	div.settings-section:has(form#passwordform),
+	div#security-webauthn.section {
+		display: none;
 	}
 
-}
 /* le dimentionnement */
 
 	/* pour les publics (par lien public) */
