@@ -3,6 +3,7 @@
 	--color-primary: #0082c9 !important;
 	--color-primary-element: #0082c9 !important;
 	--color-primary-element-hover: #0082c9 !important;
+	--color-background-plain: #f3f3f3;
 }
 body {
 
@@ -296,8 +297,12 @@ body.embedded {
 
 // les couleurs spécifiques:
 @mixin colorTheme($couleur) {
+	--color-primary-element:  #{$couleur} ;
+	--color-primary-element-hover:  #{$couleur} ;
+	--color-main-background-blur: #f3f3f3;
+	--color-background-hover: #e3e3e3;
 	& > div#escoDiv,
-	&#body-user #header, &#body-settings #header, &#body-public #header {	
+	&#body-user #header, &#body-settings #header, &#body-public #header  {	
 			a#nextcloud , ul#appmenu, div.header-right {
 			background-color: $couleur;
 		}
