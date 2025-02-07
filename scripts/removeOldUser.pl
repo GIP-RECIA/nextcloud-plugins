@@ -103,7 +103,7 @@ if (!$force && &isDelPartage(3) > 0) {
 &markToDelete;
 
 # suppression des fichiers non partagés, des comptes obsolètes
-&deleteFile(int(4 * $nbRemovedUserMax / 10));
+&deleteFile($nbRemovedUserMax);
 
 sub delPartage {
 	my $sql = newConnectSql(0);
