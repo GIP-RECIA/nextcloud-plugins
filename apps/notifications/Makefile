@@ -9,5 +9,5 @@ meld:
 	--diff src/NotificationsApp.vue  ${PLUGIN}/src/NotificationsApp.vue 
 
 sync:
-	rm -f js/*
-	rsync -av ${PLUGIN}/js .
+	rm -f js/* css/*
+	rsync -av ${PLUGIN}/js ${PLUGIN}/css .
