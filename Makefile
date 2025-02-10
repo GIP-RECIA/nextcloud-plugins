@@ -89,6 +89,7 @@ SETTINGS:
 
 NOTIFICATIONS:
 	rsync -av \
+	--include='css/***' \
 	--include='js/***' \
 	--include='lib/***' \
 	--exclude='*' apps/notifications/* $(APPS)/notifications
