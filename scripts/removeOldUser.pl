@@ -405,7 +405,7 @@ sub deleteFile {
 	my $nbLines = $sqlStatement->execute( $nbJourDelay+1, $prefixStorage, $maxCount) or §FATAL $sqlStatement->errstr;
 
 #	$sql->commit() or §FATAL $sqlStatement->errstr;
-
+	$nbLines += 0;
 	§PRINT "\tprepare delete no shared files: ", 0 + $nbLines, " comptes";
 	return unless $nbLines; # on s'arrete si il n'y a rien
 	
