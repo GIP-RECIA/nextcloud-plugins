@@ -3,25 +3,8 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2017, Joas Schilling <coding@schilljs.com>
- *
- * @author Joas Schilling <coding@schilljs.com>
- *
- * @license AGPL-3.0-or-later
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 namespace OCA\Notifications;
@@ -43,8 +26,11 @@ use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IUser;
 use OCP\L10N\IFactory;
+use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\IManager as INotificationManager;
+use OCP\Notification\IncompleteParsedNotificationException;
 use OCP\Notification\INotification;
+use OCP\Security\ISecureRandom;
 use OCP\UserStatus\IManager as IUserStatusManager;
 use OCP\UserStatus\IUserStatus;
 use OCP\Util;
@@ -131,6 +117,7 @@ class Push {
 		IUserStatusManager $userStatusManager,
 		IFactory $l10nFactory,
 		protected ITimeFactory $timeFactory,
+		protected ISecureRandom $random,
 		LoggerInterface $log,
 	) {
 		$this->db = $connection;
@@ -280,7 +267,9 @@ class Push {
 
 		if (isset($this->userStatuses[$notification->getUser()])) {
 			$userStatus = $this->userStatuses[$notification->getUser()];
-			if ($userStatus->getStatus() === IUserStatus::DND && empty($this->allowedDNDPushList[$notification->getApp()])) {
+			if ($userStatus instanceof IUserStatus
+				&& $userStatus->getStatus() === IUserStatus::DND
+				&& empty($this->allowedDNDPushList[$notification->getApp()])) {
 				$this->printInfo('<error>User status is set to DND - no push notifications will be sent</error>');
 				return;
 			}
@@ -301,14 +290,15 @@ class Push {
 		$this->printInfo('Trying to push to ' . count($devices) . ' devices');
 		$this->printInfo('');
 
-		$language = $this->l10nFactory->getUserLanguage($user);
-		$this->printInfo('Language is set to ' . $language);
-
 		if (!$notification->isValidParsed()) {
+			$language = $this->l10nFactory->getUserLanguage($user);
+			$this->printInfo('Language is set to ' . $language);
+
 			try {
 				$this->notificationManager->setPreparingPushNotification(true);
 				$notification = $this->notificationManager->prepare($notification, $language);
-			} catch (\InvalidArgumentException $e) {
+			} catch (AlreadyProcessedException|IncompleteParsedNotificationException|\InvalidArgumentException) {
+				// FIXME remove \InvalidArgumentException in Nextcloud 39
 				return;
 			} finally {
 				$this->notificationManager->setPreparingPushNotification(false);
@@ -483,6 +473,17 @@ class Push {
 			return;
 		}
 
+		$subscriptionAwareServer = rtrim($this->config->getAppValue(Application::APP_ID, 'subscription_aware_server', 'https://push-notifications.nextcloud.com'), '/');
+		if ($subscriptionAwareServer === 'https://push-notifications.nextcloud.com') {
+			$subscriptionKey = $this->config->getAppValue('support', 'subscription_key');
+		} else {
+			$subscriptionKey = $this->config->getAppValue(Application::APP_ID, 'push_subscription_key');
+			if ($subscriptionKey === '') {
+				$subscriptionKey = $this->createPushSubscriptionKey();
+				$this->config->setAppValue(Application::APP_ID, 'push_subscription_key', $subscriptionKey);
+			}
+		}
+
 		$client = $this->clientService->newClient();
 		foreach ($pushNotifications as $proxyServer => $notifications) {
 			try {
@@ -492,23 +493,28 @@ class Push {
 					],
 				];
 
-				if ($proxyServer === 'https://push-notifications.nextcloud.com') {
-					$subscriptionKey = $this->config->getAppValue('support', 'subscription_key');
-					if ($subscriptionKey) {
-						$requestData['headers']['X-Nextcloud-Subscription-Key'] = $subscriptionKey;
-					}
+				if ($subscriptionKey !== '' && $proxyServer === $subscriptionAwareServer) {
+					$requestData['headers']['X-Nextcloud-Subscription-Key'] = $subscriptionKey;
 				}
 
 				$response = $client->post($proxyServer . '/notifications', $requestData);
 				$status = $response->getStatusCode();
-				$body = $response->getBody();
-				$bodyData = json_decode($body, true);
+				$body = (string) $response->getBody();
+				try {
+					$bodyData = json_decode($body, true);
+				} catch (\JsonException $e) {
+					$bodyData = null;
+				}
 			} catch (ClientException $e) {
 				// Server responded with 4xx (400 Bad Request mostlikely)
 				$response = $e->getResponse();
 				$status = $response->getStatusCode();
 				$body = $response->getBody()->getContents();
-				$bodyData = json_decode($body, true);
+				try {
+					$bodyData = json_decode($body, true);
+				} catch (\JsonException $e) {
+					$bodyData = null;
+				}
 			} catch (ServerException $e) {
 				// Server responded with 5xx
 				$response = $e->getResponse();
@@ -781,5 +787,10 @@ class Push {
 
 	protected function createFakeUserObject(string $userId): IUser {
 		return new FakeUser($userId);
+	}
+
+	protected function createPushSubscriptionKey(): string {
+		$key = $this->random->generate(25, ISecureRandom::CHAR_ALPHANUMERIC);
+		return implode('-', str_split($key, 5));
 	}
 }
