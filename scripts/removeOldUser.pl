@@ -103,7 +103,7 @@ if (!$force && &isDelPartage(3) > 0) {
 &markToDelete;
 
 # suppression des fichiers non partagés, des comptes obsolètes
-&deleteFile(int(4 * $nbRemovedUserMax / 10));
+&deleteFile($nbRemovedUserMax);
 
 sub delPartage {
 	my $sql = newConnectSql(0);
@@ -405,7 +405,7 @@ sub deleteFile {
 	my $nbLines = $sqlStatement->execute( $nbJourDelay+1, $prefixStorage, $maxCount) or §FATAL $sqlStatement->errstr;
 
 #	$sql->commit() or §FATAL $sqlStatement->errstr;
-
+	$nbLines += 0;
 	§PRINT "\tprepare delete no shared files: ", 0 + $nbLines, " comptes";
 	return unless $nbLines; # on s'arrete si il n'y a rien
 	
