@@ -340,70 +340,73 @@ body.embedded {
 	}
 }
 
-// les couleurs spécifiques:
+// ---------- COULEURS ----------
+
 @mixin colorTheme($couleur) {
 	--color-primary-element: #{$couleur};
 	--color-primary-element-hover: #{$couleur};
-	--color-main-background-blur: #f3f3f3;
-	--color-background-hover: #e3e3e3;
-	--color-background-plain: #f3f3f3;
 
-	&>div#escoDiv,
-	&#body-user #header,
-	&#body-settings #header,
-	&#body-public #header {
-
-		a#nextcloud,
-		ul#appmenu,
-		div.header-right {
-			background-color: $couleur;
-		}
-
+	header#header {
 		background-color: $couleur;
-		background-image: none;
 	}
 
-	&>div#escoDiv>header#escoHeader>extended-uportal-header {
-		--ext-header-tpl-primary-color: #{$couleur !important};
+	#escoDiv {
+		background-color: $couleur;
+	}
+
+	#app-navigation,
+	#app-navigation-vue {
+		background-color: var(--color-background-hover);
+
+		> * {
+			--color-background-hover: #{rgba($couleur, .15)};
+		}
+	}
+
+	extended-uportal-header {
+		--ext-header-tpl-primary-color: #{$couleur} !important;
 	}
 }
 
 body {
-	&.clg18.not_embedded {
-		@include colorTheme(#004899);
-	}
+	--image-background: none;
+	--color-background-plain: var(--color-main-background);
 
-	&.clg41.not_embedded {
-		@include colorTheme(#009FE3);
-	}
-
-	&.clg37.not_embedded {
-		@include colorTheme(#c60440);
-	}
-
-	&.agri.not_embedded {
-		@include colorTheme(#2d8c17);
-	}
-
-	&.esco.not_embedded {
-		@include colorTheme(#25b2f3);
-	}
-
-	&.clg45.not_embedded {
-		@include colorTheme(#26448a);
-	}
-
-	&.clg36.not_embedded {
-		@include colorTheme(#0069B3);
-	}
-
-	&.clg28.not_embedded {
-		/* @include colorTheme(#FFCC00); */
-		@include colorTheme(#303030);
+	&.not_embedded {
+		&.clg18 {
+			@include colorTheme(#004899);
+		}
+	
+		&.clg41 {
+			@include colorTheme(#009FE3);
+		}
+	
+		&.clg37 {
+			@include colorTheme(#c60440);
+		}
+	
+		&.agri {
+			@include colorTheme(#2d8c17);
+		}
+	
+		&.esco {
+			@include colorTheme(#25b2f3);
+		}
+	
+		&.clg45 {
+			@include colorTheme(#26448a);
+		}
+	
+		&.clg36 {
+			@include colorTheme(#0069B3);
+		}
+	
+		&.clg28 {
+			@include colorTheme(#303030);
+		}
 	}
 
 	&.embedded {
 		@include colorTheme(#888888);
 	}
-
 }
