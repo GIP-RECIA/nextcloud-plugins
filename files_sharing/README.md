@@ -121,7 +121,47 @@ files_sharing/
       :shares="shares"
       @open-sharing-details="toggleShareDetailsView" />
 
-     <!-- link shares list -->
++   <!-- internal link copy -->
++   <SharingEntryInternal :file-info="fileInfo" />
++
+   <!-- link shares list -->
+   <SharingLinkList v-if="!loading"
+    ref="linkShareList"
+    :can-reshare="canReshare"
+    :file-info="fileInfo"
+    :shares="linkShares"
+    @open-sharing-details="toggleShareDetailsView" />
+
++   <!-- projects -->
++   <CollectionList v-if="projectsEnabled && fileInfo"
++    :id="`${fileInfo.id}`"
++    type="file"
++    :name="fileInfo.name" />
++  </div>
++
++  <div v-show="!showSharingDetailsView"
++   class="sharingTab__content sharingTab__additionalContent">
++   <div>{{ t('files_sharing', 'Users and groups with access') }}</div>
++
+   <!-- other shares list -->
+   <SharingList v-if="!loading"
+    ref="shareList"
+    :shares="shares"
+    :file-info="fileInfo"
+    @open-sharing-details="toggleShareDetailsView" />
+
+   <!-- inherited shares -->
+   <SharingInherited v-if="canReshare && !loading" :file-info="fileInfo" />
+-
+-   <!-- internal link copy -->
+-   <SharingEntryInternal :file-info="fileInfo" />
+-
+-   <!-- projects -->
+-   <CollectionList v-if="projectsEnabled && fileInfo"
+-    :id="`${fileInfo.id}`"
+-    type="file"
+-    :name="fileInfo.name" />
+  </div>
 ...
 <script>
 ...
