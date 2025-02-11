@@ -34,6 +34,9 @@
 				:shares="shares"
 				@open-sharing-details="toggleShareDetailsView" />
 
+			<!-- internal link copy -->
+			<SharingEntryInternal :file-info="fileInfo" />
+
 			<!-- link shares list -->
 			<SharingLinkList v-if="!loading"
 				ref="linkShareList"
@@ -41,6 +44,17 @@
 				:file-info="fileInfo"
 				:shares="linkShares"
 				@open-sharing-details="toggleShareDetailsView" />
+
+			<!-- projects -->
+			<CollectionList v-if="projectsEnabled && fileInfo"
+				:id="`${fileInfo.id}`"
+				type="file"
+				:name="fileInfo.name" />
+		</div>
+
+		<div v-show="!showSharingDetailsView"
+			class="sharingTab__content sharingTab__additionalContent">
+			<div v-if="(canReshare || shares.length > 0) && !loading">{{ t('files_sharing', 'Users and groups with access') }}</div>
 
 			<!-- other shares list -->
 			<SharingList v-if="!loading"
@@ -51,15 +65,6 @@
 
 			<!-- inherited shares -->
 			<SharingInherited v-if="canReshare && !loading" :file-info="fileInfo" />
-
-			<!-- internal link copy -->
-			<SharingEntryInternal :file-info="fileInfo" />
-
-			<!-- projects -->
-			<CollectionList v-if="projectsEnabled && fileInfo"
-				:id="`${fileInfo.id}`"
-				type="file"
-				:name="fileInfo.name" />
 		</div>
 
 		<!-- additional entries, use it with cautious -->

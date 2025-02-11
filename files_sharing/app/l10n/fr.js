@@ -426,6 +426,7 @@ OC.L10N.register(
     "All platform" : "Tout le monde",
     "Establishments" : "Etablissements",
     "Select all" : "Tous",
-    "Select none" : "Aucun"
+    "Select none" : "Aucun",
+    "Users and groups with access" : "Utilisateurs et groupes ayant accès"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
