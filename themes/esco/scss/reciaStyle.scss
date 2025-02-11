@@ -295,41 +295,41 @@ body {
 	height: calc(100vh - 90px);
  }
 */
-@media only screen and (min-width: 1024px) {
-	body>div#escoDiv>footer {
-		position: fixed;
-		z-index: 2000;
-		bottom: 0px;
-		width: 100vw;
-	}
-
-	body:hover>div#escoDiv>footer {
-		bottom: -60px; // -46px;
-	}
-
-	body:hover>div#escoDiv:hover>footer {
-		bottom: 0px;
-	}
-
-	body footer.escoDiv {
-		display: none;
-	}
-}
-
-@media only screen and (max-width: 1024px) {
-	body>footer.escoDiv {
-		display: block;
-		z-index: 2000;
-	}
-
-	body>div#escoDiv>footer {
-		display: none;
-	}
-}
 
 body.embedded {
 	li[data-id="logout"] {
 		display: none;
+	}
+}
+
+// ---------- FOOTER ----------
+
+body > footer {
+	display: none;
+}
+
+@media only screen and (hover: hover) {
+	body {
+		> footer {
+			display: unset;
+			position: fixed;
+			z-index: 2000;
+			bottom: 0;
+			right: 0;
+			left: 0;
+			transition: bottom .2s;
+		}
+
+		&:hover {
+			> footer {
+				bottom: -60px;
+			}
+
+			> #escoDiv:hover ~ footer {
+				bottom: 0;
+			}
+		}
+
 	}
 }
 

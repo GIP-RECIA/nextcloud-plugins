@@ -138,14 +138,6 @@ p($theme->getTitle());
 				<div id="user-menu"></div>
 			</div>
 		</header>
-
-		<footer>
-			<extended-uportal-footer id="reciaFooter"
-				template-api-path="/commun/portal_template_api.tpl.json"
-				<?php if ($portal_domain) { print_unescaped('			domain="' . $portal_domain . '"'); } ?>
-			>
-			</extended-uportal-footer> 
-		</footer>
 	</div>
 
 		<main role="main" id="content" class="app-<?php p($_['appid']) ?>">
