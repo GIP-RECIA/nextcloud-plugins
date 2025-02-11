@@ -56,9 +56,14 @@ p($theme->getTitle());
 				</main>
 			</div>
 		</div>
-		<footer role="contentinfo">
+		<?php
+		$longFooter = $theme->getLongFooter();
+?>
+		<footer role="contentinfo" class="guest-box <?php if ($longFooter === '') {
+			p('hidden');
+		} ?>">
 			<p class="info">
-				<?php print_unescaped($theme->getLongFooter()); ?>
+				<?php print_unescaped($longFooter); ?>
 			</p>
 		</footer>
 	</body>
