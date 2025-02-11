@@ -256,28 +256,6 @@ body {
 		max-height: 15em;
 	}
 
-	/* les redim des previews dans la colonne des partages pour plus de lisibilité */
-	.app-sidebar-header {
-		&:not(.app-sidebar-header--compact) {
-			.app-sidebar-header__figure {
-				height: 10vh !important;
-				background-size: cover !important;
-				-webkit-transition: height 0.5s 0s ease;
-				-moz-transition: height 0.5s 0s ease;
-				-o-transition: height 0.5s 0s ease;
-				transition: height 0.5s 0s ease;
-
-				&:hover {
-					height: 35vh !important;
-					max-height: 350px;
-				}
-			}
-		}
-	}
-
-	/* les couleurs */
-
-
 	div#settings div#expand.menutoggle {
 		div.avatardiv.avatardiv-shown {
 			&+div#expandDisplayName {
@@ -299,6 +277,28 @@ body {
 body.embedded {
 	li[data-id="logout"] {
 		display: none;
+	}
+}
+
+// ---------- FILES_SHARING ----------
+
+body {
+	/*
+	 * Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
+	 */
+	.app-sidebar-header:not(.app-sidebar-header--compact) {
+		.app-sidebar-header__figure {
+			height: 10vh;
+			-webkit-transition: height 0.5s 0s ease;
+			-moz-transition: height 0.5s 0s ease;
+			-o-transition: height 0.5s 0s ease;
+			transition: height 0.5s 0s ease;
+
+			&:hover {
+				height: 35vh;
+				max-height: 350px;
+			}
+		}
 	}
 }
 
