@@ -9,6 +9,10 @@
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 	<head data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
+		<?php
+			$cacheBuster = date("Ymd");
+			$request = \OC::$server->getRequest();
+		?>
 		<title>
 		<?php p($theme->getTitle()); ?>
 		</title>
@@ -21,7 +25,9 @@
 		<link rel="apple-touch-icon" href="<?php print_unescaped(image_path('core', 'favicon-touch.png')); ?>">
 		<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path('core', 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 		<?php emit_css_loading_tags($_); ?>
+		<?php emit_css_tag(\OC_Theme::getContext($request)."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
 		<?php emit_script_loading_tags($_); ?>
+		<?php emit_script_tag(\OC_Theme::getContext($request)."/themes/esco/js/recia.js?$cacheBuster"); ?>
 		<?php print_unescaped($_['headers']); ?>
 	</head>
 	<!-- base -->

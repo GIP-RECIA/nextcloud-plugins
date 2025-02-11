@@ -9,8 +9,8 @@
 <head data-requesttoken="<?php p($_['requesttoken']); ?>">
 	<meta charset="utf-8">
 	<?php
-			$cacheBuster = date("Ymd");
-			$request = \OC::$server->getRequest();
+		$cacheBuster = date("Ymd");
+		$request = \OC::$server->getRequest();
 	?>
 	<title>
 		<?php
@@ -36,13 +36,13 @@ p($theme->getTitle());
 	<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path($_['appid'], 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 	<link rel="manifest" href="<?php print_unescaped(image_path($_['appid'], 'manifest.json')); ?>" crossorigin="use-credentials">
 	<?php emit_css_loading_tags($_); ?>
-	<?php emit_css_tag(\OC_Theme::getContext($request) ."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
+	<?php emit_css_tag(\OC_Theme::getContext($request)."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
 	<?php emit_script_loading_tags($_); ?>
-	<?php   emit_script_tag(\OC_Theme::getContext($request) ."/themes/esco/js/recia.js?$cacheBuster"); ?>
+	<?php emit_script_tag(\OC_Theme::getContext($request)."/themes/esco/js/recia.js?$cacheBuster"); ?>
 	<?php print_unescaped($_['headers']); ?>
 </head>
 <!-- public -->
-<body id="<?php p($_['bodyid']);?>"  class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>" >
+<body id="<?php p($_['bodyid']);?>" class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>">
 <?php include('layout.noscript.warning.php'); ?>
 	<?php include('layout.initial-state.php'); ?>
 	<div id="skip-actions">
@@ -50,21 +50,33 @@ p($theme->getTitle());
 		<?php if ($_['id-app-navigation'] !== null) { ?><a href="<?php p($_['id-app-navigation']); ?>" class="button primary skip-navigation"><?php p($l->t('Skip to navigation of app')); ?></a><?php } ?>
 	</div>
 
-	<header id="header">
+	<header role="banner" id="header">
 		<div class="header-left">
-			<div class="logo logo-icon svg"></div>
-			<span id="nextcloud" class="header-appname">
-				<?php if (isset($template) && $template->getHeaderTitle() !== '') { ?>
-					<?php p($template->getHeaderTitle()); ?>
-				<?php } else { ?>
-					<?php	p($theme->getName()); ?>
-				<?php } ?>
-			</span>
-			<?php if (isset($template) && $template->getHeaderDetails() !== '') { ?>
-				<div class="header-shared-by">
-					<?php p($template->getHeaderDetails()); ?>
+			<div id="nextcloud" class="header-appname">
+				<?php if ($_['logoUrl']): ?>
+					<a href="<?php print_unescaped($_['logoUrl']); ?>"
+					   aria-label="<?php p($l->t('Go to %s', [$_['logoUrl']])); ?>">
+						<div class="logo logo-icon"></div>
+					</a>
+				<?php else: ?>
+					<div class="logo logo-icon"></div>
+				<?php endif; ?>
+
+				<div class="header-info">
+					<span class="header-title">
+						<?php if (isset($template) && $template->getHeaderTitle() !== '') { ?>
+							<?php p($template->getHeaderTitle()); ?>
+						<?php } else { ?>
+							<?php	p($theme->getName()); ?>
+						<?php } ?>
+					</span>
+					<?php if (isset($template) && $template->getHeaderDetails() !== '') { ?>
+						<span class="header-shared-by">
+							<?php p($template->getHeaderDetails()); ?>
+						</span>
+					<?php } ?>
 				</div>
-			<?php } ?>
+			</div>
 		</div>
 
 		<div class="header-right">
@@ -99,7 +111,7 @@ if (isset($template) && $template->getActionCount() !== 0) {
 } ?>
 		</div>
 	</header>
-	<main id="content" class="app-<?php p($_['appid']) ?>">
+	<main role="main" id="content" class="app-<?php p($_['appid']) ?>">
 		<h1 class="hidden-visually">
 			<?php if (isset($template) && $template->getHeaderTitle() !== '') { ?>
 				<?php p($template->getHeaderTitle()); ?>
@@ -109,14 +121,14 @@ if (isset($template) && $template->getActionCount() !== 0) {
 		</h1>
 		<?php print_unescaped($_['content']); ?>
 	</main>
-	<?php if (isset($template) && $template->getFooterVisible()) { ?>
-	<footer>
+	<?php if (isset($template) && $template->getFooterVisible() && ($theme->getLongFooter() !== '' || $_['showSimpleSignUpLink'])) { ?>
+	<footer role="contentinfo">
 		<p><?php print_unescaped($theme->getLongFooter()); ?></p>
 		<?php
 if ($_['showSimpleSignUpLink']) {
 	?>
-			<p>
-				<a href="https://nextcloud.com/signup/" target="_blank" rel="noreferrer noopener">
+			<p class="footer__simple-sign-up">
+				<a href="<?php p($_['signUpLink']); ?>" target="_blank" rel="noreferrer noopener">
 					<?php p($l->t('Get your own free account')); ?>
 				</a>
 			</p>
