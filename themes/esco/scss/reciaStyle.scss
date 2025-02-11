@@ -1,22 +1,7 @@
 body {
-
-	&#body-public div#content>#app>iframe {
-		height: calc(100vh - 88px);
-	}
-
 	&#body-user,
 	&#body-settings {
 		/* le style venue de la mise en place du bandeau */
-
-		/* suppression des bords arrondis et recalcul de la hauteur et largeur */
-		&>main#content,
-		&>div#content-vue.content {
-			height: calc(100% - 88px);
-			border-radius: 0;
-			margin-right: 0;
-			width: 100%;
-			margin-left: 0;
-		}
 
 		&>main#content {
 			div#app-navigation-vue {
@@ -34,8 +19,6 @@ body {
 
 		/* Style du bandeau ENT */
 		&>div#escoDiv {
-
-			height: 38px;
 
 			&#escoDiv.content {
 				padding-top: 88px; // pour Applications
@@ -215,12 +198,6 @@ body {
 	/* pour les publics (par lien public) */
 	&#body-public main#content {
 
-		height: calc(100vh - 50px);
-		border-radius: 0;
-		width: 100%;
-		margin-left: 0;
-		padding-block-end: unset;
-
 		iframe.onlyoffice-inline {
 			/* pour oo */
 			height: calc(100vh + 8px);
@@ -277,6 +254,49 @@ body {
 body.embedded {
 	li[data-id="logout"] {
 		display: none;
+	}
+}
+
+// ---------- HEADER + MAIN  ----------
+
+$extended-uportal-header-height: 38px;
+$nextcloud-header-height: 50px;
+$header-height: $extended-uportal-header-height + $nextcloud-header-height;
+
+/*
+ * Suppression des bords arrondis et 
+ */
+%fullscreen {
+	width: 100%;
+	border-radius: 0;
+	margin-right: 0;
+	margin-left: 0;
+	padding-bottom: 0;
+}
+
+/*
+ * Recalcul de la hauteur et largeur
+ */
+body {
+	&#body-user,
+	&#body-settings {
+		> main#content,
+		> div#content-vue.content {
+			@extend %fullscreen;
+			height: calc(100% - $header-height);
+		}
+
+		> #escoDiv {
+			height: $extended-uportal-header-height;
+		}
+	}
+
+	/*
+	 * Partages par lien public
+	 */
+	&#body-public > main#content {
+		@extend %fullscreen;
+		height: calc(100% - $nextcloud-header-height);
 	}
 }
 
