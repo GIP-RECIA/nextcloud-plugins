@@ -38,7 +38,7 @@ my $saveTimestamp = 0;
 
 my %pid2etab;
 
-my $noThread = 1;
+
 
 my $debug = 0; #pour supprimer les debugs des logs
 
@@ -64,7 +64,9 @@ unless (-d $dataRep) {
 
 my %etabATraiter; # ensembles des etabs a traiter pour ne pas en oublier
 
-my $force = 0; # si 1 ne considére pas les timesStamps. 
+my $force = 0; # si 1 ne considére pas les timesStamps.
+
+my $defautTraitement = 0;
 
 	# lecture du fichier contenant les timestamps;   
 if (-r $allEtabFile) {
@@ -127,6 +129,7 @@ if ($ARGV[0] eq 'all' ) {
 			die "l'association groupe etab a produit une liste vide \n";
 		}
 	} else { # on doit mettre les etabs avec timestamp dans @allEtab par ordre de taille décroissante.
+		$defautTraitement = 1 ; #on est dans le traitement journalier par défaut.
 		my $sql = connectSql();
 		my $sqlQuery = q/select uai, siren  from  recia_etab_par_taille/;
 		print "$sqlQuery\n";
@@ -345,58 +348,83 @@ sub updateTimeStamp() {
 
 #my %etab2pid;
 
-
-foreach my $etab (@allEtab) {
-	my $pid;
-	my $etabTS = $force ? 0 : $etabTimestamp{$etab};
-	if ( $pid = fork ) { 
-		$pid2etab{$pid} = $etab;
-	} else {
-		exit &traitementEtab($etab, $etabTS);
-	} 
-	
-	if ( $noThread >= $nbThread) {
-		$pid = wait;
-		
-		&updateTimeStamp($pid, $? ) unless $force;
-	} else {
-		$noThread++;
-		sleep $delai;
-	}
-}
-
-while () {
-	my $pid = wait;
-	if ($pid > 0) {
-		&updateTimeStamp($pid, $?) unless $force;
-	} else {
-		last;
-	}
-	print $pid, "\n";
-}
-
-if ($saveTimestamp) {
-	my $oldFile = $allEtabFile . ".old";
-	rename $allEtabFile, $oldFile or die "$!";
-	open OLD , $oldFile or die "$!" ;
-	open NEW , "> $allEtabFile" or die "$!";
-	while (<OLD>) {
-		chop;
-		if (/^\s*([^;,#]+)([;,]\s*\d*)?(\s*(#.*)?)$/) {
-			my $etab = $1;
-			my $comment = $4;
-			$etab =~ s/(\s+)$//; # suppression des blancs finaux 
-			if ($etab) {
-				print NEW $etab . " ; " . $etabTimestamp{$etab} . " $comment\n";
-				next;
-			} 
+sub traitementAllEtab {
+	my $force = shift;
+	my $saveTimestamp = shift;
+	my $allEtab = shift;
+	my $noThread = 1;
+	foreach my $etab (@$allEtab) {
+		my $pid;
+		my $etabTS = $force ? 0 : $etabTimestamp{$etab};
+		if ( $pid = fork ) { 
+			$pid2etab{$pid} = $etab;
+		} else {
+			exit &traitementEtab($etab, $etabTS);
 		} 
-		print NEW $_."\n";
+		
+		if ( $noThread >= $nbThread) {
+			$pid = wait;
+			
+			&updateTimeStamp($pid, $? ) unless $force;
+		} else {
+			$noThread++;
+			sleep $delai;
+		}
+	}
+
+	while () {
+		my $pid = wait;
+		if ($pid > 0) {
+			&updateTimeStamp($pid, $?) unless $force;
+		} else {
+			last;
+		}
+		print $pid, "\n";
+	}
+
+	if ($saveTimestamp) {
+		my $oldFile = $allEtabFile . ".old";
+		rename $allEtabFile, $oldFile or die "$!";
+		open OLD , $oldFile or die "$!" ;
+		open NEW , "> $allEtabFile" or die "$!";
+		while (<OLD>) {
+			chop;
+			if (/^\s*([^;,#]+)([;,]\s*\d*)?(\s*(#.*)?)$/) {
+				my $etab = $1;
+				my $comment = $4;
+				$etab =~ s/(\s+)$//; # suppression des blancs finaux 
+				if ($etab) {
+					print NEW $etab . " ; " . $etabTimestamp{$etab} . " $comment\n";
+					next;
+				} 
+			} 
+			print NEW $_."\n";
+		}
 	}
 }
 
-# on fait le menage dans les comptes hors étab ou pas modifiés depuis longtemps.
-&traitementEtab('HORS_ETAB', 0);
+&traitementAllEtab($force, $saveTimestamp, \@allEtab);
+
+
+if ($defautTraitement) {
+	
+	# on verifie les comptes isdel=1 anciens pour verifier qu'ils ne devraient pas être isdel=0;
+	my $sql = connectSql();
+	my $sqlQuery = q/select uid from oc_recia_user_history where isdel = 1 and datediff(now(), dat) > 90 order by dat limit 96/;
+	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	$sqlStatement->execute() or die $sqlStatement->errstr;
+	
+	my @uids ;
+	while (my ($uid) =  $sqlStatement->fetchrow_array) {
+		push(@uids, $uid);
+	}
+	if (@uids) {
+		&traitementAllEtab(1, 0, \@uids) ;
+	}
+
+	# on fait le menage dans les comptes hors étab ou pas modifiés depuis longtemps.
+	&traitementEtab('HORS_ETAB', 0);
+}
 
 unless (isObjectStore()) {
 	# creation des répertoires manquants
@@ -422,9 +450,9 @@ unless (isObjectStore()) {
 	}
 }
 
+__END__
 #TODO changer le display name des groupes tronqués par NC et on corrige le gid dans notre table oc_assos...
 q/update oc_groups g, oc_asso_uai_user_group a  set g.displayName = a.user_group , a.user_group = g.gid where g.displayName like '%…' and a.user_group like replace(g.gid, '…', '%')/
 
 
-__END__
 attribut ldap de detection des changement modifytimestamp>=20080601070000
