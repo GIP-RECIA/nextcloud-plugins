@@ -10,7 +10,7 @@ Utilisation de [nextcloud-docker-dev](https://github.com/juliusknorr/nextcloud-d
     ├── nextcloud-docker-dev
     │   └── workspace
     │       ├── server
-    │       └── stable28
+    │       └── stable30
     ├── nextcloud-ent
     ├── nextcloud-gip
     └── notifications
@@ -29,13 +29,13 @@ git clone https://github.com/juliusknorr/nextcloud-docker-dev.git
 cd nextcloud-docker-dev
 ./bootstrap.sh --full-clone
 cd workspace/server
-git worktree add ../stable28 stable28
+git worktree add ../stable30 stable30
 ```
 
 **Lancer une version stable de Nextcloud**
 
 ```sh
-cd workspace/nextcloud-docker-dev/workspace/stable28
-git checkout v28.0.11 -b v28.0.11
-docker compose up -d stable28
+cd workspace/nextcloud-docker-dev/workspace/stable30
+git checkout v30.0.5 -b v30.0.5
+docker compose up -d stable30
 ```
