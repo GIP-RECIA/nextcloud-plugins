@@ -413,11 +413,15 @@ pas changé
 	meld nc.28.0.14/core/templates/layout.public.php nc.29.0.11/core/templates/layout.public.php /home/legay/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent/themes/esco/core/templates/layout.public.php
 a changé => fait 
 
+	diff nc.30.0.5/apps/settings/templates/settings/personal/personal.info.php nc.29.0.11/apps/settings/templates/settings/personal/personal.info.php
+a changé
+
 	core/templates/layout.noscript.warning.php
 pas changé
 
 	diff nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.29.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
 a changé mais doit aller
+
 
 recherche de l'usage de ObjectStoreStorage:
 	cd nc.29.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.29.0.11 ; cd -
