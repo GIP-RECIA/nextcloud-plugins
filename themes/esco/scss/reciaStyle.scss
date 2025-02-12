@@ -67,9 +67,16 @@ body {
 				scrollbar-width: none;
 			}
 
-			// Masquage du menu contacts
-			> .header-right > #contactsmenu {
-				display: none;
+			> .header-right {
+				// Masquage du menu contacts
+				> #contactsmenu {
+					display: none;
+				}
+
+				// Correction du placement à l'ouverture des menu
+				.header-menu__wrapper {
+					top: unset;
+				}
 			}
 		}
 	}
@@ -279,13 +286,7 @@ body {
 
 			&>header#header.escoDivWrapper {
 
-				div.header-left ul li a {
-					height: 50px;
-					width: 50px;
-				}
-
 				.header-right {
-
 					&>div#settings>*,
 					&>div#contactsmenu>*,
 					&>div.notifications>.menu {
@@ -296,10 +297,6 @@ body {
 					&>div>.menutoggle,
 					&>form>.menutoggle {
 						width: 50px;
-					}
-
-					&>div>div.header-menu__wrapper {
-						top: unset;
 					}
 				}
 			}
