@@ -1,26 +1,8 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2017 Arthur Schiwon <blizzz@arthur-schiwon.de>
- *
- * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
- * @author Thomas Citharel <tcit@tcit.fr>
- *
- * @license GNU AGPL version 3 or any later version
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 /** @var \OCP\IL10N $l */
@@ -35,7 +17,7 @@ script('settings', [
 	'vue-settings-personal-info',
 ]);
 ?>
-<?php if (!$_['isFairUseOfFreePushService'] && false) : ?>
+<?php if (!$_['isFairUseOfFreePushService']) : ?>
 	<div class="section">
 		<div class="warning">
 			<?php p($l->t('This community release of Nextcloud is unsupported and instant notifications are unavailable.')); ?>
@@ -61,7 +43,6 @@ script('settings', [
 	<div class="personal-settings-setting-box">
 		<div id="vue-displayname-section"></div>
 	</div>
-	<?php if(false): ?>
 	<div class="personal-settings-setting-box">
 		<div id="vue-email-section"></div>
 	</div>
@@ -92,7 +73,6 @@ script('settings', [
 	<div class="personal-settings-setting-box">
 		<div id="vue-fediverse-section"></div>
 	</div>
-	<?php endif; ?>
 	<?php if ($_['profileEnabledGlobally']) : ?>
 		<div class="personal-settings-setting-box">
 			<div id="vue-organisation-section"></div>
