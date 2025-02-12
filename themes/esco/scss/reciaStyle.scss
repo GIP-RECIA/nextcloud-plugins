@@ -216,6 +216,28 @@ body {
 	// }
 }
 
+// ---------- MARKDOWN ----------
+
+body {
+	&#body-user,
+	&#body-settings {
+		main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
+			z-index: 3000 !important;
+		}
+	}
+}
+
+// ---------- NOTES ----------
+
+body {
+	&#body-user,
+	&#body-settings {
+		div.content.app-notes div.app-navigation__content {
+			height: calc(100% - 35px);
+		}
+	}
+}
+
 // ---------- FILES_SHARING ----------
 
 body {
@@ -330,30 +352,13 @@ body {
 
 		/* Style du bandeau ENT */
 		&>div#escoDiv {
-
 			&#escoDiv.content {
 				padding-top: 88px; // pour Applications
 			}
 		}
-
-		/* pour MD */
-		main#content.app-files>aside#app-sidebar-vue.app-sidebar--full {
-			z-index: 3000 !important;
-		}
-
-		/* fin MD */
-
-		/* pour Notes */
-		div.content.app-notes div.app-navigation__content {
-			height: calc(100% - 35px);
-		}
-
-		/* fin notes */
-
 	}
 
 	/* fin integration bandeau */
-
 
 	/* les suppresions d'affichage */
 	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
