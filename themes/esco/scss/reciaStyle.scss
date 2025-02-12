@@ -28,7 +28,7 @@ body {
 	// Partages par lien public
 	&#body-public > main#content {
 		@extend %fullscreen;
-		top: unset;
+		height: calc(100% - $nextcloud-header-height);
 	}
 }
 
@@ -91,9 +91,9 @@ body > footer.escoDiv {
 }
 
 // Affichage du bandau au survol du header et quand on quitte la fenetre
-// seulement pour les écran non tactiles
+// seulement pour les écran non tactiles et le body user
 @media only screen and (hover: hover) {
-	body {
+	body#body-user:not(:has(iframe#onlyofficeFrame, main#content.app-onlyoffice)) {
 		> footer.escoDiv {
 			display: unset;
 			position: fixed;
@@ -161,84 +161,35 @@ body {
 // Attention : OO passe de 2 iframe à 1 iframe au rechargement de la page
  
 body {
-	&#body-user,
-	&#body-settings {
-	
+	&#body-user {
+		// A l'ouverture
 		iframe#onlyofficeFrame {
 			height: calc(100vh - 30px)
 		}
-	
-		main#content {
-			> div#app-content > iframe#onlyofficeFrame {
-				height: calc(100vh - 30px);
-			}
-	
-			&.app-onlyoffice > div#app > iframe {
-				height: calc(100vh - 88px);
-			}
-		}
-	
-		&.onlyoffice-inline main#content {
-			margin-bottom: 0;
-			bottom: 0;
-			border-radius: 0;
+
+		// Au refresh de la page
+		main#content.app-onlyoffice > #app > iframe {
+			height: calc(100vh - $header-height);
 		}
 	}
 
+	// Partages par lien public
 	&#body-public main#content {
-		iframe.onlyoffice-inline {
+		iframe.onlyoffice-inline,
+		> #app-content > iframe#onlyofficeFrame {
 			height: calc(100vh + 8px);
 		}
-		
-		> div#app-content > iframe#onlyofficeFrame {
-				height: calc(100vh + 8px);
-		}
-
-		// &.app-onlyoffice > div#app > iframe {
-		// 	height: calc(100vh - 88px);
-		// }
-
-		&.onlyoffice-inline main#content {
-			margin-bottom:0;
-			bottom: 0;
-			border-radius: 0;
-		}
 	}
 
+	// TODO: versifier si toujours utilisé
 	&.embedded .viewcontainer div#rich-workspace #editor {
 		max-height : 15em;
 	}
 
+	// TODO: versifier si toujours utilisé
 	// suppression du menu Nouveau modele de formulaire pour OO
 	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
 		display: none;
-	}
-
-	// pour onlyoffice avec notre bandeau large ne doit plus être fonctionnel
-	// div#content > div#app-content > iframe#onlyofficeFrame {
-	// 	height: calc(100vh - 90px);
-	// }
-}
-
-// ---------- MARKDOWN ----------
-
-body {
-	&#body-user,
-	&#body-settings {
-		main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
-			z-index: 3000 !important;
-		}
-	}
-}
-
-// ---------- NOTES ----------
-
-body {
-	&#body-user,
-	&#body-settings {
-		div.content.app-notes div.app-navigation__content {
-			height: calc(100% - 35px);
-		}
 	}
 }
 
