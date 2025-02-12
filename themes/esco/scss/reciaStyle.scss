@@ -102,11 +102,15 @@ body > footer.escoDiv {
 			right: 0;
 			left: 0;
 			transition: bottom .2s;
+
+			&:hover {
+				bottom: 0 !important;
+			}
 		}
 
 		&:hover {
 			> footer.escoDiv {
-				bottom: -60px;
+				bottom: -50px;
 			}
 
 			> #escoDiv:hover ~ footer.escoDiv {
