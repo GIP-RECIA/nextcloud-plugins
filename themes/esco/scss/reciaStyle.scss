@@ -182,6 +182,16 @@ body {
 		display: none;
 	}
 
+/* panel Apparence et accessibilité à supprimer */
+	div.theming__preview-list:has(div.theming__preview.theming__preview--opendyslexic) ~ h3,
+	div.theming__preview-list:has(div.theming__preview.theming__preview--opendyslexic) ~ span {
+			display: none;
+	}
+	
+	div.settings-section.theming.settings-section--limit-width:has(div.theming__preview.theming__preview--opendyslexic) ~ div {
+		display: none;
+	}
+
 /* le dimentionnement */
 
 	/* pour les publics (par lien public) */
