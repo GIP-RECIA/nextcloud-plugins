@@ -10,6 +10,7 @@ $header-height: $extended-uportal-header-height + $nextcloud-header-height;
 	border-radius: 0;
 	margin-right: 0;
 	margin-left: 0;
+	margin-bottom: 0;
 	padding-bottom: 0;
 }
 
@@ -18,7 +19,7 @@ body {
 	&#body-user,
 	&#body-settings {
 		> main#content,
-		> div#content-vue.content {
+		> #content-vue {
 			@extend %fullscreen;
 			height: calc(100% - $header-height);
 		}
@@ -27,7 +28,7 @@ body {
 	// Partages par lien public
 	&#body-public > main#content {
 		@extend %fullscreen;
-		height: calc(100% - $nextcloud-header-height);
+		top: unset;
 	}
 }
 
