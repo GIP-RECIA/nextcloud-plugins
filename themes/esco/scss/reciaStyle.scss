@@ -75,7 +75,7 @@ body {
 
 				// Correction du placement à l'ouverture des menu
 				.header-menu__wrapper {
-					top: unset;
+					--header-height: #{$header-height};
 				}
 			}
 		}
@@ -282,23 +282,6 @@ body {
 
 			&#escoDiv.content {
 				padding-top: 88px; // pour Applications
-			}
-
-			&>header#header.escoDivWrapper {
-
-				.header-right {
-					&>div#settings>*,
-					&>div#contactsmenu>*,
-					&>div.notifications>.menu {
-						top: 50px;
-						max-height: calc(100vh - 63px * 4);
-					}
-
-					&>div>.menutoggle,
-					&>form>.menutoggle {
-						width: 50px;
-					}
-				}
 			}
 		}
 
