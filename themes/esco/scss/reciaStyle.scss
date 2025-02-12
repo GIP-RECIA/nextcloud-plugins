@@ -1,3 +1,172 @@
+// ---------- HEADER + MAIN  ----------
+
+$extended-uportal-header-height: 38px;
+$nextcloud-header-height: 50px;
+$header-height: $extended-uportal-header-height + $nextcloud-header-height;
+
+/*
+ * Suppression des bords arrondis et 
+ */
+%fullscreen {
+	width: 100%;
+	border-radius: 0;
+	margin-right: 0;
+	margin-left: 0;
+	padding-bottom: 0;
+}
+
+/*
+ * Recalcul de la hauteur et largeur
+ */
+body {
+	&#body-user,
+	&#body-settings {
+		> main#content,
+		> div#content-vue.content {
+			@extend %fullscreen;
+			height: calc(100% - $header-height);
+		}
+
+		> #escoDiv {
+			height: $extended-uportal-header-height;
+		}
+	}
+
+	/*
+	 * Partages par lien public
+	 */
+	&#body-public > main#content {
+		@extend %fullscreen;
+		height: calc(100% - $nextcloud-header-height);
+	}
+}
+
+// ---------- FILES_SHARING ----------
+
+body {
+	/*
+	 * Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
+	 */
+	.app-sidebar-header:not(.app-sidebar-header--compact) {
+		.app-sidebar-header__figure {
+			height: 10vh;
+			-webkit-transition: height 0.5s 0s ease;
+			-moz-transition: height 0.5s 0s ease;
+			-o-transition: height 0.5s 0s ease;
+			transition: height 0.5s 0s ease;
+
+			&:hover {
+				height: 35vh;
+				max-height: 350px;
+			}
+		}
+	}
+}
+
+// ---------- FOOTER ----------
+
+body > footer {
+	display: none;
+}
+
+@media only screen and (hover: hover) {
+	body {
+		> footer {
+			display: unset;
+			position: fixed;
+			z-index: 2000;
+			bottom: 0;
+			right: 0;
+			left: 0;
+			transition: bottom .2s;
+		}
+
+		&:hover {
+			> footer {
+				bottom: -60px;
+			}
+
+			> #escoDiv:hover ~ footer {
+				bottom: 0;
+			}
+		}
+
+	}
+}
+
+// ---------- COULEURS ----------
+
+@mixin colorTheme($couleur) {
+	--color-primary-element: #{$couleur};
+	--color-primary-element-hover: #{$couleur};
+
+	header#header {
+		background-color: $couleur;
+	}
+
+	#escoDiv {
+		background-color: $couleur;
+	}
+
+	#app-navigation,
+	#app-navigation-vue {
+		background-color: var(--color-background-hover);
+
+		> * {
+			--color-background-hover: #{rgba($couleur, .15)};
+		}
+	}
+
+	extended-uportal-header {
+		--ext-header-tpl-primary-color: #{$couleur} !important;
+	}
+}
+
+body {
+	--image-background: none;
+	--color-background-plain: var(--color-main-background);
+
+	&.not_embedded {
+		&.clg18 {
+			@include colorTheme(#004899);
+		}
+	
+		&.clg41 {
+			@include colorTheme(#009FE3);
+		}
+	
+		&.clg37 {
+			@include colorTheme(#c60440);
+		}
+	
+		&.agri {
+			@include colorTheme(#2d8c17);
+		}
+	
+		&.esco {
+			@include colorTheme(#25b2f3);
+		}
+	
+		&.clg45 {
+			@include colorTheme(#26448a);
+		}
+	
+		&.clg36 {
+			@include colorTheme(#0069B3);
+		}
+	
+		&.clg28 {
+			@include colorTheme(#303030);
+		}
+	}
+
+	&.embedded {
+		@include colorTheme(#888888);
+	}
+}
+
+// ---------- OLD ----------
+
 body {
 	&#body-user,
 	&#body-settings {
@@ -254,172 +423,5 @@ body {
 body.embedded {
 	li[data-id="logout"] {
 		display: none;
-	}
-}
-
-// ---------- HEADER + MAIN  ----------
-
-$extended-uportal-header-height: 38px;
-$nextcloud-header-height: 50px;
-$header-height: $extended-uportal-header-height + $nextcloud-header-height;
-
-/*
- * Suppression des bords arrondis et 
- */
-%fullscreen {
-	width: 100%;
-	border-radius: 0;
-	margin-right: 0;
-	margin-left: 0;
-	padding-bottom: 0;
-}
-
-/*
- * Recalcul de la hauteur et largeur
- */
-body {
-	&#body-user,
-	&#body-settings {
-		> main#content,
-		> div#content-vue.content {
-			@extend %fullscreen;
-			height: calc(100% - $header-height);
-		}
-
-		> #escoDiv {
-			height: $extended-uportal-header-height;
-		}
-	}
-
-	/*
-	 * Partages par lien public
-	 */
-	&#body-public > main#content {
-		@extend %fullscreen;
-		height: calc(100% - $nextcloud-header-height);
-	}
-}
-
-// ---------- FILES_SHARING ----------
-
-body {
-	/*
-	 * Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
-	 */
-	.app-sidebar-header:not(.app-sidebar-header--compact) {
-		.app-sidebar-header__figure {
-			height: 10vh;
-			-webkit-transition: height 0.5s 0s ease;
-			-moz-transition: height 0.5s 0s ease;
-			-o-transition: height 0.5s 0s ease;
-			transition: height 0.5s 0s ease;
-
-			&:hover {
-				height: 35vh;
-				max-height: 350px;
-			}
-		}
-	}
-}
-
-// ---------- FOOTER ----------
-
-body > footer {
-	display: none;
-}
-
-@media only screen and (hover: hover) {
-	body {
-		> footer {
-			display: unset;
-			position: fixed;
-			z-index: 2000;
-			bottom: 0;
-			right: 0;
-			left: 0;
-			transition: bottom .2s;
-		}
-
-		&:hover {
-			> footer {
-				bottom: -60px;
-			}
-
-			> #escoDiv:hover ~ footer {
-				bottom: 0;
-			}
-		}
-
-	}
-}
-
-// ---------- COULEURS ----------
-
-@mixin colorTheme($couleur) {
-	--color-primary-element: #{$couleur};
-	--color-primary-element-hover: #{$couleur};
-
-	header#header {
-		background-color: $couleur;
-	}
-
-	#escoDiv {
-		background-color: $couleur;
-	}
-
-	#app-navigation,
-	#app-navigation-vue {
-		background-color: var(--color-background-hover);
-
-		> * {
-			--color-background-hover: #{rgba($couleur, .15)};
-		}
-	}
-
-	extended-uportal-header {
-		--ext-header-tpl-primary-color: #{$couleur} !important;
-	}
-}
-
-body {
-	--image-background: none;
-	--color-background-plain: var(--color-main-background);
-
-	&.not_embedded {
-		&.clg18 {
-			@include colorTheme(#004899);
-		}
-	
-		&.clg41 {
-			@include colorTheme(#009FE3);
-		}
-	
-		&.clg37 {
-			@include colorTheme(#c60440);
-		}
-	
-		&.agri {
-			@include colorTheme(#2d8c17);
-		}
-	
-		&.esco {
-			@include colorTheme(#25b2f3);
-		}
-	
-		&.clg45 {
-			@include colorTheme(#26448a);
-		}
-	
-		&.clg36 {
-			@include colorTheme(#0069B3);
-		}
-	
-		&.clg28 {
-			@include colorTheme(#303030);
-		}
-	}
-
-	&.embedded {
-		@include colorTheme(#888888);
 	}
 }
