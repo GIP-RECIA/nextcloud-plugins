@@ -75,6 +75,7 @@
 use strict;
 use IPC::Open3;
 use IO::Select;
+use IO::Handle;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
@@ -404,6 +405,7 @@ sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le f
 		my ($fileName, $line) = (caller())[1,2];
 		logger ('INFO: ', "$fileName ($line)" , @_);
 	}
+	STDERR->flush;
 	print (@_, "\n");
 }
 
