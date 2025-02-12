@@ -108,6 +108,42 @@ body > footer.escoDiv {
 	}
 }
 
+// ---------- PARAMETRES ----------
+
+body {
+	#personal-settings .personal-settings-setting-box {
+		// Masquages des paramétrages du profil
+		&:has(input, textarea) {
+			display: none;
+		}
+
+		// Possibilité de changer le displayname et la langue
+		&:has(input#account-property-displayname, input#account-setting-language) {
+			display: unset;
+		}
+	}
+
+	// Masquage des paramètres de visibilité du profil
+	.personal-settings-section {
+		display: none;
+	}
+
+	// Masquage des informations de dev
+	.section.development-notice {
+		display: none;
+	}
+
+	// Masquage du changement de mot de passe
+	.settings-section:has(form#passwordform){
+		display: none;
+	}
+
+	// Masquage de l'authentification sans mot de passe
+	#security-webauthn.section {
+		display: none;
+	}
+}
+
 // ---------- ONLY OFFICE ----------
 
 /*
@@ -332,10 +368,6 @@ body {
 		}
 	}
 
-	div.section.development-notice {
-		display: none;
-	}
-
 	/* suppression du menu Nouveau modele de formulaire pour OO */
 	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
 		display: none;
@@ -347,33 +379,8 @@ body {
 		display: none;
 	}
 
-	p.social-button {
-		display: none;
-	}
-
 	div#security-password,
 	div#two-factor-auth {
-		display: none;
-	}
-
-	/* panel information personnelles à supprimer */
-	div#personal-settings div.personal-settings-setting-box {
-		&:has(input, textarea) {
-			display: none;
-		}
-
-		&:has(input#account-property-displayname) {
-			display: inline;
-		}
-	}
-
-	div.personal-settings-section {
-		display: none;
-	}
-
-	/* panel securité à supprimer */
-	div.settings-section:has(form#passwordform),
-	div#security-webauthn.section {
 		display: none;
 	}
 
