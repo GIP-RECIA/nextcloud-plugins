@@ -1,12 +1,10 @@
-// ---------- HEADER + MAIN  ----------
-
 $extended-uportal-header-height: 38px;
 $nextcloud-header-height: 50px;
 $header-height: $extended-uportal-header-height + $nextcloud-header-height;
 
-/*
- * Suppression des bords arrondis et 
- */
+// ---------- MAIN  ----------
+
+// Suppression des bords arrondis et recalcul de la largeur
 %fullscreen {
 	width: 100%;
 	border-radius: 0;
@@ -15,9 +13,7 @@ $header-height: $extended-uportal-header-height + $nextcloud-header-height;
 	padding-bottom: 0;
 }
 
-/*
- * Recalcul de la hauteur et largeur
- */
+// Recalcul de la hauteur
 body {
 	&#body-user,
 	&#body-settings {
@@ -26,52 +22,71 @@ body {
 			@extend %fullscreen;
 			height: calc(100% - $header-height);
 		}
-
-		> #escoDiv {
-			height: $extended-uportal-header-height;
-		}
 	}
 
-	/*
-	 * Partages par lien public
-	 */
+	// Partages par lien public
 	&#body-public > main#content {
 		@extend %fullscreen;
 		height: calc(100% - $nextcloud-header-height);
 	}
 }
 
-// ---------- FILES_SHARING ----------
+// ---------- EXTENDED UPORTAL HEADER  ----------
+
+body #escoDiv extended-uportal-header {
+	// Fixe le bandeau ENT au chagement
+	position: fixed;
+	width: 100%;
+	z-index: 2100;
+
+	// Placement du slot par défaut
+	> div[slot=not-loaded] {
+		text-align: end;
+		padding: 8px 16px;
+	}
+}
+
+// ---------- NEXTCLOUD HEADER ----------
 
 body {
-	/*
-	 * Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
-	 */
-	.app-sidebar-header:not(.app-sidebar-header--compact) {
-		.app-sidebar-header__figure {
-			height: 10vh;
-			-webkit-transition: height 0.5s 0s ease;
-			-moz-transition: height 0.5s 0s ease;
-			-o-transition: height 0.5s 0s ease;
-			transition: height 0.5s 0s ease;
+	&#body-user,
+	&#body-settings {
+		// Fixe le bandeau ENT au chargement
+		> #escoDiv {
+			height: $extended-uportal-header-height;
+		}
 
-			&:hover {
-				height: 35vh;
-				max-height: 350px;
+		header#header {
+			// Déplacement du bandeau nextcloud par rapport au bandeau ENT
+			top: $extended-uportal-header-height;
+			height: $nextcloud-header-height;
+
+			// Ajout du scroll sur la liste des applications
+			> .header-left > nav {
+				overflow-x: auto;
+				scrollbar-width: none;
+			}
+
+			// Masquage du menu contacts
+			> .header-right > #contactsmenu {
+				display: none;
 			}
 		}
 	}
 }
 
-// ---------- FOOTER ----------
+// ---------- EXTENDED UPORTAL FOOTER ----------
 
-body > footer {
+// Masquage du bandeau ENT par défaut
+body > footer.escoDiv {
 	display: none;
 }
 
+// Affichage du bandau au survol du header et quand on quitte la fenetre
+// seulement pour les écran non tactiles
 @media only screen and (hover: hover) {
 	body {
-		> footer {
+		> footer.escoDiv {
 			display: unset;
 			position: fixed;
 			z-index: 2000;
@@ -82,15 +97,48 @@ body > footer {
 		}
 
 		&:hover {
-			> footer {
+			> footer.escoDiv {
 				bottom: -60px;
 			}
 
-			> #escoDiv:hover ~ footer {
+			> #escoDiv:hover ~ footer.escoDiv {
 				bottom: 0;
 			}
 		}
+	}
+}
 
+// ---------- ONLY OFFICE ----------
+
+/*
+ * Attention : OO passe de 2 iframe à 1 iframe au rechargement de la page
+ */
+
+/*
+ * pour onlyoffice avec notre bandeau large
+ * ne doit plus être fonctionnel
+ */
+// div#content > div#app-content > iframe#onlyofficeFrame {
+// 	height: calc(100vh - 90px);
+// }
+
+// ---------- FILES_SHARING ----------
+
+body {
+	// Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
+	.app-sidebar-header:not(.app-sidebar-header--compact) {
+		.app-sidebar-header__figure {
+			height: 10vh !important;
+			background-size: cover !important;
+			transition: 
+				height .4s 0s ease,
+				max-height .4s 0s ease;
+
+			&:hover {
+				height: 35vh !important;
+				max-height: 350px;
+			}
+		}
 	}
 }
 
@@ -193,26 +241,7 @@ body {
 				padding-top: 88px; // pour Applications
 			}
 
-			&>#escoHeader {
-				position: fixed;
-				width: 100%;
-				z-index: 2100;
-			}
-
-			div[slot=not-loaded] {
-				padding: 6px;
-				height: 26px;
-				width: 100%;
-				background-color: #cccccc;
-			}
-
 			&>header#header.escoDivWrapper {
-				top: 38px !important;
-				height: 50px !important;
-
-				div.header-left {
-					overflow: hidden;
-				}
 
 				div.header-left ul li a {
 					height: 50px;
@@ -304,10 +333,6 @@ body {
 	}
 
 	div.section.development-notice {
-		display: none;
-	}
-
-	div#contactsmenu {
 		display: none;
 	}
 
@@ -412,13 +437,6 @@ body {
 		}
 	}
 }
-
-/* pour onlyoffice avec notre bandeau large
- * ne doit plus être fonctionnel
- div#content > div#app-content > iframe#onlyofficeFrame {
-	height: calc(100vh - 90px);
- }
-*/
 
 body.embedded {
 	li[data-id="logout"] {
