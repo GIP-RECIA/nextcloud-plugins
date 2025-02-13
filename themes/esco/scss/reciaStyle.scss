@@ -122,37 +122,53 @@ body > footer.escoDiv {
 
 // ---------- PARAMETRES ----------
 
-body {
-	#personal-settings .personal-settings-setting-box {
-		// Masquages des paramétrages du profil
-		&:has(input, textarea) {
+body#body-settings #app-content {
+	// Panel "Informations personnelles"
+	&[data-active-section-id="personal-info"] {
+		#personal-settings .personal-settings-setting-box {
+			// Masquages des paramétrages du profil
+			&:has(input, textarea) {
+				display: none;
+			}
+	
+			// Possibilité de changer le displayname et la langue
+			&:has(input#account-property-displayname, input#account-setting-language) {
+				display: unset;
+			}
+		}
+	
+		// Masquage des paramètres de visibilité du profil
+		.personal-settings-section {
+			display: none;
+		}
+	
+		// Masquage des informations de dev
+		.section.development-notice {
+			display: none;
+		}	
+	}
+
+	// Panel "Sécurité"
+	&[data-active-section-id="security"] {
+		// Masquage du changement de mot de passe
+		.settings-section:has(form#passwordform){
 			display: none;
 		}
 
-		// Possibilité de changer le displayname et la langue
-		&:has(input#account-property-displayname, input#account-setting-language) {
-			display: unset;
+		// Masquage de l'authentification sans mot de passe
+		#security-webauthn.section {
+			display: none;
 		}
 	}
 
-	// Masquage des paramètres de visibilité du profil
-	.personal-settings-section {
-		display: none;
-	}
-
-	// Masquage des informations de dev
-	.section.development-notice {
-		display: none;
-	}
-
-	// Masquage du changement de mot de passe
-	.settings-section:has(form#passwordform){
-		display: none;
-	}
-
-	// Masquage de l'authentification sans mot de passe
-	#security-webauthn.section {
-		display: none;
+	// Panel "Apparence et accessibilité"
+	&[data-active-section-id="theming"] section .settings-section{
+		// Masquage des options d'aparence
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(5) {
+			display: none;
+		}
 	}
 }
 
@@ -341,16 +357,6 @@ body {
 
 	div#security-password,
 	div#two-factor-auth {
-		display: none;
-	}
-
-	/* panel Apparence et accessibilité à supprimer */
-	div.theming__preview-list:has(div.theming__preview.theming__preview--opendyslexic)~h3,
-	div.theming__preview-list:has(div.theming__preview.theming__preview--opendyslexic)~span {
-		display: none;
-	}
-
-	div.settings-section.theming.settings-section--limit-width:has(div.theming__preview.theming__preview--opendyslexic)~div {
 		display: none;
 	}
 
