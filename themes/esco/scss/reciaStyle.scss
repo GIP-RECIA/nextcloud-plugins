@@ -307,12 +307,14 @@ body {
 	&#body-settings {
 		/* le style venue de la mise en place du bandeau */
 
+		// TODO: versifier si toujours utilisé
 		&>main#content {
 			div#app-navigation-vue {
 				padding-bottom: 10px;
 				/* pour l'aisser passer l'affichage des url */
 			}
 
+			// TODO: versifier si toujours utilisé
 			div#app-content label#view-toggle.button {
 				opacity: 1;
 				border-radius: 0;
@@ -321,6 +323,7 @@ body {
 			}
 		}
 
+		// TODO: versifier si toujours utilisé
 		/* Style du bandeau ENT */
 		&>div#escoDiv {
 			&#escoDiv.content {
@@ -331,12 +334,14 @@ body {
 
 	/* fin integration bandeau */
 
+	// TODO: versifier si toujours utilisé
 	/* les suppresions d'affichage */
 	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
 	&#body-settings div#content div#app-content div.section div.warning {
 		display: none;
 	}
 
+	// TODO: versifier si toujours utilisé
 	&#body-public.not_embedded {
 		footer {
 			/* on supprime dans les liens transmis public les liens de pub nextcloud */
@@ -344,6 +349,7 @@ body {
 		}
 	}
 
+	// TODO: versifier si toujours utilisé
 	&#body-public.layout-base.embedded {
 		div#content.app-public>div#app>iframe {
 			height: calc(100vh - 52px);
@@ -355,11 +361,13 @@ body {
 		display: none;
 	}
 
+	// TODO: versifier si toujours utilisé
 	div#security-password,
 	div#two-factor-auth {
 		display: none;
 	}
 
+	// TODO: versifier si toujours utilisé
 	div#settings div#expand.menutoggle {
 		div.avatardiv.avatardiv-shown {
 			&+div#expandDisplayName {
