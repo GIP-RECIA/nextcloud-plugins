@@ -497,7 +497,10 @@ sub deleteFile {
 		§DEBUG "delete file $path";
 		$status = §SYSTEM "$occ files:delete -f -vv $fileId", MOD => 1;
 		if ($status) {
-			$NbError{$storage2uid{$storage}}++;
+			my $uid = $storage2uid{$storage};
+			$NbError{$uid}++;
+			§ERROR "delete file: $path, $fileId, $uid";
+			sleep 1;
 		} else {
 			$cpt++;
 		}
@@ -513,7 +516,7 @@ sub deleteFile {
 			§LOG "\t$uid $nbErr";
 		}
 	}
-	§WARN "Nombre d'uids en erreur : $cpt" if $cpt;
+	§PRINT "Nombre d'uids en erreur : $cpt" if $cpt;
 
 	$sqlStatement = $sql->prepare(q/update oc_recia_user_history h, recia_init_nopartage_temp t  set h.dat = now() where t.uid = h.uid/) or §FATAL $sqlStatement->errstr;
 	$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
