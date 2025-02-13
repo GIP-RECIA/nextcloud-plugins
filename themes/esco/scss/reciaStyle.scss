@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $extended-uportal-header-height: 38px;
 $nextcloud-header-height: 50px;
 $header-height: $extended-uportal-header-height + $nextcloud-header-height;
@@ -231,11 +233,23 @@ body {
 
 // ---------- COULEURS ----------
 
+@function contrast-color($color, $dark, $light) {
+  @return if(color.channel($color, 'lightness', hsl) < 55%, $light, $dark);
+}
+
 @mixin colorTheme($couleur) {
+	// Suppression du background
 	--image-background: none;
 	--color-background-plain: var(--color-main-background);
+
+	// Colorisation des éléments primaires
 	--color-primary-element: #{$couleur};
+	--color-primary-element-text: #{contrast-color($couleur, #222222, #ffffff)};
 	--color-primary-element-hover: #{$couleur};
+
+	// Fixe les couleurs du header Nextcloud
+	--color-background-plain-text: #ffffff;
+	--background-image-invert-if-bright: none;
 
 	header#header {
 		background-color: $couleur;
@@ -247,8 +261,10 @@ body {
 
 	#app-navigation,
 	#app-navigation-vue {
+		// Couleur de background de la navigation
 		background-color: var(--color-background-hover);
 
+		// Couleur de hover sur les éléments de navigation
 		> * {
 			--color-background-hover: #{rgba($couleur, .15)};
 		}
