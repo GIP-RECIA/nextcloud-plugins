@@ -232,6 +232,8 @@ body {
 // ---------- COULEURS ----------
 
 @mixin colorTheme($couleur) {
+	--image-background: none;
+	--color-background-plain: var(--color-main-background);
 	--color-primary-element: #{$couleur};
 	--color-primary-element-hover: #{$couleur};
 
@@ -258,9 +260,6 @@ body {
 }
 
 body {
-	--image-background: none;
-	--color-background-plain: var(--color-main-background);
-
 	&.not_embedded {
 		&.clg18 {
 			@include colorTheme(#004899);
