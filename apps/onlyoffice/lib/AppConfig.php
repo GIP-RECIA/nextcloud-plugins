@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * This program is a free software product.
  * You can redistribute it and/or modify it under the terms of the GNU Affero General Public License
@@ -142,6 +142,13 @@ class AppConfig {
     private $_cronChecker = "cronChecker";
 
     /**
+     * The config key for the e-mail notifications
+     *
+     * @var string
+     */
+    private $_emailNotifications = "emailNotifications";
+
+    /**
      * The config key for the keep versions history
      *
      * @var string
@@ -210,6 +217,13 @@ class AppConfig {
      * @var string
      */
     private $_customizationTheme = "customizationTheme";
+
+    /**
+     * Display name of the unknown author
+     *
+     * @var string
+     */
+    private $_unknownAuthor = "unknownAuthor";
 
     /**
      * The config key for the setting limit groups
@@ -359,7 +373,7 @@ class AppConfig {
         $this->appName = $AppName;
 
         $this->config = \OC::$server->getConfig();
-        $this->logger = \OC::$server->getLogger();
+        $this->logger = \OC::$server->get(LoggerInterface::class);
         $cacheFactory = \OC::$server->get(ICacheFactory::class);
         $this->cache = $cacheFactory->createLocal($this->appName);
     }
@@ -760,6 +774,26 @@ class AppConfig {
     }
 
     /**
+     * Get e-mail notifications setting
+     *
+     * @return bool
+     */
+    public function getEmailNotifications() {
+        return $this->config->getAppValue($this->appName, $this->_emailNotifications, "true") !== "false";
+    }
+
+    /**
+     * Save e-mail notifications setting
+     *
+     * @param bool $value - emailNotifications
+     */
+    public function setEmailNotifications($value) {
+        $this->logger->info("Set e-mail notifications: " . json_encode($value), ["app" => $this->appName]);
+
+        $this->config->setAppValue($this->appName, $this->_emailNotifications, json_encode($value));
+    }
+
+    /**
      * Get generate preview setting
      *
      * @return bool
@@ -984,6 +1018,25 @@ class AppConfig {
             return "theme-dark";
         }
         return "theme-classic-light";
+    }
+
+    /**
+     * Save unknownAuthor setting
+     *
+     * @param string $value - unknown author
+     */
+    public function setUnknownAuthor($value) {
+        $this->logger->info("Set unknownAuthor: " . trim($value), ["app" => $this->appName]);
+        $this->config->setAppValue($this->appName, $this->_unknownAuthor, trim($value));
+    }
+
+    /**
+     * Get unknownAuthor setting
+     *
+     * @return string
+     */
+    public function getUnknownAuthor() {
+        return $this->config->getAppValue($this->appName, $this->_unknownAuthor, "");
     }
 
     /**
@@ -1265,9 +1318,8 @@ class AppConfig {
      * Get supported formats
      *
      * @return array
-     *
-     * @NoAdminRequired
      */
+    #[NoAdminRequired]
     public function formatsSetting() {
         $result = $this->buildOnlyofficeFormats();
 
@@ -1474,7 +1526,7 @@ class AppConfig {
      * DEMO DATA
      */
     private $DEMO_PARAM = [
-        "ADDR" => "https://onlinedocs.onlyoffice.com/",
+        "ADDR" => "https://onlinedocs.docs.onlyoffice.com/",
         "HEADER" => "AuthorizationJWT",
         "SECRET" => "sn2puSUF7muF5Jas",
         "TRIAL" => 30
