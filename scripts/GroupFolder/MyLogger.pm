@@ -59,7 +59,7 @@ use IO::Select;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.2";
+my $version="9.2.1";
 
 package MyLogger;
 use Filter::Simple;
@@ -474,23 +474,25 @@ sub traceSystem {
 				$select->remove($fh);
 			} else {
 				$buf = decode_utf8_partial($BUF{$fh});
-				if ($fh == $COM) {
-					$out .= $buf;
-					unless ($flagC) {
-						if ( $defautLog->{LEVEL} >= 4) { debug ($fileName, $line, " STDOUT :"); }
-						$flagC = 1;
-					}
-					while ($out =~ s/^(.*\n)//) {
-						&$printOut($1);
-					}
-				} elsif ($fh == $ERR) {
-					$err .= $buf;
-					unless ($flagE) {
-						if ($defautLog->{LEVEL} >= 1) { erreur ( 'trace : ', $fileName, $line, 'STDERR :'); }
-						$flagE = 1;
-					}
-					while ($err =~ s/^(.*\n)//) {
-						&$printErr($1);
+				if ($buf) {
+					if ($fh == $COM) {
+						$out .= $buf;
+						unless ($flagC) {
+							if ( $defautLog->{LEVEL} >= 4) { debug ($fileName, $line, " STDOUT :"); }
+							$flagC = 1;
+						}
+						while ($out =~ s/^(.*\n)//) {
+							&$printOut($1);
+						}
+					} elsif ($fh == $ERR) {
+						$err .= $buf;
+						unless ($flagE) {
+							if ($defautLog->{LEVEL} >= 1) { erreur ( 'trace : ', $fileName, $line, 'STDERR :'); }
+							$flagE = 1;
+						}
+						while ($err =~ s/^(.*\n)//) {
+							&$printErr($1);
+						}
 					}
 				}
 			}
