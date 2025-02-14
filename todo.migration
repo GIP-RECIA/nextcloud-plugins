@@ -515,3 +515,21 @@ a changé mais devrait aller !! a voir
 
 	cd nc.30.0.5 ; grep -R getStorageId . > ../grep.getStorageId.30.0.5 ; cd -
 	diff ../V29/grep.getStorageId.29.0.11 grep.getStorageId.30.0.5
+
+-----------
+migration de 30.0.5 à 30.0.6
+
+diff nc.30.0.5/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+diff nc.30.0.6/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php
+diff nc.30.0.6/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.ph
+
+meld  nc.30.0.5/core/templates/layout.public.php nc.30.0.6/core/templates/layout.public.php nc-ent/themes/esco/core/templates/layout.public.php
+
+diff nc.30.0.6/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.30.0.6/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/Mapper.php nc.30.0.6/lib/private/Files/ObjectStore/Mapper.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/S3.php nc.30.0.6/lib/private/Files/ObjectStore/S3.php
+diff nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc.30.0.6/apps/dav/lib/CardDAV/CardDavBackend.php
+diff nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc.30.0.6/lib/private/Files/Mount/RootMountProvider.php
+cd nc.30.0.6 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.30.0.6 ; cd -
+diff grep.ObjectStoreStorage.30.0.6 grep.ObjectStoreStorage.30.0.5
