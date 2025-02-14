@@ -1,4 +1,4 @@
-NEXTCLOUD_VERSION=28
+NEXTCLOUD_VERSION=30
 NEXTCLOUD_DOCKER=../../nextcloud-docker-dev/workspace/stable${NEXTCLOUD_VERSION}
 
 $(info You are currently working on ${NEXTCLOUD_DOCKER})

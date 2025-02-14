@@ -1,24 +1,7 @@
 <!--
-  - @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
-  -
-  - @author John Molakvoæ <skjnldsv@protonmail.com>
-  -
-  - @license GNU AGPL version 3 or any later version
-  -
-  - This program is free software: you can redistribute it and/or modify
-  - it under the terms of the GNU Affero General Public License as
-  - published by the Free Software Foundation, either version 3 of the
-  - License, or (at your option) any later version.
-  -
-  - This program is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  - GNU Affero General Public License for more details.
-  -
-  - You should have received a copy of the GNU Affero General Public License
-  - along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -
-  -->
+  - SPDX-FileCopyrightText: 2019 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
 <template>
 	<div class="sharing-search">
@@ -51,12 +34,11 @@ import axios from '@nextcloud/axios'
 import debounce from 'debounce'
 import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 
-import Config from '../services/ConfigService.js'
-import GeneratePassword from '../utils/GeneratePassword.js'
-import Share from '../models/Share.js'
+import Config from '../services/ConfigService.ts'
+import Share from '../models/Share.ts'
 import ShareRequests from '../mixins/ShareRequests.js'
-import ShareTypes from '../mixins/ShareTypes.js'
 import ShareDetails from '../mixins/ShareDetails.js'
+import { ShareType } from '@nextcloud/sharing'
 
 export default {
 	name: 'SharingInput',
@@ -65,7 +47,7 @@ export default {
 		NcSelect,
 	},
 
-	mixins: [ShareTypes, ShareRequests, ShareDetails],
+	mixins: [ShareRequests, ShareDetails],
 
 	props: {
 		shares: {
@@ -186,19 +168,19 @@ export default {
 			}
 
 			const shareType = [
-				this.SHARE_TYPES.SHARE_TYPE_USER,
-				this.SHARE_TYPES.SHARE_TYPE_GROUP,
-				this.SHARE_TYPES.SHARE_TYPE_REMOTE,
-				this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP,
-				this.SHARE_TYPES.SHARE_TYPE_CIRCLE,
-				this.SHARE_TYPES.SHARE_TYPE_ROOM,
-				this.SHARE_TYPES.SHARE_TYPE_GUEST,
-				this.SHARE_TYPES.SHARE_TYPE_DECK,
-				this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH,
+				ShareType.User,
+				ShareType.Group,
+				ShareType.Remote,
+				ShareType.RemoteGroup,
+				ShareType.Team,
+				ShareType.Room,
+				ShareType.Guest,
+				ShareType.Deck,
+				ShareType.ScienceMesh,
 			]
 
 			if (getCapabilities().files_sharing.public.enabled === true) {
-				shareType.push(this.SHARE_TYPES.SHARE_TYPE_EMAIL)
+				shareType.push(ShareType.Email)
 			}
 
 			let request = null
@@ -335,7 +317,7 @@ export default {
 					return arr
 				}
 				try {
-					if (share.value.shareType === this.SHARE_TYPES.SHARE_TYPE_USER) {
+					if (share.value.shareType === ShareType.User) {
 						// filter out current user
 						if (share.value.shareWith === getCurrentUser().uid) {
 							return arr
@@ -348,7 +330,7 @@ export default {
 					}
 
 					// filter out existing mail shares
-					if (share.value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
+					if (share.value.shareType === ShareType.Email) {
 						const emails = this.linkShares.map(elem => elem.shareWith)
 						if (emails.indexOf(share.value.shareWith.trim()) !== -1) {
 							return arr
@@ -386,42 +368,42 @@ export default {
 		 */
 		shareTypeToIcon(type) {
 			switch (type) {
-			case this.SHARE_TYPES.SHARE_TYPE_GUEST:
+			case ShareType.Guest:
 				// default is a user, other icons are here to differentiate
 				// themselves from it, so let's not display the user icon
-				// case this.SHARE_TYPES.SHARE_TYPE_REMOTE:
-				// case this.SHARE_TYPES.SHARE_TYPE_USER:
+				// case ShareType.Remote:
+				// case ShareType.User:
 				return {
 					icon: 'icon-user',
 					iconTitle: t('files_sharing', 'Guest'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP:
-			case this.SHARE_TYPES.SHARE_TYPE_GROUP:
+			case ShareType.RemoteGroup:
+			case ShareType.Group:
 				return {
 					icon: 'icon-group',
 					iconTitle: t('files_sharing', 'Group'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_EMAIL:
+			case ShareType.Email:
 				return {
 					icon: 'icon-mail',
 					iconTitle: t('files_sharing', 'Email'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_CIRCLE:
+			case ShareType.Team:
 				return {
-					icon: 'icon-circle',
-					iconTitle: t('files_sharing', 'Circle'),
+					icon: 'icon-teams',
+					iconTitle: t('files_sharing', 'Team'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_ROOM:
+			case ShareType.Room:
 				return {
 					icon: 'icon-room',
 					iconTitle: t('files_sharing', 'Talk conversation'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_DECK:
+			case ShareType.Deck:
 				return {
 					icon: 'icon-deck',
 					iconTitle: t('files_sharing', 'Deck board'),
 				}
-			case this.SHARE_TYPES.SHARE_TYPE_SCIENCEMESH:
+			case ShareType.Sciencemesh:
 				return {
 					icon: 'icon-sciencemesh',
 					iconTitle: t('files_sharing', 'ScienceMesh'),
@@ -438,26 +420,26 @@ export default {
 		 * @return {object}
 		 */
 		formatForMultiselect(result) {
-			let subtitle
-			if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_USER && this.config.shouldAlwaysShowUnique) {
-				subtitle = result.shareWithDisplayNameUnique ?? ''
-			} else if ((result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE
-					|| result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_REMOTE_GROUP
+			let subname
+			if (result.value.shareType === ShareType.User && this.config.shouldAlwaysShowUnique) {
+				subname = result.shareWithDisplayNameUnique ?? ''
+			} else if ((result.value.shareType === ShareType.Remote
+					|| result.value.shareType === ShareType.RemoteGroup
 			) && result.value.server) {
-				subtitle = t('files_sharing', 'on {server}', { server: result.value.server })
-			} else if (result.value.shareType === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
-				subtitle = result.value.shareWith
+				subname = t('files_sharing', 'on {server}', { server: result.value.server })
+			} else if (result.value.shareType === ShareType.Email) {
+				subname = result.value.shareWith
 			} else {
-				subtitle = result.shareWithDescription ?? ''
+				subname = result.shareWithDescription ?? ''
 			}
 
 			return {
 				shareWith: result.value.shareWith,
 				shareType: result.value.shareType,
 				user: result.uuid || result.value.shareWith,
-				isNoUser: result.value.shareType !== this.SHARE_TYPES.SHARE_TYPE_USER,
+				isNoUser: result.value.shareType !== ShareType.User,
 				displayName: result.name || result.label,
-				subtitle,
+				subname,
 				shareWithDisplayNameUnique: result.shareWithDisplayNameUnique || '',
 				...this.shareTypeToIcon(result.value.shareType),
 			}

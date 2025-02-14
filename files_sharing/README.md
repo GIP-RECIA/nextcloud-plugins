@@ -15,30 +15,30 @@ files_sharing/
 
 ## Mise à jour
 
-> ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.LICENSE.txt` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+> Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
 
-1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable28`
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable30`
 
 2. Initialisez le projet `make dev-setup`.
 
-3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable28/apps/files_sharing` et inversement.
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable30/apps/files_sharing` et inversement.
 
 4. Compilez le projet: `make build-js-production`.
 
-5. Assurez vous que tout fonction correctement dans le docker ([stable28.local](stable28.local)).
+5. Assurez vous que tout fonction correctement dans le docker ([stable30.local](stable30.local)).
 
 6. Récuperez les fichiers compilés et générez le fichier de suivi des modifications du dossier `dist`.
 
 ```bash
-nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable28
-nextcloud-docker-dev/workspace/stable28$ git checkout v28.0.11 -b v28.0.11
-nextcloud-docker-dev/workspace/stable28$ docker compose up -d stable28
-nextcloud-docker-dev/workspace/stable28$ make dev-setup
-nextcloud-docker-dev/workspace/stable28$ cd -
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable30
+nextcloud-docker-dev/workspace/stable30$ git checkout v30.0.5 -b v30.0.5
+nextcloud-docker-dev/workspace/stable30$ docker compose up -d stable30
+nextcloud-docker-dev/workspace/stable30$ make dev-setup
+nextcloud-docker-dev/workspace/stable30$ cd -
 nextcloud-plugins/files_sharing$ make meld
 nextcloud-plugins/files_sharing$ cd -
-nextcloud-docker-dev/workspace/stable28$ make build-js-production
-nextcloud-docker-dev/workspace/stable28$ cd - 
+nextcloud-docker-dev/workspace/stable30$ make build-js-production
+nextcloud-docker-dev/workspace/stable30$ cd - 
 nextcloud-plugins/files_sharing$ make sync-dist
 ```
 
