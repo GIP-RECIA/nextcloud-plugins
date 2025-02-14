@@ -31,10 +31,11 @@ namespace OCA\Onlyoffice;
 
 use \DateInterval;
 use \DateTime;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IConfig;
-use OCP\ILogger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Application configutarion
