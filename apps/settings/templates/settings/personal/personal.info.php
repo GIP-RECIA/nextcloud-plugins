@@ -71,11 +71,17 @@ script('settings', [
 	<div class="personal-settings-setting-box">
 		<div id="vue-location-section"></div>
 	</div>
+	<div class="personal-settings-setting-box">
+		<div id="vue-birthday-section"></div>
+	</div>
 	<div class="personal-settings-setting-box personal-settings-language-box">
 		<div id="vue-language-section"></div>
 	</div>
 	<div class="personal-settings-setting-box personal-settings-locale-box">
 		<div id="vue-locale-section"></div>
+	</div>
+	<div class="personal-settings-setting-box">
+		<div id="vue-fdow-section"></div>
 	</div>
 	<div class="personal-settings-setting-box">
 		<div id="vue-website-section"></div>

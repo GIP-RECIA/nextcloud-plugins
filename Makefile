@@ -46,6 +46,7 @@ defaut:
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
 	@echo " CALENDAR"
+	@echo " SETTINGS_APP"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -62,10 +63,9 @@ THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
 	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
 
-sass: --style compressed $(CSS)/reciaStyle.css
+SETTINGS_APP:
+	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
 
-$(CSS)/%.css: $(SCSS)/*.scss
-	sass $(SCSS)/$*.scss $@
 
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
@@ -89,6 +89,7 @@ SETTINGS:
 
 NOTIFICATIONS:
 	rsync -av \
+	--include='css/***' \
 	--include='js/***' \
 	--include='lib/***' \
 	--exclude='*' apps/notifications/* $(APPS)/notifications
