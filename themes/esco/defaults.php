@@ -23,6 +23,7 @@ class OC_Theme {
 	public static $dom = array (
 		'maquette-lycees.netocentre.fr' => 'maquette-lycees.netocentre.fr',
 		'recette-pub.nextcloud.recia.aquaray.com' =>  'maquette-lycees.netocentre.fr',
+		'recette.nextcloud.recia.aquaray.com' =>  'maquette-lycees.netocentre.fr',
 		'test-clg37.giprecia.net' => 'test-clg37.giprecia.net',
 		'test-lycee.giprecia.net' => 'test-lycee.giprecia.net',
 	//              'prod.nextcloud.recia.aquaray.com' => 'esco',
@@ -45,6 +46,7 @@ class OC_Theme {
 	);
 	public static $cssClass = array (
 		'maquette-lycees.netocentre.fr' => 'esco',
+		'recette.nextcloud.recia.aquaray.com' =>  'esco',
 		'recette-pub.nextcloud.recia.aquaray.com' =>  'agri',
 		'test-clg37.giprecia.net' => 'clg37',
 		'test-lycee.giprecia.net' => 'esco',
