@@ -346,3 +346,190 @@ cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
 meld grep.getStorageId*
 	n'a pas channgé
 pour gerer le preview a la facon NC mettre 'objectstore.multibucket.preview-distribution' => true
+
+---------------------------
+
+migration de  28.0.11 à 28.0.14
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+	diff nc.28.0.11/core/css/variables.scss nc.28.0.14/core/css/variables.scss
+pas changé
+
+	diff nc.28.0.11/core/templates/layout.user.php nc.28.0.14/core/templates/layout.user.php
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/  -name ObjectStoreStorage.php -ls
+	diff nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+	618,622d617
+	< 		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class) && $sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
+	< 			$this->getCache()->moveFromCache($sourceCache, $sourceInternalPath, $targetInternalPath);
+	< 			// Do not import any data when source and target bucket are identical.
+	< 			return true;
+	< 		}
+a changé
+
+	meld nc.28.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+???? a voir plus tard apres la recherche de l'usage
+
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/Mapper.php nc.28.0.11/lib/private/Files/ObjectStore/Mapper.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/S3.php nc.28.0.11/lib/private/Files/ObjectStore/S3.php
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/  -name CardDavBackend.php -ls
+pas changé
+
+	find nc.28.0.14/ nc.28.0.11/ nc-ent/ -name RootMountProvider.php -ls
+pas changé
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.28.0.14; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.28.0.14; cd -
+	cd nc.28.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.28.0.11 ; cd -
+	diff grep.ObjectStoreStorage.*
+a changé que dans ObjectStoreStorage.php déjà signalé au dessus et a traiter
+
+	cd nc.28.0.14; grep -R getStorageId . > ../grep.getStorageId.28.0.14; cd -
+	cd nc.28.0.11 ; grep -R getStorageId . > ../grep.getStorageId.28.0.11 ; cd -
+	meld grep.getStorageId*
+a changé que dans ObjectStoreStorage.php déjà signalé au dessus et a traiter
+
+--------------------------
+migration de 28.0.14 à 29.0.11
+	diff nc.28.0.14/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+pas changé
+
+	diff nc.29.0.11/core/templates/layout.user.php nc.28.0.14/core/templates/layout.user.php
+a changé => fait
+
+	core/templates/layout.base.php
+pas changé
+
+     core/templates/layout.guest.php
+pas changé
+
+	core/templates/layout.public.php
+	meld nc.28.0.14/core/templates/layout.public.php nc.29.0.11/core/templates/layout.public.php /home/legay/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent/themes/esco/core/templates/layout.public.php
+a changé => fait 
+
+	diff nc.30.0.5/apps/settings/templates/settings/personal/personal.info.php nc.29.0.11/apps/settings/templates/settings/personal/personal.info.php
+a changé
+
+	core/templates/layout.noscript.warning.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.29.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+a changé mais doit aller
+
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.29.0.11 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.29.0.11 ; cd -
+	diff grep.ObjectStoreStorage.29.0.11 ../V28/grep.ObjectStoreStorage.28.0.14
+12,14c12,14
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/AppdataPreviewObjectStoreStorage.php": "7ed13a01c8ee54bc8b37470f5ab38c264ad229d6ab13d6611d8f530a83a2d5ba015b8bf6cb8417d0109aa380278bdbed37b8ee74e304eec415632ce9e1849f44",
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/HomeObjectStoreStorage.php": "c020b8a03960df62903a5025db899ba5fa892a852ea33a5196fbe55caa1afbb4dc35829f49381332187775c4ecf42e9c3f990ed377ea4224b1fdcb28747089c4",
+< ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/ObjectStoreStorage.php": "ebfa9ffb3496268ccb2435018652712d68c543fa5d63a25800d7137e09a4f848e340738f8c0ffe0be0ef6c0a7393447a5b7cfd5218b751de7d1b162f563ed387",
+---
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/AppdataPreviewObjectStoreStorage.php": "089cf2c70cc33822dd90851a0c5e0aa115b8c64ea0be57681aa28731a1b8fbdc3ffc0c4af4b5b8a4488ed166aa914d06cfd70ccbde3223c86fee1f4a2500ad05",
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/HomeObjectStoreStorage.php": "c8c9c2c0cecdc43cc0300f05d345f0e031e959ced79c8343e9775034046afab2c6444fe44812a74e2140874560ab5fca9fcb4813b4acade7aff693b12b8a537a",
+> ./core/signature.json:        "lib\/private\/Files\/ObjectStore\/ObjectStoreStorage.php": "7ae93f40d48e87705873eaca28b9c9f6d6937ba7551442b321d91936465bc49eb8b31039335f6dd21fe51ed3e70ff226b1d9fd735360edca15baad481baa252d",
+49c49
+< ./lib/private/Files/ObjectStore/HomeObjectStoreStorage.php:class HomeObjectStoreStorage extends ObjectStoreStorage implements IHomeStorage {
+---
+> ./lib/private/Files/ObjectStore/HomeObjectStoreStorage.php:class HomeObjectStoreStorage extends ObjectStoreStorage implements \OCP\Files\IHomeStorage {
+changement non significatif
+
+	cd nc.29.0.11 ; grep -R getStorageId . > ../grep.getStorageId.29.0.11 ; cd -
+	diff grep.getStorageId.29.0.11 ../V28/grep.getStorageId.28.0.14
+3a4
+> ./apps/files_sharing/lib/SharedStorage.php:			$mount = $mountManager->findByNumericId($node->getStorageId());
+?? a voir
+
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/Mapper.php nc.29.0.11/lib/private/Files/ObjectStore/Mapper.php
+pas changé
+
+	diff nc.28.0.14/lib/private/Files/ObjectStore/S3.php nc.29.0.11/lib/private/Files/ObjectStore/S3.php
+pas changé
+
+	find nc.28.0.14/ nc.29.0.11/  -name CardDavBackend.php -ls
+à changé : pas fait mais fait sur la version 30.0.5
+
+	find nc.28.0.14/ nc.29.0.11/ nc-ent/ -name RootMountProvider.php -ls
+pas changé
+--------------
+migration de 29.0.11 à 30.0.5
+
+	cd V30; tar -xvjf nextcloud-30.0.5.tar.bz2
+	mv nextcloud nc.30.0.5
+	ln -s ../V29/nc.29.0.11 nc.29.0.11
+	ln -s ~/git/GITHUB/Nextcloud/esco-nextcloud-plugins-ent nc-ent
+
+	diff nc.30.0.5/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+seul le copyright a changé
+
+	meld nc.29.0.11/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php nc-ent/themes/esco/core/templates/layout.user.php
+a changé
+fait :  cp nc.30.0.5/core/templates/layout.user.php nc-ent/org/core/templates/layout.user.php 
+
+	meld nc.29.0.11/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.php nc-ent/themes/esco/core/templates/layout.base.php
+a changé
+fait : cp nc.30.0.5/core/templates/layout.base.php nc-ent/org/core/templates/layout.base.php 
+
+	meld  nc.29.0.11/core/templates/layout.guest.php nc.30.0.5/core/templates/layout.guest.php nc-ent/themes/esco/core/templates/layout.guest.php
+a changé
+fait:  cp nc.30.0.5/core/templates/layout.guest.php nc-ent/org/core/templates/layout.guest.php 
+
+	meld  nc.29.0.11/core/templates/layout.public.php nc.30.0.5/core/templates/layout.public.php nc-ent/themes/esco/core/templates/layout.public.php 
+a changé
+fait : cp nc.30.0.5/core/templates/layout.public.php nc-ent/org/core/templates/layout.public.php
+
+	meld nc.29.0.11/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/themes/esco/core/templates/layout.noscript.warning.php
+a changé
+fait : cp nc.30.0.5/core/templates/layout.noscript.warning.php nc-ent/org/core/templates/layout.noscript.warning.php
+
+
+	meld nc.30.0.5/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.29.0.11/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+changé doit aller n'a pas changé la fonction stat
+
+	meld  nc.30.0.5/lib/private/Files/ObjectStore/Mapper.php nc.29.0.11/lib/private/Files/ObjectStore/Mapper.php
+à changé copyright on fait rien
+
+
+	diff nc.30.0.5/lib/private/Files/ObjectStore/S3.php nc.29.0.11/lib/private/Files/ObjectStore/S3.php
+à changé copyright on ne fait rien
+
+	find nc.28.0.14/ nc.29.0.11/ nc-ent/ -name CardDavBackend.php -ls
+	 meld nc.29.0.11/apps/dav/lib/CardDAV/CardDavBackend.php nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/apps/dav/lib/CardDAV/CardDavBackend.php
+à changé que de commentaire mais on traite: cp nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/org/apps/dav/lib/CardDAV/CardDavBackend.php
+
+	find nc.30.0.5/ nc.29.0.11/ nc-ent/ -name RootMountProvider.php -ls
+	meld nc.29.0.11/lib/private/Files/Mount/RootMountProvider.php nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc-ent/lib/private/Files/Mount/RootMountProvider.php
+à changé que le copyright mais on traite : cp nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc-ent/org/lib/private/Files/Mount/RootMountProvider.php
+
+recherche de l'usage de ObjectStoreStorage:
+	cd nc.30.0.5 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.30.0.5 ; cd -
+	diff ../V29/grep.ObjectStoreStorage.29.0.11 grep.ObjectStoreStorage.30.0.5
+a changé mais devrait aller !! a voir
+
+	cd nc.30.0.5 ; grep -R getStorageId . > ../grep.getStorageId.30.0.5 ; cd -
+	diff ../V29/grep.getStorageId.29.0.11 grep.getStorageId.30.0.5
+
+-----------
+migration de 30.0.5 à 30.0.6
+
+diff nc.30.0.5/core/css/variables.scss nc.29.0.11/core/css/variables.scss
+diff nc.30.0.6/core/templates/layout.user.php nc.30.0.5/core/templates/layout.user.php
+diff nc.30.0.6/core/templates/layout.base.php nc.30.0.5/core/templates/layout.base.ph
+
+meld  nc.30.0.5/core/templates/layout.public.php nc.30.0.6/core/templates/layout.public.php nc-ent/themes/esco/core/templates/layout.public.php
+
+diff nc.30.0.6/core/templates/layout.noscript.warning.php nc.30.0.5/core/templates/layout.noscript.warning.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.30.0.6/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/Mapper.php nc.30.0.6/lib/private/Files/ObjectStore/Mapper.php
+diff nc.30.0.5/lib/private/Files/ObjectStore/S3.php nc.30.0.6/lib/private/Files/ObjectStore/S3.php
+diff nc.30.0.5/apps/dav/lib/CardDAV/CardDavBackend.php nc.30.0.6/apps/dav/lib/CardDAV/CardDavBackend.php
+diff nc.30.0.5/lib/private/Files/Mount/RootMountProvider.php nc.30.0.6/lib/private/Files/Mount/RootMountProvider.php
+cd nc.30.0.6 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.30.0.6 ; cd -
+diff grep.ObjectStoreStorage.30.0.6 grep.ObjectStoreStorage.30.0.5

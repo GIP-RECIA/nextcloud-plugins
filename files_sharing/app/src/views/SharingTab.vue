@@ -1,24 +1,7 @@
 <!--
-  - @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
-  -
-  - @author John Molakvoæ <skjnldsv@protonmail.com>
-  -
-  - @license GNU AGPL version 3 or any later version
-  -
-  - This program is free software: you can redistribute it and/or modify
-  - it under the terms of the GNU Affero General Public License as
-  - published by the Free Software Foundation, either version 3 of the
-  - License, or (at your option) any later version.
-  -
-  - This program is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  - GNU Affero General Public License for more details.
-  -
-  - You should have received a copy of the GNU Affero General Public License
-  - along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -
-  -->
+  - SPDX-FileCopyrightText: 2019 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
 <template>
 	<div class="sharingTab" :class="{ 'icon-loading': loading }">
@@ -51,6 +34,9 @@
 				:shares="shares"
 				@open-sharing-details="toggleShareDetailsView" />
 
+			<!-- internal link copy -->
+			<SharingEntryInternal :file-info="fileInfo" />
+
 			<!-- link shares list -->
 			<SharingLinkList v-if="!loading"
 				ref="linkShareList"
@@ -58,6 +44,17 @@
 				:file-info="fileInfo"
 				:shares="linkShares"
 				@open-sharing-details="toggleShareDetailsView" />
+
+			<!-- projects -->
+			<CollectionList v-if="projectsEnabled && fileInfo"
+				:id="`${fileInfo.id}`"
+				type="file"
+				:name="fileInfo.name" />
+		</div>
+
+		<div v-show="!showSharingDetailsView"
+			class="sharingTab__content sharingTab__additionalContent">
+			<div v-if="(canReshare || shares.length > 0) && !loading">{{ t('files_sharing', 'Users and groups with access') }}</div>
 
 			<!-- other shares list -->
 			<SharingList v-if="!loading"
@@ -68,15 +65,6 @@
 
 			<!-- inherited shares -->
 			<SharingInherited v-if="canReshare && !loading" :file-info="fileInfo" />
-
-			<!-- internal link copy -->
-			<SharingEntryInternal :file-info="fileInfo" />
-
-			<!-- projects -->
-			<CollectionList v-if="projectsEnabled && fileInfo"
-				:id="`${fileInfo.id}`"
-				type="file"
-				:name="fileInfo.name" />
 		</div>
 
 		<!-- additional entries, use it with cautious -->
@@ -99,16 +87,17 @@
 </template>
 
 <script>
-import { CollectionList } from 'nextcloud-vue-collections'
-import { generateOcsUrl } from '@nextcloud/router'
-import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 import axios from '@nextcloud/axios'
+import { orderBy } from '@nextcloud/files'
 import { loadState } from '@nextcloud/initial-state'
+import { generateOcsUrl } from '@nextcloud/router'
+import { CollectionList } from 'nextcloud-vue-collections'
+import { ShareType } from '@nextcloud/sharing'
+import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 
-import Config from '../services/ConfigService.js'
+import Config from '../services/ConfigService.ts'
 import { shareWithTitle } from '../utils/SharedWithMe.js'
-import Share from '../models/Share.js'
-import ShareTypes from '../mixins/ShareTypes.js'
+import Share from '../models/Share.ts'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
 import SharingInputRecia from '../components/SharingInputRecia.vue'
@@ -132,8 +121,6 @@ export default {
 		SharingList,
 		SharingDetailsTab,
 	},
-
-	mixins: [ShareTypes],
 
 	data() {
 		return {
@@ -224,7 +211,7 @@ export default {
 				this.processSharedWithMe(sharedWithMe)
 				this.processShares(shares)
 			} catch (error) {
-				if (error.response.data?.ocs?.meta?.message) {
+				if (error?.response?.data?.ocs?.meta?.message) {
 					this.error = error.response.data.ocs.meta.message
 				} else {
 					this.error = t('files_sharing', 'Unable to load the shares list')
@@ -277,13 +264,20 @@ export default {
 		 */
 		processShares({ data }) {
 			if (data.ocs && data.ocs.data && data.ocs.data.length > 0) {
-				// create Share objects and sort by newest
-				const shares = data.ocs.data
-					.map(share => new Share(share))
-					.sort((a, b) => b.createdTime - a.createdTime)
+				const shares = orderBy(
+					data.ocs.data.map(share => new Share(share)),
+					[
+						// First order by the "share with" label
+						(share) => share.shareWithDisplayName,
+						// Then by the label
+						(share) => share.label,
+						// And last resort order by createdTime
+						(share) => share.createdTime,
+					],
+				)
 
-				this.linkShares = shares.filter(share => share.type === this.SHARE_TYPES.SHARE_TYPE_LINK || share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL)
-				this.shares = shares.filter(share => share.type !== this.SHARE_TYPES.SHARE_TYPE_LINK && share.type !== this.SHARE_TYPES.SHARE_TYPE_EMAIL)
+				this.linkShares = shares.filter(share => share.type === ShareType.Link || share.type === ShareType.Email)
+				this.shares = shares.filter(share => share.type !== ShareType.Link && share.type !== ShareType.Email)
 
 				console.debug('Processed', this.linkShares.length, 'link share(s)')
 				console.debug('Processed', this.shares.length, 'share(s)')
@@ -345,7 +339,7 @@ export default {
 		addShare(share, resolve = () => { }) {
 			// only catching share type MAIL as link shares are added differently
 			// meaning: not from the ShareInput
-			if (share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
+			if (share.type === ShareType.Email) {
 				this.linkShares.unshift(share)
 			} else {
 				this.shares.unshift(share)
@@ -360,8 +354,8 @@ export default {
 		removeShare(share) {
 			// Get reference for this.linkShares or this.shares
 			const shareList
-				= share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL
-					|| share.type === this.SHARE_TYPES.SHARE_TYPE_LINK
+				= share.type === ShareType.Email
+					|| share.type === ShareType.Link
 					? this.linkShares
 					: this.shares
 			const index = shareList.findIndex(item => item.id === share.id)
@@ -382,7 +376,7 @@ export default {
 				let listComponent = this.$refs.shareList
 				// Only mail shares comes from the input, link shares
 				// are managed internally in the SharingLinkList component
-				if (share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL) {
+				if (share.type === ShareType.Email) {
 					listComponent = this.$refs.linkShareList
 				}
 				const newShare = listComponent.$children.find(component => component.share === share)

@@ -1,262 +1,228 @@
+@use 'sass:color';
 
-:root {
-	--color-primary: #0082c9 !important;
-	--color-primary-element: #0082c9 !important;
-	--color-primary-element-hover: #0082c9 !important;
-}
-body {
+$extended-uportal-header-height: 38px;
+$nextcloud-header-height: 50px;
+$header-height: $extended-uportal-header-height + $nextcloud-header-height;
 
-	&#body-public div#content > #app > iframe {
-			height: calc(100vh - 88px);
-		}
-	&#body-user, &#body-settings {
-	/* le style venue de la mise en place du bandeau */
+// ---------- MAIN  ----------
 
-		/* suppression des bords arrondis et recalcul de la hauteur et largeur */ 
-		& > main#content, & > div#content-vue.content {
-				height: calc(100% - 88px);
-				border-radius: 0;
-				margin-right: 0;
-				width: 100%;
-				margin-left: 0;
-			}
-
-		& > main#content {
-			div#app-navigation-vue {
-				padding-bottom: 10px ; /* pour l'aisser passer l'affichage des url */
-			}
-			div#app-content label#view-toggle.button {
-				opacity: 1;
-				border-radius: 0;
-				top: 0px;
-				right: 0px;
-			}
-		}
-		/* Style du bandeau ENT */
-		& > div#escoDiv  {
-
-			height: 38px;
-			&#escoDiv.content {
-				padding-top: 88px; // pour Applications
-			}
-			
-			& > #escoHeader {
-				position: fixed;
-				width: 100%;
-				z-index: 2100;
-			}
-			
-			div[slot=not-loaded] {
-				padding: 6px;
-				height:26px;
-				width: 100%;
-				background-color: #cccccc;
-			}
-			& > header#header.escoDivWrapper {
-				top : 38px !important;
-				height: 50px !important;
-
-				div.header-left {
-					overflow: hidden;
-				}
-				div.header-left ul li a {
-					height: 50px;
-					width: 50px;
-				}
-				.header-right {
-					& > div#settings >*,
-					& > div#contactsmenu >*,
-					&> div.notifications > .menu {
-						top: 50px;
-						max-height: calc(100vh - 63px * 4);
-					}
-					& > div > .menutoggle,
-					& > form > .menutoggle {
-						width: 50px;
-					}
-					& > div > div.header-menu__wrapper {
-						top: unset;
-					}
-				}
-			}
-		}
-	/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
-
-		iframe#onlyofficeFrame {
-				height:calc(100vh - 30px)
-		}
-		main#content {
-			
-			& > div#app-content > iframe#onlyofficeFrame {
-					height: calc(100vh - 30px);
-			}
-			&.app-onlyoffice > div#app > iframe {
-					height: calc(100vh - 88px);
-			}
-		}
-		
-/*		
-*/		&.onlyoffice-inline  main#content {
-				margin-bottom:0;
-				bottom: 0;
-				border-radius: 0;
-		}
-
-	/* fin OO */
-	/* pour MD */
-		main#content.app-files > aside#app-sidebar-vue.app-sidebar--full {
-			z-index: 3000 !important;
-		}
-	/* fin MD */
-	/* pour Notes */
-		div.content.app-notes div.app-navigation__content {
-			height: calc(100% - 35px);
-		}
-	/* fin notes */
-
-	}
-/* fin integration bandeau */
-
-
-/* les suppresions d'affichage */
-	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
-	&#body-settings div#content div#app-content div.section div.warning {
-		display: none;
-	}
-	&#body-public.not_embedded {
-		footer {
-			/* on supprime dans les liens transmis public les liens de pub nextcloud */
-			display: none;
-		}
-		
-	}
-
-	&#body-public.layout-base.embedded {
-		div#content.app-public > div#app > iframe {
-			height: calc(100vh - 52px);
-		}
-	}
-	div.section.development-notice {
-		display: none;
-	}
-
-	div#contactsmenu {
-		display: none;
-	}
-
-	/* suppression du menu Nouveau modele de formulaire pour OO */
-	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
-		display: none;
-	}
-
-
-
-	
-	li[data-id="firstrunwizard-about"],  li[data-id="help"],{
-	display: none;
-	}
-	p.social-button {
-		display: none;
-	}
-	div#security-password ,div#two-factor-auth {
-		display:none;
-	}
-
-	div#content.app-settings div#app-content {
-		div.personal-settings-section {
-			display: none;
-		}
-		div#personal-settings div.profile-settings-container div.personal-settings-setting-box {
-			display: none;
-		}
-	}
-	
-	.personal-settings-container {
-		.personal-settings-setting-box:nth-child(n+3) {
-			display: none;
-		}
-
-		.personal-settings-setting-box form {
-			&#displaynameform , &#emailform {
-				div.federation-menu {
-					display :none;
-				}
-			}
-		&#phoneform, &#addressform, &#websiteform, &#twitterform {
-			display :none;
-		}
-/*		&#emailform > em {
-			display : none;
-		}
-*/	
-	}
-
-	
-	div#accessibility > p {
-		display : none;
-	}
-	
-	div#fileSharingSettings.section {
-		display : none;
-	}
-	div#clientsbox + div.section {
-		display :none;
-	}
-
-}
-/* le dimentionnement */
-
-	/* pour les publics (par lien public) */
-&#body-public main#content {
-
-	height: calc(100vh - 50px);
-	border-radius: 0;
+// Suppression des bords arrondis et recalcul de la largeur
+%fullscreen {
 	width: 100%;
+	border-radius: 0;
+	margin-right: 0;
 	margin-left: 0;
-	padding-block-end: unset;
-	
-	iframe.onlyoffice-inline {
-		/* pour oo */
-		height: calc(100vh + 8px);
-		main#content{
-			border-radius: 0;
-			margin-left:0;
-			width: 100%;
-			height: 100%;
-		}
-	}
-	/* pour OO bizarrement sur un ^R oo change les id et les class de certains tag */
-	
-			& > div#app-content > iframe#onlyofficeFrame {
-					height: calc(100vh + 8px);
-			}
-	/*		&.app-onlyoffice > div#app > iframe {
-					height: calc(100vh - 88px);
-			}
-		*/
-		&.onlyoffice-inline  main#content {
-				margin-bottom:0;
-				bottom: 0;
-				border-radius: 0;
-		}
-
-	/* fin OO */
+	margin-bottom: 0;
+	padding-bottom: 0;
 }
 
+// Recalcul de la hauteur
+body {
+	&#body-user,
+	&#body-settings {
+		> main#content,
+		> #content-vue {
+			@extend %fullscreen;
+			height: calc(100% - $header-height);
+		}
+	}
+
+	// Partages par lien public
+	&#body-public > main#content {
+		@extend %fullscreen;
+		height: calc(100% - $nextcloud-header-height);
+	}
+}
+
+// ---------- EXTENDED UPORTAL HEADER  ----------
+
+body #escoDiv extended-uportal-header {
+	// Fixe le bandeau ENT au chagement
+	position: fixed;
+	width: 100%;
+	z-index: 2100;
+
+	// Placement du slot par défaut
+	> div[slot=not-loaded] {
+		text-align: end;
+		padding: 8px 16px;
+	}
+}
+
+// ---------- NEXTCLOUD HEADER ----------
+
+body {
+	&#body-user,
+	&#body-settings {
+		// Fixe le bandeau ENT au chargement
+		> #escoDiv {
+			height: $extended-uportal-header-height;
+		}
+
+		header#header {
+			// Déplacement du bandeau nextcloud par rapport au bandeau ENT
+			top: $extended-uportal-header-height;
+			height: $nextcloud-header-height;
+
+			// Ajout du scroll sur la liste des applications
+			> .header-left > nav {
+				overflow-x: auto;
+				scrollbar-width: none;
+			}
+
+			> .header-right {
+				// Masquage du menu contacts
+				> #contactsmenu {
+					display: none;
+				}
+
+				// Correction du placement à l'ouverture des menu
+				.header-menu__wrapper {
+					--header-height: #{$header-height};
+				}
+			}
+		}
+	}
+}
+
+// ---------- EXTENDED UPORTAL FOOTER ----------
+
+// Masquage du bandeau ENT par défaut
+body > footer.escoDiv {
+	display: none;
+}
+
+// Affichage du bandau au survol du header et quand on quitte la fenetre
+// seulement pour les écran non tactiles et le body user
+@media only screen and (hover: hover) {
+	body#body-user:not(:has(iframe#onlyofficeFrame, main#content.app-onlyoffice)) {
+		> footer.escoDiv {
+			display: unset;
+			position: fixed;
+			z-index: 2000;
+			bottom: 0;
+			right: 0;
+			left: 0;
+			transition: bottom .2s;
+
+			&:hover {
+				bottom: 0 !important;
+			}
+		}
+
+		&:hover {
+			> footer.escoDiv {
+				bottom: -50px;
+			}
+
+			> #escoDiv:hover ~ footer.escoDiv {
+				bottom: 0;
+			}
+		}
+	}
+}
+
+// ---------- PARAMETRES ----------
+
+body#body-settings #app-content {
+	// Panel "Informations personnelles"
+	&[data-active-section-id="personal-info"] {
+		#personal-settings .personal-settings-setting-box {
+			// Masquages des paramétrages du profil
+			&:has(input, textarea) {
+				display: none;
+			}
+	
+			// Possibilité de changer le displayname et la langue
+			&:has(input#account-property-displayname, input#account-setting-language) {
+				display: unset;
+			}
+		}
+	
+		// Masquage des paramètres de visibilité du profil
+		.personal-settings-section {
+			display: none;
+		}
+	
+		// Masquage des informations de dev
+		.section.development-notice {
+			display: none;
+		}	
+	}
+
+	// Panel "Sécurité"
+	&[data-active-section-id="security"] {
+		// Masquage du changement de mot de passe
+		.settings-section:has(form#passwordform){
+			display: none;
+		}
+
+		// Masquage de l'authentification sans mot de passe
+		#security-webauthn.section {
+			display: none;
+		}
+	}
+
+	// Panel "Apparence et accessibilité"
+	&[data-active-section-id="theming"] section .settings-section{
+		// Masquage des options d'aparence
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(5) {
+			display: none;
+		}
+	}
+}
+
+// ---------- ONLY OFFICE ----------
+
+// Attention : OO passe de 2 iframe à 1 iframe au rechargement de la page
+ 
+body {
+	&#body-user {
+		// A l'ouverture
+		iframe#onlyofficeFrame {
+			height: calc(100vh - 30px)
+		}
+
+		// Au refresh de la page
+		main#content.app-onlyoffice > #app > iframe {
+			height: calc(100vh - $header-height);
+		}
+	}
+
+	// Partages par lien public
+	&#body-public main#content {
+		iframe.onlyoffice-inline,
+		> #app-content > iframe#onlyofficeFrame {
+			height: calc(100vh + 8px);
+		}
+	}
+
+	// TODO: versifier si toujours utilisé
 	&.embedded .viewcontainer div#rich-workspace #editor {
 		max-height : 15em;
 	}
 
-	/* les redim des previews dans la colonne des partages pour plus de lisibilité */
-	.app-sidebar-header {
-	&:not(.app-sidebar-header--compact){
+	// TODO: versifier si toujours utilisé
+	// suppression du menu Nouveau modele de formulaire pour OO
+	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
+		display: none;
+	}
+}
+
+// ---------- FILES_SHARING ----------
+
+body {
+	// Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
+	.app-sidebar-header:not(.app-sidebar-header--compact) {
 		.app-sidebar-header__figure {
 			height: 10vh !important;
 			background-size: cover !important;
-			-webkit-transition: height 0.5s 0s ease;
-			-moz-transition: height 0.5s 0s ease;
-			-o-transition: height 0.5s 0s ease;
-			transition: height 0.5s 0s ease;
+			transition: 
+				height .4s 0s ease,
+				max-height .4s 0s ease;
+
 			&:hover {
 				height: 35vh !important;
 				max-height: 350px;
@@ -264,102 +230,172 @@ body {
 		}
 	}
 }
-/* les couleurs */
+
+// ---------- COULEURS ----------
+
+@function contrast-color($color, $dark, $light) {
+  @return if(color.channel($color, 'lightness', hsl) < 55%, $light, $dark);
+}
+
+@mixin colorTheme($couleur) {
+	// Suppression du background
+	--image-background: none;
+	--color-background-plain: var(--color-main-background);
+
+	// Colorisation des éléments primaires
+	--color-primary-element: #{$couleur};
+	--color-primary-element-text: #{contrast-color($couleur, #222222, #ffffff)};
+	--color-primary-element-hover: #{$couleur};
+
+	// Fixe les couleurs du header Nextcloud
+	--color-background-plain-text: #ffffff;
+	--background-image-invert-if-bright: none;
+
+	header#header {
+		background-color: $couleur;
+	}
+
+	#escoDiv {
+		background-color: $couleur;
+	}
+
+	#app-navigation,
+	#app-navigation-vue {
+		// Couleur de background de la navigation
+		background-color: var(--color-background-hover);
+
+		// Couleur de hover sur les éléments de navigation
+		> * {
+			--color-background-hover: #{rgba($couleur, .15)};
+		}
+	}
+
+	extended-uportal-header {
+		--ext-header-tpl-primary-color: #{$couleur} !important;
+	}
+}
+
+body {
+	&.not_embedded {
+		&.clg18 {
+			@include colorTheme(#004899);
+		}
 	
+		&.clg41 {
+			@include colorTheme(#009FE3);
+		}
 	
-	div#settings div#expand.menutoggle  { 
+		&.clg37 {
+			@include colorTheme(#c60440);
+		}
+	
+		&.agri {
+			@include colorTheme(#2d8c17);
+		}
+	
+		&.esco {
+			@include colorTheme(#25b2f3);
+		}
+	
+		&.clg45 {
+			@include colorTheme(#26448a);
+		}
+	
+		&.clg36 {
+			@include colorTheme(#0069B3);
+		}
+	
+		&.clg28 {
+			@include colorTheme(#303030);
+		}
+	}
+
+	&.embedded {
+		@include colorTheme(#888888);
+	}
+}
+
+// ---------- OLD ----------
+
+body {
+	&#body-user,
+	&#body-settings {
+		/* le style venue de la mise en place du bandeau */
+
+		// TODO: versifier si toujours utilisé
+		&>main#content {
+			div#app-navigation-vue {
+				padding-bottom: 10px;
+				/* pour l'aisser passer l'affichage des url */
+			}
+
+			// TODO: versifier si toujours utilisé
+			div#app-content label#view-toggle.button {
+				opacity: 1;
+				border-radius: 0;
+				top: 0px;
+				right: 0px;
+			}
+		}
+
+		// TODO: versifier si toujours utilisé
+		/* Style du bandeau ENT */
+		&>div#escoDiv {
+			&#escoDiv.content {
+				padding-top: 88px; // pour Applications
+			}
+		}
+	}
+
+	/* fin integration bandeau */
+
+	// TODO: versifier si toujours utilisé
+	/* les suppresions d'affichage */
+	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
+	&#body-settings div#content div#app-content div.section div.warning {
+		display: none;
+	}
+
+	// TODO: versifier si toujours utilisé
+	&#body-public.not_embedded {
+		footer {
+			/* on supprime dans les liens transmis public les liens de pub nextcloud */
+			display: none;
+		}
+	}
+
+	// TODO: versifier si toujours utilisé
+	&#body-public.layout-base.embedded {
+		div#content.app-public>div#app>iframe {
+			height: calc(100vh - 52px);
+		}
+	}
+
+	li[data-id="firstrunwizard-about"],
+	li[data-id="help"] {
+		display: none;
+	}
+
+	// TODO: versifier si toujours utilisé
+	div#security-password,
+	div#two-factor-auth {
+		display: none;
+	}
+
+	// TODO: versifier si toujours utilisé
+	div#settings div#expand.menutoggle {
 		div.avatardiv.avatardiv-shown {
-			&+ div#expandDisplayName {
+			&+div#expandDisplayName {
 				display: block;
 			}
+
 			display: none;
 		}
 	}
 }
 
-/* pour onlyoffice avec notre bandeau large
- * ne doit plus être fonctionnel
- div#content > div#app-content > iframe#onlyofficeFrame {
-	height: calc(100vh - 90px);
- }
-*/
-@media only screen and (min-width: 1024px) {
-	body > div#escoDiv > footer  {
-		position: fixed;
-		z-index:2000;
-		bottom: 0px;
-		width: 100vw;
-	}
-	body:hover > div#escoDiv > footer  {
-		//bottom: -46px;
-		bottom: -60px
-	}
-	body:hover > div#escoDiv:hover > footer {
-		bottom: 0px;
-	}
-	body  footer.escoDiv {
-		display: none;
-	}
-}
-@media only screen and (max-width: 1024px) {
-	body > footer.escoDiv {
-		display: block;
-		z-index:2000;
-	}
-	body > div#escoDiv > footer  {
-		display: none;
-	}
-}
-
 body.embedded {
 	li[data-id="logout"] {
-	display: none;
+		display: none;
 	}
-}
-
-// les couleurs spécifiques:
-@mixin colorTheme($couleur) {
-	& > div#escoDiv,
-	&#body-user #header, &#body-settings #header, &#body-public #header {	
-			a#nextcloud , ul#appmenu, div.header-right {
-			background-color: $couleur;
-		}
-		background-color: $couleur;
-		background-image: none;
-	}
-	& > div#escoDiv > header#escoHeader > extended-uportal-header {
-		--ext-header-tpl-primary-color: #{$couleur !important};
-	}
-}
-
-body {
-	&.clg18.not_embedded {
-        @include colorTheme(#004899);
-    }
-	&.clg41.not_embedded {
-        @include colorTheme(#009FE3);
-    }
-    &.clg37.not_embedded {
-        @include colorTheme(#c60440);
-    }
-    &.agri.not_embedded {
-        @include colorTheme(#2d8c17);
-    }
-    &.esco.not_embedded  {
-        @include colorTheme(#25b2f3);
-    }
-    &.clg45.not_embedded  {
-        @include colorTheme(#26448a);
-    }
-    &.clg36.not_embedded  {
-        @include colorTheme(#0069B3);
-    }
-    &.clg28.not_embedded  {
-        /* @include colorTheme(#FFCC00); */
-         @include colorTheme(#303030);
-    }
-    &.embedded {
-		@include colorTheme(#888888);
-	}
-    
 }
