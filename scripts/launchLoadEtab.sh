@@ -12,6 +12,11 @@ rcode=$HOME/scripts
 #pour poser des verrous empechant l'execution  des cron NC. Si le process termine tardivement
 lock=$HOME/logs-esco/NCcron/lock
 
+#si les cron tourne on vire leurs verous pour pouvoir passer quand même
+
+rm ${lock}1 ${lock}2 ${lock}3
+
+# et on repose les verous pour les empécher de revenir
 (flock -x 7 ; flock -x 8 ; flock -x 9;
 
 	/usr/bin/nice $rcode/GroupFolder/loadGroupFolders.pl -l 3 up 2>&1 | /usr/bin/perl -n -e 'END{map {print ">$_";} @ERROR;} push @ERROR , $_ if /error/i; next if /=>/; print;'
