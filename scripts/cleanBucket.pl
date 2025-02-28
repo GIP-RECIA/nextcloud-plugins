@@ -15,7 +15,7 @@ use ncUtil;
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $s3cmd = "/usr/bin/s3cmd ";
-my $s3lsFormat = "$s3cmd ls %s";
+my $s3lsFormat = "$s3cmd ls %s/urn:oid:";
 my $s3rmFormat = "$s3cmd del %s/urn:oid:%s"; 
 my $s3mvFormat = "$s3cmd mv %s/urn:oid:%s  %s";
 
@@ -85,12 +85,15 @@ sub heure(){
 	return sprintf "%02dH%02d:%02d", $local[2], $local[1], $local[0];
 }
 
+{
+	my $sqlStatement ;
 sub fileIdInbase() {
 	my $fileId = shift;
-	my $sql = &connectSql();
-	my $sqlQuery = "select storage from oc_filecache where fileid = ?";
-	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
-	
+	unless ($sqlStatement) {
+		my $sql = &connectSql();
+		my $sqlQuery = "select storage from oc_filecache where fileid = ?";
+		$sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+	}
 	$sqlStatement->execute($fileId) or die $sqlStatement->errstr;
 		
 	my $ary_ref =  $sqlStatement->fetch;
@@ -99,7 +102,7 @@ sub fileIdInbase() {
 	}	
 	return $$ary_ref[0];
 }
-
+} 
 my $datLimit = &date(time - $nbJour * 24 * 3600);
 
 my $s3commande = sprintf($s3lsFormat, $bucket);
@@ -109,6 +112,7 @@ my $cptOk;
 my $cptKo;
 my $cptDel;
 open S3LS, "$s3commande |" or die "$!";
+print "$s3commande!\n";
 while (<S3LS>) {
 	if (/^(\d{4}-\d{2}-\d{2})\s+(\S+)\s+(\d+)\s+($bucket\/urn:oid:(\d+))$/) {
 		my $dateFile = $1;
@@ -130,6 +134,7 @@ while (<S3LS>) {
 				} else {
 					$rmCommande = sprintf $s3mvFormat, $bucket, $fileId, $bucketCorbeille;
 					$display = " move ";
+					print "$rmCommande!\n";
 				}
 				if ($globalChoix) {
 					$choix = $globalChoix;
