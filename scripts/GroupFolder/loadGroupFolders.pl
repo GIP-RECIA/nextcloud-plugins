@@ -103,7 +103,12 @@ if ($test) {
 	MyLogger->level(5, 1);
 } else {
 	if ($loglevel) {
-		MyLogger->level($loglevel, 2);
+		my $mod = 2;
+		if ($loglevel >= 10) {
+			$mod = $loglevel % 10;
+			$loglevel = int($loglevel / 10);
+		}
+		MyLogger->level($loglevel, $mod);
 	}
 }
 
