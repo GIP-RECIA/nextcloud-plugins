@@ -7,7 +7,7 @@ Les modifications portent principalement sur :
 - La gestion des groupes (LDAP Importer): Données les droits (quota) et créer les groupes Nextcloud à partir des groupes LDAP.
 - La recherche de groupe et personne pour le partage (Files Sharing).
 - La gestion des buckets : n'avoir qu'un bucket par compte, par avatar et vignette.
-- Un plugin de chargement de js et css particulier (CSS JS Loader).
+- Un plugin de chargement de js et css particulier (CSS JS Loader [Déprécié]).
 - Les fichiers par défauts (Skeleton) : suppression modification du repertoire skeleton.
 
 [Présentation de juin 2023 au ESUP DAYS](Presentation_ESUP_DAYS_06.2023/presentation.pdf)
@@ -58,7 +58,9 @@ et ajouter dans `./lib/private/Files/ObjectStore` : `ReciaObjectStoreStorage.php
 
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/lib)
 
-# CSS JS Loader
+# CSS JS Loader [Déprécié]
+
+> ⚠️ déprécié => utilisation d'un thème personnalisé
 
 Plugin pour Nextcloud CSSJSLoader qui surcharge le css et le js de toutes les pages
 
