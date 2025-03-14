@@ -18,8 +18,8 @@ etabs:
         regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU CHER):groupes_locaux:Echanges etablissements:Managers$'
         last: ifMatch
         group: &group18 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
-        folder: &folder18 'Échanges CD18-établissements' # création du folder 'Échanges CD18-établissements'
-        permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
+        folder: &folder18 'Échanges CD18-établissements' 						# création du folder 'Échanges CD18-établissements'
+        permF: 								# droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
           - write
           - share
           - delete
