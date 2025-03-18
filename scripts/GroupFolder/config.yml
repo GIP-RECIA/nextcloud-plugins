@@ -57,33 +57,33 @@ etabs:
               - delete
             quotaF: 50
 
-      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:SG_*)'
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Secteur*)'
         regexs:
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(SG_Bourge)$'
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Bourges)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18Bourge
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(SG_NORD)$'
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Nord)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18nord
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(SG_OUEST)$'
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Ouest)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18ouest
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(SG_SUD)$'
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Sud)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18sud
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(SG_EST)$'
+          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Est)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18Bourge
