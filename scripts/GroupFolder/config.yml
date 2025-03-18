@@ -56,9 +56,8 @@ etabs:
               - share
               - delete
             quotaF: 50
-
       - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Secteur*)'
-        regexs:
+        regexes:
           - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Bourges)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
@@ -86,7 +85,7 @@ etabs:
           - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Est)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
-            folder: *f18Bourge
+            folder: *f18est
             permF:
               - write
 
