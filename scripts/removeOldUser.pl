@@ -103,6 +103,28 @@ sub delPartage {
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 
 	§INFO "\t", 0 + $nbLines, " suppressions";
+
+	§INFO "delete from oc_deck_board_acl ";
+	$delShareRequete = q/delete from oc_deck_board_acl
+						where participant like 'F_______'
+						and participant in (select uid from oc_recia_user_history u where u.isDel >= 2
+							and datediff(now(), dat) > 60)
+						limit ?/;
+	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
+	$sqlStatement->trace(2, MyLogger::file()) if $loglevel = 5;
+	$nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	§INFO "\t", 0 + $nbLines, " suppressions";
+
+	§INFO "delete from oc_deck_board_acl ";
+	$delShareRequete = q/delete from oc_deck_assigned_users
+						where participant like 'F_______'
+						and participant in (select uid from oc_recia_user_history u where u.isDel >= 2
+							and datediff(now(), dat) > 60)
+						limit ?/;
+	$sqlStatement = $sql->prepare($delShareRequete) or §FATAL $sql->errstr;
+	$sqlStatement->trace(2, MyLogger::file()) if $loglevel = 5;
+	$nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
+	§INFO "\t", 0 + $nbLines, " suppressions";
 }
 
 # expiration des partages des comptes obsolètes
