@@ -122,3 +122,13 @@ create or replace view recia_direct_partages as (
 	where f.fileid = item_source
 	and share_type in (0, 2, 13)
 );
+
+
+create TABLE recia_group_history (
+	gid varchar(64) primary key,
+	datDebut date,
+	datFin date
+);
+
+insert into recia_group_history (gid, datDebut, datFin)
+select gid, now(), null from oc_groups where gid like '%:LDAP';

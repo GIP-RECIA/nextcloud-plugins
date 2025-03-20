@@ -26,8 +26,8 @@ unless (@ARGV) {
 
 my $groupSuffix;
 
-unless (@ARGV[0] eq 'all') {
-	if  (@ARGV[0] eq 'LDAP' ) {
+unless ($ARGV[0] eq 'all') {
+	if  ($ARGV[0] eq 'LDAP' ) {
 		$groupSuffix = ':LDAP';
 	} else {
 		print STDERR  "argument illégal\n";
@@ -43,24 +43,67 @@ unless (@ARGV[0] eq 'all') {
 ##################
 my $sql = connectSql();
 
+
+# requete de mise a jour de recia_group_history
+# fixe la datFin si elle n'y est pas deja et si le groupe n'a pas de membre non obsolète
+# met datFin à null si elle n'y est pas déjà et le groupe a des membre non obsolète 
+my $sqlQuery = q/
+	update  recia_group_history rgh,
+	(
+	select g.gid gid1, u.gid gid2
+	from  oc_groups g left join (
+		  select u.gid
+		  from  oc_group_user u, oc_recia_user_history h
+		  where h.uid = u.uid
+		  and h.isdel < 2
+		) u on u.gid = g.gid
+	group by g.gid, u.gid
+	) gu
+	set datFin = if (datFin is null, now(),  null)
+	where gid = gid1
+	and (datFin is null or gid2 is not null)
+	and (datFin is not null or gid2 is null)
+/;
+
+print "update recia_group_history\n";
+$sql->do($sqlQuery) or die $sql->errstr;
+
+print "ok\n";
 # 
-# recupère les groupes qui n'ont pas d'utilisateurs dans l'historique avec isDel < 2
-my $sqlQuery = q/select g.gid from  oc_groups g left join (select u.gid, u.uid from  oc_group_user u, oc_recia_user_history h where h.uid = u.uid and h.isdel < 2) u on u.gid = g.gid where u.uid is null/;
+# recupère les groupes à supprimer ceux dont datFin > 10
+$sqlQuery = q/	select gid
+				from recia_group_history
+				where datediff(now() , datFin )> 10
+			/;
  
-print "$sqlQuery\n";
+print "suppression des vieux groupes vides\n";
 my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 $sqlStatement->execute() or die $sqlStatement->errstr;
 
-my $cpt = 0;
-while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
-	my $gid = $tuple->{'gid'};
+my $deleteStatement = $sql->prepare(q/delete from recia_group_history where gid = ?/);
 
+my $cpt = 0;
+while (my ($gid ) =  $sqlStatement->fetchrow_array) {
 	next if ($groupSuffix and rindex($gid, $groupSuffix) < 0 );
 	unless ($gid eq 'admin') { 
 #		print "$commande '$gid' \n";
 		system ("$commande '$gid'") == 0 or die "$!\n";
 		$cpt++;
+		$deleteStatement->execute($gid);
 	}
 }
-
 print " Nombre de groupe supprimés = $cpt\n";
+
+
+# insert les nouveaux groupes dans l'historique
+print "insert nouveaux groupes dans recia_group_history\n";
+$sqlQuery = q/	insert IGNORE
+				into recia_group_history (gid, datDebut, datFin)
+				select gid, now(), null
+				from oc_groups
+				where gid like ?
+			/;
+$sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
+$sqlStatement->execute('%' . $groupSuffix) or die $sqlStatement->errstr;
+
+print "ok\n";
