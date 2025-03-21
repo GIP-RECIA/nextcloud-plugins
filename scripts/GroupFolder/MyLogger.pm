@@ -73,11 +73,10 @@
 use strict;
 use IPC::Open3;
 use IO::Select;
-use IO::Handle;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.3.2";
+my $version="10.2";
 
 package MyLogger;
 use Filter::Simple;
@@ -95,9 +94,9 @@ sub import {
 FILTER {
 	
 	if ($isDebug eq 'TRACE') {
-		s/\#§(TRACE|DEBUG)\b/rewrite4log('#'.$1)/ge;
+		s/\#§(TRACE|DEBUG)\b(\*?)/rewrite4log('#'.$1, $2)/ge;
 	} elsif ($isDebug eq 'DEBUG') {
-		s/\#§DEBUG\b/rewrite4log('#DEBUG')/ge;
+		s/\#§DEBUG\b(\*?)/rewrite4log('#DEBUG', $1)/ge;
 	}
 
 	s/§(FATAL|ERROR|WARN|INFO|DEBUG|TRACE|SYSTEM|PRINT|LOG)\b(\*?)(?:\s*\[(\d+)\])?(?:\s*\[(\$\w+)])?(?:\s*\[([^\]]+)\])?/rewrite4log($1, $2, $3, $4, $5)/ge;
@@ -195,7 +194,7 @@ my %ParamLogger = (
 		TRACE => ['trace ', 	5, 0],
 		SYSTEM => ['traceSystem ',0, 1],
 		LOG => ['logger ',		0, 0],
-		'#DEBUG' => ['debug ',  0, 1,"'DEBUG: ',"],
+		'#DEBUG' => ['debug_ 3, ',  0, 1,"'DEBUG: ',"],
 		'#TRACE' => ['trace ',  0, 1],
 	);
 
@@ -261,7 +260,7 @@ sub rewrite4log {
 
 
 ########################################################################
-my $defautLog = new MyLogger();
+our $defautLog = new MyLogger();
 
 sub new {
 	my $class = shift;
@@ -297,16 +296,17 @@ sub file {
 
 	my ($filename, $autoflush) = @_;
 
-	my $MyLoggerFile = $defautLog->{FILE};;
+	my $MyLoggerFile = $self->{FILE};
 
 	if ($MyLoggerFile) {
 		close $MyLoggerFile;
+		$MyLoggerFile = '';
 	}
 	if ($filename) {
 		
 		$filename =~ s/(\>{1,2})//;
 		my $encoding = $1 ? "$1:encoding(UTF-8)" : ">:encoding(UTF-8)";
-		print STDERR "Open $1$filename\n";
+
 		open ($MyLoggerFile, $encoding, $filename) or die $filename . " $!" ;
 		if ($autoflush) {
 			my $old_fh = select($MyLoggerFile);
@@ -348,7 +348,7 @@ sub is {
 }
 
 sub _trace {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	trace (@_);
 }
 
@@ -383,7 +383,7 @@ sub logger {
 
 
 sub _debug {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	debug(@_);
 }
 
@@ -410,13 +410,19 @@ sub debug_ {
 }
 
 sub _info {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	info(@_);
 }
 
 sub info {
 	info_($defautLog->{MOD}, @_);
 }
+
+sub _printInfo {
+	local $defautLog = shift;
+	printInfo(@_);
+}
+
 
 sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le fichier de log 
 	my $text = shift;
@@ -432,7 +438,7 @@ sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le f
 sub info_ {
 	my $mod = shift;
 	my $text = shift;
-	my $fileName = lastname (shift) . ' (' . shift . '): ';
+	my $fileName = lastname (shift()) . ' (' . shift() . '): ';
 
 	$fileName = '' unless $text;
 
@@ -447,7 +453,7 @@ sub info_ {
 }
 
 sub _erreur {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	erreur(@_);
 }
 
@@ -472,7 +478,7 @@ sub erreur_ {
 }
 
 sub _fatal {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	fatal(@_);
 }
 
@@ -501,7 +507,7 @@ sub lastname {
 }
 
 sub _traceSystem {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	traceSystem(@_);
 }
 
@@ -539,7 +545,7 @@ sub traceSystem {
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 
-	info_ ($mod, $fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
+	info_ ($mod, 'INFO: ', $fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
 
 	$select->add($COM, $ERR);
 
@@ -558,10 +564,11 @@ sub traceSystem {
 				$select->remove($fh);
 			} else {
 				$buf = decode_utf8_partial($BUF{$fh});
+				if ($buf) {
 				if ($fh == $COM) {
 					$out .= $buf;
 					unless ($flagC) {
-						if ( $defautLog->{LEVEL} >= 4) { debug_ ($mod, $fileName, $line, " STDOUT :"); }
+							if ( $defautLog->{LEVEL} >= 4) { debug_ ($mod, 'DEBUG: ', $fileName, $line, " STDOUT :"); }
 						$flagC = 1;
 					}
 					while ($out =~ s/^(.*\n)//) {
@@ -575,6 +582,7 @@ sub traceSystem {
 					}
 					while ($err =~ s/^(.*\n)//) {
 						&$printErr($1);
+						}
 					}
 				}
 			}
