@@ -9,6 +9,7 @@
 	Le paramétrage des logs
 	
 	use MyLogger [(DEBUG|TRACE)];   si DEBUG ou TRACE sont en paramètre les loggers commentés correspondants seront décommantés ie #§DEBUG et #§TRACE seront réécrits en §DEBUG ou §TRACE
+	
 	MyLogger->file(filename [, autoflush]); définit le fichier de log, si autoflush=true alors les logs seront écrits (flush) à chaque fois immédiatement.
 	MyLogger->level(); retourne le level et mode utilisé.
 	MyLogger->level(level); fix le niveau de log :
@@ -27,6 +28,7 @@
 
 	Tous les loggers affiche l'heure, le fichier et la ligne sauf §TRACE .
 	Si le nom du logger est suivi d'un chiffre entre crochets [n] ; il affichera le fichier et la ligne de la énième procédure appelante dans la trace d'exécution, utile dans une lib pour indiquer l'erreur dans la procédure appelante et pas dans la lib.
+
 	Le logger §LOG écrit dans le fichier de log sans condition de niveau, si pas de fichier ne fait rien.
 	
 	Exemples : les macros seront remplacées par le code ad hoc les arguments suivants resteront tels quel à la suite, donc ne pas mettre de () et finir par; le 1er argument est obligatoire ;
@@ -38,12 +40,27 @@
 
 	§LOG "une info pour le fichier de log ", " seulement" ;
 
+	§PRINT "ecrit dans STDOUT comme print et dans le fichier de log comme §INFO"; 
+
 	§SYSTEM est une macro pour logger les appels système ie stderr et stdin seront logger en fonction du niveau fixé.
 	Exemple:
-	§SYSTEM "tar -czf monfichier.tgz monrep"; # exécute la commande tar et met les erreurs dans  le fichier de log ou stderr suivant le niveau et le mode
-	si on veut traiter la sortie de la commande ou peut passer une closure, $_ donne chaque ligne renvoyée par la commande.
+	§SYSTEM "tar -czf monfichier.tgz monrep";
+		# exécute la commande tar et met les erreurs dans  le fichier de log ou stderr suivant le niveau et le mode
 
-	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => sub {print $_;}; # affichera la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+	Les dernier parametres  facultatif (syntaxe des hash): OUT, ERR, MOD
+	Si on veut traiter les sorties de la commande ou peut passer des closure dans les parametres OUT ou ERR,
+	$_ donne chaque ligne renvoyée par la commande.
+	Exemple:
+	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => sub {print $_;}, ERR => sub { $nbErr++ ; $lastErr = $_}, MOD => 0;
+				# OUT affiche la sortie du tar dans STDIN, tout en loggant dans le fichier de log ;
+				# ERR compte le nombre d'erreurs et mémorise la dernière.
+				# MOD change le mod du logger dans SYSTEM, avec 0 on affiche rien dans STDERR, on ne log que dans le fichier.
+
+	Dans OUT et ERR, au lieux de closure on peut mettre la réference à un tableaux qui contiendra les lignes produites par la commande:
+	exemple:
+	§SYSTEM "tar -cvzf monfichier.tgz monrep", OUT => \@sortieTar, MOD => 1;
+		# @sortieTar contiendra les sorties STDOUT produites par la commande;
+		# MOD 1 donne dans  STDERR les FATAL, ERROR et WARN .
 
 	Si la commande ne peut pas se lancer un §FATAL est exécuté et le programme finit.
 
@@ -59,7 +76,7 @@ use IO::Select;
 use Symbol 'gensym';
 #use Hash::Util::FieldHash;
 # 
-my $version="9.2.1";
+my $version="10.2";
 
 package MyLogger;
 use Filter::Simple;
@@ -77,12 +94,12 @@ sub import {
 FILTER {
 	
 	if ($isDebug eq 'TRACE') {
-		s/\#§(TRACE|DEBUG)\b/rewrite4log('#'.$1)/ge;
+		s/\#§(TRACE|DEBUG)\b(\*?)/rewrite4log('#'.$1, $2)/ge;
 	} elsif ($isDebug eq 'DEBUG') {
-		s/\#§DEBUG\b/rewrite4log('#DEBUG')/ge;
+		s/\#§DEBUG\b(\*?)/rewrite4log('#DEBUG', $1)/ge;
 	}
 
-	s/§(FATAL|ERROR|WARN|INFO|DEBUG|TRACE|SYSTEM|LOG)\b(?:\s*\[(\d+)\])?(?:\s*\[(\$\w+)])?/rewrite4log($1, $2, $3)/ge;
+	s/§(FATAL|ERROR|WARN|INFO|DEBUG|TRACE|SYSTEM|PRINT|LOG)\b(\*?)(?:\s*\[(\d+)\])?(?:\s*\[(\$\w+)])?(?:\s*\[([^\]]+)\])?/rewrite4log($1, $2, $3, $4, $5)/ge;
 
 	my $out;
 	my $nbParam = -1;
@@ -115,6 +132,7 @@ sub rewrite4Var {
 		unless ($name =~ /(NEW|PARAM|package)/){
 			if ($pEgal eq '=') {
 				return '${$self->_'.$name.'()} =';
+			#	return '$self->{"'.uc($name).'"}=';
 			} elsif ($pEgal eq '(') {
 				return '$self->'.$name.'(';
 			} else {
@@ -171,26 +189,44 @@ my %ParamLogger = (
 		FATAL => ['fatal ',		0, 1, "'FATAL: die at ',"],
 		ERROR => ['erreur ',	1, 1, "'ERROR: ',"],
 		WARN => ['erreur ',		2, 1, "'WARN: ',"],
-		INFO => ['info ',		3, 1],
-		DEBUG => ['debug ', 	4, 1],
+		INFO => ['info ',		3, 1, "'INFO: ',"],
+		PRINT => ['printInfo ',		0, 0,"'INFO: ',"],
+		DEBUG => ['debug ', 	4, 1 , "'DEBUG: ',"],
 		TRACE => ['trace ', 	5, 0],
 		SYSTEM => ['traceSystem ',0, 1],
 		LOG => ['logger ',		0, 0],
-		'#DEBUG' => ['debug ',  0, 1],
+		'#DEBUG' => ['debug_ 3, ',  0, 1,"'DEBUG: ',"],
 		'#TRACE' => ['trace ',  0, 1],
 	);
 
 sub rewrite4log {
-	my ($name, $call, $logger) = @_;
+	my ($name, $noText, $call, $logger, $sep) = @_;
 	my ($function, $level, $iscall, $text) = @{$ParamLogger{$name}};
 
 #	print "$name, $call, $logger; $function, $level, $call, $text\n";
-	my $caller = $call ? sprintf('@{[(caller(%d))]}[1,2]', $call-1 ) : '__FILE__, __LINE__';
+	my $caller ;
+	if ($noText) { #cas avec * pas de texte ni de ligne (caller)
+		$caller = "'', ''";
 
-	unless ($text) {
-		$text = '';
+		if ($text) {
+			$text = " '', ";
+		} else {
+			$text = ' ';
+		}
+	} else {
+		$caller = $call ? sprintf('@{[(caller(%d))]}[1,2]', $call-1 ) : '__FILE__, __LINE__';
+	if ($text) {
+		$text = " $text ";
+	} else {
+			$text =' ';
+		}
 	}
 	
+	if ($sep) {
+		$sep = " join \"$sep\",";
+	} else {
+		$sep ='';
+	}
 	my $test;
 	my $testFile;
 	if ($logger) {
@@ -205,19 +241,19 @@ sub rewrite4log {
 	
 	if ($iscall) {
 		if ($level > 0) {
-			return $test . $level . ") and " . $function . " $text " . $caller . ", "; 
+			return $test . $level . ") and " . $function . $text . $caller . ", $sep"; 
 		} elsif ($level < 0) { # on test l'existance d'un fichier
-			return   $testFile. $function . " $text " . $caller . ","; 
+			return   $testFile. $function . $text . $caller . ", $sep"; 
 		} else {
-			return $function . " $text " . $caller . ","; 
+			return $function . $text . $caller . ",$sep"; 
 		}
 	} else {
 		if ($level > 0) {
-			return $test . $level . ") and " . $function . " $text ";
+			return $test . $level . ") and " . $function . $text. $sep;
 		} elsif ($level < 0) {
-			return $testFile . $function . " $text ";
+			return $testFile . $function . $text. $sep;
 		}
-		return $function . " $text "; 
+		return $function . $text . $sep; 
 	}
 }
 
@@ -225,7 +261,7 @@ sub rewrite4log {
 
 
 ########################################################################
-my $defautLog = new MyLogger();
+our $defautLog = new MyLogger();
 
 sub new {
 	my $class = shift;
@@ -261,15 +297,17 @@ sub file {
 
 	my ($filename, $autoflush) = @_;
 
-	my $MyLoggerFile = $defautLog->{FILE};;
+	my $MyLoggerFile = $self->{FILE};
 
 	if ($MyLoggerFile) {
 		close $MyLoggerFile;
+		$MyLoggerFile = '';
 	}
 	if ($filename) {
 		
 		$filename =~ s/(\>{1,2})//;
 		my $encoding = $1 ? "$1:encoding(UTF-8)" : ">:encoding(UTF-8)";
+
 		open ($MyLoggerFile, $encoding, $filename) or die $filename . " $!" ;
 		if ($autoflush) {
 			my $old_fh = select($MyLoggerFile);
@@ -311,19 +349,25 @@ sub is {
 }
 
 sub _trace {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	trace (@_);
 }
-sub trace {
+
+sub trace_ {
+	my $mod = shift;
 	if ($defautLog->{FILE}) {
 		print {$defautLog->{FILE}} @_;
-		if ($defautLog->{MOD} >  2) {
+		if ($mod >  2) {
 			print STDERR @_;
 		}
 	} else {
 		print STDERR @_;
 	}
 }
+sub trace {
+	trace_($defautLog->{MOD}, @_);
+}
+
 
 sub _logger {
 	my $self = shift;
@@ -340,52 +384,93 @@ sub logger {
 
 
 sub _debug {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	debug(@_);
 }
 
 sub debug {
-	unshift (@_, lastname (shift) . ' (', shift . '): ');
+	debug_($defautLog->{MOD}, @_);
+}
+
+sub debug_ {
+	my $mod = shift;
+	my $text = shift;
+	my $name = lastname (shift) . ' (' . shift . '): ';
+	$name = '' unless $text;
+
+	unshift (@_, $name);
+
 	if ($defautLog->{FILE}) {
-		logger ('DEBUG: ', @_);
-		if ($defautLog->{MOD} > 2) {
-			print STDERR ' DEBUG: ', @_, "\n";
+		logger ($text, @_);
+		if ($mod > 2) {
+			print STDERR $text, @_, "\n";
 		}
 	} else {
-		print STDERR ' DEBUG: ', @_, "\n";
+		print STDERR $text, @_, "\n";
 	}
 }
 
 sub _info {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	info(@_);
 }
 
 sub info {
-	my $fileName = lastname (shift) . ' (' . shift . '): ';
+	info_($defautLog->{MOD}, @_);
+}
+
+sub _printInfo {
+	local $defautLog = shift;
+	printInfo(@_);
+}
+
+
+sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le fichier de log 
+	my $text = shift;
+	if ($defautLog->{LEVEL} > 1 && $defautLog->{FILE}) {
+		my ($fileName, $line) = (caller())[1,2];
+		logger ($text, "$fileName ($line): " , @_);
+	}
+	STDERR->flush;
+	print (@_, "\n");
+}
+
+
+sub info_ {
+	my $mod = shift;
+	my $text = shift;
+	my $fileName = lastname (shift()) . ' (' . shift() . '): ';
+
+	$fileName = '' unless $text;
 
 	if ($defautLog->{FILE}) {
-		logger ('INFO: ', $fileName, @_);
-		if ($defautLog->{MOD} > 1) {
-			print STDERR '  INFO: ', @_,"\n";
+		logger ($text, $fileName, @_);
+		if ($mod > 1) {
+			print STDERR $text, @_,"\n";
 		}
 	} else {
-		print STDERR '  INFO: ', $fileName, @_, "\n";
+		print STDERR $text , $fileName, @_, "\n";
 	}
 }
 
 sub _erreur {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	erreur(@_);
 }
 
 sub erreur {
+	erreur_($defautLog->{MOD}, @_);
+}
+sub erreur_ {
+	my $mod = shift;
 	my $type = shift;
 	my $fileName = lastname(shift). ' (' . shift . '): ';
 
+	$fileName = '' unless $type;
+
 	if ($defautLog->{FILE}) {
 		logger $type, $fileName, @_;
-		if ($defautLog->{MOD} > 0) {
+		if ($mod > 0) {
 			print STDERR  '> ', $type, $fileName, @_, "\n";
 		} 
 	} else {
@@ -394,7 +479,7 @@ sub erreur {
 }
 
 sub _fatal {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	fatal(@_);
 }
 
@@ -423,7 +508,7 @@ sub lastname {
 }
 
 sub _traceSystem {
-	local $::defautLog = shift;
+	local $defautLog = shift;
 	traceSystem(@_);
 }
 
@@ -433,14 +518,20 @@ sub traceSystem {
 	my $commande = shift;
 	my %params = @_; 
 
+	my $mod ;
+	if (exists $params{'MOD'}) {
+		$mod = $params{'MOD'};
+	} else {
+		$mod = $defautLog->{MOD};
+	}
 	unless ($fileName or $line) {
 		($fileName, $line) = (caller())[1,2];
 		erreur ( 'WARN : ', $fileName, $line, '§SYSTEM appelé avec un indice ne permetant pas de déterminer le fichier et la ligne de d\'appèle' );
 	}
 	# les parametres optionnels donnés par name => valeur
-	my $printOut = printCodeFromParameter($fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
-	my $printErr = printCodeFromParameter($fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
-	
+	my $printOut = printCodeFromParameter($mod, $fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
+	my $printErr = printCodeFromParameter($mod, $fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
+
 	my $bufSize = $params{'bufferSize'}; #taille du buffer de lecture
 
 	$bufSize = $defautLog->{BUFSIZE} unless $bufSize;
@@ -455,7 +546,7 @@ sub traceSystem {
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 
-	info ($fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
+	info_ ($mod, 'INFO: ', $fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
 
 	$select->add($COM, $ERR);
 
@@ -463,10 +554,10 @@ sub traceSystem {
 	my $flagE =0;
 	my $out;
 	my $err;
-
+	
 	my %BUF;
 	while (my @ready = $select->can_read) {
-		foreach my $fh (@ready) {			
+		foreach my $fh (@ready) {
 			my $buf;
 			my $len = sysread $fh, $BUF{$fh}, $bufSize, length($BUF{$fh});
 			
@@ -478,7 +569,7 @@ sub traceSystem {
 					if ($fh == $COM) {
 						$out .= $buf;
 						unless ($flagC) {
-							if ( $defautLog->{LEVEL} >= 4) { debug ($fileName, $line, " STDOUT :"); }
+							if ( $defautLog->{LEVEL} >= 4) { debug_ ($mod, 'DEBUG: ', $fileName, $line, " STDOUT :"); }
 							$flagC = 1;
 						}
 						while ($out =~ s/^(.*\n)//) {
@@ -487,7 +578,7 @@ sub traceSystem {
 					} elsif ($fh == $ERR) {
 						$err .= $buf;
 						unless ($flagE) {
-							if ($defautLog->{LEVEL} >= 1) { erreur ( 'trace : ', $fileName, $line, 'STDERR :'); }
+							if ($defautLog->{LEVEL} >= 1) { erreur_ ($mod,  'trace : ', $fileName, $line, 'STDERR :'); }
 							$flagE = 1;
 						}
 						while ($err =~ s/^(.*\n)//) {
@@ -504,14 +595,16 @@ sub traceSystem {
 	&$printErr("$err\n") if $err;
 	
 	waitpid $pid, 0;
-	
+	my $child_signal = $? & 127;
 	my $child_exit_status = $? >> 8;
-	erreur ("ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status") if $child_exit_status;
+	erreur_ ($mod, "ERROR: ", $fileName, $line,"$commande : Exit Status: $child_exit_status, Signal: $child_signal") if $child_exit_status;
 	close $ERR;
 	close $COM;
+	return $child_exit_status;
 }
 
 sub printCodeFromParameter {
+	my $mod = shift;
 	my $fileName = shift;
 	my $line = shift;
 	my $level = shift;
@@ -525,19 +618,19 @@ sub printCodeFromParameter {
 		if ($2) {
 			return sub {
 				local $_ = shift;
-				if ($defautLog->{LEVEL} >=  $level) { trace($tab, $_); }
+				if ($defautLog->{LEVEL} >=  $level) { trace_($mod,$tab, $_); }
 				&$code;
 			}
 		}
 		return sub {
 			my $line = shift;
-			if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
-			push @$code, $_[0];
+			if ($defautLog->{LEVEL} >=  $level) { trace_($mod, $tab, $line); }
+			push @$code, $line;
 		}
 	}
 	return sub {
 		my $line = shift;
-		if ($defautLog->{LEVEL} >=  $level) { trace($tab, $line); }
+		if ($defautLog->{LEVEL} >=  $level) { trace_($mod, $tab, $line); }
 	}
 }
 
