@@ -220,23 +220,17 @@ sub deleteComptes{
 	my $nbSuppression;
 	
 	my $nbErr = 0;
-		# attention a ne pas augmenter le nombre max de boucle
-		# sans revoir la valeur du sleep en debut de boucle
-		# avec 5 erreurs on aurra un sleep de 52mm  avec 6 on passe a 12h
-	my $maxErr = 5;
-	while ($nbErr < $maxErr) {
-		sleep $nbErr ** $nbErr if $nbErr++; 
-		my $isErr = 0;
-		if (§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
-				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
-				ERR => sub { $isErr = 1 if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;},
-				MOD => 0
-			) {# cas ou la commande termine en erreur
-				$isErr = 1;
-				$maxErr--;
-		} 
 	
-		last unless ($isErr);
+	while ($nbErr < 10) {
+		sleep $nbErr  if $nbErr++;
+
+		unless (§SYSTEM "/usr/bin/php occ ldap:remove-disabled-user -vvv ",
+				OUT => sub { $nbSuppression++ if /User\ with\ uid\ :F\w{7}\ was\ deleted/;},
+				ERR => sub { $nbErr++ if /((\[critical\]\ Fatal\ Error\:)|(An\ unhandled\ exception\ has\ been\ thrown\:))/;},
+				MOD => 0
+			) {# cas ou la commande termine sans erreur
+				last;
+		}
 	}
 	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
 	§PRINT " nombre de suppressions de compte : $nbSuppression";

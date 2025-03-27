@@ -596,7 +596,7 @@ sub traceSystem {
 	waitpid $pid, 0;
 	my $child_signal = $? & 127;
 	my $child_exit_status = $? >> 8;
-	erreur_ ($mod, "ERROR: ", $fileName, $line,"$commande : erreur $child_exit_status, $child_signal") if $child_exit_status;
+	erreur_ ($mod, "ERROR: ", $fileName, $line,"$commande : Exit status: $child_exit_status, Signal: $child_signal") if $child_exit_status;
 	close $ERR;
 	close $COM;
 	return $child_exit_status;
