@@ -232,7 +232,7 @@ sub deleteComptes{
 				last;
 		}
 	}
-	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution sur $maxErr possible !" ; }
+	if (--$nbErr ) { §ERROR "$nbErr erreur d'execution !" ; }
 	§PRINT " nombre de suppressions de compte : $nbSuppression";
 }
 
