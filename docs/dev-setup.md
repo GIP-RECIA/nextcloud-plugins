@@ -36,6 +36,6 @@ git worktree add ../stable30 stable30
 
 ```sh
 cd workspace/nextcloud-docker-dev/workspace/stable30
-git checkout v30.0.5 -b v30.0.5
+git checkout v30.0.8 -b v30.0.8
 docker compose up -d stable30
 ```
