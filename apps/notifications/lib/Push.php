@@ -18,6 +18,7 @@ use OCA\Notifications\AppInfo\Application;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Authentication\Exceptions\InvalidTokenException;
+use OCP\Authentication\Token\IToken;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Http\Client\IClientService;
 use OCP\ICache;
@@ -245,6 +246,8 @@ class Push {
 
 	public function pushToDevice(int $id, INotification $notification, ?OutputInterface $output = null): void {
 		if (!$this->config->getSystemValueBool('has_internet_connection', true)) {
+			$this->printInfo('<error>Internet connectivity is disabled in configuration file - no push notifications will be sent</error>');
+
 			return;
 		}
 
@@ -283,12 +286,9 @@ class Push {
 		}
 
 		if (empty($devices)) {
-			$this->printInfo('No devices found for user');
+			$this->printInfo('<comment>No devices found for user</comment>');
 			return;
 		}
-
-		$this->printInfo('Trying to push to ' . count($devices) . ' devices');
-		$this->printInfo('');
 
 		if (!$notification->isValidParsed()) {
 			$language = $this->l10nFactory->getUserLanguage($user);
@@ -310,11 +310,16 @@ class Push {
 		$this->printInfo('Private user key size: ' . strlen($userKey->getPrivate()));
 		$this->printInfo('Public user key size: ' . strlen($userKey->getPublic()));
 
+
+		$this->printInfo('');
+		$this->printInfo('Found ' . count($devices) . ' devices registered for push notifications');
 		$isTalkNotification = \in_array($notification->getApp(), ['spreed', 'talk', 'admin_notification_talk'], true);
 		$devices = $this->filterDeviceList($devices, $notification->getApp());
 		if (empty($devices)) {
+			$this->printInfo('<comment>No devices left after filtering</comment>');
 			return;
 		}
+		$this->printInfo('Trying to push to ' . count($devices) . ' devices');
 
 		// We don't push to devices that are older than 60 days
 		$maxAge = time() - 60 * 24 * 60 * 60;
@@ -344,6 +349,7 @@ class Push {
 				$this->deletePushToken($device['token']);
 			}
 		}
+		$this->printInfo('');
 
 		if (!$this->deferPayloads) {
 			$this->sendNotificationsToProxies();
@@ -527,7 +533,7 @@ class Push {
 					'app' => 'notifications',
 				]);
 
-				$this->printInfo('Could not send notification to push server [' . $proxyServer . ']: ' . $error);
+				$this->printInfo('<error>Could not send notification to push server [' . $proxyServer . ']: ' . $error . '</error>');
 				continue;
 			} catch (\Exception $e) {
 				$this->log->error($e->getMessage(), [
@@ -535,7 +541,7 @@ class Push {
 				]);
 
 				$error = $e->getMessage() ?: 'no reason given';
-				$this->printInfo('Could not send notification to push server [' . get_class($e) . ']: ' . $error);
+				$this->printInfo('<error>Could not send notification to push server [' . get_class($e) . ']: ' . $error . '</error>');
 				continue;
 			}
 
@@ -543,22 +549,22 @@ class Push {
 				if (is_array($bodyData['unknown'])) {
 					// Proxy returns null when the array is empty
 					foreach ($bodyData['unknown'] as $unknownDevice) {
-						$this->printInfo('Deleting device because it is unknown by the push server: ' . $unknownDevice);
+						$this->printInfo('<comment>Deleting device because it is unknown by the push server: ' . $unknownDevice . '</comment>');
 						$this->deletePushTokenByDeviceIdentifier($unknownDevice);
 					}
 				}
 
 				if ($bodyData['failed'] !== 0) {
-					$this->printInfo('Push notification sent, but ' . $bodyData['failed'] . ' failed');
+					$this->printInfo('<comment>Push notification sent, but ' . $bodyData['failed'] . ' failed</comment>');
 				} else {
-					$this->printInfo('Push notification sent successfully');
+					$this->printInfo('<info>Push notification sent successfully</info>');
 				}
 			} elseif ($status !== Http::STATUS_OK) {
 				if ($status === Http::STATUS_TOO_MANY_REQUESTS) {
 					$this->config->setAppValue(Application::APP_ID, 'rate_limit_reached', (string) $this->timeFactory->getTime());
 				}
 				$error = $body && $bodyData === null ? $body : 'no reason given';
-				$this->printInfo('Could not send notification to push server [' . $proxyServer . ']: ' . $error);
+				$this->printInfo('<error>Could not send notification to push server [' . $proxyServer . ']: ' . $error . '</error>');
 				$this->log->warning('Could not send notification to push server [{url}]: {error}', [
 					'error' => $error,
 					'url' => $proxyServer,
@@ -566,7 +572,7 @@ class Push {
 				]);
 			} else {
 				$error = $body && $bodyData === null ? $body : 'no reason given';
-				$this->printInfo('Push notification sent but response was not parsable, using an outdated push proxy? [' . $proxyServer . ']: ' . $error);
+				$this->printInfo('<comment>Push notification sent but response was not parsable, using an outdated push proxy? [' . $proxyServer . ']: ' . $error . '</comment>');
 				$this->log->info('Push notification sent but response was not parsable, using an outdated push proxy? [{url}]: {error}', [
 					'error' => $error,
 					'url' => $proxyServer,
@@ -578,27 +584,61 @@ class Push {
 
 	protected function validateToken(int $tokenId, int $maxAge): bool {
 		$age = $this->cache->get('t' . $tokenId);
-		if ($age !== null) {
-			return $age > $maxAge;
+
+		if ($age === null) {
+			try {
+				// Check if the token is still valid...
+				$token = $this->tokenProvider->getTokenById($tokenId);
+				$type = $this->callSafelyForToken($token, 'getType');
+				if ($type === IToken::WIPE_TOKEN) {
+					// Token does not exist any more, should drop the push device entry
+					$this->printInfo('Device token is marked for remote wipe');
+					$this->deletePushToken($tokenId);
+					$this->cache->set('t' . $tokenId, 0, 600);
+					return false;
+				}
+
+				$age = $token->getLastCheck();
+				$lastActivity = $this->callSafelyForToken($token, 'getLastActivity');
+				if ($lastActivity) {
+					$age = max($age, $lastActivity);
+				}
+				$this->cache->set('t' . $tokenId, $age, 600);
+			} catch (InvalidTokenException) {
+				// Token does not exist any more, should drop the push device entry
+				$this->printInfo('<error>InvalidTokenException is thrown</error>');
+				$this->deletePushToken($tokenId);
+				$this->cache->set('t' . $tokenId, 0, 600);
+				return false;
+			}
 		}
 
-		try {
-			// Check if the token is still valid...
-			$token = $this->tokenProvider->getTokenById($tokenId);
-			$this->cache->set('t' . $tokenId, $token->getLastCheck(), 600);
-			if ($token->getLastCheck() > $maxAge) {
-				$this->printInfo('Device token is valid');
-			} else {
-				$this->printInfo('Device token "last checked" is older than 60 days: ' . $token->getLastCheck());
-			}
-			return $token->getLastCheck() > $maxAge;
-		} catch (InvalidTokenException $e) {
-			// Token does not exist anymore, should drop the push device entry
-			$this->printInfo('InvalidTokenException is thrown');
-			$this->deletePushToken($tokenId);
-			$this->cache->set('t' . $tokenId, 0, 600);
-			return false;
+		if ($age > $maxAge) {
+			$this->printInfo('Device token is valid');
+			return true;
 		}
+
+		$this->printInfo('<comment>Device token "last checked" is older than 60 days: ' . $age . '</comment>');
+		return false;
+	}
+
+	/**
+	 * The functions are not part of public API so we are a bit more careful
+	 * @param IToken $token
+	 * @param 'getLastActivity'|'getType' $method
+	 * @return int|null
+	 */
+	protected function callSafelyForToken(IToken $token, string $method): ?int {
+		if (method_exists($token, $method) || method_exists($token, '__call')) {
+			try {
+				$result = $token->$method();
+				if (is_int($result)) {
+					return $result;
+				}
+			} catch (\BadFunctionCallException) {
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -646,14 +686,14 @@ class Push {
 		if (!openssl_public_encrypt(json_encode($data), $encryptedSubject, $device['devicepublickey'], OPENSSL_PKCS1_PADDING)) {
 			$error = openssl_error_string();
 			$this->log->error($error, ['app' => 'notifications']);
-			$this->printInfo('Error while encrypting data: "' . $error . '"');
+			$this->printInfo('<error>Error while encrypting data: "' . $error . '"</error>');
 			throw new \InvalidArgumentException('Failed to encrypt message for device');
 		}
 
 		if (openssl_sign($encryptedSubject, $signature, $userKey->getPrivate(), OPENSSL_ALGO_SHA512)) {
 			$this->printInfo('Signed encrypted push subject');
 		} else {
-			$this->printInfo('Failed to signed encrypted push subject');
+			$this->printInfo('<error>Failed to signed encrypted push subject</error>');
 		}
 		$base64EncryptedSubject = base64_encode($encryptedSubject);
 		$base64Signature = base64_encode($signature);
