@@ -135,3 +135,7 @@ modif de l10n/fr.js, l10n/fr.json; lib/AppConfig.php
 > meld nc-gip/apps/richdocuments/ nc-gip/org/apps/richdocuments/ nc.30.0.6/apps/richdocuments/
 ....
 meld nc-gip/apps/onlyoffice/ nc-gip/org/apps/onlyoffice/ onlyoffice-nextcloud-9.6.0/
+
+--------------------------------
+migration de 30.0.6 vers 30.0.8
+on fait la migration en test (https://nc.recia.test.recia.dev/nextcloud-gip) ensuite on s'occupe des adaptations colabora et onlyofice
