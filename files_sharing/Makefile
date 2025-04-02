@@ -28,6 +28,9 @@ meld-app:
 meld-dist:
 	meld dist/ ${NEXTCLOUD_DOCKER}/dist/
 
+meld-sharing-input:
+	meld app/src/components/SharingInputRecia.vue ${NEXTCLOUD_DOCKER}/apps/files_sharing/src/components/SharingInput.vue
+
 update-composer:
 	cd ${NEXTCLOUD_DOCKER}/apps/files_sharing/composer/ && composer install
 
