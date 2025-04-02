@@ -15,7 +15,7 @@ files_sharing/
 
 ## Mise à jour
 
-> Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+> Version 28 ⚠️ La compilation génères 4 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.map` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map.license`) qui sont nécessaire au fonctionnement du plugin.
 
 1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable30`
 
@@ -31,7 +31,7 @@ files_sharing/
 
 ```bash
 nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable30
-nextcloud-docker-dev/workspace/stable30$ git checkout v30.0.6 -b v30.0.6
+nextcloud-docker-dev/workspace/stable30$ git checkout v30.0.8 -b v30.0.8
 nextcloud-docker-dev/workspace/stable30$ docker compose up -d stable30
 nextcloud-docker-dev/workspace/stable30$ make dev-setup
 nextcloud-docker-dev/workspace/stable30$ cd -
