@@ -16,7 +16,7 @@ files_sharing/
 
 ## Mise à jour
 
-> Version 28 ⚠️ La compilation génères 3 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map`) qui sont nécessaire au fonctionnement du plugin.
+> Version 28 ⚠️ La compilation génères 4 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.map` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map.license`) qui sont nécessaire au fonctionnement du plugin.
 
 1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable30`
 
@@ -103,7 +103,8 @@ files_sharing/
 +   "All platform" : "Tout le monde",
 +   "Establishments" : "Etablissements",
 +   "Select all" : "Tous",
-+   "Select none" : "Aucun"
++   "Select none" : "Aucun",
++   "Users and groups with access" : "Utilisateurs et groupes ayant accès"
 ...
 ```
 
