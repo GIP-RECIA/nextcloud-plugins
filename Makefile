@@ -42,11 +42,10 @@ defaut:
 	@echo " LDAPIMPORTER"
 	@echo " DAV"
 	@echo " CSSJSLOADER"
-	@echo " SETTINGS"
+	@echo " SETTINGS or SETTINGS_APP"
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
 	@echo " CALENDAR"
-	@echo " SETTINGS_APP"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -62,10 +61,6 @@ LIB:
 THEME:
 	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
 	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
-
-SETTINGS_APP:
-	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
-
 
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
@@ -84,7 +79,7 @@ DAV:
 CSSJSLOADER:
 	cp -rvT cssjsloader $(APPS)/cssjsloader
 
-SETTINGS:
+SETTINGS SETTINGS_APP:
 	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
 
 NOTIFICATIONS:
