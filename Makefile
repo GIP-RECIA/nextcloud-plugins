@@ -46,6 +46,7 @@ defaut:
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
 	@echo " CALENDAR"
+	@echo " ONLYOFFICE"
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
@@ -99,3 +100,8 @@ CALENDAR:
 	--include='js/***' \
 	--include='l10n/***' \
 	--exclude='*' apps/calendar/* $(APPS)/calendar
+
+ONLYOFFICE:
+	rsync -av \
+	--include='js/***' \
+	--exclude='*' apps/onlyoffice/* $(APPS)/onlyoffice
