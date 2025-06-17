@@ -191,18 +191,11 @@ body {
 		}
 	}
 
-	&#body-public {
-		// Partages par lien public
-		main#content {
-			iframe.onlyoffice-inline,
-			> #app-content > iframe#onlyofficeFrame {
-				height: calc(100vh + 8px);
-			}
-		}
-
-		// Force la hauteur pour l'affichage mobile de OO
-		#content > #app > iframe {
-			height: calc(100dvh - 58px) !important;
+	// Partages par lien public
+	&#body-public main#content {
+		iframe.onlyoffice-inline,
+		> #app-content > iframe#onlyofficeFrame {
+			height: calc(100vh + 8px);
 		}
 	}
 
