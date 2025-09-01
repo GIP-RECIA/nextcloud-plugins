@@ -26,8 +26,8 @@ $getUserAvatar = static function (int $size) use ($_): string {
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
 		<?php //mise en place du bandeau ENT
-			emit_script_tag("/commun/extended-uportal-header.min.js?$cacheBuster"); 
-			emit_script_tag("/commun/extended-uportal-footer.min.js?$cacheBuster"); 
+			emit_script_tag("/commun/r-header.js?$cacheBuster"); 
+			emit_script_tag("/commun/r-footer.js?$cacheBuster"); 
 			$request = \OC::$server->getRequest();
 		?>
 		<title>
@@ -78,30 +78,8 @@ p($theme->getTitle());
 
 		<header id="escoHeader">
 			<extended-uportal-header
-				service-name="nextcloud"
-				context-api-url="/portail"
-				sign-out-url="/portail/Logout"
-				default-org-logo-path="/annuaire_images/default_banner_v1.jpg"
-				default-avatar-path="/images/icones/noPictureUser.svg"
-				default-org-icon-path="/images/partners/netocentre-simple.svg"
-				favorite-api-url="/portail/api/layout"
-				layout-api-url="/portail/api/v4-3/dlm/layout.json"
-				organization-api-url="/change-etablissement/rest/v2/structures/structs/"
-				portlet-api-url="/portail/api/v4-3/dlm/portletRegistry.json?category=All%20categories"
-				user-info-api-url="/portail/api/v5-1/userinfo?claims=private,picture,name,ESCOSIRENCourant,ESCOSIREN&groups="
-				user-info-portlet-url="/portail/api/ExternalURLStats?fname=ESCO-MCE&amp;service=/MCE"
+				service-name="Nextcloud"
 				template-api-path="/commun/portal_template_api.tpl.json"
-				switch-org-portlet-url="/portail/p/etablissement-swapper"
-				favorites-portlet-card-size="small"
-				grid-portlet-card-size="auto"
-				hide-action-mode="never"
-				show-favorites-in-slider="true"
-				return-home-title="Aller à l'accueil"
-				return-home-target="_self"
-				icon-type="nine-square"
-				messages='[{"locales": ["fr", "fr-FR"], "messages": { "message": {"header": {"login": "Connexion ENT" } }}}]'
-				height="38px"
-				session-api-url="/portail/api/session.json"
 			<?php
 				$portal_domain = \OC_Theme::getDomain($request);
 				// error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
@@ -114,9 +92,6 @@ p($theme->getTitle());
 				}
 			?>
 			>
-				<div slot="not-loaded">
-					<a href="https://netocentre.fr/">Connection à votre ENT</a> 
-				</div>
 			</extended-uportal-header>
 		</header>
 

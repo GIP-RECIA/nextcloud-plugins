@@ -1,10 +1,14 @@
 @use 'sass:color';
 
-$extended-uportal-header-height: 38px;
+$extended-uportal-header-height: var(--recia-header-height, 68px);
 $nextcloud-header-height: 50px;
-$header-height: $extended-uportal-header-height + $nextcloud-header-height;
+$header-height: calc($extended-uportal-header-height + $nextcloud-header-height);
 
 // ---------- MAIN  ----------
+
+html {
+	font-size: unset;
+}
 
 // Suppression des bords arrondis et recalcul de la largeur
 %fullscreen {
@@ -38,8 +42,10 @@ body {
 
 body #escoDiv extended-uportal-header {
 	// Fixe le bandeau ENT au chagement
-	position: fixed;
+	display: block;
+	height: $extended-uportal-header-height;
 	width: 100%;
+	position: fixed;
 	z-index: 2100;
 
 	// Placement du slot par défaut
@@ -94,7 +100,7 @@ body > footer.escoDiv {
 
 // Affichage du bandau au survol du header et quand on quitte la fenetre
 // seulement pour les écran non tactiles et le body user
-@media only screen and (hover: hover) {
+@media only screen and (hover: hover) and (pointer: fine) {
 	body#body-user:not(:has(iframe#onlyofficeFrame, main#content.app-onlyoffice)) {
 		> footer.escoDiv {
 			display: unset;
@@ -103,20 +109,20 @@ body > footer.escoDiv {
 			bottom: 0;
 			right: 0;
 			left: 0;
-			transition: bottom .2s;
+			transition: transform .2s;
 
 			&:hover {
-				bottom: 0 !important;
+				transform: translateY(0) !important;
 			}
 		}
 
 		&:hover {
 			> footer.escoDiv {
-				bottom: -50px;
+				transform: translateY(calc(100% - 10px));
 			}
 
 			> #escoDiv:hover ~ footer.escoDiv {
-				bottom: 0;
+				transform: translateY(0);
 			}
 		}
 	}
@@ -182,7 +188,7 @@ body {
 	&#body-user {
 		// A l'ouverture
 		iframe#onlyofficeFrame {
-			height: calc(100vh - 30px)
+			height: calc(100vh - calc($extended-uportal-header-height - 8px))
 		}
 
 		// Au refresh de la page
@@ -268,10 +274,6 @@ body {
 		> * {
 			--color-background-hover: #{rgba($couleur, .15)};
 		}
-	}
-
-	extended-uportal-header {
-		--ext-header-tpl-primary-color: #{$couleur} !important;
 	}
 }
 
