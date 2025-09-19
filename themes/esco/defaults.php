@@ -110,7 +110,7 @@ class OC_Theme {
 //		error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log" );
 		$domain = self::domain($host);
 		if ($domain) {
-			$cas = (strpos($host, 'test' ) == false) ? "ent.netocentre.fr" : "auth.test.recia.dev";
+			$cas = (strpos($host, 'test' ) == false) ? "auth.recia.fr" : "auth.test.recia.dev";
 			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
 			//https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
 			//$portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
