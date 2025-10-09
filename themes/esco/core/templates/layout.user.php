@@ -78,17 +78,13 @@ p($theme->getTitle());
 
 		<header id="escoHeader">
 			<extended-uportal-header
-				service-name="Nextcloud"
 				template-api-path="/commun/portal_template_api.tpl.json"
+				fname="Nextcloud"
 			<?php
 				$portal_domain = \OC_Theme::getDomain($request);
 				// error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
 				if ($portal_domain) {
-					$portal_login_url = \OC_Theme::getPortailLoginUrl($request);
 					print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
-					if ($portal_login_url) {
-						print_unescaped('			sign-in-url="'. $portal_login_url . '"' ."\n");
-					}
 				}
 			?>
 			>
