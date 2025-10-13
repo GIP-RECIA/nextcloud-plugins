@@ -149,19 +149,55 @@ order by h.dat  limit 2000
 
 /* Les vues utilisées pour LA SUPPRESSION DES REPERTOIRE UTILISATEUR */
 
-/* 	Une vue qui donne les repertoires contenant des partages
-	pour tout les comptes initialisés dans
-					recia_init_nopartage_temp
-	utilise aussi : recia_direct_partages.
 
+/* 	Une vue qui donne les répertoire partagés:
+	un répertoire partagé est soit partagé explicitement soit contenue dans un repertoire partagé
+
+	Utilise recia_init_nopartage_temp 	pour limiter aux comptes qui nous intéresse.
+			recia_direct_partages  		pour initialiser avec les partages directe de répertoire.
+	Puis fait un parcour top down. 
+*/
+create or replace view recia_rep_partages as
+with recursive reppartage as (
+	/* init avec les partages sur les storages de la table recia_init_nopartage_temp */
+	select distinct t.storage,  if(p.isFolder = 1, p.fileid, null) fileid, p.parent , if(p.isFolder = 1, p.path, REGEXP_replace(p.path, '/[^/]+$', '')) path, t.mimetype
+	from recia_init_nopartage_temp t , recia_direct_partages p
+	where p.storage = t.storage
+	and p.mimetype = t.mimetype
+	union
+	/* on descent dans tous les sous-repertoires */
+	select p.storage,  f.fileid, f.parent, f.path, f.mimetype
+	from reppartage p , oc_filecache f
+	where f.parent = p.fileid
+	and f.mimetype = p.mimetype
+) select * from reppartage where fileid is not null  order by storage, path
+
+
+/* 	Une vue qui donne les repertoires contenant des partages,
+	pour tout les comptes initialisés dans recia_init_nopartage_temp.
+
+	Les répertoires contenants des partages sont 
+	ceux qui ont des fichiers ou des répertoires partagés
+	ou des répertoires contenant des partages.
+	 
+	Utilise: 	recia_init_nopartage_temp 	pour limiter aux comptes qui nous intéresse.
+				recia_direct_partage		pour initialiser avec les répertoires contenants de partages directe de fichier
+				recia_rep_partages 			pour initialiser avec les répertoires partagés (même indirecte).
 	Fait un parcour bottom up 
 */
 create or replace view recia_rep_avec_partage as
 with recursive repwithpartage as (
+	/* init avec les partages sur les storage de la table recia_init_nopartage_temp */
 	select distinct t.storage,  if(p.isFolder = 1, p.fileid, null) fileid, p.parent , if(p.isFolder = 1, p.path, REGEXP_replace(p.path, '/[^/]+$', '')) path
 	from recia_init_nopartage_temp t , recia_direct_partages p
 	where p.storage = t.storage
+	and p.mimetype != t.mimetype /* on ne prend pas les repertoires pris dans l'union suivantes */
+	union /* on ajoute les répertoires partagés */
+	select p.storage,  p.fileid, p.parent, p.path
+	from recia_init_nopartage_temp t, recia_rep_partages p
+	where p.storage = t.storage
 	union
+	/* on remonte sur les repertoires contenant */
 	select p.storage,  f.fileid, f.parent, f.path
 	from repwithpartage p , oc_filecache f
 	where p.parent = f.fileid
@@ -173,6 +209,8 @@ with recursive repwithpartage as (
 					recia_init_nopartage_temp
 	utilise aussi : recia_direct_partages,
 					recia_rep_avec_partage.
+
+    utilisé dans scripts/removeOldUser.pl:446
 */
 create or replace view recia_rep_sans_partage as
 select  f.storage, f.fileid, f.parent, f.path
@@ -182,11 +220,12 @@ and f.mimetype = t.mimetype
 and r.fileid is null
 order by f.storage, f.path;
 
-
 /* 	Vue qui donne les fichiers et repertoires non partagés ayant un path = 'files/...'
 	Ils ne doivent pas être dans un répertoire partagé.
 	Attention un répertoire non partagé peut contenir des partages.
-	Fait donc un parcour top down. 
+	Fait donc un parcour top down.
+
+	utilisé dans scripts/removeOldUser.pl:491
 */
 create or replace view recia_files_non_partage as 
 with recursive nopartage as (
@@ -202,4 +241,4 @@ with recursive nopartage as (
     where f.storage = n.storage
     and f.parent = n.fileid
     and p.fileid is null
-    ) select fileid, storage , isrep, path from nopartage order by storage, path ;
+    ) select fileid, storage , isrep, path from nopartage and !isRep order by storage, path ;
