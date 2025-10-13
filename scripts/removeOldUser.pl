@@ -145,7 +145,12 @@ sub delPartage {
 # expiration des partages des comptes obsolètes
 sub expirePartage {
 
-	my $req = q/update oc_share set expiration = now() where share_type in (3, 4) and (expiration is null or expiration > now()) and uid_owner in (select uid from oc_recia_user_history where isDel = 2 and datediff(now(), dat) > ? order by dat) limit ?/;
+	my $req = q/update oc_share
+					set expiration = now()
+				where share_type in (3, 4)
+				and (expiration is null or expiration > now())
+				and uid_owner in (select uid from oc_recia_user_history where isDel = 2 and datediff(now(), dat) > ? order by dat)
+				limit ?/;
 	§PRINT "update oc_share set expiration";
 
 	my $sta =$sql->prepare($req) or §FATAL $sql->errstr;
@@ -483,7 +488,7 @@ sub deleteFile {
 	
 	§PRINT "Suppression des fichiers restant non partagés";
 
-	$sqlStatement = $sql->prepare(q(select fileid, storage, path from recia_files_non_partage where !isrep and path like 'files/%' order by storage, path)) or §FATAL $sqlStatement->errstr;
+	$sqlStatement = $sql->prepare(q(select fileid, storage, path from recia_files_non_partage where path like 'files/%' order by storage, path)) or §FATAL $sqlStatement->errstr;
 	$sqlStatement->execute() or §FATAL $sqlStatement->errstr;
 
 	$cpt = 0;
