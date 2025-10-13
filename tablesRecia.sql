@@ -170,7 +170,7 @@ with recursive reppartage as (
 	from reppartage p , oc_filecache f
 	where f.parent = p.fileid
 	and f.mimetype = p.mimetype
-) select * from reppartage where fileid is not null  order by storage, path
+) select * from reppartage where fileid is not null  order by storage, path;
 
 
 /* 	Une vue qui donne les repertoires contenant des partages,
@@ -241,4 +241,5 @@ with recursive nopartage as (
     where f.storage = n.storage
     and f.parent = n.fileid
     and p.fileid is null
-    ) select fileid, storage , isrep, path from nopartage and !isRep order by storage, path ;
+    ) select fileid, storage , isrep, path from nopartage where !isrep order by storage, path ;
+
