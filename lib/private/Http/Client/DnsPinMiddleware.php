@@ -19,7 +19,7 @@ class DnsPinMiddleware {
 
 	public function __construct(
 		NegativeDnsCache $negativeDnsCache,
-		IpAddressClassifier $ipAddressClassifier
+		IpAddressClassifier $ipAddressClassifier,
 	) {
 		$this->negativeDnsCache = $negativeDnsCache;
 		$this->ipAddressClassifier = $ipAddressClassifier;
@@ -91,13 +91,13 @@ class DnsPinMiddleware {
 		return function (callable $handler) {
 			return function (
 				RequestInterface $request,
-				array $options
+				array $options,
 			) use ($handler) {
 				if ($options['nextcloud']['allow_local_address'] === true) {
 					return $handler($request, $options);
 				}
 
-				$hostName = (string) $request->getUri()->getHost();
+				$hostName = (string)$request->getUri()->getHost();
 				$port = $request->getUri()->getPort();
 
 				$ports = [
@@ -106,7 +106,7 @@ class DnsPinMiddleware {
 				];
 
 				if ($port !== null) {
-					$ports[] = (string) $port;
+					$ports[] = (string)$port;
 				}
 
 				$targetIps = $this->dnsResolve(idn_to_utf8($hostName), 0);
