@@ -13,8 +13,9 @@
 		$request = \OC::$server->getRequest();
 	?>
 	<title>
-		<?php
-			p(!empty($_['application']) ? $_['application'].' - ' : '');
+	<?php
+				p(!empty($_['pageTitle']) && (empty($_['application']) || $_['pageTitle'] !== $_['application']) ? $_['pageTitle'] . ' - ' : '');
+p(!empty($_['application']) ? $_['application'] . ' - ' : '');
 p($theme->getTitle());
 ?>
 	</title>
@@ -53,7 +54,7 @@ p($theme->getTitle());
 	</div>
 
 	<header role="banner" id="header">
-		<div class="header-left">
+		<div class="header-start">
 			<div id="nextcloud" class="header-appname">
 				<?php if ($_['logoUrl']): ?>
 					<a href="<?php print_unescaped($_['logoUrl']); ?>"
@@ -81,48 +82,23 @@ p($theme->getTitle());
 			</div>
 		</div>
 
-		<div class="header-right">
-		<?php
-/** @var \OCP\AppFramework\Http\Template\PublicTemplateResponse $template */
-if (isset($template) && $template->getActionCount() !== 0) {
-	$primary = $template->getPrimaryAction();
-	$others = $template->getOtherActions(); ?>
-			<span id="header-primary-action" class="<?php if ($template->getActionCount() === 1) {
-				p($primary->getIcon());
-			} ?>">
-				<a href="<?php p($primary->getLink()); ?>" class="primary button">
-					<span><?php p($primary->getLabel()) ?></span>
-				</a>
-			</span>
-			<?php if ($template->getActionCount() > 1) { ?>
-			<div id="header-secondary-action">
-				<button id="header-actions-toggle" class="menutoggle icon-more-white"></button>
-				<div id="header-actions-menu" class="popovermenu menu">
-					<ul>
-						<?php
-							/** @var \OCP\AppFramework\Http\Template\IMenuAction $action */
-							foreach ($others as $action) {
-								print_unescaped($action->render());
-							}
-				?>
-					</ul>
-				</div>
-			</div>
-			<?php } ?>
-		<?php
-} ?>
+		<div class="header-end">
+			<div id="public-page-menu"></div>
 		</div>
 	</header>
+
 	<main role="main" id="content" class="app-<?php p($_['appid']) ?>">
 		<h1 class="hidden-visually">
-			<?php if (isset($template) && $template->getHeaderTitle() !== '') { ?>
-				<?php p($template->getHeaderTitle()); ?>
-			<?php } else { ?>
-				<?php	p($theme->getName()); ?>
-			<?php } ?>
+			<?php
+		if (isset($template) && $template->getHeaderTitle() !== '') {
+			p($template->getHeaderTitle());
+		} else {
+			p($theme->getName());
+		} ?>
 		</h1>
 		<?php print_unescaped($_['content']); ?>
 	</main>
+
 	<?php if (isset($template) && $template->getFooterVisible() && ($theme->getLongFooter() !== '' || $_['showSimpleSignUpLink'])) { ?>
 	<footer role="contentinfo">
 		<p><?php print_unescaped($theme->getLongFooter()); ?></p>
