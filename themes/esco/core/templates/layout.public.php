@@ -42,13 +42,10 @@ p($theme->getTitle());
 	<?php print_unescaped($_['headers']); ?>
 </head>
 <!-- public -->
-<body id="<?php p($_['bodyid']);?>" 
-	class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>"
-	<?php foreach ($_['enabledThemes'] as $themeId) {
-		p("data-theme-$themeId ");
-	}?> data-themes="<?php p(join(',', $_['enabledThemes'])) ?>"
->
-<?php include('layout.noscript.warning.php'); ?>
+<body id="<?php p($_['bodyid']);?>" class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>"> <!--<?php foreach ($_['enabledThemes'] as $themeId) {
+	p("data-theme-$themeId ");
+}?> data-themes="<?php p(join(',', $_['enabledThemes'])) ?>"-->
+	<?php include('layout.noscript.warning.php'); ?>
 	<?php include('layout.initial-state.php'); ?>
 	<div id="skip-actions">
 		<?php if ($_['id-app-content'] !== null) { ?><a href="<?php p($_['id-app-content']); ?>" class="button primary skip-navigation skip-content"><?php p($l->t('Skip to main content')); ?></a><?php } ?>
