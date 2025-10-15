@@ -22,52 +22,56 @@
   -->
 
 <template>
-	<NcSelect v-model="selected"
-		:loading="loading"
-		:options="etabs"
-		:placeholder="t('files_sharing', 'Establishments')"
-		:close-on-select="false"
-		multiple
-		deselect-from-dropdown
-		class="sharing-input-etab"
-		@input="change"
-		@search="saveQuery">
-		<template #list-header>
-			<li>
-				<div class="option__selectall">
-					<NcButton type="tertiary"
-						size="small"
-						:aria-label="t('files_sharing', 'Select all')"
-						@click="selectAll">
-						{{ t('files_sharing', 'Select all') }}
-					</NcButton>
-					<NcButton type="tertiary"
-						size="small"
-						:aria-label="t('files_sharing', 'Select none')"
-						@click="deselectAll">
-						{{ t('files_sharing', 'Select none') }}
-					</NcButton>
+	<div>
+		<label class="hidden-visually" :for="shareInputEtabId">
+			{{ t('files_sharing', 'Establishments') }}
+		</label>
+		<NcSelect v-model="selected"
+			:input-id="shareInputEtabId"
+			:loading="loading"
+			:options="etabs"
+			:placeholder="t('files_sharing', 'Establishments')"
+			:close-on-select="false"
+			multiple
+			deselect-from-dropdown
+			class="sharing-input-etab"
+			@input="change"
+			@search="saveQuery">
+			<template #list-header>
+				<li>
+					<div class="option__selectall">
+						<NcButton type="tertiary"
+							size="small"
+							@click="selectAll">
+							{{ t('files_sharing', 'Select all') }}
+						</NcButton>
+						<NcButton type="tertiary"
+							size="small"
+							@click="deselectAll">
+							{{ t('files_sharing', 'Select none') }}
+						</NcButton>
+					</div>
+				</li>
+			</template>
+			<template #no-options>
+				{{ noResultText }}
+			</template>
+			<template #option="{ name, uai }">
+				<div class="option__container">
+					<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
+					<div class="option__desc">
+						<NcHighlight class="option__name" :text="name" :search="query" />
+						<NcHighlight class="option__uai" :text="uai" :search="query" />
+					</div>
 				</div>
-			</li>
-		</template>
-		<template #no-options>
-			{{ noResultText }}
-		</template>
-		<template #option="{ name, uai }">
-			<div class="option__container">
-				<NcIconSvgWrapper class="option__icon" :path="mdiCheck" inline />
-				<div class="option__desc">
-					<NcHighlight class="option__name" :text="name" :search="query" />
-					<NcHighlight class="option__uai" :text="uai" :search="query" />
+			</template>
+			<template #selected-option-container="{ option }">
+				<div class="vs__selected">
+					{{ option.name }}
 				</div>
-			</div>
-		</template>
-		<template #selected-option-container="{ option }">
-			<div class="vs__selected">
-				{{ option.name }}
-			</div>
-		</template>
-	</NcSelect>
+			</template>
+		</NcSelect>
+	</div>
 </template>
 
 <script>
@@ -89,6 +93,12 @@ export default {
 		NcHighlight,
 		NcIconSvgWrapper,
 		NcSelect,
+	},
+
+	setup() {
+		return {
+			shareInputEtabId: `share-input-etab-${Math.random().toString(36).slice(2, 7)}`,
+		}
 	},
 
 	data() {

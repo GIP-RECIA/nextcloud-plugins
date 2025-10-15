@@ -18,32 +18,32 @@ files_sharing/
 
 > Version 28 ⚠️ La compilation génères 4 fichiers (du type `xxxx-xxxx.js` `xxxx-xxxx.js.map` `xxxx-xxxx.js.license` `xxxx-xxxx.js.map.license`) qui sont nécessaire au fonctionnement du plugin.
 
-1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable30`
+1. Mettez vous au tag de la version stable souhaitée et lancer le docker compose. `docker compose up -d stable31`
 
 2. Initialisez le projet : `make dev-setup`.
 
-3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable30/apps/files_sharing` et inversement.
+3. Reportez les modifications de `nextcloud-plugins/files_sharing/app` vers le serveur `nextcloud-docker-dev/workspace/stable31/apps/files_sharing` et inversement.
 
 4. Mettez à jour l'autoloader php : `composer install`.
 
 5. Compilez le projet : `make build-js-production`.
 
-6. Assurez vous que tout fonction correctement dans le docker ([stable30.local](stable30.local)).
+6. Assurez vous que tout fonction correctement dans le docker ([stable31.local](stable31.local)).
 
 7. Récuperez les fichiers compilés et le dossier `composer` : `make sync`.
 
 ```bash
-nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable30/
-nextcloud-docker-dev/workspace/stable30$ git checkout v30.0.16 -b v30.0.16
-nextcloud-docker-dev/workspace/stable30$ docker compose up -d stable30
-nextcloud-docker-dev/workspace/stable30$ make dev-setup
-nextcloud-docker-dev/workspace/stable30$ cd -
+nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable31/
+nextcloud-docker-dev/workspace/stable31$ git checkout v31.0.9 -b v31.0.9
+nextcloud-docker-dev/workspace/stable31$ docker compose up -d stable31
+nextcloud-docker-dev/workspace/stable31$ make dev-setup
+nextcloud-docker-dev/workspace/stable31$ cd -
 nextcloud-plugins/files_sharing$ make add
 nextcloud-plugins/files_sharing$ make meld
 nextcloud-plugins/files_sharing$ make update-composer
 nextcloud-plugins/files_sharing$ cd -
-nextcloud-docker-dev/workspace/stable30$ make build-js-production
-nextcloud-docker-dev/workspace/stable30$ cd -
+nextcloud-docker-dev/workspace/stable31$ make build-js-production
+nextcloud-docker-dev/workspace/stable31$ cd -
 nextcloud-plugins/files_sharing$ make sync
 ```
 
