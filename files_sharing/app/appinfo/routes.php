@@ -1,5 +1,4 @@
 <?php
-
 /**
  * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
@@ -40,12 +39,6 @@ return [
 			'url' => '/s/{token}/preview',
 			'verb' => 'GET',
 			'root' => '',
-		],
-
-		[
-			'name' => 'externalShares#testRemote',
-			'url' => '/testremote',
-			'verb' => 'GET'
 		],
 		[
 			'name' => 'PublicPreview#getPreview',
