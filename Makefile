@@ -32,7 +32,6 @@ defaut:
 	@echo "### Plugins ###"
 	@echo " USER_CAS\tonly on first install (to check)"
 	@echo " LDAPIMPORTER"
-	@echo " FILES_SHARING"
 	@echo " COLLABORA"
 
 SCRIPTS: 
@@ -50,11 +49,6 @@ USER_CAS:
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
-
-FILES_SHARING:
-	rsync -av files_sharing/dist/* $(DIST)
-	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
-	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
