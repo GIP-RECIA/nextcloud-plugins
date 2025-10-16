@@ -213,7 +213,4 @@ backups/**
 
 ###< perso gbrousse ###
 util.sh
-/Prod/
-/NC-extended/
-
 makefile
