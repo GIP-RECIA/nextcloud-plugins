@@ -19,3 +19,11 @@
 ├── skeleton
 └── themes
 ```
+
+## Build theme
+
+```sh
+nvm use
+npm i -g sass
+sass --style=compressed --error-css themes/esco/scss:themes/esco/css
+```
