@@ -36,6 +36,7 @@ use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
+use OCA\Onlyoffice\AppInfo\Application;
 
 /**
  * Application configutarion
@@ -43,28 +44,6 @@ use Psr\Log\LoggerInterface;
  * @package OCA\Onlyoffice
  */
 class AppConfig {
-
-    /**
-     * Application name
-     *
-     * @var string
-     */
-    private $appName;
-
-    /**
-     * Config service
-     *
-     * @var IConfig
-     */
-    private $config;
-
-    /**
-     * Logger
-     *
-     * @var ILogger
-     */
-    private $logger;
-
     /**
      * The config key for the demo server
      *
@@ -120,6 +99,13 @@ class AppConfig {
      * @var string
      */
     private $_sameTab = "sameTab";
+
+    /**
+     * The config key for the enabling sharring in a same tab
+     *
+     * @var string
+     */
+    private $_enableSharing = "enableSharing";
 
     /**
      * The config key for the generate preview
@@ -192,18 +178,18 @@ class AppConfig {
     private $_customizationForcesave = "customizationForcesave";
 
     /**
+     * The config key for the live view on share setting
+     *
+     * @var string
+     */
+    private $_liveViewOnShare = "liveViewOnShare";
+
+    /**
      * The config key for the help display setting
      *
      * @var string
      */
     private $_customizationHelp = "customizationHelp";
-
-    /**
-     * The config key for the no tabs setting
-     *
-     * @var string
-     */
-    private $_customizationToolbarNoTabs = "customizationToolbarNoTabs";
 
     /**
      * The config key for the review mode setting
@@ -332,13 +318,6 @@ class AppConfig {
     public $_customization_autosave = "customization_autosave";
 
     /**
-     * The config key for the goback
-     *
-     * @var string
-     */
-    public $_customization_goback = "customization_goback";
-
-    /**
      * The config key for the macros
      *
      * @var string
@@ -353,6 +332,13 @@ class AppConfig {
     public $_customizationPlugins = "customization_plugins";
 
     /**
+     * The config key for the disable downloading
+     *
+     * @var string
+     */
+    public $_disableDownload = "disable_download";
+
+    /**
      * The config key for the interval of editors availability check by cron
      *
      * @var string
@@ -360,23 +346,24 @@ class AppConfig {
     private $_editors_check_interval = "editors_check_interval";
 
     /**
-     * The config key for store cache
+     * The config key for the JWT expiration
      *
-     * @var ICache
+     * @var string
      */
-    private $cache;
+    private $_jwt_expiration = "jwt_expiration";
 
     /**
-     * @param string $AppName - application name
+     * The config key for store cache
      */
-    public function __construct($AppName) {
+    private ICache $cache;
 
-        $this->appName = $AppName;
-
-        $this->config = \OC::$server->getConfig();
-        $this->logger = \OC::$server->get(LoggerInterface::class);
-        $cacheFactory = \OC::$server->get(ICacheFactory::class);
-        $this->cache = $cacheFactory->createLocal($this->appName);
+    public function __construct(
+        private string $appName,
+        private IConfig $config,
+        private LoggerInterface $logger,
+        ICacheFactory $cacheFactory,
+    ) {
+        $this->cache = $cacheFactory->createLocal(Application::APP_ID);
     }
 
     /**
@@ -711,6 +698,10 @@ class AppConfig {
     public function setSameTab($value) {
         $this->logger->info("Set opening in a same tab: " . json_encode($value), ["app" => $this->appName]);
 
+        if ($value) {
+            $this->setEnableSharing(false);
+        }
+
         $this->config->setAppValue($this->appName, $this->_sameTab, json_encode($value));
     }
 
@@ -721,6 +712,26 @@ class AppConfig {
      */
     public function getSameTab() {
         return $this->config->getAppValue($this->appName, $this->_sameTab, "true") === "true";
+    }
+
+    /**
+     * Save the enable sharing setting
+     *
+     * @param bool $value - enable sharing
+     */
+    public function setEnableSharing($value) {
+        $this->logger->info("Set enable sharing: " . json_encode($value), ["app" => $this->appName]);
+
+        $this->config->setAppValue($this->appName, $this->_enableSharing, json_encode($value));
+    }
+
+    /**
+     * Get the enable sharing setting
+     *
+     * @return bool
+     */
+    public function getEnableSharing() {
+        return $this->config->getAppValue($this->appName, $this->_enableSharing, "false") === "true";
     }
 
     /**
@@ -928,6 +939,26 @@ class AppConfig {
     }
 
     /**
+     * Save live view on share setting
+     *
+     * @param bool $value - live view on share
+     */
+    public function setLiveViewOnShare($value) {
+        $this->logger->info("Set live view on share: " . json_encode($value), ["app" => $this->appName]);
+
+        $this->config->setAppValue($this->appName, $this->_liveViewOnShare, json_encode($value));
+    }
+
+    /**
+     * Get live view on share setting
+     *
+     * @return bool
+     */
+    public function getLiveViewOnShare() {
+        return $this->config->getAppValue($this->appName, $this->_liveViewOnShare, "false") === "true";
+    }
+
+    /**
      * Save help display setting
      *
      * @param bool $value - display help
@@ -945,26 +976,6 @@ class AppConfig {
      */
     public function getCustomizationHelp() {
         return $this->config->getAppValue($this->appName, $this->_customizationHelp, "true") === "true";
-    }
-
-    /**
-     * Save without tabs setting
-     *
-     * @param bool $value - without tabs
-     */
-    public function setCustomizationToolbarNoTabs($value) {
-        $this->logger->info("Set without tabs: " . json_encode($value), ["app" => $this->appName]);
-
-        $this->config->setAppValue($this->appName, $this->_customizationToolbarNoTabs, json_encode($value));
-    }
-
-    /**
-     * Get without tabs setting
-     *
-     * @return bool
-     */
-    public function getCustomizationToolbarNoTabs() {
-        return $this->config->getAppValue($this->appName, $this->_customizationToolbarNoTabs, "true") === "true";
     }
 
     /**
@@ -1008,17 +1019,47 @@ class AppConfig {
     /**
      * Get theme setting
      *
+     * @param bool $realValue - get real value (for example, for settings)
      * @return string
      */
-    public function getCustomizationTheme() {
-        $value = $this->config->getAppValue($this->appName, $this->_customizationTheme, "theme-classic-light");
-        if ($value === "theme-light") {
-            return "theme-light";
+    public function getCustomizationTheme($realValue = false) {
+        $value = $this->config->getAppValue($this->appName, $this->_customizationTheme, "theme-system");
+        $validThemes = [
+            "default" => "theme-system",
+            "light" => "default-light",
+            "dark" => "default-dark"
+        ];
+
+        if (!in_array($value, $validThemes)) {
+            $value = "theme-system";
         }
-        if ($value === "theme-dark") {
-            return "theme-dark";
+
+        if ($realValue) {
+            return $value;
         }
-        return "theme-classic-light";
+
+        if ($value === "theme-system") {
+            $user = \OC::$server->getUserSession()->getUser();
+
+            if ($user !== null) {
+                $themingMode = $this->config->getUserValue($user->getUID(), "theming", "enabled-themes", "");
+
+                if ($themingMode !== "") {
+                    try {
+                        $themingModeArray = json_decode($themingMode, true);
+                        $themingMode = $themingModeArray[0] ?? "";
+
+                        if (isset($validThemes[$themingMode])) {
+                            return $validThemes[$themingMode];
+                        }
+                    } catch (Exception $e) {
+                        $this->logger->error("Error decoding theming mode: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -1195,7 +1236,7 @@ class AppConfig {
             // group unknown -> error and allow nobody
             $group = \OC::$server->getGroupManager()->get($groupName);
             if ($group === null) {
-                \OC::$server->getLogger()->error("Group is unknown $groupName", ["app" => $this->appName]);
+                \OCP\Log\logger('onlyoffice')->error("Group is unknown $groupName", ["app" => $this->appName]);
                 $this->setLimitGroups(array_diff($groups, [$groupName]));
             } else {
                 if ($group->inGroup($user)) {
@@ -1307,12 +1348,21 @@ class AppConfig {
     }
 
     /**
+     * Get the error text of the status settings
+     *
+     * @param string $value - error
+     */
+    public function getSettingsError() {
+        return $this->config->getAppValue($this->appName, $this->_settingsError, "");
+    }
+
+    /**
      * Get the status settings
      *
      * @return bool
      */
     public function settingsAreSuccessful() {
-        return empty($this->config->getAppValue($this->appName, $this->_settingsError, ""));
+        return empty($this->getSettingsError());
     }
 
     /**
@@ -1382,6 +1432,16 @@ class AppConfig {
     }
 
     /**
+     * Get the disable download value
+     *
+     * @return bool
+     */
+    public function getDisableDownload() {
+        $disableDownload = (bool)$this->getSystemValue($this->_disableDownload);
+
+        return $disableDownload;
+    }
+    /**
      * Get the editors check interval
      *
      * @return int
@@ -1400,6 +1460,20 @@ class AppConfig {
             $interval = 60 * 60 * 24;
         }
         return (integer)$interval;
+    }
+
+    /**
+     * Get the JWT expiration
+     *
+     * @return int
+     */
+    public function getJwtExpiration() {
+        $jwtExp = $this->getSystemValue($this->_jwt_expiration);
+
+        if (empty($jwtExp)) {
+            return 5;
+        }
+        return (integer)$jwtExp;
     }
 
     /**
@@ -1437,7 +1511,7 @@ class AppConfig {
             }
             return $result;
         } catch (\Exception $e) {
-            $this->logger->logException($e, ["message" => "Format matrix error", "app" => $this->appName]);
+            $this->logger->error("Format matrix error", ['exception' => $e]);
             return [];
         }
     }
@@ -1456,12 +1530,11 @@ class AppConfig {
             ],
             "docxf" => [
                 "def" => true,
-                "review" => true,
-                "comment" => true,
                 "createForm" => true,
             ],
             "oform" => [
                 "def" => true,
+                "createForm" => true,
             ],
             "pdf" => [
                 "def" => true,
@@ -1480,6 +1553,9 @@ class AppConfig {
             ],
             "csv" => [
                 "edit" => true,
+            ],
+            "vsdx" => [
+                "def" => true,
             ],
         ];
         return $additionalFormatAttributes;
