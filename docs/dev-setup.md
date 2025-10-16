@@ -14,7 +14,8 @@ Utilisation de [nextcloud-docker-dev](https://github.com/juliusknorr/nextcloud-d
     ├── nextcloud-ent
     ├── nextcloud-gip
     ├── notifications
-    └── onlyoffice-nextcloud
+    ├── onlyoffice-nextcloud
+    └── richdocuments
 ```
 
 **Initialisation des sous projets**
@@ -28,6 +29,7 @@ git worktree add nextcloud-ent master-ent
 git clone https://github.com/nextcloud/notifications.git
 git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git
 git clone https://github.com/juliusknorr/nextcloud-docker-dev.git
+git clone https://github.com/nextcloud/richdocuments.git
 cd nextcloud-docker-dev
 ./bootstrap.sh --full-clone
 cd workspace/server
