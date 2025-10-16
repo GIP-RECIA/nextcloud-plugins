@@ -1,11 +1,6 @@
 OC.L10N.register(
     "richdocuments",
     {
-    "New document" : "Nouveau document LO Write",
-    "New spreadsheet" : "Nouvelle feuille LO Calc",
-    "New presentation" : "Nouvelle présentation LO Impress",
-    "New diagram" : "Nouveau diagramme LO Draw",
-    "Nextcloud Office" : "Nextcloud Office",
     "Cannot create document" : "Impossible de créer le document",
     "New Document.odt" : "Nouveau Document.odt",
     "New Spreadsheet.ods" : "Nouvelle Feuille de Calcul.ods",
@@ -32,6 +27,10 @@ OC.L10N.register(
     "Only template files can be uploaded" : "Seuls des fichiers modèles peuvent être téléversés",
     "Invalid file provided" : "Fichier fourni invalide",
     "Template not found" : "Modèle non trouvé",
+    "New document" : "Nouveau document LO Write",
+    "New spreadsheet" : "Nouvelle feuille de calcul LO Calc",
+    "New presentation" : "Nouvelle présentation LO Impress",
+    "New diagram" : "Nouveau diagramme LO Draw",
     "Link to office document section" : "Lien vers la section des documents bureautiques",
     "Nextcloud Office" : "Nextcloud Office",
     "Headings" : "Titres",
