@@ -113,19 +113,4 @@ class OC_Theme
 		}
 		return '';
 	}
-
-	public static function getPortailLoginUrl($request)
-	{
-		$host = $request->getServerHost();
-		// error_log("get PortailLoginUrl '$host'\n", 3, "/home/esco/logs/themes.esco.log");
-		$domain = self::domain($host);
-		if ($domain) {
-			$cas = (strpos($host, 'test' ) == false) ? "auth.recia.fr" : "auth.test.recia.dev";
-			$portail_login = sprintf("https://%s/cas/login?service=https://%s/portail/Login", $cas, $domain);
-			// https://test-clg37.giprecia.net/portail/api/ExternalURLStats?fname=nextcloud&service=/nextcloud/apps/user_cas/login?portal_domain=test-clg37.giprecia.net
-			// $portail_login = sprintf("https://%s/portail/p/nextcloud&pP_next=https://%s/nextcloud/apps/user_cas/login", $domain, $host);
-		}
-		// error_log("return '$portail_login'\n", 3, "/home/esco/logs/themes.esco.log");
-		return $portail_login;
-	}
 }
