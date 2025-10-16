@@ -11,6 +11,7 @@
 ├── config
 ├── core
 ├── cssjsloader
+├── docs
 ├── files_sharing
 ├── ldapimporter
 ├── lib
