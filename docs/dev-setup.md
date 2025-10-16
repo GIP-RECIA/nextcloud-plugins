@@ -33,6 +33,7 @@ git clone https://github.com/nextcloud/richdocuments.git
 cd nextcloud-docker-dev
 ./bootstrap.sh --full-clone
 cd workspace/server
+git submodule update --init
 git worktree add ../stable30 stable30
 ```
 
