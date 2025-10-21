@@ -28,7 +28,7 @@ class S3 implements IObjectStore, IObjectStoreMultiPartUpload, IObjectStoreMetaD
 		return $this->id;
 	}
 
-	public function setBucket($bucket) {
+	public function setBucket(string $bucket) {
 		$this->id = 'amazon::' . $bucket;
 		$this->bucket = $bucket;
 	}
