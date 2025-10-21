@@ -28,7 +28,7 @@ class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload, IObjectStore
 		return $this->id;
 	}
 
-	public function setBucket($bucket) {
+	public function setBucket(string $bucket) {
 		$this->id = 'amazon::' . $bucket;
 		$this->bucket = $bucket;
 	}
