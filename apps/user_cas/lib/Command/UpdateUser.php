@@ -13,6 +13,7 @@ use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\Mail\IMailer;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -86,7 +87,7 @@ class UpdateUser extends Command
         $mailer = \OC::$server->getMailer();
         $config = \OC::$server->getConfig();
         $userSession = \OC::$server->getUserSession();
-        $logger = \OC::$server->getLogger();
+        $logger = \OCP\Server::get(LoggerInterface::class);
         $urlGenerator = \OC::$server->getURLGenerator();
         $appManager = \OC::$server->getAppManager();
 

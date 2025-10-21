@@ -24,7 +24,7 @@
 namespace OCA\UserCAS\Service;
 
 use \OCP\IConfig;
-use \OCP\ILogger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class LoggingService
@@ -71,7 +71,7 @@ class LoggingService
     private $config;
 
     /**
-     * @var \OCP\ILogger $logger
+     * @var \OCP\LoggerInterface $logger
      */
     private $logger;
 
@@ -79,9 +79,9 @@ class LoggingService
      * LoggingService constructor.
      * @param string $appName
      * @param \OCP\IConfig $config
-     * @param \OCP\ILogger $logger
+     * @param \OCP\LoggerInterface $logger
      */
-    public function __construct($appName, IConfig $config, ILogger $logger)
+    public function __construct($appName, IConfig $config, LoggerInterface $logger)
     {
 
         $this->appName = $appName;
