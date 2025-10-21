@@ -597,86 +597,76 @@ diff grep.ObjectStoreStorage.30.0.16 grep.ObjectStoreStorage.30.0.8
 conclusion des changement mais devrait aller
 
 cd nc.30.0.16 ; grep -R getStorageId . > ../grep.getStorageId.30.0.8 ; cd -
-> diff grep.getStorageId.30.0.6 grep.getStorageId.30.0.8
-1,14d0
-< ./apps/files_sharing/lib/SharedMount.php:			return $this->getShare()->getNodeCacheEntry()->getStorageId();
-< ./apps/files_sharing/lib/Cache.php:		$this->numericId = $sourceRootInfo->getStorageId();
-< ./apps/files_sharing/lib/Cache.php:		if ($rawEntry->getStorageId() === $this->getNumericStorageId()) {
-< ./apps/circles/lib/Model/FileCacheWrapper.php:	public function getStorageId(): int {
-< ./apps/circles/lib/Model/FileCacheWrapper.php:			'storage' => $this->getStorageId(), // strange, it is not !?
-< ./apps/circles/lib/Model/FileCacheWrapper.php:			'storageId' => $this->getStorageId(),
-< ./apps/files_external/lib/Service/StoragesService.php:			$this->userMountCache->remoteStorageMounts($this->getStorageId($updatedStorage));
-< ./apps/files_external/lib/Service/StoragesService.php:			$storageId = $this->getStorageId($updatedStorage);
-< ./apps/files_external/lib/Service/StoragesService.php:	private function getStorageId(StorageConfig $storageConfig) {
-< ./apps/files_external/lib/Command/Notify.php:			$storages = $this->getStorageIds($mountId, $parent);
-< ./apps/files_external/lib/Command/Notify.php:			$storages = $this->getStorageIds($mountId, $path);
-< ./apps/files_external/lib/Command/Notify.php:	private function getStorageIds(int $mountId, string $path): array {
-< ./apps/activity/lib/FilesHooks.php:				'storageId' => $mount->getStorageId()
-< ./core/Command/Info/File.php:			$objectStoreId = $storage->getObjectStore()->getStorageId();
+> diff grep.getStorageId.30.0.16 grep.getStorageId.30.0.8
+< ./lib/private/FilesMetadata/Service/MetadataRequestService.php:			->hintShardKey('storage', $this->getStorageId($filesMetadata))
+< ./lib/private/FilesMetadata/Service/MetadataRequestService.php:			->hintShardKey('files_metadata', $this->getStorageId($filesMetadata))
+---
+> ./lib/private/FilesMetadata/Service/MetadataRequestService.php:		   ->hintShardKey('storage', $this->getStorageId($filesMetadata))
+> ./lib/private/FilesMetadata/Service/MetadataRequestService.php:		   ->hintShardKey('files_metadata', $this->getStorageId($filesMetadata))
+27c27
+< ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			$sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()
+---
+> ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class) && $sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
+44c44
+< ./apps/activity/lib/FilesHooks.php:				'storageId' => $mount->getStorageId(),
+---
+> ./apps/activity/lib/FilesHooks.php:				'storageId' => $mount->getStorageId()
 
 
-< ./lib/public/Files/Mount/IMountPoint.php:	public function getStorageId();
+
+--------------------------------
+
+migration de 30.0.16 à 31.0.9
+
+diff nc.30.0.16/core/css/variables.scss nc.31.0.9/core/css/variables.scss
+meld nc.30.0.16/core/css/variables.scss nc-ent/core/css/variables.scss nc.31.0.9/core/css/variables.scss
+
+diff nc.30.0.16/core/templates/layout.user.php nc.31.0.9/core/templates/layout.user.php
+meld ...
+diff nc.30.0.16/core/templates/layout.base.php nc.31.0.9/core/templates/layout.base.php
+
+diff nc.30.0.16/core/templates/layout.public.php nc.31.0.9/core/templates/layout.public.php
+
+
+
+diff nc.30.0.16/core/templates/layout.noscript.warning.php nc.31.0.9/core/templates/layout.noscript.warning.php
+diff nc.30.0.16/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.31.0.9/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+a changé
+meld nc.30.0.16/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.31.0.9/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+essentielement du typage ne voit pas trop d'impact a verifier en recette !
+
+diff nc.30.0.16/lib/private/Files/ObjectStore/Mapper.php nc.31.0.9/lib/private/Files/ObjectStore/Mapper.php
+que des blanc
+
+
+diff nc.30.0.16/lib/private/Files/ObjectStore/S3.php nc.31.0.9/lib/private/Files/ObjectStore/S3.php
+à changé
+> meld  nc.30.0.16/lib/private/Files/ObjectStore/S3.php nc-ent/lib/private/Files/ObjectStore/S3Recia.php nc.31.0.9/lib/private/Files/ObjectStore/S3.php
+du typage ok
+
+
+diff nc.30.0.16/apps/dav/lib/CardDAV/CardDavBackend.php nc.31.0.9/apps/dav/lib/CardDAV/CardDavBackend.php
+> meld  nc.30.0.16/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/apps/dav/lib/CardDAV/CardDavBackend.php nc.31.0.9/apps/dav/lib/CardDAV/CardDavBackend.php
+return null a ajouter a la nouvelle
+
+diff nc.30.0.16/lib/private/Files/Mount/RootMountProvider.php nc.31.0.9/lib/private/Files/Mount/RootMountProvider.php
+
+cd nc.31.0.9 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.31.0.9 ; cd -
+diff grep.ObjectStoreStorage.31.0.9 ../V30/grep.ObjectStoreStorage.30.0.16
+des changement dans les signatures .json
+
+cd nc.31.0.9 ; grep -R getStorageId . > ../grep.getStorageId.31.0.9 ; cd -
+> diff grep.getStorageId.31.0.9 ../V30/grep.getStorageId.30.0.16
+44,49d43
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Config/ICachedMountInfo.php:	public function getStorageId(): int;
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/ObjectStore/IObjectStore.php:	public function getStorageId();
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/ICacheEntry.php:	public function getStorageId();
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/ICacheEvent.php:	public function getStorageId(): int;
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/AbstractCacheEvent.php:	public function getStorageId(): int {
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Mount/IMountPoint.php:	public function getStorageId();
+52c46
+< ./apps/files_sharing/lib/Cache.php:		$this->numericId = $this->sourceRootInfo->getStorageId();
 ---
-> ./lib/public/Files/ObjectStore/IObjectStore.php:	public function getStorageId();
-18d3
-< ./lib/public/Files/Cache/AbstractCacheEvent.php:	public function getStorageId(): int {
-20,21c5,6
-< ./lib/public/Files/ObjectStore/IObjectStore.php:	public function getStorageId();
-< ./lib/private/FilesMetadata/Model/FilesMetadata.php:	public function getStorageId(): ?int {
----
-> ./lib/public/Files/Cache/AbstractCacheEvent.php:	public function getStorageId(): int {
-> ./lib/public/Files/Mount/IMountPoint.php:	public function getStorageId();
-24,25c9,12
-< ./lib/private/FilesMetadata/Service/MetadataRequestService.php:		   ->hintShardKey('storage', $this->getStorageId($filesMetadata))
-< ./lib/private/FilesMetadata/Service/MetadataRequestService.php:		   ->hintShardKey('files_metadata', $this->getStorageId($filesMetadata))
----
-> ./lib/private/FilesMetadata/Service/MetadataRequestService.php:			->hintShardKey('storage', $this->getStorageId($filesMetadata))
-> ./lib/private/FilesMetadata/Service/MetadataRequestService.php:			->hintShardKey('files_metadata', $this->getStorageId($filesMetadata))
-> ./lib/private/FilesMetadata/Model/FilesMetadata.php:	public function getStorageId(): ?int {
-> ./lib/private/Preview/Storage/Root.php:	public function getStorageId(): int {
-29,32d15
-< ./lib/private/Preview/Storage/Root.php:	public function getStorageId(): int {
-< ./lib/private/Files/Config/LazyStorageMountInfo.php:	public function getStorageId(): int {
-< ./lib/private/Files/Config/LazyStorageMountInfo.php:		return parent::getStorageId();
-< ./lib/private/Files/Config/CachedMountInfo.php:	public function getStorageId(): int {
-38,39c21,30
-< ./lib/private/Files/Mount/MountPoint.php:	public function getStorageId() {
-< ./lib/private/Files/Mount/Manager.php:			if ($mount->getStorageId() === $id) {
----
-> ./lib/private/Files/Config/LazyStorageMountInfo.php:	public function getStorageId(): int {
-> ./lib/private/Files/Config/LazyStorageMountInfo.php:		return parent::getStorageId();
-> ./lib/private/Files/Config/CachedMountInfo.php:	public function getStorageId(): int {
-> ./lib/private/Files/ObjectStore/Swift.php:	public function getStorageId() {
-> ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			$this->id = 'object::store:' . $this->objectStore->getStorageId();
-> ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			if ($sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
-> ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			$sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()
-> ./lib/private/Files/ObjectStore/StorageObjectStore.php:	public function getStorageId(): string {
-> ./lib/private/Files/ObjectStore/Azure.php:	public function getStorageId() {
-> ./lib/private/Files/ObjectStore/S3.php:	public function getStorageId() {
-51,57c42,57
-< ./lib/private/Files/ObjectStore/StorageObjectStore.php:	public function getStorageId(): string {
-< ./lib/private/Files/ObjectStore/Azure.php:	public function getStorageId() {
-< ./lib/private/Files/ObjectStore/S3.php:	public function getStorageId() {
-< ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			$this->id = 'object::store:' . $this->objectStore->getStorageId();
-< ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:			if ($sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
-< ./lib/private/Files/ObjectStore/ObjectStoreStorage.php:		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class) && $sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
-< ./lib/private/Files/ObjectStore/Swift.php:	public function getStorageId() {
----
-> ./lib/private/Files/Mount/Manager.php:			if ($mount->getStorageId() === $id) {
-> ./lib/private/Files/Mount/MountPoint.php:	public function getStorageId() {
-> ./apps/activity/lib/FilesHooks.php:				'storageId' => $mount->getStorageId(),
-> ./apps/files_sharing/lib/SharedMount.php:			return $this->getShare()->getNodeCacheEntry()->getStorageId();
 > ./apps/files_sharing/lib/Cache.php:		$this->numericId = $sourceRootInfo->getStorageId();
-> ./apps/files_sharing/lib/Cache.php:		if ($rawEntry->getStorageId() === $this->getNumericStorageId()) {
-> ./apps/circles/lib/Model/FileCacheWrapper.php:	public function getStorageId(): int {
-> ./apps/circles/lib/Model/FileCacheWrapper.php:			'storage' => $this->getStorageId(), // strange, it is not !?
-> ./apps/circles/lib/Model/FileCacheWrapper.php:			'storageId' => $this->getStorageId(),
-> ./apps/files_external/lib/Service/StoragesService.php:			$this->userMountCache->remoteStorageMounts($this->getStorageId($updatedStorage));
-> ./apps/files_external/lib/Service/StoragesService.php:			$storageId = $this->getStorageId($updatedStorage);
-> ./apps/files_external/lib/Service/StoragesService.php:	private function getStorageId(StorageConfig $storageConfig) {
-> ./apps/files_external/lib/Command/Notify.php:			$storages = $this->getStorageIds($mountId, $parent);
-> ./apps/files_external/lib/Command/Notify.php:			$storages = $this->getStorageIds($mountId, $path);
-> ./apps/files_external/lib/Command/Notify.php:	private function getStorageIds(int $mountId, string $path): array {
-> ./core/Command/Info/File.php:			$objectStoreId = $storage->getObjectStore()->getStorageId();
 
 
