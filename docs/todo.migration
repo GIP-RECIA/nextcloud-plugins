@@ -143,3 +143,18 @@ on fait la migration en test (https://nc.recia.test.recia.dev/nextcloud-gip) ens
 migration de 30.0.8 => 30.0.16
 on fait la migration en test (https://nc.recia.test.recia.dev/nextcloud-gip)
 ensuite on s'occupe des adaptations colabora et onlyofice
+
+migration de 30.0.16 => 31.0.9
+reprise des modifs de user_cas et ldapimporter fait pour l'ent
+
+cp -rvT ../esco-nextcloud-plugins-ent/apps/user_cas apps/user_cas
+
+idem avec ldapimporter
+> meld ldapimporter/ ../esco-nextcloud-plugins-ent/ldapimporter
+mkdir -p ldapimporter/vendor/psr/log/Psr/Log/LoggerInterface.php
+cp ../esco-nextcloud-plugins-ent/ldapimporter/vendor/psr/log/Psr/Log/LoggerInterface.php ldapimporter/vendor/psr/log/Psr/Log/LoggerInterface.php
+
+
+
+
+
