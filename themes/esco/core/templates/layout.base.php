@@ -31,7 +31,7 @@
 		<?php print_unescaped($_['headers']); ?>
 	</head>
 	<!-- base -->
-	<body id="body-public" class="layout-base">
+	<body id="body-public" class="layout-base <?php p(\OC_Theme::getCssClass($request)) ?>">
 		<?php include 'layout.noscript.warning.php'; ?>
 		<?php include 'layout.initial-state.php'; ?>
 		<div id="content" class="app-public" role="main">

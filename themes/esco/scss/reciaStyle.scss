@@ -171,6 +171,18 @@ body#body-settings #app-content {
 	}
 }
 
+// ---------- ONLY OFFICE ----------
+ 
+body#body-user iframe#onlyofficeFrame {
+	height: calc(100vh - $extended-uportal-header-height)
+}
+
+// ---------- TEXT ----------
+
+body#body-user .app-sidebar--full {
+	z-index: 2100 !important;
+}
+
 // ---------- FILES_SHARING ----------
 
 body {
