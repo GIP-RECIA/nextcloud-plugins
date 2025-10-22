@@ -1,6 +1,5 @@
 <?php
 
-
 namespace OCA\LdapImporter\Service\Import;
 
 use OCA\LdapImporter\Service\Merge\AdUserMerger;
@@ -301,12 +300,12 @@ class AdImporter implements ImporterInterface
                                                 $this->logger->debug("L'établissement avec le nom/Uai : " . $groupFilterMatches[intval($groupFilter["uaiNumber"])] . " n'existe pas");
                                             } else {
 												$this->logger->debug("ERREUR ETAB");
-											}
+                                            }
                                             break;
                                         }
                                     }
                                     else {
-                                        $this->logger->debug("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
+                                  //      $this->logger->debug("Groupes fonctionels : la regex " . $groupFilter['filter'] . " ne match pas avec le groupe " . $resultGroupsAttribute);
                                     }
                                 }
                             }
@@ -385,7 +384,7 @@ class AdImporter implements ImporterInterface
 									}
 								}
 								else {
-									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
+//									$this->logger->debug("Groupes pédagogique : la regex " . $pedagogicFilter . " ne match pas avec le groupe " . $attrPedagogicStr);
 								}
 							}
 						}
@@ -410,8 +409,9 @@ class AdImporter implements ImporterInterface
                 }
 				
 				/* pl mettre l'historique a jours. */
+				$etat = false;
 				$alreadyExist= false;
-                
+				
                 if ($etatUser  && $employeeID) {
 					$etabRatach = $m['entpersonstructrattach'][0];
 					if ($etabRatach ) {
@@ -633,7 +633,7 @@ class AdImporter implements ImporterInterface
             $result = $newEtablissement->execute();
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
-        } 
+        }
 	$this->logger->error("addEtablissement sans nom (". $name . ") ou sans UAI (" . $uai . ") ni SIREN (" . $siren . ")");
 
         return null;
@@ -673,9 +673,13 @@ class AdImporter implements ImporterInterface
 					->from('etablissements')
 					->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
 				$result = $qb->execute();
-            
-				$idEtabs = $result->fetchAll()[0];
-				return $idEtabs["id"];
+				$etabAll  = $result->fetchAll();
+				if ($etabAll) {
+					$idEtabs = $etabAll[0];
+					return $idEtabs["id"];
+				}
+				// $this->logger->error("getIdEtablissementFromSiren  [Siren = $siren] return null "); 
+				return null;
 			} catch (\Exception $e) {
 				$this->logger->error(print_r($e, TRUE) . "  [Siren = $siren] ");
 			}

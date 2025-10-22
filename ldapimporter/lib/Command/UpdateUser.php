@@ -251,14 +251,18 @@ class UpdateUser extends Command
 
             $user->setDisplayName($input->getOption('display-name'));
             $output->writeln('Display name set to "' . $user->getDisplayName() . '"');
-        }
+        } else {
+			$output->writeln('no Display-name');
+		}
 
         # Set email if supplied & valid
         if ($email !== null) {
 
             $user->setEMailAddress($email);
             $output->writeln('Email address set to "' . $user->getEMailAddress() . '"');
-        }
+        } else {
+			$output->writeln('no Email ');
+		}
 
         # Set Groups
         $groups = (array)$input->getOption('group');
@@ -267,7 +271,9 @@ class UpdateUser extends Command
 
             $this->userService->updateGroups($user, $groups, $this->config->getAppValue('ldapimporter', 'cas_protected_groups'));
             $output->writeln('Groups have been updated.');
-        }
+        } else {
+			$output->writeln('no groups ');
+		}
 
         # Set Quota
         $quota = $input->getOption('quota');

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ownCloud - ldapimporter
+ * ownCloud - user_cas
  *
  * @author Felix Rupp <kontakt@felixrupp.com>
  * @copyright Felix Rupp <kontakt@felixrupp.com>
@@ -21,7 +21,7 @@
  *
  */
 
-namespace OCA\LdapImporter\Service;
+namespace OCA\UserCAS\Service;
 
 use \OCP\IConfig;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,12 @@ use Psr\Log\LoggerInterface;
 /**
  * Class LoggingService
  *
- * @package OCA\LdapImporter\Service
+ * @package OCA\UserCAS\Service
+ *
+ * @author Felix Rupp <kontakt@felixrupp.com>
+ * @copyright Felix Rupp <kontakt@felixrupp.com>
+ *
+ * @since 1.5.0
  */
 class LoggingService
 {

@@ -1,25 +1,45 @@
 <?php
 
+/**
+ * ownCloud - user_cas
+ *
+ * @author Felix Rupp <kontakt@felixrupp.com>
+ * @copyright Felix Rupp <kontakt@felixrupp.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU AFFERO GENERAL PUBLIC LICENSE for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
-namespace OCA\LdapImporter\AppInfo;
+namespace OCA\UserCAS\AppInfo;
 
 use \OCP\AppFramework\App;
 use \OCP\IContainer;
 
-use OCA\LdapImporter\Service\UserService;
-use OCA\LdapImporter\Service\AppService;
-use OCA\LdapImporter\Controller\SettingsController;
-use OCA\LdapImporter\User\Backend;
-use OCA\LdapImporter\User\NextBackend;
-use OCA\LdapImporter\Service\LoggingService;
-use OCA\LdapImporter\Hooks\UserHooks;
-use OCA\LdapImporter\Controller\AuthenticationController;
+use OCA\UserCAS\Service\UserService;
+use OCA\UserCAS\Service\AppService;
+use OCA\UserCAS\Hooks\UserHooks;
+use OCA\UserCAS\Controller\SettingsController;
+use OCA\UserCAS\Controller\AuthenticationController;
+use OCA\UserCAS\User\Backend;
+use OCA\UserCAS\User\NextBackend;
+use OCA\UserCAS\Service\LoggingService;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class Application
  *
- * @package OCA\LdapImporter\AppInfo
+ * @package OCA\UserCAS\AppInfo
  *
  * @author Felix Rupp <kontakt@felixrupp.com>
  * @copyright Felix Rupp <kontakt@felixrupp.com>
@@ -37,7 +57,7 @@ class Application extends App
     public function __construct(array $urlParams = array())
     {
 
-        parent::__construct('ldapimporter', $urlParams);
+        parent::__construct('user_cas', $urlParams);
 
         $container = $this->getContainer();
 
@@ -55,7 +75,6 @@ class Application extends App
 
 	$container->registerService('Logger', function (IContainer $c) {
 		return \OC::$server->query(\Psr\Log\LoggerInterface::class);
-
         });
 
         /**
@@ -79,7 +98,8 @@ class Application extends App
                 $c->query('LoggingService'),
                 $c->query('ServerContainer')->getUserManager(),
                 $c->query('ServerContainer')->getUserSession(),
-                $c->query('ServerContainer')->getURLGenerator()
+                $c->query('ServerContainer')->getURLGenerator(),
+                $c->query('ServerContainer')->getAppManager()
             );
         });
 
@@ -96,7 +116,8 @@ class Application extends App
                     $c->query('Config'),
                     $c->query('LoggingService'),
                     $c->query('AppService'),
-                    $c->query('ServerContainer')->getUserManager()
+                    $c->query('ServerContainer')->getUserManager(),
+                    $c->query('UserService')
                 );
             });
         } else {

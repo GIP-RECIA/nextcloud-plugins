@@ -122,7 +122,8 @@ class DeleteService
             ->andWhere($queryBuilder->expr()->eq('p.configkey', $queryBuilder->createNamedParameter('enabled')))
             ->andWhere($queryBuilder->expr()->eq('p.configvalue', $queryBuilder->createNamedParameter('false'), IQueryBuilder::PARAM_STR))
             ->andWhere($queryBuilder->expr()->eq('r.isdel', $queryBuilder->createNamedParameter(3)))
-            ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(60));
+            ->andWhere(' datediff(now(), dat) > ' . $queryBuilder->createNamedParameter(60))
+            ->setMaxResults(2000);
         $result = $queryBuilder->execute();
         $disabledUsers = $result->fetchAll();
 
@@ -134,10 +135,13 @@ class DeleteService
             ;
             $qbDelete->execute();
             $user = $this->userManager->get($uidUser);
+            $this->logger->info('delete user :' . $uidUser );
             if ($user->delete()) {
                 $this->logger->info('User with uid :' . $uidUser . ' was deleted');
                 $this->markDelUserHistory($uidUser, 4);
-            }
+            } else {
+				$this->logger->warning('Error delete user uid :' . $uidUser);
+			}
         }
     }
 
@@ -265,10 +269,10 @@ class DeleteService
 			$query = "update oc_recia_user_history set dat = curdate(), isdel = ?, eta = ? where uid = ?";
 			$this->db->executeQuery($query , [$value, $etat, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR, IQueryBuilder::PARAM_STR]);
 		} else {
-			$query = "update oc_recia_user_history set dat = curdate(), isdel = ? where uid = ?";
-			$this->db->executeQuery($query , [$value, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR]);
-		}
-		
+		$query = "update oc_recia_user_history set dat = curdate(), isdel = ? where uid = ?";
+		$this->db->executeQuery($query , [$value, $idUser], [IQueryBuilder::PARAM_INT, IQueryBuilder::PARAM_STR]);
+	}
+
 	}
 
     /**
@@ -691,7 +695,6 @@ class DeleteService
         }
 
         $ret = substr($ret, 0, 0 - strlen($glue));
-
         return $ret;
     }
 }
