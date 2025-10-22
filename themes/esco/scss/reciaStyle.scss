@@ -1,7 +1,7 @@
 @use 'sass:color';
 
 $extended-uportal-header-height: var(--recia-header-height, 68px);
-$nextcloud-header-height: 50px;
+$nextcloud-header-height: var(--header-height, 50px);
 $header-height: calc($extended-uportal-header-height + $nextcloud-header-height);
 $extended-uportal-footer-visible-height: 10px;
 
@@ -15,6 +15,7 @@ html {
 body {
 	--body-container-radius: 0px;
 	--body-container-margin: 0px;
+	--body-height: calc(100% - #{$nextcloud-header-height}- #{$extended-uportal-footer-visible-height});
 
 	&#body-user,
 	&#body-settings {
@@ -106,6 +107,13 @@ body > footer.escoDiv {
 			}
 		}
 	}
+}
+
+// ---------- NEXTCLOUD FOOTER ----------
+
+// Suppression de la pub nextcloud
+body#body-public.not_embedded footer {
+	display: none;
 }
 
 // ---------- PARAMETRES ----------
