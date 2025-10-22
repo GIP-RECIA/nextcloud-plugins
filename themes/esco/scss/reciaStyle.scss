@@ -3,38 +3,22 @@
 $extended-uportal-header-height: var(--recia-header-height, 68px);
 $nextcloud-header-height: 50px;
 $header-height: calc($extended-uportal-header-height + $nextcloud-header-height);
+$extended-uportal-footer-visible-height: 10px;
 
 // ---------- MAIN  ----------
 
 html {
-	font-size: unset;
+	font-size: unset !important;
 }
 
 // Suppression des bords arrondis et recalcul de la largeur
-%fullscreen {
-	width: 100%;
-	border-radius: 0;
-	margin-right: 0;
-	margin-left: 0;
-	margin-bottom: 0;
-	padding-bottom: 0;
-}
-
-// Recalcul de la hauteur
 body {
+	--body-container-radius: 0px;
+	--body-container-margin: 0px;
+
 	&#body-user,
 	&#body-settings {
-		> main#content,
-		> #content-vue {
-			@extend %fullscreen;
-			height: calc(100% - $header-height);
-		}
-	}
-
-	// Partages par lien public
-	&#body-public > main#content {
-		@extend %fullscreen;
-		height: calc(100% - $nextcloud-header-height);
+		--body-height: calc(100% - #{$header-height} - #{$extended-uportal-footer-visible-height});
 	}
 }
 
@@ -47,12 +31,6 @@ body #escoDiv extended-uportal-header {
 	width: 100%;
 	position: fixed;
 	z-index: 2100;
-
-	// Placement du slot par défaut
-	> div[slot=not-loaded] {
-		text-align: end;
-		padding: 8px 16px;
-	}
 }
 
 // ---------- NEXTCLOUD HEADER ----------
@@ -68,15 +46,14 @@ body {
 		header#header {
 			// Déplacement du bandeau nextcloud par rapport au bandeau ENT
 			top: $extended-uportal-header-height;
-			height: $nextcloud-header-height;
 
 			// Ajout du scroll sur la liste des applications
-			> .header-left > nav {
+			> .header-start > nav {
 				overflow-x: auto;
 				scrollbar-width: none;
 			}
 
-			> .header-right {
+			> .header-end {
 				// Masquage du menu contacts
 				> #contactsmenu {
 					display: none;
@@ -101,28 +78,31 @@ body > footer.escoDiv {
 // Affichage du bandau au survol du header et quand on quitte la fenetre
 // seulement pour les écran non tactiles et le body user
 @media only screen and (hover: hover) and (pointer: fine) {
-	body#body-user:not(:has(iframe#onlyofficeFrame, main#content.app-onlyoffice)) {
-		> footer.escoDiv {
-			display: unset;
-			position: fixed;
-			z-index: 2000;
-			bottom: 0;
-			right: 0;
-			left: 0;
-			transition: transform .2s;
+	body {
+		&#body-user:not(:has(iframe#onlyofficeFrame, main#content.app-onlyoffice)),
+		&#body-settings {
+			> footer.escoDiv {
+				display: unset;
+				position: fixed;
+				z-index: 2000;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				transition: transform .2s;
+
+				&:hover {
+					transform: translateY(0) !important;
+				}
+			}
 
 			&:hover {
-				transform: translateY(0) !important;
-			}
-		}
+				> footer.escoDiv {
+					transform: translateY(calc(100% - $extended-uportal-footer-visible-height));
+				}
 
-		&:hover {
-			> footer.escoDiv {
-				transform: translateY(calc(100% - 10px));
-			}
-
-			> #escoDiv:hover ~ footer.escoDiv {
-				transform: translateY(0);
+				> #escoDiv:hover ~ footer.escoDiv {
+					transform: translateY(0);
+				}
 			}
 		}
 	}
@@ -205,12 +185,12 @@ body {
 		}
 	}
 
-	// TODO: versifier si toujours utilisé
+	// TODO: verifier si toujours utilisé
 	&.embedded .viewcontainer div#rich-workspace #editor {
 		max-height : 15em;
 	}
 
-	// TODO: versifier si toujours utilisé
+	// TODO: verifier si toujours utilisé
 	// suppression du menu Nouveau modele de formulaire pour OO
 	div.newFileMenu a.menuitem[data-action="onlyofficeDocxf"][data-filetype="docxf"] {
 		display: none;
@@ -220,19 +200,26 @@ body {
 // ---------- FILES_SHARING ----------
 
 body {
-	// Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
-	.app-sidebar-header:not(.app-sidebar-header--compact) {
-		.app-sidebar-header__figure {
-			height: 10vh !important;
-			background-size: cover !important;
-			transition: 
-				height .4s 0s ease,
-				max-height .4s 0s ease;
+	#app-sidebar-vue {
+		// Redimensionnement des previews dans la colonne des partages pour plus de lisibilité
+		.app-sidebar-header:not(.app-sidebar-header--compact) {
+			.app-sidebar-header__figure {
+				height: 10vh !important;
+				background-size: cover !important;
+				transition: 
+					height .4s 0s ease,
+					max-height .4s 0s ease;
 
-			&:hover {
-				height: 35vh !important;
-				max-height: 350px;
+				&:hover {
+					height: 35vh !important;
+					max-height: 350px;
+				}
 			}
+		}
+	
+		// Fix le scroll dans le menu de partage
+		.sharingTab {
+			height: unset !important;
 		}
 	}
 }
@@ -314,90 +301,5 @@ body {
 
 	&.embedded {
 		@include colorTheme(#888888);
-	}
-}
-
-// ---------- OLD ----------
-
-body {
-	&#body-user,
-	&#body-settings {
-		/* le style venue de la mise en place du bandeau */
-
-		// TODO: versifier si toujours utilisé
-		&>main#content {
-			div#app-navigation-vue {
-				padding-bottom: 10px;
-				/* pour l'aisser passer l'affichage des url */
-			}
-
-			// TODO: versifier si toujours utilisé
-			div#app-content label#view-toggle.button {
-				opacity: 1;
-				border-radius: 0;
-				top: 0px;
-				right: 0px;
-			}
-		}
-
-		// TODO: versifier si toujours utilisé
-		/* Style du bandeau ENT */
-		&>div#escoDiv {
-			&#escoDiv.content {
-				padding-top: 88px; // pour Applications
-			}
-		}
-	}
-
-	/* fin integration bandeau */
-
-	// TODO: versifier si toujours utilisé
-	/* les suppresions d'affichage */
-	/* suppression du warning indiquant la non prise encharge et l'arret des notification push */
-	&#body-settings div#content div#app-content div.section div.warning {
-		display: none;
-	}
-
-	// TODO: versifier si toujours utilisé
-	&#body-public.not_embedded {
-		footer {
-			/* on supprime dans les liens transmis public les liens de pub nextcloud */
-			display: none;
-		}
-	}
-
-	// TODO: versifier si toujours utilisé
-	&#body-public.layout-base.embedded {
-		div#content.app-public>div#app>iframe {
-			height: calc(100vh - 52px);
-		}
-	}
-
-	li[data-id="firstrunwizard-about"],
-	li[data-id="help"] {
-		display: none;
-	}
-
-	// TODO: versifier si toujours utilisé
-	div#security-password,
-	div#two-factor-auth {
-		display: none;
-	}
-
-	// TODO: versifier si toujours utilisé
-	div#settings div#expand.menutoggle {
-		div.avatardiv.avatardiv-shown {
-			&+div#expandDisplayName {
-				display: block;
-			}
-
-			display: none;
-		}
-	}
-}
-
-body.embedded {
-	li[data-id="logout"] {
-		display: none;
 	}
 }
