@@ -20,6 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Logger\ConsoleLogger;
+use Psr\Log\LoggerInterface;
 
 
 /**
@@ -84,7 +85,8 @@ class CreateUser extends Command
         $mailer = \OC::$server->getMailer();
         $config = \OC::$server->getConfig();
         $userSession = \OC::$server->getUserSession();
-        $logger = \OC::$server->getLogger();
+        $logger = \OC::$server->query(\Psr\Log\LoggerInterface::class);
+
         $urlGenerator = \OC::$server->getURLGenerator();
 
         $loggingService = new LoggingService('ldapimporter', $config, $logger);
@@ -228,7 +230,6 @@ class CreateUser extends Command
 
             //$output->writeln('<error>An error occurred while creating the user</error>');
             $logger->error("An error occurred while creating the user $uid");
-            
             return 1;
         }
 

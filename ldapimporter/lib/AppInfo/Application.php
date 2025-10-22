@@ -55,7 +55,7 @@ class Application extends App
 
 	$container->registerService('Logger', function (IContainer $c) {
 		return \OC::$server->query(\Psr\Log\LoggerInterface::class);
-            return $c->query('ServerContainer')->getLogger();
+
         });
 
         /**
