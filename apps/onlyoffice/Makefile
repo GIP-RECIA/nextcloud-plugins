@@ -5,7 +5,8 @@ defaut:
 
 meld:
 	meld \
-	--diff src/editor.js  ${PLUGIN}/src/editor.js 
+	--diff src/editor.js  ${PLUGIN}/src/editor.js \
+	--diff css/editor.css  ${PLUGIN}/css/editor.css 
 
 sync:
 	rm -f js/*
