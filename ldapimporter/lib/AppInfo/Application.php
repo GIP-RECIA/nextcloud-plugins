@@ -14,6 +14,7 @@ use OCA\LdapImporter\User\NextBackend;
 use OCA\LdapImporter\Service\LoggingService;
 use OCA\LdapImporter\Hooks\UserHooks;
 use OCA\LdapImporter\Controller\AuthenticationController;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Application
@@ -52,7 +53,8 @@ class Application extends App
             return $c->query('ServerContainer')->getL10N($c->query('AppName'));
         });
 
-        $container->registerService('Logger', function (IContainer $c) {
+	$container->registerService('Logger', function (IContainer $c) {
+		return \OC::$server->query(\Psr\Log\LoggerInterface::class);
             return $c->query('ServerContainer')->getLogger();
         });
 
