@@ -1,8 +1,7 @@
 @use 'sass:color';
 
 $extended-uportal-header-height: var(--recia-header-height, 68px);
-$nextcloud-header-height: var(--header-height, 50px);
-$header-height: calc($extended-uportal-header-height + $nextcloud-header-height);
+$header-height: calc($extended-uportal-header-height + var(--header-height));
 $extended-uportal-footer-visible-height: 10px;
 
 // ---------- MAIN  ----------
@@ -15,7 +14,7 @@ html {
 body {
 	--body-container-radius: 0px;
 	--body-container-margin: 0px;
-	--body-height: calc(100% - #{$nextcloud-header-height}- #{$extended-uportal-footer-visible-height});
+	--body-height: calc(100% - var(--header-height));
 
 	&#body-user,
 	&#body-settings {
