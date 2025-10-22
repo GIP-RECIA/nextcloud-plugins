@@ -71,7 +71,7 @@ class LoggingService
     private $config;
 
     /**
-     * @var \OCP\LoggerInterface $logger
+     * @var Psr\Log\LoggerInterface $logger
      */
     private $logger;
 
@@ -79,7 +79,7 @@ class LoggingService
      * LoggingService constructor.
      * @param string $appName
      * @param \OCP\IConfig $config
-     * @param \OCP\LoggerInterface $logger
+     * @param Psr\Log\LoggerInterface $logger
      */
     public function __construct($appName, IConfig $config, LoggerInterface $logger)
     {
