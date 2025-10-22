@@ -104,4 +104,5 @@ CALENDAR:
 ONLYOFFICE:
 	rsync -av \
 	--include='js/***' \
+	--include='css/***' \
 	--exclude='*' apps/onlyoffice/* $(APPS)/onlyoffice
