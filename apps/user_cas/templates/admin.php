@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+
+use OCP\App\IAppManager;
+
 script('user_cas', 'settings');
 style('user_cas', 'settings');
 ?>
@@ -26,7 +29,7 @@ style('user_cas', 'settings');
     <input type="hidden" autocomplete="false" />
 
     <h2><?php p($l->t('CAS Authentication backend')); ?>
-        &nbsp;<!-- ?php p(\OCP\App::getAppInfo('user_cas')["version"]); ? --></h2>
+        &nbsp;<?php p(\OCP\Server::get(IAppManager::class)->getAppInfo('user_cas')["version"]); ?></h2>
 
     <div id="casSettings" class="personalblock">
         <ul>
