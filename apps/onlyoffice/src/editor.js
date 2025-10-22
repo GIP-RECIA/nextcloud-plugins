@@ -335,6 +335,7 @@
 			'image/gif', 'image/tiff',
 			'image/jpeg', 'image/jpg', 'application/jpg', 'application/x-jpg',
 			'image/png', 'image/x-png', 'application/png', 'application/x-png',
+			'image/svg+xml',
 		]
 
 		if (event.data) {
@@ -733,7 +734,7 @@
 		}
 
 		const headerHeight = $('header#header').length > 0 ? $('header#header').height() : 50
-		const headerEscoHeight = $('#escoDiv').length > 0 ? $('#escoDiv').height() : 68
+		const headerEscoHeight = $('#escoDiv').length > 0 ? $('#escoDiv').height() : 0
 		const totalHeaderHeight = headerHeight + headerEscoHeight
 		const wrapEl = $('#app>iframe')
 		if (wrapEl.length > 0) {
