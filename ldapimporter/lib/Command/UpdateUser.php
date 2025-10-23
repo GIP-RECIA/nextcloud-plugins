@@ -9,18 +9,21 @@ use OCA\LdapImporter\Service\UserService;
 use OCA\LdapImporter\User\Backend;
 use OCA\LdapImporter\User\NextBackend;
 use OCA\LdapImporter\User\UserCasBackendInterface;
+use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IGroupManager;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\IUserSession;
 use OCP\Mail\IMailer;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Logger\ConsoleLogger;
-use Psr\Log\LoggerInterface;
 
 
 /**
@@ -88,14 +91,13 @@ class UpdateUser extends Command
     {
         parent::__construct();
 
-        $userManager = \OC::$server->getUserManager();
-        $groupManager = \OC::$server->getGroupManager();
-        $mailer = \OC::$server->getMailer();
-        $config = \OC::$server->getConfig();
-        $userSession = \OC::$server->getUserSession();
-        $logger = \OC::$server->query(\Psr\Log\LoggerInterface::class);
-
-        $urlGenerator = \OC::$server->getURLGenerator();
+        $userManager = \OCP\Server::get(IUserManager::class);
+        $groupManager = \OCP\Server::get(IGroupManager::class);
+        $mailer = \OCP\Server::get(IMailer::class);
+        $config = \OCP\Server::get(IConfig::class);
+        $userSession = \OCP\Server::get(IUserSession::class);
+        $logger = \OCP\Server::get(LoggerInterface::class);
+        $urlGenerator = \OCP\Server::get(IURLGenerator::class);
         $this->db = $db;
 
 
@@ -260,7 +262,7 @@ class UpdateUser extends Command
         # Set email if supplied & valid
         if ($email !== null) {
 
-            $user->setEMailAddress($email);
+            $user->setSystemEMailAddress($email);
             $output->writeln('Email address set to "' . $user->getEMailAddress() . '"');
         } else {
 			$output->writeln('no Email ');
@@ -319,7 +321,7 @@ class UpdateUser extends Command
             # Set Backend
             if ($this->appService->isNotNextcloud()) {
 
-                $query = \OC_DB::prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`uid` = LOWER(?)');
+                $query = \OCP\Server::get(IDBConnection::class)->prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`uid` = LOWER(?)');
                 $result = $query->execute([get_class($this->backend), $uid]);
 
                 $output->writeln('New user added to CAS backend.');

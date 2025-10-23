@@ -24,7 +24,9 @@
 namespace OCA\LdapImporter\Service;
 
 use OCA\LdapImporter\Exception\PhpCas\PhpUserCasLibraryNotFoundException;
+use OCP\Authentication\Token\IToken;
 use \OCP\IConfig;
+use OCP\IDBConnection;
 use \OCP\IUserSession;
 use \OCP\IUserManager;
 use \OCP\IURLGenerator;
@@ -794,7 +796,7 @@ class AppService
             $tokenType = IToken::TEMPORARY_TOKEN;
 
             $sql = "DELETE FROM oc_authtoken WHERE uid = ? AND type = ? AND password IS NULL;";
-            $stmt = \OC::$server->getDatabaseConnection()->prepare($sql);
+            $stmt = \OCP\Server::get(IDBConnection::class)->prepare($sql);
             $stmt->bindParam(1, $username, \PDO::PARAM_STR);
             $stmt->bindParam(2, $tokenType, \PDO::PARAM_INT);
 
