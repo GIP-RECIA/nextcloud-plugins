@@ -11,7 +11,7 @@ use Exception;
 use OCP\Files\ObjectStore\IObjectStore;
 use OCP\Files\ObjectStore\IObjectStoreMultiPartUpload;
 
-class S3 implements IObjectStore, IObjectStoreMultiPartUpload, IObjectStoreMetaData {
+class S3Recia implements IObjectStore, IObjectStoreMultiPartUpload, IObjectStoreMetaData {
 	use S3ConnectionTrait;
 	use S3ObjectTrait;
 
