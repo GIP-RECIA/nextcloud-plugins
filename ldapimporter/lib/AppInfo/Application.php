@@ -1,10 +1,8 @@
 <?php
 
-
 namespace OCA\LdapImporter\AppInfo;
 
 use \OCP\AppFramework\App;
-use \OCP\IContainer;
 
 use OCA\LdapImporter\Service\UserService;
 use OCA\LdapImporter\Service\AppService;
@@ -14,6 +12,7 @@ use OCA\LdapImporter\User\NextBackend;
 use OCA\LdapImporter\Service\LoggingService;
 use OCA\LdapImporter\Hooks\UserHooks;
 use OCA\LdapImporter\Controller\AuthenticationController;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -41,62 +40,61 @@ class Application extends App
 
         $container = $this->getContainer();
 
-        $container->registerService('User', function (IContainer $c) {
-            return $c->query('UserSession')->getUser();
+        $container->registerService('User', function (ContainerInterface $c) {
+            return $c->get('UserSession')->getUser();
         });
 
-        $container->registerService('Config', function (IContainer $c) {
-            return $c->query('ServerContainer')->getConfig();
+        $container->registerService('Config', function (ContainerInterface $c) {
+            return $c->get('ServerContainer')->getConfig();
         });
 
-        $container->registerService('L10N', function (IContainer $c) {
-            return $c->query('ServerContainer')->getL10N($c->query('AppName'));
+        $container->registerService('L10N', function (ContainerInterface $c) {
+            return $c->get('ServerContainer')->getL10N($c->get('appName'));
         });
 
-	$container->registerService('Logger', function (IContainer $c) {
-		return \OC::$server->query(\Psr\Log\LoggerInterface::class);
-
+        $container->registerService('Logger', function (ContainerInterface $c) {
+		    return \OC::$server->get(LoggerInterface::class);
         });
 
         /**
          * Register LoggingService
          */
-        $container->registerService('LoggingService', function (IContainer $c) {
+        $container->registerService('LoggingService', function (ContainerInterface $c) {
             return new LoggingService(
-                $c->query('AppName'),
-                $c->query('Config'),
-                $c->query('Logger')
+                $c->get('appName'),
+                $c->get('Config'),
+                $c->get('Logger')
             );
         });
 
         /**
          * Register AppService with config
          */
-        $container->registerService('AppService', function (IContainer $c) {
+        $container->registerService('AppService', function (ContainerInterface $c) {
             return new AppService(
-                $c->query('AppName'),
-                $c->query('Config'),
-                $c->query('LoggingService'),
-                $c->query('ServerContainer')->getUserManager(),
-                $c->query('ServerContainer')->getUserSession(),
-                $c->query('ServerContainer')->getURLGenerator()
+                $c->get('appName'),
+                $c->get('Config'),
+                $c->get('LoggingService'),
+                $c->get('ServerContainer')->getUserManager(),
+                $c->get('ServerContainer')->getUserSession(),
+                $c->get('ServerContainer')->getURLGenerator()
             );
         });
 
 
         // Workaround for Nextcloud >= 14.0.0
-        if ($container->query('AppService')->isNotNextcloud()) {
+        if ($container->get('AppService')->isNotNextcloud()) {
 
             /**
              * Register regular Backend
              */
-            $container->registerService('Backend', function (IContainer $c) {
+            $container->registerService('Backend', function (ContainerInterface $c) {
                 return new Backend(
-                    $c->query('AppName'),
-                    $c->query('Config'),
-                    $c->query('LoggingService'),
-                    $c->query('AppService'),
-                    $c->query('ServerContainer')->getUserManager()
+                    $c->get('appName'),
+                    $c->get('Config'),
+                    $c->get('LoggingService'),
+                    $c->get('AppService'),
+                    $c->get('ServerContainer')->getUserManager()
                 );
             });
         } else {
@@ -104,14 +102,14 @@ class Application extends App
             /**
              * Register Nextcloud Backend
              */
-            $container->registerService('Backend', function (IContainer $c) {
+            $container->registerService('Backend', function (ContainerInterface $c) {
                 return new NextBackend(
-                    $c->query('AppName'),
-                    $c->query('Config'),
-                    $c->query('LoggingService'),
-                    $c->query('AppService'),
-                    $c->query('ServerContainer')->getUserManager(),
-                    $c->query('UserService')
+                    $c->get('appName'),
+                    $c->get('Config'),
+                    $c->get('LoggingService'),
+                    $c->get('AppService'),
+                    $c->get('ServerContainer')->getUserManager(),
+                    $c->get('UserService')
                 );
             });
         }
@@ -119,58 +117,58 @@ class Application extends App
         /**
          * Register UserService with UserSession for login/logout and UserManager for create
          */
-        $container->registerService('UserService', function (IContainer $c) {
+        $container->registerService('UserService', function (ContainerInterface $c) {
             return new UserService(
-                $c->query('AppName'),
-                $c->query('Config'),
-                $c->query('ServerContainer')->getUserManager(),
-                $c->query('ServerContainer')->getUserSession(),
-                $c->query('ServerContainer')->getGroupManager(),
-                $c->query('AppService'),
-                $c->query('LoggingService')
+                $c->get('appName'),
+                $c->get('Config'),
+                $c->get('ServerContainer')->getUserManager(),
+                $c->get('ServerContainer')->getUserSession(),
+                $c->get('ServerContainer')->getGroupManager(),
+                $c->get('AppService'),
+                $c->get('LoggingService')
             );
         });
 
         /**
          * Register SettingsController
          */
-        $container->registerService('SettingsController', function (IContainer $c) {
+        $container->registerService('SettingsController', function (ContainerInterface $c) {
             return new SettingsController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('Config'),
-                $c->query('L10N')
+                $c->get('appName'),
+                $c->get('Request'),
+                $c->get('Config'),
+                $c->get('L10N')
             );
         });
 
         /**
          * Register AuthenticationController
          */
-        $container->registerService('AuthenticationController', function (IContainer $c) {
+        $container->registerService('AuthenticationController', function (ContainerInterface $c) {
             return new AuthenticationController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('Config'),
-                $c->query('UserService'),
-                $c->query('AppService'),
-                $c->query('ServerContainer')->getUserSession(),
-                $c->query('LoggingService')
+                $c->get('appName'),
+                $c->get('Request'),
+                $c->get('Config'),
+                $c->get('UserService'),
+                $c->get('AppService'),
+                $c->get('ServerContainer')->getUserSession(),
+                $c->get('LoggingService')
             );
         });
 
         /**
          * Register UserHooks
          */
-        $container->registerService('UserHooks', function (IContainer $c) {
+        $container->registerService('UserHooks', function (ContainerInterface $c) {
             return new UserHooks(
-                $c->query('AppName'),
-                $c->query('ServerContainer')->getUserManager(),
-                $c->query('ServerContainer')->getUserSession(),
-                $c->query('Config'),
-                $c->query('UserService'),
-                $c->query('AppService'),
-                $c->query('LoggingService'),
-                $c->query('Backend')
+                $c->get('appName'),
+                $c->get('ServerContainer')->getUserManager(),
+                $c->get('ServerContainer')->getUserSession(),
+                $c->get('Config'),
+                $c->get('UserService'),
+                $c->get('AppService'),
+                $c->get('LoggingService'),
+                $c->get('Backend')
             );
         });
     }

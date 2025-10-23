@@ -457,7 +457,7 @@ class AdImporter implements ImporterInterface
             ->from('recia_user_history')
             ->where($qbHist->expr()->eq('uid', $qbHist->createNamedParameter($uid)))
         ;
-        $result = $qbHist->execute();
+        $result = $qbHist->executeQuery();
         $uids = $result->fetchAll();
         return count($uids) > 0;
 	}
@@ -465,8 +465,7 @@ class AdImporter implements ImporterInterface
 	protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
 		$qbHist = $this->db->getQueryBuilder();
 		
-	//	$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
-		$del = preg_match("/(DELETE|BLOQUE)/i", $etat);
+		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
 		
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
@@ -477,7 +476,7 @@ class AdImporter implements ImporterInterface
 				->set('isdel', $qbHist->createNamedParameter($del))
 				->set('name', $qbHist->createNamedParameter($name))
 				->where( $qbHist->expr()->eq('uid' , $qbHist->createNamedParameter($uid))) ;
-			$qbHist->execute();
+			$qbHist->executeStatement();
 				
 		} else {
 			$qbHist->insert('recia_user_history')
@@ -490,7 +489,7 @@ class AdImporter implements ImporterInterface
 					'isdel' => $qbHist->createNamedParameter($del),
 					'name' => $qbHist->createNamedParameter($name),
 				]);
-			$qbHist->execute();
+			$qbHist->executeStatement();
 		}
 	}
     /**
@@ -506,7 +505,7 @@ class AdImporter implements ImporterInterface
             ->from('asso_uai_user_group')
             ->where($qbAsso->expr()->eq('user_group', $qbAsso->createNamedParameter($uid)))
         ;
-        $result = $qbAsso->execute();
+        $result = $qbAsso->executeQuery();
         $etablissement = $result->fetchAll();
 
         if (sizeof($etablissement) !== 0) {
@@ -521,7 +520,7 @@ class AdImporter implements ImporterInterface
                     ->where($qbDelete->expr()->eq('id_etablissement', $qbDelete->createNamedParameter($idToDelete)))
                     ->andWhere($qbDelete->expr()->eq('user_group', $qbDelete->createNamedParameter($uid)))
                 ;
-                $qbDelete->execute();
+                $qbDelete->executeStatement();
             }
         }
     }
@@ -575,7 +574,7 @@ class AdImporter implements ImporterInterface
                 ->from('etablissements')
                 ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
             ;
-            $result = $qbEtablissement->execute();
+            $result = $qbEtablissement->executeQuery();
             $etablissement = $result->fetchAll();
 
             if (sizeof($etablissement) !== 0) {
@@ -603,7 +602,7 @@ class AdImporter implements ImporterInterface
 				$newEtablissement->select('id')
 					->from('etablissements')
 					->where($newEtablissement->expr()->eq('name', $newEtablissement->createNamedParameter($name)));
-				$result = $newEtablissement->execute();
+				$result = $newEtablissement->executeQuery();
 				$newEtab = $result->fetchAll()[0];
 				return $newEtab["id"];
 			}
@@ -612,7 +611,7 @@ class AdImporter implements ImporterInterface
                 ->from('etablissements')
                 ->where($qbEtablissement->expr()->eq('siren', $qbEtablissement->createNamedParameter($siren)))
                 ->orWhere($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)));
-            $result = $qbEtablissement->execute();
+            $result = $qbEtablissement->executeQuery();
             $etablissement = $result->fetchAll();
 
             if (sizeof($etablissement) === 0) {
@@ -623,14 +622,14 @@ class AdImporter implements ImporterInterface
                         'name' => $insertEtablissement->createNamedParameter($name),
                         'siren' => $insertEtablissement->createNamedParameter($siren),
                     ]);
-                $insertEtablissement->execute();
+                $insertEtablissement->executeStatement();
             }
             $newEtablissement = $this->db->getQueryBuilder();
             $newEtablissement->select('id')
                 ->from('etablissements')
                 ->where($newEtablissement->expr()->eq('siren', $newEtablissement->createNamedParameter($siren)))
                 ->orWhere($newEtablissement->expr()->eq('uai', $newEtablissement->createNamedParameter($uai)));
-            $result = $newEtablissement->execute();
+            $result = $newEtablissement->executeQuery();
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
         }
@@ -652,7 +651,7 @@ class AdImporter implements ImporterInterface
             $qb->select('id')
                 ->from('etablissements')
                 ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)));
-            $result = $qb->execute();
+            $result = $qb->executeQuery();
             $idEtabs = $result->fetchAll()[0];
             return $idEtabs["id"];
         }
@@ -672,7 +671,7 @@ class AdImporter implements ImporterInterface
 				$qb->select('id')
 					->from('etablissements')
 					->where($qb->expr()->eq('siren', $qb->createNamedParameter($siren)));
-				$result = $qb->execute();
+				$result = $qb->executeQuery();
 				$etabAll  = $result->fetchAll();
 				if ($etabAll) {
 					$idEtabs = $etabAll[0];
@@ -702,7 +701,7 @@ class AdImporter implements ImporterInterface
                 ->from('asso_uai_user_group')
                 ->where($qb->expr()->eq('id_etablissement', $qb->createNamedParameter($idEtablissement)))
                 ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)));
-            $result = $qb->execute();
+            $result = $qb->executeQuery();
             $assoOaiUserGroup = $result->fetchAll();
             if (sizeof($assoOaiUserGroup) === 0) {
                 $insertAsso = $this->db->getQueryBuilder();
@@ -711,7 +710,7 @@ class AdImporter implements ImporterInterface
                         'id_etablissement' => $insertAsso->createNamedParameter($idEtablissement),
                         'user_group' => $insertAsso->createNamedParameter($groupUserId),
                     ]);
-                $insertAsso->execute();
+                $insertAsso->executeStatement();
             }
         }
     }
