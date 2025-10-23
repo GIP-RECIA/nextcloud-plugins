@@ -53,7 +53,7 @@ class Admin implements ISettings
      */
     public function getSection()
     {
-        return 'security';
+        return 'ldapimporter';
     }
 
     /**
