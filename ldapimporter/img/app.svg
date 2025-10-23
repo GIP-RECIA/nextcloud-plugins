@@ -28,7 +28,7 @@
   <defs
      id="defs8" />
   <sodipodi:namedview
-     pagecolor="#ffffff"
+     pagecolor="#000000"
      bordercolor="#666666"
      borderopacity="1"
      objecttolerance="10"
@@ -52,5 +52,5 @@
      display="block"
      fill="#fff"
      id="path2"
-     style="fill:#ffffff" />
+     style="fill:#000000" />
 </svg>

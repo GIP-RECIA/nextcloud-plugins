@@ -26,5 +26,6 @@
 
     <settings>
         <admin>OCA\LdapImporter\Panels\Admin</admin>
+        <admin-section>OCA\LdapImporter\Panels\AdminSection</admin-section>
     </settings>
 </info>
