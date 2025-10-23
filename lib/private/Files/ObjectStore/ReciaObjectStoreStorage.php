@@ -48,7 +48,7 @@ class ReciaObjectStoreStorage extends ObjectStoreStorage {
  	}
 
 
-	public function stat($path) {
+	public function stat(string $path): array|false {
 #	try {
 		$stat = parent::stat($path);
 		if (!(is_null($this->objectStore) or is_null($this->defautObjectStore) )) {
