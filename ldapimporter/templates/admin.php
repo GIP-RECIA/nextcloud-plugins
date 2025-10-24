@@ -1,5 +1,7 @@
 <?php
 
+use OCP\App\IAppManager;
+
 script('ldapimporter', 'settings');
 style('ldapimporter', 'settings');
 ?>
@@ -8,7 +10,7 @@ style('ldapimporter', 'settings');
 
     <input type="hidden" autocomplete="false" />
 
-    <h2><?php p($l->t('Import Users')); ?></h2>
+    <h2><?php p($l->t('Import Users')); ?> <?php p(\OCP\Server::get(IAppManager::class)->getAppInfo('ldapimporter')["version"]); ?></h2>
 
     <div id="casSettings" class="personalblock">
         <ul>

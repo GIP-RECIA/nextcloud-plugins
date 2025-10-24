@@ -27,9 +27,11 @@ use OCA\LdapImporter\Exception\PhpCas\PhpUserCasLibraryNotFoundException;
 use OCA\LdapImporter\Service\LoggingService;
 use OCA\LdapImporter\User\UserCasBackendInterface;
 use \OCP\IConfig;
+use OCP\IDBConnection;
 use \OCP\IUserManager;
 use \OCP\IGroupManager;
 use \OCP\IUserSession;
+use OCP\Security\ISecureRandom;
 
 use OCA\LdapImporter\User\Backend;
 
@@ -364,7 +366,7 @@ class UserService
      */
     public function updateGroups($user, $groups, $protectedGroups = '', $justCreated = false)
     {
-		$groupSuffix = ':LDAP';
+
         if (is_string($groups)) $groups = explode(",", $groups);
         if (is_string($protectedGroups)) $protectedGroups = explode(",", $protectedGroups);
 
@@ -379,18 +381,14 @@ class UserService
                 if ($group instanceof \OCP\IGroup) {
 
                     $groupId = $group->getGID();
-                    $pos = strpos($groupId, $groupSuffix);
-                    
-					if ($pos) {
-						$groupId = substr($groupId, 0, $pos) ; 
-						if (!in_array($groupId, $protectedGroups) && !in_array($groupId, $groups)) {
 
-							$group->removeUser($user);
+                    if (!in_array($groupId, $protectedGroups) && !in_array($groupId, $groups)) {
 
-							$this->loggingService->write(LoggingService::DEBUG, "Removed '" . $uid . "' from the group '" . $groupId . "'");
-							#\OCP\Util::writeLog('cas', 'Removed "' . $uid . '" from the group "' . $groupId . '"', \OCA\LdapImporter\Service\LoggingService::DEBUG);
-						}
-					}
+                        $group->removeUser($user);
+
+                        $this->loggingService->write(LoggingService::DEBUG, "Removed '" . $uid . "' from the group '" . $groupId . "'");
+                        #\OCP\Util::writeLog('cas', 'Removed "' . $uid . '" from the group "' . $groupId . '"', \OCA\LdapImporter\Service\LoggingService::DEBUG);
+                    }
                 }
             }
         }
@@ -427,19 +425,17 @@ class UserService
 
                 $group = substr($group, 0, 63) . "…";
             }
-			$groupId = $group . $groupSuffix;
-			
-            if (!$this->groupManager->isInGroup($uid, $groupId)) {
 
-                if (!$this->groupManager->groupExists($groupId)) {
-					$this->loggingService->write(LoggingService::DEBUG, 'New group to created: ' . $groupId);
-                    $groupObject = $this->groupManager->createGroup($groupId);
-                    $groupObject->setDisplayName($group);
+            if (!$this->groupManager->isInGroup($uid, $group)) {
+
+                if (!$this->groupManager->groupExists($group)) {
+					$this->loggingService->write(LoggingService::DEBUG, 'New group to created: ' . $group);
+                    $groupObject = $this->groupManager->createGroup($group);
  
                     #\OCP\Util::writeLog('cas', 'New group created: ' . $group, \OCA\LdapImporter\Service\LoggingService::DEBUG);
                 } else {
 
-                    $groupObject = $this->groupManager->get($groupId);
+                    $groupObject = $this->groupManager->get($group);
                 }
 
                 $groupObject->addUser($user);
@@ -609,7 +605,7 @@ class UserService
 
                 if (!is_null($user) && ($user->getBackendClassName() === 'OC\User\Database' || $user->getBackendClassName() === "Database")) {
 
-                    $query = \OC_DB::prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
+                    $query = \OCP\Server::get(IDBConnection::class)->prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
                     $result = $query->execute([get_class($this->getBackend()), $uid]);
 
                     $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, 'phpCAS user existing in database backend, move to CAS-Backend with result: ' . $result);
@@ -631,10 +627,10 @@ class UserService
     protected function getNewPassword()
     {
 
-        $newPasswordCharsLower = \OC::$server->getSecureRandom()->generate(8, \OCP\Security\ISecureRandom::CHAR_LOWER);
-        $newPasswordCharsUpper = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_UPPER);
-        $newPasswordNumbers = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_DIGITS);
-        $newPasswordSymbols = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_SYMBOLS);
+        $newPasswordCharsLower = \OCP\Server::get(ISecureRandom::class)->generate(8, \OCP\Security\ISecureRandom::CHAR_LOWER);
+        $newPasswordCharsUpper = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_UPPER);
+        $newPasswordNumbers = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_DIGITS);
+        $newPasswordSymbols = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_SYMBOLS);
 
         return str_shuffle($newPasswordCharsLower . $newPasswordCharsUpper . $newPasswordNumbers . $newPasswordSymbols);
     }

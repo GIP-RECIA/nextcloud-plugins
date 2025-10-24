@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+<info>
     <id>ldapimporter</id>
     <name>Ldap Importer</name>
     <summary>LDAP importer</summary>
@@ -10,15 +9,12 @@
     <author>RECIA</author>
     <namespace>LdapImporter</namespace>
     <category>integration</category>
-    <bugs>http://localhost.com</bugs>
-    <types>
-        <prelogin/>
-        <authentication/>
-    </types>
-    <dependencies>
-        <nextcloud min-version="15" max-version="28"/>
-    </dependencies>
+
     <category>security</category>
+
+    <dependencies>
+        <nextcloud min-version="15" max-version="31"/>
+    </dependencies>
 
     <commands>
         <command>OCA\LdapImporter\Command\CreateUser</command>
@@ -31,5 +27,4 @@
     <settings>
         <admin>OCA\LdapImporter\Panels\Admin</admin>
     </settings>
-
 </info>

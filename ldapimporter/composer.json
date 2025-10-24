@@ -1,15 +1,15 @@
 {
-    "name": "Ldap Importer",
+    "name": "gip-recia/ldapimporter",
     "description": "LDAP importer",
-    "type": "project",
-    "license": "AGPL",
+    "minimum-stability": "stable",
+    "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "Noé Maire-Amiot"
         }
     ],
-    "require": {},
-    "require-dev": {
-        "phpunit/phpunit": "^7.3"
+    "require": {
+        "php": ">=7.4",
+        "psr/log": "^3.0"
     }
 }
