@@ -219,12 +219,13 @@ sub cleanFolder {
 	}
 }
 
+
 sub cleanAllFolder {
 	my $class = shift;
 	# verifications de quota de folder par rapport au disque
 	# on recupere les size  en base:
 	my %Size;
-	if (util->isObjectStore) {
+	if (!util->isObjectStore) {
 		my $sqlRes = util->executeSql(q"select name, size from oc_filecache where path like '__groupfolders/%' and path = concat('__groupfolders/', name)") ;
 		while (my ($name, $size) =  $sqlRes->fetchrow_array()) {
 			$Size{$name} = $size;
@@ -256,7 +257,6 @@ sub cleanAllFolder {
 
 	foreach (values %folderInBase) { $_->cleanFolder }
 }
-
 
 sub diffBaseDisque {
 	my $folder = shift;
