@@ -3,7 +3,7 @@
 
 namespace OCA\LdapImporter\Service\Delete;
 
-use OC\DB\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use OCA\LdapImporter\Service\Merge\AdUserMerger;
 use OCA\LdapImporter\Service\Merge\MergerInterface;
 use OCP\DB\QueryBuilder\IQueryBuilder;
@@ -205,7 +205,7 @@ class DeleteService
 				->where($qb->expr()->eq('r.isdel', $qb->createNamedParameter(1)))
 				->andWhere('e.siren is null');
 	
-            $dbUsers = $qb->execute()->fetchAll();
+            $dbUsers = $qb->executeQuery()->fetchAll();
 
 			$this->testAndDisableDbUsers($dbUsers);
             
@@ -218,7 +218,7 @@ class DeleteService
 				->orderBy('r.dat')
 				->setMaxResults(1000);
 				
-			$dbUsers = $qb->execute()->fetchAll();
+			$dbUsers = $qb->executeQuery()->fetchAll();
 			
 			foreach ($this->testAndDisableDbUsers($dbUsers) as $idUser) {
 				// on met a jour la date de l'historique de ceux non désactivé
@@ -241,16 +241,16 @@ class DeleteService
             if (!is_null($sirenArray)) {
                 $qb->andWhere($qb->expr()->in('e.siren', $qb->createNamedParameter(
                     $sirenArray,
-                    Connection::PARAM_STR_ARRAY
+                    ArrayParameterType::STRING
                 )));
             }  elseif (!is_null($uaiArray)) {
                 $qb->andWhere($qb->expr()->in('e.uai', $qb->createNamedParameter(
                     $uaiArray,
-                    Connection::PARAM_STR_ARRAY
+                    ArrayParameterType::STRING
                 )));
             }
 
-            $dbUsers = $qb->execute()->fetchAll();
+            $dbUsers = $qb->executeQuery()->fetchAll();
 			
 			$this->testAndDisableDbUsers($dbUsers);
            
@@ -285,7 +285,7 @@ class DeleteService
         $qb->select('uid')
             ->from('users')
             ->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid)));
-        $dbUsers = $qb->execute()->fetchAll();
+        $dbUsers = $qb->executeQuery()->fetchAll();
         return count($dbUsers) > 0;
     }
 
@@ -310,7 +310,7 @@ class DeleteService
             ->from('group_admin')
             ->where("gid='admin'")
         ;
-        $result = $qbAdmin->execute();
+        $result = $qbAdmin->executeQuery();
         $admins = $result->fetchAll();
 
         return array_map(function ($admin) {
@@ -331,7 +331,7 @@ class DeleteService
                 ->from('etablissements')
                 ->where($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)))
             ;
-            $result = $qbEtablissement->execute();
+            $result = $qbEtablissement->executeQuery();
             $etablissement = $result->fetchAll();
 
             if (sizeof($etablissement) !== 0) {
@@ -358,7 +358,7 @@ class DeleteService
                 ->from('etablissements')
                 ->where($qbEtablissement->expr()->eq('siren', $qbEtablissement->createNamedParameter($siren)))
                 ->orWhere($qbEtablissement->expr()->eq('uai', $qbEtablissement->createNamedParameter($uai)));
-            $result = $qbEtablissement->execute();
+            $result = $qbEtablissement->executeQuery();
             $etablissement = $result->fetchAll();
 
             if (sizeof($etablissement) === 0) {
@@ -369,14 +369,14 @@ class DeleteService
                         'name' => $insertEtablissement->createNamedParameter($name),
                         'siren' => $insertEtablissement->createNamedParameter($siren),
                     ]);
-                $insertEtablissement->execute();
+                $insertEtablissement->executeStatement();
             }
             $newEtablissement = $this->db->getQueryBuilder();
             $newEtablissement->select('id')
                 ->from('etablissements')
                 ->where($newEtablissement->expr()->eq('siren', $newEtablissement->createNamedParameter($siren)))
                 ->orWhere($newEtablissement->expr()->eq('uai', $newEtablissement->createNamedParameter($uai)));
-            $result = $newEtablissement->execute();
+            $result = $newEtablissement->executeQuery();
             $newEtab = $result->fetchAll()[0];
             return $newEtab["id"];
         }
@@ -396,7 +396,7 @@ class DeleteService
             $qb->select('id')
                 ->from('etablissements')
                 ->where($qb->expr()->eq('uai', $qb->createNamedParameter($uai)));
-            $result = $qb->execute();
+            $result = $qb->executeQuery();
             $idEtabs = $result->fetchAll()[0];
             return $idEtabs["id"];
         }
@@ -416,7 +416,7 @@ class DeleteService
                 ->from('asso_uai_user_group')
                 ->where($qb->expr()->eq('id_etablissement', $qb->createNamedParameter($idEtablissement)))
                 ->andWhere($qb->expr()->eq('user_group', $qb->createNamedParameter($groupUserId)));
-            $result = $qb->execute();
+            $result = $qb->executeQuery();
             $assoOaiUserGroup = $result->fetchAll();
             if (sizeof($assoOaiUserGroup) === 0) {
                 $insertAsso = $this->db->getQueryBuilder();
@@ -425,7 +425,7 @@ class DeleteService
                         'id_etablissement' => $insertAsso->createNamedParameter($idEtablissement),
                         'user_group' => $insertAsso->createNamedParameter($groupUserId),
                     ]);
-                $insertAsso->execute();
+                $insertAsso->executeStatement();
             }
         }
     }

@@ -27,9 +27,11 @@ use OCA\LdapImporter\Exception\PhpCas\PhpUserCasLibraryNotFoundException;
 use OCA\LdapImporter\Service\LoggingService;
 use OCA\LdapImporter\User\UserCasBackendInterface;
 use \OCP\IConfig;
+use OCP\IDBConnection;
 use \OCP\IUserManager;
 use \OCP\IGroupManager;
 use \OCP\IUserSession;
+use OCP\Security\ISecureRandom;
 
 use OCA\LdapImporter\User\Backend;
 
@@ -603,7 +605,7 @@ class UserService
 
                 if (!is_null($user) && ($user->getBackendClassName() === 'OC\User\Database' || $user->getBackendClassName() === "Database")) {
 
-                    $query = \OC_DB::prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
+                    $query = \OCP\Server::get(IDBConnection::class)->prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
                     $result = $query->execute([get_class($this->getBackend()), $uid]);
 
                     $this->loggingService->write(\OCA\LdapImporter\Service\LoggingService::DEBUG, 'phpCAS user existing in database backend, move to CAS-Backend with result: ' . $result);
@@ -625,10 +627,10 @@ class UserService
     protected function getNewPassword()
     {
 
-        $newPasswordCharsLower = \OC::$server->getSecureRandom()->generate(8, \OCP\Security\ISecureRandom::CHAR_LOWER);
-        $newPasswordCharsUpper = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_UPPER);
-        $newPasswordNumbers = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_DIGITS);
-        $newPasswordSymbols = \OC::$server->getSecureRandom()->generate(4, \OCP\Security\ISecureRandom::CHAR_SYMBOLS);
+        $newPasswordCharsLower = \OCP\Server::get(ISecureRandom::class)->generate(8, \OCP\Security\ISecureRandom::CHAR_LOWER);
+        $newPasswordCharsUpper = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_UPPER);
+        $newPasswordNumbers = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_DIGITS);
+        $newPasswordSymbols = \OCP\Server::get(ISecureRandom::class)->generate(4, \OCP\Security\ISecureRandom::CHAR_SYMBOLS);
 
         return str_shuffle($newPasswordCharsLower . $newPasswordCharsUpper . $newPasswordNumbers . $newPasswordSymbols);
     }

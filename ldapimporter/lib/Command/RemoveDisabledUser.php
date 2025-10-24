@@ -3,22 +3,15 @@
 
 namespace OCA\LdapImporter\Command;
 
-use OC\User\Manager;
 use OCA\LdapImporter\Service\Delete\DeleteService;
-use OCA\LdapImporter\Service\Import\AdImporter;
-use OCA\LdapImporter\Service\Import\ImporterInterface;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IGroupManager;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -60,8 +53,8 @@ class RemoveDisabledUser extends Command
     {
         parent::__construct();
 
-        $this->userManager = \OC::$server->getUserManager();
-        $this->config = \OC::$server->getConfig();
+        $this->userManager = \OCP\Server::get(IUserManager::class);
+        $this->config = \OCP\Server::get(IConfig::class);
         $this->db = $db;
         $this->groupManager = $groupManager;
         $this->userManager = $userManager;

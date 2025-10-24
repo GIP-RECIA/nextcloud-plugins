@@ -85,7 +85,7 @@ class SearchDB {
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
 
-		$usersFetched = $qb->execute()->fetchAll();
+		$usersFetched = $qb->executeQuery()->fetchAll();
 
 		if (count($usersFetched) > $limit){
 			$hasMore = true;
@@ -132,7 +132,7 @@ class SearchDB {
 			->where($whereClauses)
 			->setMaxResults($limit+1)
 			->setFirstResult($offset);
-		$groupsFetched = $qb->execute()->fetchAll();
+		$groupsFetched = $qb->executeQuery()->fetchAll();
 		if (count($groupsFetched) > $limit) {
 			$hasMore = true;
 			array_pop($groupsFetched);

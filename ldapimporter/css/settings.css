@@ -1,1 +1,22 @@
-#casSettings fieldset{border-bottom:1px solid #DDD;border-left:1px solid #DDD;border-right:1px solid #DDD;margin-bottom:10px}#casSettings input[type="text"]{width:15em;margin-left:3px}#casSettings label{display:inline-block;width:31em}#casSettings label.checkbox{display:inline;width:auto}#casSettings .csh{font-size:90%}
+#ldapimporter .labeled-input > label {
+    display: inline-block;
+    width: 21em;
+}
+
+#ldapimporter .labeled-input > input {
+    width: 31em;
+}
+
+#ldapimporter .labeled-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+#ldapimporter .cw-100 > * {
+    width: 100%;
+}
+
+#ldapimporter .footer-actions {
+    display: flex;
+    justify-content: end;
+}
