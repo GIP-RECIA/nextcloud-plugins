@@ -190,6 +190,7 @@ connexion à l'UI
 #	> rm -r backups/*
 	> make FILES_SHARING
 	> make NOTIFICATIONS
+	> make ONLYOFFICE
 
 ### autre commande occ avant le cron
 	# suppression de mail quand un compte change de groupe	
