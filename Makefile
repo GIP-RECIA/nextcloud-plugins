@@ -45,7 +45,7 @@ SKELETON:
 # Plugins
 
 USER_CAS:
-	find apps/user_cas -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
+	cp -rvT apps/user_cas $(APPS)/user_cas
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
