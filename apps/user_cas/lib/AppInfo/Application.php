@@ -73,8 +73,8 @@ class Application extends App
             return $c->query('ServerContainer')->getL10N($c->query('AppName'));
         });
 
-        $container->registerService('Logger', function (IContainer $c) {
-            return \OC::$server->query(LoggerInterface::class);
+	$container->registerService('Logger', function (IContainer $c) {
+		return \OC::$server->query(\Psr\Log\LoggerInterface::class);
         });
 
         /**
