@@ -139,3 +139,7 @@ meld nc-gip/apps/onlyoffice/ nc-gip/org/apps/onlyoffice/ onlyoffice-nextcloud-9.
 --------------------------------
 migration de 30.0.6 vers 30.0.8
 on fait la migration en test (https://nc.recia.test.recia.dev/nextcloud-gip) ensuite on s'occupe des adaptations colabora et onlyofice
+
+migration de 30.0.8 => 30.0.16
+on fait la migration en test (https://nc.recia.test.recia.dev/nextcloud-gip)
+ensuite on s'occupe des adaptations colabora et onlyofice
