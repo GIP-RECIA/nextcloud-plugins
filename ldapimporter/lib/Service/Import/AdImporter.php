@@ -465,7 +465,8 @@ class AdImporter implements ImporterInterface
 	protected function saveUserHistory($uid, $name, $isExists, $isAdded, $etat, $date, $siren){
 		$qbHist = $this->db->getQueryBuilder();
 		
-		$del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+		// $del = (stripos($etat, 'DELETE') !== false) ? 1 : 0;
+        $del = preg_match("/(DELETE|BLOQUE)/i", $etat);
 		
 		if ($isExists) {
 			$qbHist->update('recia_user_history')
@@ -812,6 +813,7 @@ class AdImporter implements ImporterInterface
         // Query user attributes
         $results = (($keep) ? ldap_search($this->ldapConnection, $groupCn, $filter, $keep) : ldap_search($this->ldapConnection, $groupCn, $filter));
         if (ldap_error($this->ldapConnection) == "No such object") {
+            $this->logger->error("No such object: ". $groupCn .": " . $filter);
             return [];
         }
         elseif (ldap_error($this->ldapConnection) != "Success") {
