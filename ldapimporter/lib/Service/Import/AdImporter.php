@@ -227,14 +227,15 @@ class AdImporter implements ImporterInterface
                                         $groupCnEtablissement = str_replace("people", "structures", $this->config->getAppValue($this->appName, 'cas_import_ad_base_dn'));
                                         if (is_null($uaiEtablissement)) {
                                             $filter = "ENTStructureNomCourant=" . str_replace("'", "\\27", str_replace(" ", "\\20", $nameEtablissement));
-                                            $groupAttr = $this->getLdapSearch($groupCnEtablissement, $filter);
                                             $assoEtab = $nameEtablissement;
                                         }
                                         else {
                                             $filter = "ENTStructureUAI=" . $uaiEtablissement;
-                                            $groupAttr = $this->getLdapSearch($groupCnEtablissement, $filter);
                                             $assoEtab = $uaiEtablissement;
                                         }
+                                        $filter = "(&(!(ENTStructureTypeStruct=Entreprise))($filter))"; # pour éviter les entreprises 
+                                        $groupAttr = $this->getLdapSearch($groupCnEtablissement, $filter);
+
                                         $sirenEtab = null;
                                         $uaiEtab = null;
                                         if (array_key_exists('entstructuresiren', $groupAttr) && $groupAttr['entstructuresiren']['count'] > 0) {
