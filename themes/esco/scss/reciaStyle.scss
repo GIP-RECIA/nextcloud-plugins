@@ -160,6 +160,14 @@ body#body-settings #app-content {
 		}
 	}
 
+	// Panel "Stockage externe"
+	&[data-active-section-id="externalstorages"] {
+		// Masquage de l'option de partage
+		li:has(#mountOptionsSharing) {
+			display: none;
+		}
+	}
+
 	// Panel "Apparence et accessibilité"
 	&[data-active-section-id="theming"] section .settings-section{
 		// Masquage des options d'aparence
