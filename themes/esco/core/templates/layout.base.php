@@ -4,15 +4,14 @@
  * SPDX-FileCopyrightText: 2012-2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
+$cacheBuster = date("Ymd");
+$request = \OC::$server->getRequest();
 ?>
 <!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 	<head data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
-		<?php
-			$cacheBuster = date("Ymd");
-			$request = \OC::$server->getRequest();
-		?>
 		<title>
 		<?php p($theme->getTitle()); ?>
 		</title>

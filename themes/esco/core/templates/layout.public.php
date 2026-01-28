@@ -3,15 +3,14 @@
  * SPDX-FileCopyrightText: 2018-2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
+$cacheBuster = date("Ymd");
+$request = \OC::$server->getRequest();
 ?>
 <!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 <head data-requesttoken="<?php p($_['requesttoken']); ?>">
 	<meta charset="utf-8">
-	<?php
-		$cacheBuster = date("Ymd");
-		$request = \OC::$server->getRequest();
-	?>
 	<title>
 	<?php
 				p(!empty($_['pageTitle']) && (empty($_['application']) || $_['pageTitle'] !== $_['application']) ? $_['pageTitle'] . ' - ' : '');
@@ -53,7 +52,7 @@ p($theme->getTitle());
 		<?php if ($_['id-app-navigation'] !== null) { ?><a href="<?php p($_['id-app-navigation']); ?>" class="button primary skip-navigation"><?php p($l->t('Skip to navigation of app')); ?></a><?php } ?>
 	</div>
 
-	<header role="banner" id="header">
+	<header id="header">
 		<div class="header-start">
 			<div id="nextcloud" class="header-appname">
 				<?php if ($_['logoUrl']): ?>
@@ -84,10 +83,11 @@ p($theme->getTitle());
 
 		<div class="header-end">
 			<div id="public-page-menu"></div>
+			<div id="public-page-user-menu"></div>
 		</div>
 	</header>
 
-	<main role="main" id="content" class="app-<?php p($_['appid']) ?>">
+	<div id="content" class="app-<?php p($_['appid']) ?>">
 		<h1 class="hidden-visually">
 			<?php
 		if (isset($template) && $template->getHeaderTitle() !== '') {
@@ -97,22 +97,22 @@ p($theme->getTitle());
 		} ?>
 		</h1>
 		<?php print_unescaped($_['content']); ?>
-	</main>
+	</div>
 
-	<?php if (isset($template) && $template->getFooterVisible() && ($theme->getLongFooter() !== '' || $_['showSimpleSignUpLink'])) { ?>
-	<footer role="contentinfo">
-		<p><?php print_unescaped($theme->getLongFooter()); ?></p>
-		<?php
-if ($_['showSimpleSignUpLink']) {
-	?>
-			<p class="footer__simple-sign-up">
-				<a href="<?php p($_['signUpLink']); ?>" target="_blank" rel="noreferrer noopener">
-					<?php p($l->t('Get your own free account')); ?>
-				</a>
-			</p>
-			<?php
-}
-		?>
+	<?php if ((!isset($template) || $template->getFooterVisible() !== false) && ($theme->getLongFooter() !== '' || $_['showSimpleSignUpLink'])) { ?>
+	<footer class="guest-box">
+		<?php if ($theme->getLongFooter() !== '') { ?>
+		<p class="info">
+			<?php  print_unescaped($theme->getLongFooter()); ?>
+		</p>
+		<?php } ?>
+		<?php if ($_['showSimpleSignUpLink']) { ?>
+		<p class="footer__simple-sign-up">
+			<a href="<?php p($_['signUpLink']); ?>" target="_blank" rel="noreferrer noopener">
+				<?php p($l->t('Get your own free account')); ?>
+			</a>
+		</p>
+		<?php } ?>
 	</footer>
 	<?php } ?>
 

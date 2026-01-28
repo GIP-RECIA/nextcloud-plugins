@@ -12,9 +12,11 @@
  */
 
 $cacheBuster = date("Ymd");
+$request = \OC::$server->getRequest();
+$portal_domain = \OC_Theme::getDomain($request);
 
 $getUserAvatar = static function (int $size) use ($_): string {
-	return \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
+	return \OCP\Server::get(\OCP\IURLGenerator::class)->linkToRoute('core.avatar.getAvatar', [
 		'userId' => $_['user_uid'],
 		'size' => $size,
 		'v' => $_['userAvatarVersion']
@@ -25,11 +27,6 @@ $getUserAvatar = static function (int $size) use ($_): string {
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
-		<?php //mise en place du bandeau ENT
-			emit_script_tag("/commun/r-header.js?$cacheBuster"); 
-			emit_script_tag("/commun/r-footer.js?$cacheBuster"); 
-			$request = \OC::$server->getRequest();
-		?>
 		<title>
 			<?php
 				p(!empty($_['pageTitle']) && (empty($_['application']) || $_['pageTitle'] !== $_['application']) ? $_['pageTitle'] . ' - ' : '');
@@ -57,8 +54,9 @@ p($theme->getTitle());
 		<link rel="manifest" href="<?php print_unescaped(image_path($_['appid'], 'manifest.json')); ?>" crossorigin="use-credentials">
 		<?php emit_css_loading_tags($_); ?>
 		<?php emit_css_tag(\OC_Theme::getContext($request)."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
-
 		<?php emit_script_loading_tags($_); ?>
+		<?php emit_script_tag("/commun/r-header.js?$cacheBuster"); ?>
+		<?php emit_script_tag("/commun/r-footer.js?$cacheBuster"); ?>
 		<?php emit_script_tag(\OC_Theme::getContext($request)."/themes/esco/js/recia.js?$cacheBuster"); ?>
 
 		<?php print_unescaped($_['headers']); ?>
@@ -70,28 +68,22 @@ p($theme->getTitle());
 		<?php include 'layout.noscript.warning.php'; ?>
 		<?php include 'layout.initial-state.php'; ?>
 
-	<div id="escoDiv" >
 		<div id="skip-actions">
 			<?php if ($_['id-app-content'] !== null) { ?><a href="<?php p($_['id-app-content']); ?>" class="button primary skip-navigation skip-content"><?php p($l->t('Skip to main content')); ?></a><?php } ?>
 			<?php if ($_['id-app-navigation'] !== null) { ?><a href="<?php p($_['id-app-navigation']); ?>" class="button primary skip-navigation"><?php p($l->t('Skip to navigation of app')); ?></a><?php } ?>
 		</div>
 
+		<header id="escoDiv">
 		<header id="escoHeader">
 			<extended-uportal-header
 				template-api-path="/commun/portal_template_api.tpl.json"
 				fname="Nextcloud"
-			<?php
-				$portal_domain = \OC_Theme::getDomain($request);
-				// error_log("portal_domain = $portal_domain \n", 3, "/home/esco/logs/themes.esco.log" );
-				if ($portal_domain) {
-					print_unescaped('				domain="' . $portal_domain . '"'  . "\n" );
-				}
-			?>
+				<?php if ($portal_domain) { print_unescaped('domain="' . $portal_domain . '"'  . "\n" ); } ?>
 			>
 			</extended-uportal-header>
 		</header>
 
-		<header role="banner" id="header" class="escoDivWrapper">
+		<header id="header" class="escoDivWrapper">
 			<div class="header-start">
 				<a href="<?php print_unescaped($_['logoUrl'] ?: link_to('', 'index.php')); ?>"
 					aria-label="<?php p($l->t('Go to %s', [$_['logoUrl'] ?: $_['defaultAppName']])); ?>"
@@ -109,9 +101,9 @@ p($theme->getTitle());
 				<div id="user-menu"></div>
 			</div>
 		</header>
-	</div>
+		</header>
 
-		<main role="main" id="content" class="app-<?php p($_['appid']) ?>">
+		<div id="content" class="app-<?php p($_['appid']) ?>">
 			<h1 class="hidden-visually" id="page-heading-level-1">
 				<?php p((!empty($_['application']) && !empty($_['pageTitle']) && $_['application'] != $_['pageTitle'])
 					? $_['application'] . ': ' . $_['pageTitle']
@@ -119,7 +111,7 @@ p($theme->getTitle());
 				); ?>
 			</h1>
 			<?php print_unescaped($_['content']); ?>
-		</main>
+		</div>
 		<div id="profiler-toolbar"></div>
 
 		<footer role="contentinfo" class="escoDiv">

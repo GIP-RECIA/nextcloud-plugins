@@ -44,24 +44,24 @@ p($theme->getTitle());
 		<div class="wrapper">
 			<div class="v-align">
 				<?php if ($_['bodyid'] === 'body-login'): ?>
-					<header role="banner">
-						<div id="header">
+					<header>
+						<div id="header" class="header-guest">
 							<div class="logo"></div>
 						</div>
 					</header>
 				<?php endif; ?>
-				<main>
+				<div>
 					<h1 class="hidden-visually">
 						<?php p($theme->getName()); ?>
 					</h1>
 					<?php print_unescaped($_['content']); ?>
-				</main>
+				</div>
 			</div>
 		</div>
 		<?php
 		$longFooter = $theme->getLongFooter();
 ?>
-		<footer role="contentinfo" class="guest-box <?php if ($longFooter === '') {
+		<footer class="guest-box <?php if ($longFooter === '') {
 			p('hidden');
 		} ?>">
 			<p class="info">
