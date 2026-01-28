@@ -45,7 +45,7 @@ defaut:
 	@echo " SETTINGS or SETTINGS_APP"
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
-	@echo " CALENDAR"
+# 	@echo " CALENDAR"
 	@echo " ONLYOFFICE"
 
 SCRIPTS: 
@@ -95,11 +95,11 @@ FILES_SHARING:
 	rsync -av files_sharing/app/* $(APPS)/files_sharing --exclude src
 	rsync -av --chown=$(NEXTCLOUD_OWNER):$(NEXTCLOUD_GROUP) $(DIST)
 
-CALENDAR:
-	rsync -av \
-	--include='js/***' \
-	--include='l10n/***' \
-	--exclude='*' apps/calendar/* $(APPS)/calendar
+# CALENDAR:
+# 	rsync -av \
+# 	--include='js/***' \
+# 	--include='l10n/***' \
+# 	--exclude='*' apps/calendar/* $(APPS)/calendar
 
 ONLYOFFICE:
 	rsync -av \
