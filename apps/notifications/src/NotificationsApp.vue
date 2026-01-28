@@ -3,59 +3,59 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<NcHeaderMenu v-if="!shutdown"
+	<NcHeaderMenu
+		v-if="!shutdown"
 		id="notifications"
+		v-model:open="open"
 		class="notifications-button"
 		:exclude-click-outside-selectors="['.popover']"
-		:open.sync="open"
 		:aria-label="t('notifications', 'Notifications')"
 		:title="t('notifications', 'Notifications')"
-		@open="onOpen">
+		@opened="onOpen">
 		<template #trigger>
-			<IconNotification :size="20"
+			<IconNotification
+				:size="20"
 				:show-dot="notifications.length !== 0 || webNotificationsGranted === null"
 				:show-warning="hasThrottledPushNotifications" />
 		</template>
 
 		<!-- Notifications list content -->
-		<div ref="container" class="notification-container">
+		<div class="notification-container">
 			<transition name="fade" mode="out-in">
-				<transition-group v-if="notifications.length > 0"
+				<transition-group
+					v-if="notifications.length > 0"
 					class="notification-wrapper"
 					name="list"
 					tag="ul">
-					<Notification v-if="hasThrottledPushNotifications"
+					<NotificationItem
+						v-if="hasThrottledPushNotifications"
 						:key="-2016"
-						datetime="warning"
-						app="core"
-						:icon="warningIcon"
-						external-link="https://nextcloud.com/fairusepolicy"
-						:message="emptyContentDescription"
-						:subject="emptyContentMessage"
-						:index="2016" />
-					<Notification v-for="(n, index) in notifications"
-						:key="n.notificationId"
-						v-bind="n"
-						:index="index"
-						@remove="onRemove" />
+						:notification="fairUsePolicyNotification" />
+					<NotificationItem
+						v-for="(notification, index) in notifications"
+						:key="notification.notificationId"
+						:notification="notification"
+						@remove="onRemove(index)" />
 				</transition-group>
 
 				<!-- No notifications -->
-				<NcEmptyContent v-else
+				<NcEmptyContent
+					v-else
 					:name="emptyContentMessage"
 					:description="emptyContentDescription">
 					<template #icon>
-						<IconBell v-if="!hasThrottledPushNotifications" />
+						<IconBellOutline v-if="!hasThrottledPushNotifications" />
 						<span v-else class="icon icon-alert-outline" />
 					</template>
 
 					<template v-if="hasThrottledPushNotifications" #action>
-						<NcButton type="primary"
+						<NcButton
+							variant="primary"
 							href="https://nextcloud.com/fairusepolicy"
 							target="_blank"
 							rel="noreferrer noopener">
 							<template #icon>
-								<IconMessage :size="20" />
+								<IconMessageOutline :size="20" />
 							</template>
 							{{ t('notifications', 'Contact Nextcloud GmbH') }} ↗
 						</NcButton>
@@ -65,7 +65,8 @@
 
 			<!-- Dismiss all -->
 			<div v-if="notifications.length > 0" class="dismiss-all">
-				<NcButton type="tertiary"
+				<NcButton
+					variant="tertiary"
 					wide
 					@click="onDismissAll">
 					<template #icon>
@@ -79,40 +80,67 @@
 </template>
 
 <script>
-import IconBell from 'vue-material-design-icons/Bell.vue'
-import IconClose from 'vue-material-design-icons/Close.vue'
-import IconMessage from 'vue-material-design-icons/Message.vue'
-import IconNotification from './Components/IconNotification.vue'
-import Notification from './Components/Notification.vue'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import { getCurrentUser, getRequestToken } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
-import { getCurrentUser } from '@nextcloud/auth'
-import { emit, subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { showError } from '@nextcloud/dialogs'
+import { emit, subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { loadState } from '@nextcloud/initial-state'
-import {
-	generateOcsUrl,
-	imagePath,
-} from '@nextcloud/router'
-import { getNotificationsData } from './services/notificationsService.js'
+import { t } from '@nextcloud/l10n'
 import { listen } from '@nextcloud/notify_push'
-
-import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
-import NcHeaderMenu from '@nextcloud/vue/dist/Components/NcHeaderMenu.js'
+import { generateOcsUrl, imagePath } from '@nextcloud/router'
+import NcButton from '@nextcloud/vue/components/NcButton'
+import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
+import NcHeaderMenu from '@nextcloud/vue/components/NcHeaderMenu'
+import IconBellOutline from 'vue-material-design-icons/BellOutline.vue'
+import IconClose from 'vue-material-design-icons/Close.vue'
+import IconMessageOutline from 'vue-material-design-icons/MessageOutline.vue'
+import IconNotification from './Components/IconNotification.vue'
+import NotificationItem from './Components/NotificationItem.vue'
+import {
+	getNotificationsData,
+	setCurrentTabAsActive,
+} from './services/notificationsService.js'
 import { createWebNotification } from './services/webNotificationsService.js'
+
+const sessionKeepAlive = loadState('core', 'config', { session_keepalive: true }).session_keepalive
+const hasThrottledPushNotifications = false // loadState('notifications', 'throttled_push_notifications')
+
+const fairUsePolicyNotification = {
+	// Required properties
+	notificationId: -1,
+	app: 'core',
+	user: '',
+	datetime: 'warning',
+	objectId: '',
+	objectType: '',
+	subject: t('notifications', 'Push notifications might be unreliable'),
+	message: t('notifications', 'Nextcloud GmbH sponsors a free push notification gateway for private users. To ensure good service, the gateway limits the number of push notifications per server. For enterprise users, a more scalable gateway is available. Contact Nextcloud GmbH for more information.'),
+	link: 'https://nextcloud.com/fairusepolicy',
+	actions: [],
+	// Optional properties
+	externalLink: 'https://nextcloud.com/fairusepolicy',
+	icon: imagePath('core', 'actions/alert-outline.svg'),
+}
 
 export default {
 	name: 'NotificationsApp',
 
 	components: {
-		IconBell,
+		IconBellOutline,
 		IconClose,
-		IconMessage,
+		IconMessageOutline,
 		IconNotification,
 		NcButton,
 		NcEmptyContent,
 		NcHeaderMenu,
-		Notification,
+		NotificationItem,
+	},
+
+	setup() {
+		return {
+			fairUsePolicyNotification,
+			hasThrottledPushNotifications,
+		}
 	},
 
 	data() {
@@ -121,8 +149,6 @@ export default {
 			backgroundFetching: false,
 			hasNotifyPush: false,
 			shutdown: false,
-			// hasThrottledPushNotifications: loadState('notifications', 'throttled_push_notifications'),
-			hasThrottledPushNotifications: false,
 			notifications: [],
 			lastETag: null,
 			lastTabId: null,
@@ -173,7 +199,7 @@ export default {
 			}
 
 			if (this.hasThrottledPushNotifications) {
-				return t('notifications', 'Push notifications might be unreliable')
+				return this.fairUsePolicyNotification.subject
 			}
 
 			return t('notifications', 'No notifications')
@@ -181,19 +207,15 @@ export default {
 
 		emptyContentDescription() {
 			if (this.hasThrottledPushNotifications) {
-				return t('notifications', 'Nextcloud GmbH sponsors a free push notification gateway for private users. To ensure good service, the gateway limits the number of push notifications per server. For enterprise users, a more scalable gateway is available. Contact Nextcloud GmbH for more information.')
+				return this.fairUsePolicyNotification.message
 			}
 
 			return ''
 		},
-
-		warningIcon() {
-			return imagePath('core', 'actions/alert-outline.svg')
-		},
 	},
 
 	mounted() {
-		this.tabId = OC.requestToken || ('' + Math.random())
+		this.tabId = getRequestToken() || ('' + Math.random())
 		this._oldcount = 0
 
 		this.checkWebNotificationPermissions()
@@ -219,21 +241,26 @@ export default {
 		subscribe('user_status:status.updated', this.userStatusUpdated)
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		unsubscribe('user_status:status.updated', this.userStatusUpdated)
 		unsubscribe('networkOffline', this.handleNetworkOffline)
 		unsubscribe('networkOnline', this.handleNetworkOnline)
 	},
 
 	methods: {
+		t,
+
 		userStatusUpdated(state) {
 			if (getCurrentUser().uid === state.userId) {
 				this.userStatus = state.status
 			}
 		},
 
-		onOpen() {
+		async onOpen() {
 			this.requestWebNotificationPermissions()
+
+			await setCurrentTabAsActive(this.tabId)
+			await this._fetch()
 		},
 
 		handleNetworkOffline() {
@@ -248,7 +275,7 @@ export default {
 		},
 
 		setupBackgroundFetcher() {
-			if (OC.config.session_keepalive) {
+			if (sessionKeepAlive) {
 				console.debug('Started background fetcher as session_keepalive is enabled')
 				this.interval = window.setInterval(this._backgroundFetch.bind(this), this.pollIntervalCurrent)
 			} else {
@@ -261,13 +288,17 @@ export default {
 				.delete(generateOcsUrl('apps/notifications/api/v2/notifications'))
 				.then(() => {
 					this.notifications = []
+					this.open = false
+					setCurrentTabAsActive(this.tabId)
 				})
 				.catch(() => {
 					showError(t('notifications', 'Failed to dismiss all notifications'))
 				})
 		},
+
 		onRemove(index) {
 			this.notifications.splice(index, 1)
+			setCurrentTabAsActive(this.tabId)
 		},
 
 		/**
@@ -452,7 +483,7 @@ export default {
 		},
 
 		processWebNotifications(notifications) {
-			notifications.forEach(notification => {
+			notifications.forEach((notification) => {
 				if (this.backgroundFetching) {
 					// Can not rely on showBrowserNotifications because each tab should
 					// be able to utilize the data from the notification in events.

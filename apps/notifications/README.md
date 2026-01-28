@@ -18,7 +18,7 @@
 
 ```bash
 nextcloud-plugins/apps/notifications$ cd ../../../notifications/
-notifications$ git checkout v31.0.14 -b v31.0.14
+notifications$ git checkout v32.0.5 -b v32.0.5
 notifications$ make dev-setup
 notifications$ cd -
 nextcloud-plugins/apps/notifications$ make meld
@@ -43,12 +43,7 @@ protected function sendNotificationsToProxies(): void {
 
 ```diff
 [...]
-data() {
-    return {
-      [...]
--     // hasThrottledPushNotifications: loadState('notifications', 'throttled_push_notifications'),
-+     hasThrottledPushNotifications: false,
-      [...]
-}
+- const hasThrottledPushNotifications = loadState('notifications', 'throttled_push_notifications')
++ const hasThrottledPushNotifications = false // loadState('notifications', 'throttled_push_notifications')
 [...]
 ```
