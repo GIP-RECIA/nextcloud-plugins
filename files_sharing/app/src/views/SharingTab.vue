@@ -169,8 +169,6 @@ import { loadState } from '@nextcloud/initial-state'
 import { generateOcsUrl } from '@nextcloud/router'
 import { ShareType } from '@nextcloud/sharing'
 import { getSidebarSections } from '@nextcloud/sharing/ui'
-import axios from '@nextcloud/axios'
-import moment from '@nextcloud/moment'
 
 import NcAvatar from '@nextcloud/vue/components/NcAvatar'
 import NcButton from '@nextcloud/vue/components/NcButton'
@@ -178,7 +176,11 @@ import NcCollectionList from '@nextcloud/vue/components/NcCollectionList'
 import NcPopover from '@nextcloud/vue/components/NcPopover'
 import InfoIcon from 'vue-material-design-icons/InformationOutline.vue'
 
+import axios from '@nextcloud/axios'
+import moment from '@nextcloud/moment'
+
 import { shareWithTitle } from '../utils/SharedWithMe.js'
+
 import Config from '../services/ConfigService.ts'
 import Share from '../models/Share.ts'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
@@ -195,6 +197,8 @@ import SidebarTabExternalSectionLegacy from '../components/SidebarTabExternal/Si
 
 import ShareDetails from '../mixins/ShareDetails.js'
 import logger from '../services/logger.ts'
+
+const productName = window.OC.theme.productName
 
 export default {
 	name: 'SharingTab',
@@ -243,9 +247,9 @@ export default {
 			shareDetailsData: {},
 			returnFocusElement: null,
 
-			internalSharesHelpText: t('files_sharing', 'Use this method to share files with individuals or teams within your organization. If the recipient already has access to the share but cannot locate it, you can send them the internal share link for easy access.'),
-			externalSharesHelpText: t('files_sharing', 'Use this method to share files with individuals or organizations outside your organization. Files and folders can be shared via public share links and email addresses. You can also share to other Nextcloud accounts hosted on different instances using their federated cloud ID.'),
-			additionalSharesHelpText: t('files_sharing', 'Shares that are not part of the internal or external shares. This can be shares from apps or other sources.'),
+			internalSharesHelpText: t('files_sharing', 'Share files within your organization. Recipients who can already view the file can also use this link for easy access.'),
+			externalSharesHelpText: t('files_sharing', 'Share files with others outside your organization via public links and email addresses. You can also share to {productName} accounts on other instances using their federated cloud ID.', { productName }),
+			additionalSharesHelpText: t('files_sharing', 'Shares from apps or other sources which are not included in internal or external shares.'),
 		}
 	},
 
@@ -296,18 +300,23 @@ export default {
 		},
 
 		internalShareInputPlaceholder() {
-			return this.config.showFederatedSharesAsInternal
-				? t('files_sharing', 'Share with accounts, teams, federated cloud id')
-				: t('files_sharing', 'Share with accounts and teams')
+			return this.config.showFederatedSharesAsInternal && this.config.isFederationEnabled
+				// TRANSLATORS: Type as in with a keyboard
+				? t('files_sharing', 'Type names, teams, federated cloud IDs')
+				// TRANSLATORS: Type as in with a keyboard
+				: t('files_sharing', 'Type names or teams')
 		},
 
 		externalShareInputPlaceholder() {
 			if (!this.isLinkSharingAllowed) {
-				return this.config.isFederationEnabled ? t('files_sharing', 'Federated cloud ID') : ''
+				// TRANSLATORS: Type as in with a keyboard
+				return this.config.isFederationEnabled ? t('files_sharing', 'Type a federated cloud ID') : ''
 			}
 			return !this.config.showFederatedSharesAsInternal && !this.config.isFederationEnabled
-				? t('files_sharing', 'Email')
-				: t('files_sharing', 'Email, federated cloud id')
+				// TRANSLATORS: Type as in with a keyboard
+				? t('files_sharing', 'Type an email')
+				// TRANSLATORS: Type as in with a keyboard
+				: t('files_sharing', 'Type an email or federated cloud ID')
 		},
 	},
 	methods: {
@@ -378,6 +387,7 @@ export default {
 			this.sharedWithMe = {}
 			this.shares = []
 			this.linkShares = []
+			this.externalShares = []
 			this.showSharingDetailsView = false
 			this.shareDetailsData = {}
 		},
