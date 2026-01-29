@@ -1,16 +1,14 @@
 <?php
 
+declare(strict_types=1);
 
 namespace OCA\LdapImporter\Command;
 
+use OC\Core\Command\Base;
 use OCA\LdapImporter\Service\Import\AdImporter;
-use OCA\LdapImporter\Service\Import\ImporterInterface;
-use OCP\IConfig;
+use OCP\IAppConfig;
 use OCP\IDBConnection;
-use OCP\IGroupManager;
 use OCP\IUserManager;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,54 +16,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
-/**
- * Class ImportUsersAd
- * @package OCA\LdapImporter\Command
- *
- */
-class ImportUsersAd extends Command
+class ImportUsersAd extends Base
 {
-
-    /**
-     * @var IUserManager $userManager
-     */
-    private $userManager;
-
-    /**
-     * @var IConfig
-     */
-    private $config;
-
-    /**
-     * @var IDBConnection
-     */
-    private $db;
-
-    /**
-     * @var IGroupManager
-     */
-    private $groupManager;
-
-    /**
-     * ImportUsersAd constructor.
-     * @param IDBConnection $db
-     * @param IGroupManager $groupManager
-     */
-    public function __construct(IDBConnection $db, IGroupManager $groupManager)
-    {
+    public function __construct(
+        private IAppConfig $appConfig,
+        private IDBConnection $dbConnection,
+        private IUserManager $userManager
+    ) {
         parent::__construct();
-
-        $this->userManager = \OCP\Server::get(IUserManager::class);
-        $this->config = \OCP\Server::get(IConfig::class);
-        $this->db = $db;
-        $this->groupManager = $groupManager;
-
     }
 
-    /**
-     * Configure method
-     */
     protected function configure()
     {
         $this
@@ -81,30 +41,20 @@ class ImportUsersAd extends Command
                 'convert-backend',
                 'c',
                 InputOption::VALUE_OPTIONAL,
-                'Convert the backend to CAS (on update only)')
+                'Convert the backend to CAS (on update only)'
+            )
             ->addOption(
                 'ldap-filter',
                 'lf',
                 InputOption::VALUE_OPTIONAL,
                 'filter ldap search'
-            )
-        ;
+            );
+        parent::configure();
     }
 
-    /**
-     * Execute method
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-
         try {
-            /**
-             * @var LoggerInterface $logger
-             */
             $logger = new ConsoleLogger($output);
 
             # Check for ldap extension
@@ -112,10 +62,11 @@ class ImportUsersAd extends Command
 
                 $output->writeln('Start account import from ActiveDirectory.');
 
-                /**
-                 * @var ImporterInterface $importer
-                 */
-                $importer = new AdImporter($this->config, $this->db, $input->getOption('ldap-filter'));
+                $importer = new AdImporter(
+                    $this->appConfig,
+                    $this->dbConnection,
+                    $input->getOption('ldap-filter')
+                );
                 $output->writeln('Construct done');
 
                 $importer->init($logger);
@@ -139,7 +90,6 @@ class ImportUsersAd extends Command
                 $convertBackend = $input->getOption('convert-backend');
 
                 if ($convertBackend) {
-
                     $logger->info("Backend conversion: Backends will be converted to CAS-Backend.");
                 }
 
@@ -147,7 +97,6 @@ class ImportUsersAd extends Command
                 $deltaUpdate = $input->getOption('delta-update');
 
                 if ($deltaUpdate) {
-
                     $logger->info("Delta updates: Existing users will be updated.");
                 }
 
@@ -155,36 +104,30 @@ class ImportUsersAd extends Command
                 $updateCommand = $this->getApplication()->find('ldap:update-user');
 
                 foreach ($allUsers as $user) {
-
                     $arguments = [
                         'command' => 'ldap:create-user',
                         'uid' => $user["uid"],
                         '--display-name' => $user["displayName"],
                         '--email' => $user["email"],
-                        '--quota' => $user["quota"]."GB",
+                        '--quota' => $user["quota"] . "GB",
                         '--enabled' => $user["enable"],
                         '--group' => $user["groups"]
                     ];
 
                     # Create user if he does not exist
                     if (!$this->userManager->userExists($user["uid"])) {
-                        $logger->info(" " . implode(',' , array_slice($arguments, 0,  6)). "[" . implode(', ' , $user["groups"]) . ']');
-
+                        $logger->info(" " . implode(',', array_slice($arguments, 0,  6)) . "[" . implode(', ', $user["groups"]) . ']');
                         $input = new ArrayInput($arguments);
-
                         $createCommand->run($input, $output);
                     } # Update user if he already exists and delta update is true
                     else if ($this->userManager->userExists($user["uid"]) && $deltaUpdate) {
-
                         $arguments['command'] = 'ldap:update-user';
-                        $logger->info(" " . implode(',' , array_slice($arguments, 0, 6)). "[" . implode(', ' , $user["groups"]) . ']');
+                        $logger->info(" " . implode(',', array_slice($arguments, 0, 6)) . "[" . implode(', ', $user["groups"]) . ']');
 
                         if ($convertBackend) {
-
                             $arguments["--convert-backend"] = 1;
                         }
                         $input = new ArrayInput($arguments);
-
                         $updateCommand->run($input, $output);
                     }
 
@@ -195,16 +138,14 @@ class ImportUsersAd extends Command
                 $progressBar->clear();
 
                 $output->writeln('Account import to database finished.');
-
             } else {
-
                 throw new \Exception("User import failed. PHP extension 'ldap' is not loaded.");
             }
         } catch (\Exception $e) {
-
             $logger->critical("Fatal Error: " . $e->getMessage());
             return 1;
         }
+
         return 0;
     }
 }

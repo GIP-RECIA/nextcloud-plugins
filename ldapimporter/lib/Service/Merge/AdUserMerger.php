@@ -1,31 +1,15 @@
 <?php
 
+declare(strict_types=1);
 
 namespace OCA\LdapImporter\Service\Merge;
 
-
 use Psr\Log\LoggerInterface;
 
-/**
- * Class AdUserMerger
- * @package LdapImporter\Service\Merge
- *
- * @since 1.0.0
- */
-class AdUserMerger implements MergerInterface
+class AdUserMerger
 {
+    protected LoggerInterface $logger;
 
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-
-    /**
-     * AdUserMerger constructor.
-     * @param LoggerInterface $logger
-     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -40,8 +24,13 @@ class AdUserMerger implements MergerInterface
      * @param bool $preferEnabledAccountsOverDisabled
      * @param string $primaryAccountDnStartswWith
      */
-    public function mergeUsers(array &$userStack, array $userToMerge, $merge, $preferEnabledAccountsOverDisabled, $primaryAccountDnStartswWith)
-    {
+    public function mergeUsers(
+        array &$userStack,
+        array $userToMerge,
+        $merge,
+        $preferEnabledAccountsOverDisabled,
+        $primaryAccountDnStartswWith
+    ) {
         # User already in stack
         if ($merge && isset($userStack[$userToMerge["uid"]])) {
 
@@ -52,34 +41,33 @@ class AdUserMerger implements MergerInterface
             //      if one is enabled, use this account
             //      if both enabled, use information of $primaryAccountDnStartswWith
 
-            if ($preferEnabledAccountsOverDisabled && $userStack[$userToMerge["uid"]]['enable'] == 0 && $userToMerge['enable'] == 1) { # First disabled, second enabled and $preferEnabledAccountsOverDisabled is true
-
+            if (
+                $preferEnabledAccountsOverDisabled
+                && $userStack[$userToMerge["uid"]]['enable'] == 0
+                && $userToMerge['enable'] == 1
+            ) { # First disabled, second enabled and $preferEnabledAccountsOverDisabled is true
                 $this->logger->info("User " . $userToMerge["uid"] . " is merged because first account was disabled.");
-
                 $userStack[$userToMerge["uid"]] = $userToMerge;
-            }
-            elseif(!$preferEnabledAccountsOverDisabled && $userStack[$userToMerge["uid"]]['enable'] == 0 && $userToMerge['enable'] == 1) {  # First disabled, second enabled and $preferEnabledAccountsOverDisabled is false
-
+            } elseif (
+                !$preferEnabledAccountsOverDisabled
+                && $userStack[$userToMerge["uid"]]['enable'] == 0
+                && $userToMerge['enable'] == 1
+            ) {  # First disabled, second enabled and $preferEnabledAccountsOverDisabled is false
                 $this->logger->info("User " . $userToMerge["uid"] . " has not been merged, second enabled account was not preferred, because of preferEnabledAccountsOverDisabled option.");
-            }
-            elseif ($userStack[$userToMerge["uid"]]['enable'] == 1 && $userToMerge['enable'] == 1) { # Both enabled
-
+            } elseif (
+                $userStack[$userToMerge["uid"]]['enable'] == 1
+                && $userToMerge['enable'] == 1
+            ) { # Both enabled
                 if (strpos(strtolower($userToMerge['dn']), strtolower($primaryAccountDnStartswWith) !== FALSE)) {
-
                     $this->logger->info("User " . $userToMerge["uid"] . " is merged because second account is primary, based on merge filter.");
-
                     $userStack[$userToMerge["uid"]] = $userToMerge;
-                }
-                else {
-
+                } else {
                     $this->logger->info("User " . $userToMerge["uid"] . " has not been merged, second account was not primary, based on merge filter.");
                 }
             } else {
-
                 $this->logger->info("User " . $userToMerge["uid"] . " has not been merged, second account was disabled, first account was enabled.");
             }
         } else { # User not in stack
-
             $userStack[$userToMerge["uid"]] = $userToMerge;
         }
     }

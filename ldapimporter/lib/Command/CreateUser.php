@@ -1,143 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OCA\LdapImporter\Command;
 
-use OCA\LdapImporter\Service\AppService;
-use OCA\LdapImporter\Service\LoggingService;
+use OC\Core\Command\Base;
 use OCA\LdapImporter\Service\UserService;
-
 use OCA\LdapImporter\User\Backend;
-use OCA\LdapImporter\User\NextBackend;
-use OCA\LdapImporter\User\UserCasBackendInterface;
-use OCP\IConfig;
-use OCP\IDBConnection;
 use OCP\IGroupManager;
-use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
-use OCP\IUserSession;
-use OCP\Mail\IMailer;
+use OCP\Mail\IEmailValidator;
+use OCP\Security\ISecureRandom;
+use OCP\Util;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\OutputInterface;
 
-
-/**
- * Class CreateUser
- *
- * @package OCA\LdapImporter\Command
- *
- */
-class CreateUser extends Command
+class CreateUser extends Base
 {
+    private UserService $userService;
+    private Backend $backend;
 
-    /**
-     * @var UserService
-     */
-    protected $userService;
-
-    /**
-     * @var AppService
-     */
-    protected $appService;
-
-    /**
-     * @var IUserManager
-     */
-    protected $userManager;
-
-    /**
-     * @var IGroupManager
-     */
-    protected $groupManager;
-
-    /**
-     * @var IMailer
-     */
-    protected $mailer;
-
-    /**
-     * @var LoggingService
-     */
-    protected $loggingService;
-
-    /**
-     * @var IConfig
-     */
-    protected $config;
-
-    /**
-     * @var Backend|UserCasBackendInterface
-     */
-    protected $backend;
-
-
-    /**
-     *
-     */
-    public function __construct()
-    {
+    public function __construct(
+        private IGroupManager $groupManager,
+        private IUserManager $userManager,
+        private IEmailValidator $emailValidator,
+        private ISecureRandom $secureRandom,
+        private LoggerInterface $loggerInterface
+    ) {
         parent::__construct();
 
-        $userManager = \OCP\Server::get(IUserManager::class);
-        $groupManager = \OCP\Server::get(IGroupManager::class);
-        $mailer = \OCP\Server::get(IMailer::class);
-        $config = \OCP\Server::get(IConfig::class);
-        $userSession = \OCP\Server::get(IUserSession::class);
-        $logger = \OCP\Server::get(LoggerInterface::class);
-        $urlGenerator = \OCP\Server::get(IURLGenerator::class);
-
-        $loggingService = new LoggingService('ldapimporter', $config, $logger);
-        $this->appService = new AppService('ldapimporter', $config, $loggingService, $userManager, $userSession, $urlGenerator);
-
-        $userService = new UserService(
-            'ldapimporter',
-            $config,
-            $userManager,
-            $userSession,
+        $this->userService = new UserService(
             $groupManager,
-            $this->appService,
-            $loggingService
+            $userManager,
+            $secureRandom,
+            $loggerInterface
         );
-
-        if ($this->appService->isNotNextcloud()) {
-
-            $backend = new Backend(
-                'ldapimporter',
-                $config,
-                $loggingService,
-                $this->appService,
-                $userManager
-            );
-        } else {
-
-            $backend = new NextBackend(
-                'ldapimporter',
-                $config,
-                $loggingService,
-                $this->appService,
-                $userManager,
-                $userService
-            );
-        }
-
-        $this->userService = $userService;
-        $this->userManager = $userManager;
-        $this->groupManager = $groupManager;
-        $this->mailer = $mailer;
-        $this->loggingService = $loggingService;
-        $this->config = $config;
-        $this->backend = $backend;
+        $this->backend = new Backend();
     }
 
-
-    /**
-     *
-     */
     protected function configure()
     {
         $this
@@ -183,21 +88,14 @@ class CreateUser extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Set user uai-courant'
-            )
-        ;
+            );
+        parent::configure();
     }
 
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @throws \Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-	//	$output->writeln("begin create user " . $user->getUID() ); /* pl no commit */
-		$logger = new ConsoleLogger($output);
+        //$output->writeln("begin create user " . $user->getUID() ); /* pl no commit */
+        $logger = new ConsoleLogger($output);
         $uid = $input->getArgument('uid');
         if ($this->userManager->userExists($uid)) {
             //$output->writeln('<error>The user "' . $uid . '" already exists.</error>');
@@ -209,7 +107,7 @@ class CreateUser extends Command
         $email = $input->getOption('email');
         if ($email !== null) {
             // Validate first
-            if (!$this->mailer->validateMailAddress($email)) {
+            if (!$this->emailValidator->isValid($email)) {
                 // Invalid! Error
                 //$output->writeln('<error>Invalid email address supplied</error>');
                 $logger->error("Invalide email ($email) for $uid");
@@ -220,102 +118,69 @@ class CreateUser extends Command
         # Register Backend
         $this->userService->registerBackend($this->backend);
 
-        /**
-         * @var IUser
-         */
         $user = $this->userService->create($uid, $this->backend);
 
         if ($user instanceof IUser) {
-
             $output->writeln('<info>The user "' . $user->getUID() . '" was created successfully</info>');
         } else {
-
             //$output->writeln('<error>An error occurred while creating the user</error>');
             $logger->error("An error occurred while creating the user $uid");
-            
+
             return 1;
         }
 
         # Set displayName
         if ($input->getOption('display-name')) {
-
             $user->setDisplayName($input->getOption('display-name'));
             $output->writeln('Display name set to "' . $user->getDisplayName() . '"');
         } else {
-			$output->writeln('no display-name');
-		}
+            $output->writeln('no display-name');
+        }
 
         # Set email if supplied & valid
         if ($email !== null) {
-
-            $user->setEMailAddress($email);
+            $user->setSystemEMailAddress($email);
             $output->writeln('Email address set to "' . $user->getEMailAddress() . '"');
         } else {
-			$output->writeln('no Email address');
-		}
+            $output->writeln('no Email address');
+        }
 
         # Set Groups
         $groups = (array)$input->getOption('group');
-
         if (count($groups) > 0) {
-
-            $this->userService->updateGroups($user, $groups, $this->config->getAppValue('ldapimporter', 'cas_protected_groups'), TRUE);
+            $this->userService->updateGroups($user, $groups, '', true);
             $output->writeln('Groups have been set.');
         } else {
-			$output->writeln('no Groups');
-		}
+            $output->writeln('no Groups');
+        }
 
         # Set Quota
         $quota = $input->getOption('quota');
-
         if (!empty($quota)) {
-
             if (is_numeric($quota)) {
-
                 $newQuota = $quota;
             } elseif ($quota === 'default') {
-
                 $newQuota = 'default';
             } elseif ($quota === 'none') {
-
                 $newQuota = 'none';
             } else {
-
-                $newQuota = \OCP\Util::computerFileSize($quota);
+                $newQuota = Util::computerFileSize($quota);
             }
-
             $user->setQuota($newQuota);
             $output->writeln('Quota set to "' . $user->getQuota() . '"');
         } else {
-			$output->writeln('no Quota');
-		}
+            $output->writeln('no Quota');
+        }
 
         # Set enabled
         $enabled = $input->getOption('enabled');
 
         if (is_numeric($enabled) || is_bool($enabled)) {
-
             $user->setEnabled(boolval($enabled));
-
             $enabledString = ($user->isEnabled()) ? 'enabled' : 'not enabled';
             $output->writeln('Enabled set to "' . $enabledString . '"');
         }
 
-        # Set Backend
-        if ($this->appService->isNotNextcloud()) {
-
-            if (!is_null($user) && ($user->getBackendClassName() === 'OC\User\Database' || $user->getBackendClassName() === "Database")) {
-
-                $query = \OCP\Server::get(IDBConnection::class)->prepare('UPDATE `*PREFIX*accounts` SET `backend` = ? WHERE LOWER(`user_id`) = LOWER(?)');
-                $result = $query->execute([get_class($this->backend), $uid]);
-
-                $output->writeln('New user added to CAS backend.');
-            }
-
-        } else {
-
-            $output->writeln('This is a Nextcloud instance, no backend update needed.');
-        }
         return 0;
     }
 }

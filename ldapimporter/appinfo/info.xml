@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<info>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>ldapimporter</id>
     <name>Ldap Importer</name>
     <summary>LDAP importer</summary>
@@ -9,13 +10,10 @@
     <author>RECIA</author>
     <namespace>LdapImporter</namespace>
     <category>integration</category>
-
-    <category>security</category>
-
+    <bugs>https://github.com/GIP-RECIA/nextcloud-plugins</bugs>
     <dependencies>
-        <nextcloud min-version="15" max-version="31"/>
+        <nextcloud min-version="31" max-version="32" />
     </dependencies>
-
     <commands>
         <command>OCA\LdapImporter\Command\CreateUser</command>
         <command>OCA\LdapImporter\Command\UpdateUser</command>
@@ -23,9 +21,8 @@
         <command>OCA\LdapImporter\Command\DisableDeletedUser</command>
         <command>OCA\LdapImporter\Command\RemoveDisabledUser</command>
     </commands>
-
     <settings>
-        <admin>OCA\LdapImporter\Panels\Admin</admin>
-        <admin-section>OCA\LdapImporter\Panels\AdminSection</admin-section>
+        <admin>OCA\LdapImporter\Settings\Admin</admin>
+        <admin-section>OCA\LdapImporter\Settings\Sections\Admin</admin-section>
     </settings>
 </info>

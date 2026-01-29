@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    const computeHiddenFields = function() {
+    const computeHiddenFields = function () {
         let pegadogicGroups = {};
-        $('.cas_import_map_groups_pedagogic').each(function(i) {
+        $('.cas_import_map_groups_pedagogic').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 pegadogicGroups[i] = {
@@ -11,7 +11,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_map_groups_pedagogic_filter').each(function(i) {
+        $('.cas_import_map_groups_pedagogic_filter').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 pegadogicGroups[i] = {
@@ -20,7 +20,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_map_groups_pedagogic_naming').each(function(i) {
+        $('.cas_import_map_groups_pedagogic_naming').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 pegadogicGroups[i] = {
@@ -31,7 +31,7 @@ $(document).ready(function () {
         })
 
         let filterGroups = {};
-        $('.cas_import_map_groups_filter').each(function(i) {
+        $('.cas_import_map_groups_filter').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 filterGroups[i] = {
@@ -40,7 +40,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_map_groups_naming').each(function(i) {
+        $('.cas_import_map_groups_naming').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 filterGroups[i] = {
@@ -49,7 +49,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_map_groups_quota').each(function(i) {
+        $('.cas_import_map_groups_quota').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 filterGroups[i] = {
@@ -58,7 +58,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_map_groups_uai_number').each(function(i) {
+        $('.cas_import_map_groups_uai_number').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 filterGroups[i] = {
@@ -68,9 +68,8 @@ $(document).ready(function () {
             }
         })
 
-
         let nameUaiGroup = {};
-        $('.cas_import_regex_name_uai').each(function(i) {
+        $('.cas_import_regex_name_uai').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 nameUaiGroup[i] = {
@@ -79,7 +78,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_regex_name_group').each(function(i) {
+        $('.cas_import_regex_name_group').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 nameUaiGroup[i] = {
@@ -88,7 +87,7 @@ $(document).ready(function () {
                 }
             }
         })
-        $('.cas_import_regex_uai_group').each(function(i) {
+        $('.cas_import_regex_uai_group').each(function (i) {
             const value = $(this).val();
             if (value.length > 0) {
                 nameUaiGroup[i] = {
@@ -97,7 +96,6 @@ $(document).ready(function () {
                 }
             }
         })
-
 
         $('#cas_import_map_groups_fonctionel').val(JSON.stringify(filterGroups));
         $('#cas_import_map_groups_pedagogic').val(JSON.stringify(pegadogicGroups));
@@ -114,7 +112,7 @@ $(document).ready(function () {
             console.log(postData)
 
             var infoNotification = OC.Notification.show("Sauvegarde en cours");
-    
+
             $.ajax({
                 method: method,
                 url: url,
@@ -142,26 +140,25 @@ $(document).ready(function () {
         $(this).trigger('change');
     });
 
-    $('#cas_import_ad_sync_pagesize').on ('change', function() {
+    $('#cas_import_ad_sync_pagesize').on('change', function () {
         console.log($(this).val());
         $("#cas_import_ad_sync_pagesize_value").val($(this).val());
     });
 
-    $('#cas_import_ad_sync_pagesize_value').on('keyup', function() {
+    $('#cas_import_ad_sync_pagesize_value').on('keyup', function () {
         console.log($(this).val());
         $("#cas_import_ad_sync_pagesize").val($(this).val());
     });
-
 
     const importMapGroupsPedagogic = $('#cas_import_map_groups_pedagogic').val();
     if (importMapGroupsPedagogic.length > 0) {
         let parsedPedagogicGroups = null;
         try {
             parsedPedagogicGroups = JSON.parse(decodeHTMLEntities(importMapGroupsPedagogic))
-        } catch(e) {
+        } catch (e) {
             parsedPedagogicGroups = []
         }
-        Object.entries(parsedPedagogicGroups).forEach(function([key, pedagogicGroup], i) {
+        Object.entries(parsedPedagogicGroups).forEach(function ([key, pedagogicGroup], i) {
             if (i === 0) {
                 $('#cas_import_map_groups_pedagogic_first').val(pedagogicGroup.field)
                 $('#cas_import_map_groups_pedagogic_filter_first').val(pedagogicGroup.filter)
@@ -172,15 +169,9 @@ $(document).ready(function () {
                 const filter = pedagogicGroup.filter ? pedagogicGroup.filter : '';
                 const naming = pedagogicGroup.naming ? pedagogicGroup.naming : '';
                 $('#addPedagogicGroup').before(
-                    "<input " +
-                    " class=\"cas_import_map_groups_pedagogic\"" +
-                    " value='" + field + "'/>" +
-                    "<input " +
-                    " class=\"cas_import_map_groups_pedagogic_filter\"" +
-                    " value='" + filter + "'/>" +
-                    "<input " +
-                    " class=\"cas_import_map_groups_pedagogic_naming\"" +
-                    " value='" + naming + "'/>");
+                    "<input class=\"cas_import_map_groups_pedagogic\" value='" + field + "'/>" +
+                    "<input class=\"cas_import_map_groups_pedagogic_filter\" value='" + filter + "'/>" +
+                    "<input class=\"cas_import_map_groups_pedagogic_naming\" value='" + naming + "'/>");
             }
         });
     }
@@ -190,7 +181,7 @@ $(document).ready(function () {
         let parsedFilterGroups = null;
         try {
             parsedFilterGroups = JSON.parse(decodeHTMLEntities(importMapFilterGroups))
-        } catch(e) {
+        } catch (e) {
             parsedFilterGroups = []
         }
         Object.entries(parsedFilterGroups).forEach(function ([key, fonctionnelGroup], i) {
@@ -206,20 +197,11 @@ $(document).ready(function () {
                 const quota = fonctionnelGroup.quota ? fonctionnelGroup.quota : '';
                 const uaiNumber = fonctionnelGroup.uaiNumber ? fonctionnelGroup.uaiNumber : '';
                 $('#addFilterGroup').before(
-                    "<input " +
-                    " class=\"cas_import_map_groups_filter\"" +
-                    " value='" + filter + "'/>" +
-                    "<input " +
-                    " class=\"cas_import_map_groups_naming\"" +
-                    " value='" + naming + "'/>" +
-                    "<input " +
-                    " class=\"cas_import_map_groups_uai_number\"" +
-                    " value='" + uaiNumber + "'/>" +
-                    "<input " +
-                    " class=\"cas_import_map_groups_quota\"" +
-                    " value='" + quota + "'/>");
+                    "<input class=\"cas_import_map_groups_filter\" value='" + filter + "'/>" +
+                    "<input class=\"cas_import_map_groups_naming\" value='" + naming + "'/>" +
+                    "<input class=\"cas_import_map_groups_uai_number\" value='" + uaiNumber + "'/>" +
+                    "<input class=\"cas_import_map_groups_quota\" value='" + quota + "'/>");
             }
-
         });
     }
 
@@ -228,7 +210,7 @@ $(document).ready(function () {
         let parsedNameUaiGroups = null;
         try {
             parsedNameUaiGroups = JSON.parse(decodeHTMLEntities(importNameUaiGroups))
-        } catch(e) {
+        } catch (e) {
             parsedNameUaiGroups = []
         }
         Object.entries(parsedNameUaiGroups).forEach(function ([key, group], i) {
@@ -242,47 +224,33 @@ $(document).ready(function () {
                 const nameGroup = group.nameGroup ? group.nameGroup : '';
                 const uaiGroup = group.uaiGroup ? group.uaiGroup : '';
                 $('#addNameUaiGroup').before(
-                    "                        <input\n" +
-                    "                                class=\"cas_import_regex_name_uai\"\n" +
-                    "                                value=\"" + nameUai + "\"/>\n" +
-                    "                        <input\n" +
-                    "                                class=\"cas_import_regex_name_group\"\n" +
-                    "                                value=\"" + nameGroup + "\"/>\n" +
-                    "                        <input\n" +
-                    "                                class=\"cas_import_regex_uai_group\"\n" +
-                    "                                value=\"" + uaiGroup + "\"/>\n");
+                    "<input class=\"cas_import_regex_name_uai\" value=\"" + nameUai + "\"/>" +
+                    "<input class=\"cas_import_regex_name_group\" value=\"" + nameGroup + "\"/>" +
+                    "<input class=\"cas_import_regex_uai_group\" value=\"" + uaiGroup + "\"/>");
             }
-
         });
     }
 
-    $('#addPedagogicGroup').on('click', function() {
+    $('#addPedagogicGroup').on('click', function () {
         $('#addPedagogicGroup').before(
-            "<input " +
-            " class=\"cas_import_map_groups_pedagogic\"/>" +
-            "<input " +
-            " class=\"cas_import_map_groups_pedagogic_filter\"/>" +
-            "<input " +
-            " class=\"cas_import_map_groups_pedagogic_naming\"/>");
+            "<input class=\"cas_import_map_groups_pedagogic\"/>" +
+            "<input class=\"cas_import_map_groups_pedagogic_filter\"/>" +
+            "<input class=\"cas_import_map_groups_pedagogic_naming\"/>");
     });
 
-    $('#addNameUaiGroup').on('click', function() {
+    $('#addNameUaiGroup').on('click', function () {
         $('#addNameUaiGroup').before(
-            "                        <input class=\"cas_import_regex_name_uai\"/>" +
-            "                        <input class=\"cas_import_regex_name_group\"/>" +
-            "                        <input class=\"cas_import_regex_uai_group\"/>");
+            "<input class=\"cas_import_regex_name_uai\"/>" +
+            "<input class=\"cas_import_regex_name_group\"/>" +
+            "<input class=\"cas_import_regex_uai_group\"/>");
     });
 
-    $('#addFilterGroup').on('click', function() {
+    $('#addFilterGroup').on('click', function () {
         $('#addFilterGroup').before(
-            "<input " +
-            " class=\"cas_import_map_groups_filter\"/>" +
-            "<input " +
-            " class=\"cas_import_map_groups_naming\"/>" +
-            "<input " +
-            " class=\"cas_import_map_groups_uai_number\"/>" +
-            "<input " +
-            " class=\"cas_import_map_groups_quota\"/>");
+            "<input class=\"cas_import_map_groups_filter\"/>" +
+            "<input class=\"cas_import_map_groups_naming\"/>" +
+            "<input class=\"cas_import_map_groups_uai_number\"/>" +
+            "<input class=\"cas_import_map_groups_quota\"/>");
     });
 });
 
