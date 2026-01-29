@@ -1,83 +1,40 @@
 <?php
 
+declare(strict_types=1);
 
 namespace OCA\LdapImporter\Command;
 
+use OC\Core\Command\Base;
 use OCA\LdapImporter\Service\Delete\DeleteService;
-use OCP\IConfig;
+use OCP\IAppConfig;
 use OCP\IDBConnection;
-use OCP\IGroupManager;
 use OCP\IUserManager;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
-/**
- * Class DisableDeletedUser
- * @package OCA\LdapImporter\Command
- *
- */
-class DisableDeletedUser extends Command
+class DisableDeletedUser extends Base
 {
-
-    /**
-     * @var IConfig
-     */
-    private $config;
-
-    /**
-     * @var IDBConnection
-     */
-    private $db;
-
-    /**
-     * @var IGroupManager
-     */
-    private $groupManager;
-
-    /**
-     * @var IUserManager
-     */
-    private $userManager;
-
-    /**
-     * ImportUsersAd constructor.
-     * @param IDBConnection $db
-     * @param IGroupManager $groupManager
-     * @param IUserManager $userManager
-     */
-    public function __construct(IDBConnection $db, IGroupManager $groupManager, IUserManager $userManager)
-    {
+    public function __construct(
+        private IAppConfig $appConfig,
+        private IDBConnection $dbConnection,
+        private IUserManager $userManager
+    ) {
         parent::__construct();
-
-        $this->userManager = \OCP\Server::get(IUserManager::class);
-        $this->config = \OCP\Server::get(IConfig::class);
-        $this->db = $db;
-        $this->groupManager = $groupManager;
-        $this->userManager = $userManager;
-
     }
 
-    /**
-     * Configure method
-     */
     protected function configure()
     {
         $this
             ->setName('ldap:disable-deleted-user')
             ->setDescription('Disable users that not in ldap anymore')
-            ->setDescription('UAI des établissements séléctionnés')
             ->addOption(
                 'uai',
-                'uai',
+                null,
                 InputOption::VALUE_OPTIONAL,
                 'Liste des UAI des établissements séparer par des virgules'
             )
-            ->setDescription('Siren des établissements séléctionnés')
             ->addOption(
                 'siren',
                 's',
@@ -89,30 +46,25 @@ class DisableDeletedUser extends Command
                 'u',
                 InputOption::VALUE_OPTIONAL,
                 'Liste des utilsateurs à supprimer séparé par des virgules'
-            )
-        ;
+            );
+        parent::configure();
     }
 
-    /**
-     * Execute method
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            /**
-             * @var LoggerInterface $logger
-             */
             $logger = new ConsoleLogger($output);
 
             $output->writeln('Start disable deleted user.');
 
-            $importer = new DeleteService($this->config, $this->db, $this->groupManager, $this->userManager);
+            $deleteService = new DeleteService(
+                $this->appConfig,
+                $this->dbConnection,
+                $this->userManager
+            );
             $output->writeln('Construct done');
 
-            $importer->init($logger);
+            $deleteService->init($logger);
             $output->writeln('init done');
 
             $uai = $input->getOption('uai');
@@ -127,15 +79,13 @@ class DisableDeletedUser extends Command
             if (!is_null($users)) {
                 $users = explode(",", $input->getOption('users'));
             }
-            $importer->disableDeletedUsers($uai, $siren, $users);
-
-            $importer->close();
-
+            $deleteService->disableDeletedUsers($uai, $siren, $users);
+            $deleteService->close();
             $output->writeln('Disabling users finished.');
-
         } catch (\Exception $e) {
             $logger->critical("Fatal Error: " . $e->getMessage());
         }
+
         return 0;
     }
 }
