@@ -48,7 +48,14 @@ etabs:
               - write
               - share
               - delete
-            
+      - regex: '^coll:Collectivites:GIP-RECIA:Services:((E-éducation - Logiciels libres:ENT)|(GSI:ISSR))$'
+        group: 'PLL.ISSR.GIP-RECIA'
+        folder: 'GIP-RECIA/PLL-ISSR'
+        quotaF: 100
+        permF:
+          - write
+          - share
+          - delete
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
         last: ifMatch
         groups:
