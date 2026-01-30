@@ -13,7 +13,7 @@ suffixGroup: ':LDAP'  # tous les identifiants de groupes NC géré par cette app
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800046
-    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*)(cn=coll:Applications:Nextcloud_GIP-RECIA:*))'
+    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:PLL-ISSR)(cn=coll:Applications:Nextcloud_GIP-RECIA:*))'
     regexes:  
       - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):(?:Tous_)(\2)$'
         last: ifMatch
