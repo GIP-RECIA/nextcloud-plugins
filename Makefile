@@ -52,6 +52,7 @@ SCRIPTS:
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
 	cp -uv $(ALLETAB) $(NEXTCLOUD_SCRIPTS)/allEtab.txt
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
+	@echo 'ATTENTION launchNextcloudCron.sh est éventuellement à copier sur le VM web2 et web3' 
 
 CONFIG: config/*.json
 	cp config/*.json $(NEXTCLOUD_PATH)/config/
