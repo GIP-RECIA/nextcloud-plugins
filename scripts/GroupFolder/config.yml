@@ -48,18 +48,18 @@ etabs:
               - write
               - share
               - delete
-      - regex: '^coll:Collectivites:GIP-RECIA:groupes_locaux:PLL-ISSR$'
-        group: 'PLL.ISSR.GIP-RECIA'
-        folder: 'GIP-RECIA/PLL-ISSR'
-        quotaF: 100
-        permF:
-          - write
-          - share
-          - delete
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(GSI|E-éducation - Logiciels libres):(ISSR|Tous_E-éducation - Logiciels libres)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA):Services:GSI:(ISSR)$'
         groups:
           - group: '%2$s.%1$s'
-          - group: '%3$s.%1$s'
+            folder: 'GIP-RECIA/PLL-ISSR'
+            quotaF: 100
+            permF:
+              - write
+              - share
+              - delete
+      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(E-éducation - Logiciels libres):Logiciels libres$'
+        groups:
+          - group: '%2$s.%1$s'
             folder: 'GIP-RECIA/PLL-ISSR'
             quotaF: 100
             permF:
