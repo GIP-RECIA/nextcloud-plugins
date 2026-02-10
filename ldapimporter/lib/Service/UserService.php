@@ -87,7 +87,7 @@ class UserService
                     $groupObject->setDisplayName($group);
                     #Util::writeLog('cas', 'New group created: ' . $group, LoggingService::DEBUG);
                 } else {
-                    $groupObject = $this->groupManager->get($group);
+                    $groupObject = $this->groupManager->get($groupId);
                 }
 
                 $groupObject->addUser($user);
