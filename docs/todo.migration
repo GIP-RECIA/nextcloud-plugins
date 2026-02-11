@@ -669,4 +669,68 @@ cd nc.31.0.9 ; grep -R getStorageId . > ../grep.getStorageId.31.0.9 ; cd -
 ---
 > ./apps/files_sharing/lib/Cache.php:		$this->numericId = $sourceRootInfo->getStorageId();
 
+-------------
 
+
+migration de 31.0.9 à 31.0.13
+
+diff nc.31.0.9/core/css/variables.scss nc.31.0.13/core/css/variables.scss
+
+diff nc.31.0.9/core/templates/layout.user.php nc.31.0.13/core/templates/layout.user.php
+
+diff nc.31.0.9/core/templates/layout.base.php nc.31.0.13/core/templates/layout.base.php
+
+diff nc.31.0.9/core/templates/layout.public.php nc.31.0.13/core/templates/layout.public.php
+
+diff nc.31.0.9/core/templates/layout.noscript.warning.php nc.31.0.13/core/templates/layout.noscript.warning.php
+
+diff nc.31.0.9/lib/private/Files/ObjectStore/ObjectStoreStorage.php nc.31.0.13/lib/private/Files/ObjectStore/ObjectStoreStorage.php
+
+diff nc.31.0.9/lib/private/Files/ObjectStore/Mapper.php nc.31.0.13/lib/private/Files/ObjectStore/Mapper.php
+> meld nc.31.0.9/lib/private/Files/ObjectStore/Mapper.php    nc-ent/lib/private/Files/ObjectStore/Mapper.php  nc.31.0.13/lib/private/Files/ObjectStore/Mapper.php
+
+diff nc.31.0.9/lib/private/Files/ObjectStore/S3.php nc.31.0.13/lib/private/Files/ObjectStore/S3.php
+
+
+
+diff nc.31.0.9/apps/dav/lib/CardDAV/CardDavBackend.php nc.31.0.13/apps/dav/lib/CardDAV/CardDavBackend.php
+> meld  nc.31.0.9/apps/dav/lib/CardDAV/CardDavBackend.php nc-ent/apps/dav/lib/CardDAV/CardDavBackend.php nc.31.0.13/apps/dav/lib/CardDAV/CardDavBackend.php
+
+
+
+diff nc.31.0.9/lib/private/Files/Mount/RootMountProvider.php nc.31.0.13/lib/private/Files/Mount/RootMountProvider.php
+meld nc.31.0.9/lib/private/Files/Mount/RootMountProvider.php nc-ent/lib/private/Files/Mount/RootMountProvider.php nc.31.0.13/lib/private/Files/Mount/RootMountProvider.php
+on a fait le modif mais dvrait être inutile car on va supprimer le reciaObjectstore.class
+
+
+cd nc.31.0.13 ; grep -R ObjectStoreStorage . > ../grep.ObjectStoreStorage.31.0.13 ; cd -
+diff grep.ObjectStoreStorage.31.0.13 ../V31/grep.ObjectStoreStorage.31.0.9
+des changement dans les signatures .json +
+15,17c15,17
+< ./lib/private/Files/Mount/RootMountProvider.php:		return new MountPoint(ObjectStoreStorage::class, '/', $arguments, $loader, null, null, self::class);
+< ./lib/private/Files/Mount/ObjectHomeMountProvider.php:use OC\Files\ObjectStore\HomeObjectStoreStorage;
+< ./lib/private/Files/Mount/ObjectHomeMountProvider.php:		return new HomeMountPoint($user, HomeObjectStoreStorage::class, '/' . $user->getUID(), $arguments, $loader, null, null, self::class);
+---
+> ./lib/private/Files/Mount/RootMountProvider.php:		$config['class'] = ObjectStoreStorage::class;
+> ./lib/private/Files/Mount/RootMountProvider.php:		$config['class'] = ObjectStoreStorage::class;
+> ./lib/private/Files/Mount/ObjectHomeMountProvider.php:		return new HomeMountPoint($user, '\OC\Files\ObjectStore\HomeObjectStoreStorage', '/' . $user->getUID(), $config['arguments'], $loader, null, null, self::class);
+
+50d49
+< ./core/Command/Info/File.php:				if (!$node->getStorage()->instanceOfStorage(ObjectStoreStorage::class)) {
+diff nc.31.0.9/core/Command/Info/File.php nc.31.0.13/core/Command/Info/File.php
+
+
+
+cd nc.31.0.13 ; grep -R getStorageId . > ../grep.getStorageId.31.0.13 ; cd -
+> diff grep.getStorageId.31.0.13 ../V30/grep.getStorageId.31.0.9
+44,49d43
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Config/ICachedMountInfo.php:	public function getStorageId(): int;
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/ObjectStore/IObjectStore.php:	public function getStorageId();
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/ICacheEntry.php:	public function getStorageId();
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/ICacheEvent.php:	public function getStorageId(): int;
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Cache/AbstractCacheEvent.php:	public function getStorageId(): int {
+< ./apps/suspicious_login/vendor-bin/psalm/vendor/nextcloud/ocp/OCP/Files/Mount/IMountPoint.php:	public function getStorageId();
+52c46
+< ./apps/files_sharing/lib/Cache.php:		$this->numericId = $this->sourceRootInfo->getStorageId();
+---
+> ./apps/files_sharing/lib/Cache.php:		$this->numericId = $sourceRootInfo->getStorageId();
