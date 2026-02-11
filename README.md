@@ -58,23 +58,6 @@ et ajouter dans `./lib/private/Files/ObjectStore` : `ReciaObjectStoreStorage.php
 
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/lib)
 
-# CSS JS Loader [Déprécié]
-
-> ⚠️ déprécié => utilisation d'un thème personnalisé
-
-Plugin pour Nextcloud CSSJSLoader qui surcharge le css et le js de toutes les pages
-
-Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/cssjsloader)
-
-**Installation**
-
-A placer dans le dossier `apps/` de Nextcloud
-
-**Utilisation**
-
-- Placer les ficher js dans le dossier `apps/cssjsloader/inputs/js`
-- Placer les ficher css dans le dossier `apps/cssjsloader/inputs/css`
-
 # Skeleton
 
 Répertoire contenant le document par défaut à la creation d'un l'utilisateur.\
