@@ -60,8 +60,15 @@ LIB:
 	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
 
 THEME:
-	cp -riTv themes/esco $(NEXTCLOUD_PATH)/themes/esco
-	cp core/css/variables.scss $(NEXTCLOUD_PATH)/core/css/variables.scss
+	rsync -av \
+	--include='defaults.php' \
+	--include='css/***' \
+	--include='js/***' \
+	--exclude='*' themes/esco/* $(NEXTCLOUD_PATH)/themes/esco
+	rsync -av \
+	--include='css/***' \
+	--include='templates/***' \
+	--exclude='*' core/* $(NEXTCLOUD_PATH)/core
 
 SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
