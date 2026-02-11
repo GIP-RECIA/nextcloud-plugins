@@ -6,8 +6,7 @@
 │   ├── calendar
 │   ├── dav
 │   ├── notifications
-│   ├── settings
-│   └── user_cas
+│   └── settings
 ├── config
 ├── core
 ├── cssjsloader
@@ -25,7 +24,6 @@
 Vérifier la dernière version compatible avec la version de Nextcloud :
 
 - [ONLYOFFICE](https://apps.nextcloud.com/apps/onlyoffice/releases)
-- [CAS user and group backend](https://apps.nextcloud.com/apps/user_cas/releases)
 
 ## Build theme
 

@@ -38,7 +38,6 @@ defaut:
 	@echo " THEME"
 	@echo " SKELETON"
 	@echo "### Plugins ###"
-	@echo " USER_CAS\tonly on first install (to check)"
 	@echo " LDAPIMPORTER"
 	@echo " DAV"
 	@echo " CSSJSLOADER"
@@ -68,9 +67,6 @@ SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 # Plugins
-
-USER_CAS:
-	cp -rvT apps/user_cas $(APPS)/user_cas
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
