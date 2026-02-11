@@ -30,7 +30,6 @@ defaut:
 	@echo " SCRIPTS"
 	@echo " SKELETON"
 	@echo "### Plugins ###"
-	@echo " USER_CAS\tonly on first install (to check)"
 	@echo " LDAPIMPORTER"
 	@echo " COLLABORA"
 
@@ -43,9 +42,6 @@ SKELETON:
 	cp -rvT skeleton $(NEXTCLOUD_PATH)/core/skeleton
 
 # Plugins
-
-USER_CAS:
-	cp -rvT apps/user_cas $(APPS)/user_cas
 
 LDAPIMPORTER:
 	cp -rvT ldapimporter $(APPS)/ldapimporter
