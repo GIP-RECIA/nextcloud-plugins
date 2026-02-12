@@ -734,7 +734,11 @@
 		}
 
 		const headerHeight = $('header#header').length > 0 ? $('header#header').height() : 50
-		const headerEscoHeight = $('#escoDiv').length > 0 ? $('#escoDiv').height() : 0
+		const headerEscoHeight = $('#escoDiv').length > 0
+			? $('#escoDiv').height()
+			: parent.querySelector('#escoDiv')
+				? parent.querySelector('#escoDiv').offsetHeight
+				: 0
 		const totalHeaderHeight = headerHeight + headerEscoHeight
 		const wrapEl = $('#app>iframe')
 		if (wrapEl.length > 0) {
