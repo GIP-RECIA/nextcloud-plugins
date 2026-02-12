@@ -3,9 +3,9 @@
 ```bash
 .
 ├── apps
-│   ├── calendar
 │   ├── dav
 │   ├── notifications
+│   ├── onlyoffice
 │   └── settings
 ├── config
 ├── core
