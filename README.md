@@ -6,8 +6,7 @@ Les modifications portent principalement sur :
 
 - La gestion des groupes (LDAP Importer): Données les droits (quota) et créer les groupes Nextcloud à partir des groupes LDAP.
 - La recherche de groupe et personne pour le partage (Files Sharing).
-- La gestion des buckets : n'avoir qu'un bucket par compte, par avatar et vignette.
-- Un plugin de chargement de js et css particulier (CSS JS Loader [Déprécié]).
+- La gestion des buckets : n'avoir qu'un bucket par compte.
 - Les fichiers par défauts (Skeleton) : suppression modification du repertoire skeleton.
 
 [Présentation de juin 2023 au ESUP DAYS](Presentation_ESUP_DAYS_06.2023/presentation.pdf)
@@ -16,26 +15,28 @@ Aller sur la branche [ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/m
 
 # LDAP Importer
 
-Le plugin LDAP Importer permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP. On en déduit leurs groupes Nextcloud et leurs quota. Les filtres sont paramètrés avec des regexs dans "Paramètres -> sécurité -> Import Users -> Filtre & nomage de groupe".
+Le plugin LDAP Importer permet l'alimentation des utilisateurs avec filtrage sur leurs groupes LDAP. On en déduit leurs groupes Nextcloud et leurs quota. Les filtres sont paramètrés avec des regexs dans "Paramètres d'&dministration -> LDAP Importer".
 
 - Une première serie de regex permet de deduire les noms des établissement (pour Nextcloud) à partir des groupes LDAP.
 - La deuxième définit les groupes Nextcloud à partir des groupes LDAP (fixe le quota minimum), sans groupe de cette serie un user LDAP ne sera pas importer dans Nextcloud.
 - La troisièmes définit les groupes Nextcloud à partir des groupes pédagogiques de l'utilisateur, ce ne sont pas des groupes fonctionnels, ils  ne sont pas dans le isMemberOf du LDAP. Il faut donc définir l'attribut LDAP approprié.  
 
-Tester avec le plugin "CAS Authentication backend" version : 1.10
-
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/ldapimporter) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/ldapimporter)
 
 **Installation**
 
-A placer dans le dossier `apps/` de Nextcloud
+A placer dans le dossier `apps/` de Nextcloud.
+
+```sh
+Make LDAPIMPORTER
+```
 
 **Utilisation**
 
 La commande pour importer les utilisateurs du LDAP à la BDD :
 
 ```sh
-sudo -u www-data php occ ldap:import-users-ad
+php occ ldap:import-users-ad
 ```
 
 # File Sharing
@@ -46,22 +47,35 @@ Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/t
 
 **Installation**
 
-Remplacer TOTALEMENT le dossier `files_sharing` dans le dossier `apps/` à la racine du projet.
+```sh
+Make FILES_SHARING
+```
 
 # Gestion des buckets (S3)
 
-Remplacer `./lib/private/Files/objectStore/Mapper.php` et `./lib/private/Files/Mount/RootMountProvider.php` par nos versions
-et ajouter dans `./lib/private/Files/ObjectStore` : `ReciaObjectStoreStorage.php` et `S3Recia.php`.
+Utilisation d'un hash par user, donc quasiment un bucket par user.
 
-`Mapper.php` distribut un bucket par user (c'est un hash donc quasiment un bucket par user).\
-`ReciaObjectStoreStorage.php` et `S3Recia.php` permetent de na pas stocker tous les avatars et préview dans le même bucket system (bucket 0).
+**Installation**
+
+Remplacer `./lib/private/Files/objectStore/Mapper.php`.
+
+```sh
+Make LIB
+```
 
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/lib)
 
 # Skeleton
 
-Répertoire contenant le document par défaut à la creation d'un l'utilisateur.\
+Répertoire contenant le document par défaut à la creation d'un l'utilisateur.
+
+**Installation**
+
 À recopier dans `core/skeleton`.
+
+```sh
+Make SKELETON
+```
 
 Voir les fichiers [branche ENT](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-ent/skeleton) | [branche GIP](https://github.com/GIP-RECIA/nextcloud-plugins/tree/master-gip/skeleton) (même skleton pour les deux branches)
 
