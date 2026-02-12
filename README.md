@@ -57,7 +57,7 @@ Utilisation d'un hash par user, donc quasiment un bucket par user.
 
 **Installation**
 
-Remplacer `./lib/private/Files/objectStore/Mapper.php`.
+Remplacer `lib/private/Files/objectStore/Mapper.php`.
 
 ```sh
 Make LIB
