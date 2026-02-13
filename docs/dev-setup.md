@@ -41,6 +41,6 @@ git worktree add ../stable32 stable32
 
 ```sh
 cd workspace/nextcloud-docker-dev/workspace/stable32
-git checkout v32.0.5 -b v32.0.5
+git checkout v32.0.6 -b v32.0.6
 docker compose up -d stable32
 ```
