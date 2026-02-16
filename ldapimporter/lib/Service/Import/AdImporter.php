@@ -754,7 +754,7 @@ class AdImporter
                         'name',
                         $newEtablissement->createNamedParameter($name)
                     ));
-                $newEtab = $newEtablissement->executeQuery()->fetchOne();
+                $newEtab = $newEtablissement->executeQuery()->fetchAll()[0];
 
                 return $newEtab["id"];
             }
@@ -795,7 +795,7 @@ class AdImporter
                     'uai',
                     $newEtablissement->createNamedParameter($uai)
                 ));
-            $newEtab = $newEtablissement->executeQuery()->fetchOne();
+            $newEtab = $newEtablissement->executeQuery()->fetchAll()[0];
 
             return $newEtab["id"];
         }
@@ -821,7 +821,7 @@ class AdImporter
                     'uai',
                     $qb->createNamedParameter($uai)
                 ));
-            $idEtabs = $qb->executeQuery()->fetchOne();
+            $idEtabs = $qb->executeQuery()->fetchAll()[0];
 
             return $idEtabs["id"];
         }
@@ -845,7 +845,7 @@ class AdImporter
                         'siren',
                         $qb->createNamedParameter($siren)
                     ));
-                $idEtabs = $qb->executeQuery()->fetchOne();
+                $idEtabs = $qb->executeQuery()->fetchAll()[0];
                 if ($idEtabs)
                     return $idEtabs["id"];
                 // $this->logger->error("getIdEtablissementFromSiren  [Siren = $siren] return null "); 
