@@ -391,7 +391,7 @@ class DeleteService
                     'uai',
                     $newEtablissement->createNamedParameter($uai)
                 ));
-            $newEtab = $newEtablissement->executeQuery()->fetchOne();
+            $newEtab = $newEtablissement->executeQuery()->fetchAll()[0];
 
             return $newEtab["id"];
         }
@@ -416,7 +416,7 @@ class DeleteService
                     'uai',
                     $qb->createNamedParameter($uai)
                 ));
-            $idEtabs = $qb->executeQuery()->fetchOne();
+            $idEtabs = $qb->executeQuery()->fetchAll()[0];
 
             return $idEtabs["id"];
         }
