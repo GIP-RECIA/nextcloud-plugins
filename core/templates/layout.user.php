@@ -55,8 +55,8 @@ p($theme->getTitle());
 		<?php emit_css_loading_tags($_); ?>
 		<?php emit_css_tag(\OC_Theme::getContext($request)."/themes/esco/css/reciaStyle.css?$cacheBuster"); ?>
 		<?php emit_script_loading_tags($_); ?>
-		<?php emit_script_tag("/commun/r-header.js?$cacheBuster"); ?>
-		<?php emit_script_tag("/commun/r-footer.js?$cacheBuster"); ?>
+		<?php emit_script_tag("/resource-server/webjars/gip-recia__ui-webcomponents/dist/r-header.js?$cacheBuster"); ?>
+		<?php emit_script_tag("/resource-server/webjars/gip-recia__ui-webcomponents/dist/r-footer.js?$cacheBuster"); ?>
 		<?php emit_script_tag(\OC_Theme::getContext($request)."/themes/esco/js/recia.js?$cacheBuster"); ?>
 
 		<?php print_unescaped($_['headers']); ?>
