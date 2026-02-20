@@ -26,20 +26,6 @@ body {
 	}
 }
 
-// ---------- USER MENU  ----------
-
-#header-menu-user-menu {
-	// Cache la déconnexion
-	li:has(#logout) {
-		display: none;
-	}
-
-	// Ajoute du padding sur l'avant dernier élément
-	li:has(+ li:last-of-type) {
-		padding-block-end: 4px;
-	}
-}
-
 // ---------- EXTENDED UPORTAL HEADER  ----------
 
 body #escoDiv extended-uportal-header {
@@ -75,6 +61,18 @@ body {
 				// Masquage du menu contacts
 				> #contactsmenu {
 					display: none;
+				}
+
+				> #user-menu > #header-menu-user-menu {
+					// Cache la déconnexion
+					li:has(#logout) {
+						display: none;
+					}
+
+					// Ajoute du padding sur l'avant dernier élément
+					li:has(+ li:last-of-type) {
+						padding-block-end: 4px;
+					}
 				}
 
 				// Correction du placement à l'ouverture des menu
