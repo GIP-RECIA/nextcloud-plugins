@@ -62,19 +62,6 @@ rm ${lock}1 ${lock}2 ${lock}3
 	#/usr/bin/nice $rcode/removeOldUser.pl -n 1500 -l 4 2>&1
 
 	#date
-	logClean=$rlog/cleanBucket.`date +'%d'`.log
+	
 
-	# nétoyage du bucket 0 peut être tres long donc on verrouille pour ne pas en lancer 2 à la fois
-lock=$HOME/logs-esco/lockCleanBucket
-(flock -x 9;
-	echo "\nnettoyage de nc-prod-0"
-	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
-	date 
-	tail -1 $logClean
 
-	date
-	echo "\nnettoyage de nc-prod-corbeille"
-	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
-	date
-	tail -1 $logClean
-) 9>${lock}
