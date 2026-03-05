@@ -13,13 +13,13 @@ lock=$HOME/logs-esco/lockCleanBucket
 	
 	logClean=$rlog/cleanBucket.`date +'%d'`.LOG
 	echo "\nnettoyage de nc-prod-0 encours"
-	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
+	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean  2>&1
 	date 
 	tail -1 $logClean
 
 	date
 	echo "\nnettoyage de nc-prod-corbeille"
-	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean
+	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-corbeille all >> $logClean 2>&1
 	date
 	tail -1 $logClean
 	echo "\nnettoyage de nc-prod terminé"
