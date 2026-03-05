@@ -3,11 +3,15 @@ rlog=$HOME/logs-esco
 fdata=$HOME/data
 rcode=$HOME/scripts
 
-	# nétoyage du bucket 0 peut être tres long donc on verrouille pour ne pas en lancer 2 à la fois
+	# Nettoyage du bucket 0 peut être très long donc on verrouille pour ne pas en lancer 2 à la fois
 lock=$HOME/logs-esco/lockCleanBucket
 
 (flock -n 9 || exit 1 ; # si il y a un verrou on sort sans rien faire
-	logClean=$rlog/cleanBucket.`date +'%d'`.log
+	/usr/bin/gzip $rlog/cleanBucket*.LOG
+
+	for i in $rlog/cleanBucket*.LOG.gz ; do mv $i ${i%.LOG.gz}.log.gz; done;
+	
+	logClean=$rlog/cleanBucket.`date +'%d'`.LOG
 	echo "\nnettoyage de nc-prod-0 encours"
 	/usr/bin/nice $rcode/cleanBucket.pl s3://nc-prod-0 90 all > $logClean
 	date 
