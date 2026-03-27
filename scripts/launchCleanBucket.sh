@@ -1,3 +1,4 @@
+#!/bin/bash
 date
 rlog=$HOME/logs-esco
 fdata=$HOME/data
@@ -6,7 +7,7 @@ rcode=$HOME/scripts
 	# Nettoyage du bucket 0 peut être très long donc on verrouille pour ne pas en lancer 2 à la fois
 lock=$HOME/logs-esco/lockCleanBucket
 
-(flock -n 9 || exit 1 ; # si il y a un verrou on sort sans rien faire
+(flock -n 9 || exit 1; # si il y a un verrou on sort sans rien faire
 	/usr/bin/gzip $rlog/cleanBucket*.LOG
 
 	for i in $rlog/cleanBucket*.LOG.gz ; do mv $i ${i%.LOG.gz}.log.gz; done;

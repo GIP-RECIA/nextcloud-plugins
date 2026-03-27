@@ -335,14 +335,15 @@ if ($bucket) {
 		} 
 	} else {
 		print "Pas de bucket ";
-	}	
-	$bucketId = $prefixBucket . "0". lc($uid);
-	print "\nLecture du bucket des avatars $bucketId \n";
-	open S3 , &lsCommande($bucketId) . "|"  || die "$!";
-	while (<S3>) {
-		print;
 	}
-	close S3; 
+#  suppresion lecture bucket avatar n'existe plus
+#	$bucketId = $prefixBucket . "0". lc($uid);
+#	print "\nLecture du bucket des avatars $bucketId \n";
+#	open S3 , &lsCommande($bucketId) . "|"  || die "$!";
+#	while (<S3>) {
+#		print;
+#	}
+#	close S3; 
 } elsif ($file) {
 	getNextcloudFiles($uid);
 	print "les fichiers :\n";
