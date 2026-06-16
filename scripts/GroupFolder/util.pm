@@ -42,7 +42,7 @@ $PARAM{'NC_SCRIPTS'} = $scriptRep;
 
 	# lecture des paramatres de conf
 
-	open CONFIG, "$configFile" or die $!;
+	open CONFIG, "$configFile" or warn " $configFile: $!" ; #die $!;
 
 	while (<CONFIG>)  {
 		if (/'(\w+)'\s*=>\s*'([^']+)'/) {
