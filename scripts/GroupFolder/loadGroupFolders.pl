@@ -102,6 +102,7 @@ MyLogger->file('>>' . $logsFile);
 if ($test) {
 	MyLogger->level(5, 1);
 } else {
+	die "Error config " unless ${util::PARAM}{'NC_DATA'};
 	if ($loglevel) {
 		MyLogger->level($loglevel, 2);
 	}

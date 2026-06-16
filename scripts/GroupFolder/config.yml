@@ -25,32 +25,50 @@ etabs:
               - share
               - delete
             quotaF: 50
+          - folder: &folder18educ
+              - *folder18
+              - 'Éducation'                        # création du folder 'Échanges CD18-établissements'
+            permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
+              - write
+              - share
+              - delete
+            quotaF: 50
             
-          - folder: &f18Bourge 'Échanges CD18-établissements/AFFECTATION AGENTS MUTUALISÉS BOURGES ET ALENTOURS'
+          - folder: &f18Bourge
+              - *folder18
+              - 'AFFECTATION AGENTS MUTUALISÉS BOURGES ET ALENTOURS'
             permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
               - write
               - share
               - delete
             quotaF: 50
-          - folder: &f18nord 'Échanges CD18-établissements/AFFECTATION AGENTS MUTUALISÉS NORD'
+          - folder: &f18nord
+              - *folder18
+              - 'AFFECTATION AGENTS MUTUALISÉS NORD'
             permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder
               - write
               - share
               - delete
             quotaF: 50
-          - folder: &f18ouest 'Échanges CD18-établissements/AFFECTATION AGENTS MUTUALISÉS OUEST'
+          - folder: &f18ouest
+              - *folder18
+              - 'AFFECTATION AGENTS MUTUALISÉS OUEST'
             permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
               - write
               - share
               - delete
             quotaF: 50
-          - folder: &f18sud 'Échanges CD18-établissements/AFFECTATION AGENTS MUTUALISÉS SUD'
+          - folder: &f18sud
+              - *folder18
+              - 'AFFECTATION AGENTS MUTUALISÉS SUD'
             permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
               - write
               - share
               - delete
             quotaF: 50
-          - folder: &f18est 'Échanges CD18-établissements/AFFECTATION AGENTS MUTUALISÉS EST'
+          - folder: &f18est
+              - *folder18
+              - 'AFFECTATION AGENTS MUTUALISÉS EST'
             permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
               - write
               - share
@@ -102,15 +120,17 @@ etabs:
                 folders:
                   - folder: *folder18 # droit du groupe est lecture sur Échanges CD18-établissements
                     permF: []
-                  - folder: &folderEtab18 # création des folders: 'Échanges CD18-établissements/nomEtab_uai'
-                      - *folder18
+                  - folder: *folder18educ # droit du groupe est lecture sur Échanges CD18-établissements/Education
+                    permF: []
+                  - folder: &folderEtab18educ # création des folders: 'Échanges CD18-établissements/Education/nomEtab_uai'
+                      - *folder18educ
                       - '%1$s'
                     quotaF: 50
-                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/nomEtab_uai'
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/Education/nomEtab_uai'
                       - write
                       - delete
               - group: *group18 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: *folderEtab18 # les droits sur les folders 'changes CD18-établissements/nomEtab_uai'
+                folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
                 permF:
                   - write
                   - delete
@@ -118,6 +138,7 @@ etabs:
             last: ifMatch
             uai: '%2$s'
             groups: *groupsEtab18 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
+
 
   - nom: CD45-LOIRET
     siren: 22450001700013
