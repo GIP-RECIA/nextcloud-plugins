@@ -217,4 +217,46 @@ etabs:
             last: ifMatch
             uai: '%2$s'
             groups: *groupsEtab45 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
+  - nom: CD28-Eure-et-Loir
+    siren: 22280001300013
+    ldapFilterList:
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL D EURE ET LOIR:groupes_locaux:Echanges etablissements:Managers)'
+        regex: '^coll:Collectivites:([^:]+)'
+        last: ifMatch
+        group: &group28 'Echanges etablissements.$1' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL D EURE ET LOIR'
+        folder: &folder28 'Échanges CD28-établissements' # création du folder 'Échanges CD28-établissements'
+        permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' sur le folder 'Échanges CD28-établissements'
+          - write
+          - share
+          - delete
+        quotaF: 50
+      - ldapFilterGroups: '(|  (cn=clg28:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+                               (cn=clg28:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                               (cn=clg28:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
+                           )'
+        regexes:
+          - regex: '^clg28:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: &groupsEtab28
+              - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
+                folders:
+                  - folder: *folder28 # droit du groupe est lecture sur Échanges CD45-établissements
+                    permF: []
+                  - folder: &folderEtab28 # création des folders: 'Échanges CD45-établissements/nomEtab_uai'
+                      - *folder45
+                      - '%1$s'
+                    quotaF: 50
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD45-établissements/nomEtab_uai'
+                      - write
+                      - delete
+              - group: *group28 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET'
+                folder: *folderEtab28 # les droits sur les folders 'changes CD45-établissements/nomEtab_uai'
+                permF:
+                  - write
+                  - delete
+          - regex: '^clg28:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: *groupsEtab28 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
 ...
