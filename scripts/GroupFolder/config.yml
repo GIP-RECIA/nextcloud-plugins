@@ -145,11 +145,24 @@ etabs:
                     permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/Education/nomEtab_uai'
                       - write
                       - delete
+                  - folder: *folder18pat
+                    permF: []
+                  - folder: &folderEtab18pat
+                      - *folder18pat
+                      - '%1$s'
+                    permF:
+                      - write
+                      - delete
               - group: *group18 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
-                folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
-                permF:
-                  - write
-                  - delete
+                folders:
+                  - folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
+                    permF:
+                      - write
+                      - delete
+                  - folder: &folderEtab18pat
+                    permF:
+                      - write
+                      - delete
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
             last: ifMatch
             uai: '%2$s'
