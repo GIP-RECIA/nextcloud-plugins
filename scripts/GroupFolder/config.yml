@@ -6,7 +6,7 @@
 #   un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
 #   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
 #   permF definit les droits du groupe sur le groupefolder
-# pour le moment les utilisateurs ne sont pas crééer avce loadGroupFolder mais avec loadEtab (du coup quotaG par exemple ne sert a rien)
+# pour le moment les utilisateurs ne sont pas créés avec loadGroupFolder mais avec loadEtab (du coup quotaG par exemple ne sert a rien)
 
 
 ---
@@ -74,6 +74,22 @@ etabs:
               - share
               - delete
             quotaF: 50
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:DIRECTION DU PATRIMOINE IMMOBILIER:*)
+        regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:(DIRECTION DU PATRIMOINE IMMOBILIER):Tous_DIRECTION DU PATRIMOINE IMMOBILIER$)
+        last: ifMatch
+        group: &g18pat '%1$s.CONSEIL DEPARTEMENTAL DU CHER' # creation du groupe 'DIRECTION DU PATRIMOINE IMMOBILIER.CONSEIL DEPARTEMENTAL DU CHER'
+        folders:
+          - folder: &folder18pat                #  creation du folder 'Échanges CD18-établissements/Patrimoine'
+              - *&folder18
+              - 'Patrimoine'
+            permF:                              # droit du groupe &g18pat sur le folder &folder18pat 'Échanges CD18-établissements/Patrimoine'
+              - write
+              - share
+              - delete
+            quotaF: 50
+          - folder: &folder18                   # droit du groupe &g18pat en lecture seul sur  le folder 'Échanges CD18-établissements'
+            permF: []
+
       - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Secteur*)'
         regexes:
           - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Bourges)$'
