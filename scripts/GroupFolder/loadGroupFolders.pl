@@ -61,10 +61,27 @@ local $YAML::XS::ForbidDuplicateKeys = 1; # ne marche pas vraiement
 	my %orderTags = map(($_, $cpt++) ,qw/suffixGroup etabs nom siren ldapFilterList ldapFilterGroups regexes regex last uai groups group quotaG admin folders folder permF quotaF/);
 	sub orderTags {
 		my @ary;
+		my $decalage = 0; #le decalage du au variable nommées genre \maVar
+		my $poslast = $orderTags{last}; # on les mets derriere lasr
 		for ( keys %{shift()} ){
 			my $idx = $orderTags{$_};
-			§FATAL "Mauvaise clé dans le fichier de conf: $_, $idx" if  ($idx eq undef);
-			§FATAL "Doublon de clé dans le fichier de  conf: $_" unless $ary[$idx] eq undef; # innopérant le doublon est gérée par ecrassement avant 
+			if ($idx eq undef) {
+				if (/^(\$\w+)/) {
+					$decalage++;
+					$idx = $poslast + $decalage;
+					 for (my $i = @ary; $i > $idx;) {
+						 $ary[$i] = $ary[--$i];
+					 }
+				} else {
+					§FATAL "Mauvaise clé dans le fichier de conf: $_, $idx" if  ($idx eq undef);
+					§FATAL "Doublon de clé dans le fichier de  conf: $_" unless $ary[$idx] eq undef; # inopérant le doublon est gérée par ecrassement avant
+				}
+			} else {
+				if ($idx > $poslast) {
+					$idx += $decalage;
+				}
+			}
+			
 			$ary[$idx] = $_;
 		}
 		return [ grep $_ , @ary ];
