@@ -152,7 +152,7 @@ etabs:
         regexes:
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
             last: ifMatch
-            $var: '%1$s'
+            $nom_etab: '%1$s'
             uai: '%2$s'
             groups: &groupsEtab18
               - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
@@ -163,7 +163,7 @@ etabs:
                     permF: []
                   - folder: &folderEtab18educ # création des folders: 'Échanges CD18-établissements/Education/nomEtab_uai'
                       - *folder18educ
-                      - $var
+                      - $nom_etab
                     quotaF: 50
                     permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/Education/nomEtab_uai'
                       - write
@@ -172,7 +172,7 @@ etabs:
                     permF: []
                   - folder: &folderEtab18pat
                       - *folder18pat
-                      - '%1$s'
+                      - $nom_etab
                     permF:
                       - write
                       - delete
@@ -192,11 +192,13 @@ etabs:
                   - write
                   - delete
               - group: *group18pat
+                folder: *folderEtab18pat
                 permF:
                   - write
                   - delete
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
             last: ifMatch
+            $nom_etab: '%1$s'
             uai: '%2$s'
             groups: *groupsEtab18 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
   - nom: CD45-LOIRET
