@@ -73,11 +73,11 @@ my $readOnly = 0;
 # permet de ne pas jouer la commande occ
 sub testMode {
 	$readOnly = 1;
-	$occ = "echo $occ ";
+	$occ = "OCC ";
 }
 
 sub isTestMode {
-	return $occ =~ /^echo/; 
+	return $readOnly || ($occ =~ /^OCC/) ;
 }
 
 sub isObjectStore {
@@ -201,10 +201,14 @@ sub occ {
 	my $com = shift;
 	my $out = shift;
 
-	if ($out) {
-		§SYSTEM[1] "$occ $com", OUT => $out;
+	if (isTestMode) {
+		§INFO "$occ $com" ;
 	} else {
-		§SYSTEM[1] "$occ $com" ;
+		if ($out) {
+			§SYSTEM[1] "$occ $com", OUT => $out;
+		} else {
+			§SYSTEM[1] "$occ $com" ;
+		}
 	}
 }
 
