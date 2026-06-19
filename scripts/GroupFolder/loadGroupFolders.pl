@@ -48,6 +48,7 @@ use Folder;
 use Group;
 use Etab;
 use GroupFolder;
+use Variables;
 
 my $fileYml = "config.yml";
 my $test = 0;
@@ -58,7 +59,7 @@ my $userLoad;
 local $YAML::XS::ForbidDuplicateKeys = 1; # ne marche pas vraiement
 {
 	my $cpt;
-	my %orderTags = map(($_, $cpt++) ,qw/suffixGroup etabs nom siren ldapFilterList ldapFilterGroups regexes regex last uai groups group quotaG admin folders folder permF quotaF/);
+	my %orderTags = map(($_, $cpt++) ,qw/suffixGroup var etabs nom siren ldapFilterList ldapFilterGroups regexes regex last uai groups group quotaG admin folders folder permF quotaF/);
 	sub orderTags {
 		my @ary;
 		my $decalage = 0; #le decalage du au variable nommées genre \maVar
@@ -274,9 +275,18 @@ END {
 }
 
 
+
+
+sub flat {  # une methode pour applanir un array d'array récursivement
+    return map { ref eq 'ARRAY' ? flat(@$_) : $_ } @_;
+}
+
+
+
 sub traitementRegexGroup {
 	my $etabNC = shift;
 	my $confGroupsList = shift;
+	my $etabVariables = shift; # ne pas modifier !
 	my @grpRegexMatches = @_;
 
 	# §TRACE Dumper(@res);
@@ -288,6 +298,7 @@ sub traitementRegexGroup {
 		
 		if ($groupFormat) {
 
+			$groupFormat = $etabVariables->remplace($groupFormat);
 			my $groupNC = Group->getOrCreateGroup(sprintf($groupFormat, @grpRegexMatches), $etabNC, $suffixGroup);
 
 			my $confFoldersList = $confGroup->{folders};
@@ -299,9 +310,11 @@ sub traitementRegexGroup {
 			foreach my $confFolder (@{$confFoldersList}) {
 				my $folderName = $confFolder->{folder};
 				if (ref($folderName) eq  'ARRAY') {
-					$folderName = join "/", @$folderName;
+					$folderName = join "/", &flat($folderName);
 				}
-				§DEBUG "foldername = ", Dumper($folderName);
+				§TRACE "avant remplace foldername = ", Dumper($folderName);
+				$folderName = $etabVariables->remplace($folderName);
+				§DEBUG "apres remplace foldername = ", Dumper($folderName);
 				GroupFolder->createFolder4Group(
 						$etabNC,
 						$folderName,
@@ -327,11 +340,14 @@ sub traitementRegexGroup {
 }
 
 
+
+
 sub traitementEtabGroup {
 	my $confEtab = shift;
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
-
+    my $etabVariables = shift;
+    
 	my $regexes =  $confEtab->{regexes};
 
 	unless ($regexes) {
@@ -348,7 +364,10 @@ sub traitementEtabGroup {
 		my $uaiFormat = $confRegexGroup->{uai};
 		my $lastIfMatch;
 		my $lastIfNotMatch;
+
 		
+		my $localVariables = $etabVariables->filtre($confRegexGroup);
+		§DEBUG 'apres etabVariables->filtre:', Dumper($localVariables) ;
 		§INFO "REGEX = $regex";
 		
 		unless ($confGroups) {
@@ -364,7 +383,8 @@ sub traitementEtabGroup {
 				§WARN "Ingnore last: $last";
 			}
 		}
-
+		# on cherche s'il y a des declarations de variables:
+		
 		#s'il y a un uai on traite sur un autre etab que celui passé en parametre
 		
 		
@@ -390,7 +410,14 @@ GROUPLDAP:
 				} else { # si pas d'uai le groupe est crée dans l'etab par défaut
 					$etabNC = $etabNCdefault;
 				}
-				&traitementRegexGroup($etabNC,$confGroups, @res);
+
+				§DEBUG "localVariables = ", Dumper($localVariables);
+				if (%$localVariables) { # si on a des variables déclarées a ce niveau il faut les instancier
+					
+					$etabVariables->instancie($localVariables, @res);
+					§DEBUG "etabVariables = ", Dumper($etabVariables);
+				}
+				&traitementRegexGroup($etabNC,$confGroups, $etabVariables, @res);
 				$entryGrp = '' if $lastIfMatch;
 				if ($uai) {
 					$etabForLoad{$uai} = 1;
@@ -414,6 +441,8 @@ sub traitementEtab {
 	my $siren = $confEtab->{siren};
 	my $filtreLdapList = $confEtab->{ldapFilterList};
 
+	my $etabVariables = Variables->new(); # pour stocker les variables liées à l'établissement
+	 
 	unless ( $filtreLdapList ) {
 				$filtreLdapList = [ $confEtab ];
 	}
@@ -454,7 +483,7 @@ sub traitementEtab {
 
 			§DEBUG "nb ldapGroups =", scalar @ldapGroups;
 			if (@ldapGroups) {
-				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups);
+				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups, $etabVariables);
 				# si tout est ok on met a jour le  timestamp
 
 				#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
