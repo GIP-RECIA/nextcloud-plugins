@@ -287,6 +287,7 @@ sub traitementRegexGroup {
 	my $etabNC = shift;
 	my $confGroupsList = shift;
 	my $etabVariables = shift; # ne pas modifier !
+	my $trace = shift;
 	my @grpRegexMatches = @_;
 
 	# §TRACE Dumper(@res);
@@ -295,10 +296,13 @@ sub traitementRegexGroup {
 
 		§DEBUG Dumper($confGroup);
 		my $groupFormat = $confGroup->{group};
-		
+
 		if ($groupFormat) {
 
-			$groupFormat = $etabVariables->remplace($groupFormat);
+			my $localTrace = "$trace groupe: $groupFormat;";
+
+			$groupFormat = $etabVariables->remplace($groupFormat, $localTrace);
+
 			my $groupNC = Group->getOrCreateGroup(sprintf($groupFormat, @grpRegexMatches), $etabNC, $suffixGroup);
 
 			my $confFoldersList = $confGroup->{folders};
@@ -311,9 +315,14 @@ sub traitementRegexGroup {
 				my $folderName = $confFolder->{folder};
 				if (ref($folderName) eq  'ARRAY') {
 					$folderName = join "/", &flat($folderName);
+				} else {
+					unless ($folderName) {
+						§ERROR "nom du folder non définit : $localTrace ", Dumper($confFolder);
+						next; 
+					}
 				}
 				§TRACE "avant remplace foldername = ", Dumper($folderName);
-				$folderName = $etabVariables->remplace($folderName);
+				$folderName = $etabVariables->remplace($folderName, "$localTrace folderName= $folderName; ");
 				§DEBUG "apres remplace foldername = ", Dumper($folderName);
 				GroupFolder->createFolder4Group(
 						$etabNC,
@@ -347,6 +356,7 @@ sub traitementEtabGroup {
 	my $etabNCdefault = shift;
 	my $allLdapGroups = shift;
     my $etabVariables = shift;
+    my $trace = shift;
     
 	my $regexes =  $confEtab->{regexes};
 
@@ -365,9 +375,10 @@ sub traitementEtabGroup {
 		my $lastIfMatch;
 		my $lastIfNotMatch;
 
+		my $localTrace = "$trace regex: $regex;";
 		
-		my $localVariables = $etabVariables->filtre($confRegexGroup);
-		§DEBUG 'apres etabVariables->filtre:', Dumper($localVariables) ;
+		my $regexVariables = Variables->new($confRegexGroup);
+		§DEBUG 'apres etabVariables->filtre:', Dumper($regexVariables) ;
 		§INFO "REGEX = $regex";
 		
 		unless ($confGroups) {
@@ -411,13 +422,8 @@ GROUPLDAP:
 					$etabNC = $etabNCdefault;
 				}
 
-				§DEBUG "localVariables = ", Dumper($localVariables);
-				if (%$localVariables) { # si on a des variables déclarées a ce niveau il faut les instancier
-					
-					$etabVariables->instancie($localVariables, @res);
-					§DEBUG "etabVariables = ", Dumper($etabVariables);
-				}
-				&traitementRegexGroup($etabNC,$confGroups, $etabVariables, @res);
+				§DEBUG "regexVariables = ", Dumper($regexVariables);
+				&traitementRegexGroup($etabNC,$confGroups, $regexVariables->instancie($etabVariables, @res), $localTrace, @res);
 				$entryGrp = '' if $lastIfMatch;
 				if ($uai) {
 					$etabForLoad{$uai} = 1;
@@ -447,7 +453,8 @@ sub traitementEtab {
 				$filtreLdapList = [ $confEtab ];
 	}
 		
-	if ($siren) { 
+	if ($siren) {
+		my $trace = " etab: $siren; ";
 		my $etabNC = Etab->readNC($siren);
 
 		if (!$useTimeStamp && $sirenList && !($sirenList=~ m/$siren/)) {
@@ -474,6 +481,8 @@ sub traitementEtab {
 			my $filtreLdap =  $confFiltreLdap->{ldapFilterGroups};
 			chomp $filtreLdap ;
 
+			my $localTrace = "$trace $filtreLdap: ";
+			
 			if ($useTimeStamp && $lastTimeStampLdap) {
 				$filtreLdap = sprintf( "(&%s(modifytimestamp>=%sZ))", $filtreLdap, $lastTimeStampLdap);
 			}
@@ -483,7 +492,7 @@ sub traitementEtab {
 
 			§DEBUG "nb ldapGroups =", scalar @ldapGroups;
 			if (@ldapGroups) {
-				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups, $etabVariables);
+				$reloadEtab += &traitementEtabGroup($confFiltreLdap, $etabNC, \@ldapGroups, $etabVariables, $localTrace);
 				# si tout est ok on met a jour le  timestamp
 
 				#TODO faire le traitement des utilisateurs ici car on a des groups modifiés
