@@ -15,7 +15,7 @@ This file is generated from multiple sources. Included packages:
 	- version: 14.2.1
 	- license: MIT
 - onlyoffice
-	- version: 9.14.2
+	- version: 10.1.2
 	- license: AGPL-3.0
 - striptags
 	- version: 3.2.0

@@ -15,13 +15,13 @@ SPDX-FileCopyrightText: escape-html developers
 
 This file is generated from multiple sources. Included packages:
 - @floating-ui/core
-	- version: 1.7.4
+	- version: 1.7.5
 	- license: MIT
 - @floating-ui/dom
 	- version: 1.1.1
 	- license: MIT
 - @floating-ui/utils
-	- version: 0.2.10
+	- version: 0.2.11
 	- license: MIT
 - @nextcloud/l10n
 	- version: 3.4.1

@@ -18,7 +18,7 @@
 
 ```bash
 nextcloud-plugins/apps/onlyoffice$ cd ../../../onlyoffice-nextcloud/
-onlyoffice-nextcloud$ git checkout v9.14.2 -b v9.14.2
+onlyoffice-nextcloud$ git checkout v10.1.2 -b v10.1.2
 onlyoffice-nextcloud$ npm i
 onlyoffice-nextcloud$ cd -
 nextcloud-plugins/apps/onlyoffice$ make meld
