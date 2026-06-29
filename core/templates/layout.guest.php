@@ -50,7 +50,7 @@ p($theme->getTitle());
 						</div>
 					</header>
 				<?php endif; ?>
-				<div>
+				<div class="guest-content">
 					<h1 class="hidden-visually">
 						<?php p($theme->getName()); ?>
 					</h1>
