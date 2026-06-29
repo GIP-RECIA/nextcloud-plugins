@@ -18,7 +18,7 @@
 
 ```bash
 nextcloud-plugins/apps/onlyoffice$ cd ../../../onlyoffice-nextcloud/
-onlyoffice-nextcloud$ git checkout v9.12.0 -b v9.12.0
+onlyoffice-nextcloud$ git checkout v9.14.2 -b v9.14.2
 onlyoffice-nextcloud$ npm i
 onlyoffice-nextcloud$ cd -
 nextcloud-plugins/apps/onlyoffice$ make meld
@@ -30,23 +30,30 @@ nextcloud-plugins/apps/onlyoffice$ make sync
 
 ### Fichiers modifieés
 
+**src/editor.css**
+
+```diff
+[...]
+-    height: calc(100dvh - 58px);
++    height: calc(100dvh - 50px);
+[...]
+```
+
 **src/editor.js**
 
 ```diff
 [...]
-  const headerHeight = $('#header').length > 0 ? $('#header').height() : 50
-+ const headerEscoHeight = $('#escoDiv').length > 0
-+   ? $('#escoDiv').height()
-+   : parent.querySelector('#escoDiv')
-+     ? parent.querySelector('#escoDiv').offsetHeight
-+     : 0
-+ const totalHeaderHeight = headerHeight + headerEscoHeight
-  const wrapEl = $('#app>iframe')
-  if (wrapEl.length > 0) {
--         wrapEl[0].style.height = (screen.availHeight - headerHeight) + 'px'
-+         wrapEl[0].style.height = (screen.availHeight - totalHeaderHeight) + 'px'
-          window.scrollTo(0, -1)
--         wrapEl[0].style.height = (window.top.innerHeight - headerHeight) + 'px'
-+         wrapEl[0].style.height = (window.top.innerHeight - totalHeaderHeight) + 'px'
+        const headerHeight = document.getElementById('header')?.offsetHeight ?? 50
++       const headerEscoHeight = document.getElementById('escoDiv')?.offsetHeight
++               ?? parent.getElementById('escoDiv')?.offsetHeight
++               ?? 0
++       const totalHeaderHeight = headerHeight + headerEscoHeight
+        const wrapEl = document.querySelector('#app>iframe')
+        if (wrapEl) {
+-               wrapEl.style.height = (screen.availHeight - headerHeight) + 'px'
++               wrapEl.style.height = (screen.availHeight - totalHeaderHeight) + 'px'
+                window.scrollTo(0, -1)
+-               wrapEl.style.height = (window.top.innerHeight - headerHeight) + 'px'
++               wrapEl.style.height = (window.top.innerHeight - totalHeaderHeight) + 'px'
 [...]
 ```

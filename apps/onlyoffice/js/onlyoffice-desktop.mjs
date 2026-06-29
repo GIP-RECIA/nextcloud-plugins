@@ -1,0 +1,2 @@
+import{g as i}from"./index-ConQ1DnN.chunk.mjs";import{g as e}from"./index-C48g2owx.chunk.mjs";if(OCA.Onlyoffice=Object.assign({},OCA.Onlyoffice),window.AscDesktopEditor){OCA.Onlyoffice.Desktop=!0,document.documentElement.classList.add("AscDesktopEditor");let o=/^http(s)?:\/\/[^\\/]+/.exec(location)[0];o+=e();const t={displayName:i()?.uid,domain:o,provider:"Nextcloud"};window.AscDesktopEditor.execCommand("portal:login",JSON.stringify(t))}
+//# sourceMappingURL=onlyoffice-desktop.mjs.map
