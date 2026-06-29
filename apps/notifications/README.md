@@ -18,7 +18,7 @@
 
 ```bash
 nextcloud-plugins/apps/notifications$ cd ../../../notifications/
-notifications$ git checkout v32.0.12 -b v32.0.12
+notifications$ git checkout v33.0.5 -b v33.0.5
 notifications$ make dev-setup
 notifications$ cd -
 nextcloud-plugins/apps/notifications$ make meld
