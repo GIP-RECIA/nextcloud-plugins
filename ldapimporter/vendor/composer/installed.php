@@ -3,7 +3,7 @@
         'name' => 'gip-recia/ldapimporter',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'a919b67b2016c45dcdcae059048820c0a73c397e',
+        'reference' => 'b62fa72c51b7e0fae04ad4980a7e2533cf228ad8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'gip-recia/ldapimporter' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'a919b67b2016c45dcdcae059048820c0a73c397e',
+            'reference' => 'b62fa72c51b7e0fae04ad4980a7e2533cf228ad8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
