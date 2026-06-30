@@ -96,5 +96,5 @@ echo
 echo "⏩ Setting up Nextcloud's stable folder structure"
 cd workspace/server
 git submodule update --init 2>&1 | indent_cli
-add_worktree ../stable32 stable32
 add_worktree ../stable33 stable33
+add_worktree ../stable34 stable34
