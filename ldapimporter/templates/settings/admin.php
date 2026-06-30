@@ -259,7 +259,7 @@ style(Application::APP_ID, 'settings');
             <div style="display: grid;grid-template-columns: 3fr 1fr 1fr;column-gap: 4px;" class="cw-100">
                 <div>
                     <label for="cas_import_regex_name_uai">
-                        Regex de nommage d\'établissement et du UAI
+                        Regex de nommage d'établissement et du UAI
                     </label>
                     <p style="color: gray;">
                         Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre
