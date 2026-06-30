@@ -34,7 +34,7 @@ files_sharing/
 
 ```bash
 nextcloud-plugins/files_sharing$ cd ../../nextcloud-docker-dev/workspace/stable32/
-nextcloud-docker-dev/workspace/stable32$ git checkout v32.0.11 -b v32.0.11
+nextcloud-docker-dev/workspace/stable32$ git checkout v32.0.12 -b v32.0.12
 nextcloud-docker-dev/workspace/stable32$ docker compose up -d stable32
 nextcloud-docker-dev/workspace/stable32$ make dev-setup
 nextcloud-docker-dev/workspace/stable32$ cd -
