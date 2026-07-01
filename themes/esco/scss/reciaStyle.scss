@@ -138,59 +138,66 @@ body#body-public.not_embedded footer {
 
 // ---------- PARAMETRES ----------
 
-body#body-settings #app-content {
-	// Panel "Informations personnelles"
-	&[data-active-section-id="personal-info"] {
-		#personal-settings .personal-settings-setting-box {
-			// Masquages des paramétrages du profil
-			&:has(input, textarea) {
+body#body-settings {
+	#app-content {
+		// Panel "Informations personnelles"
+		&[data-active-section-id="personal-info"] {
+			#personal-settings .personal-settings-setting-box {
+				// Masquages des paramétrages du profil
+				&:has(input, textarea) {
+					display: none;
+				}
+	
+				// Possibilité de changer le displayname et la langue
+				&:has(input#account-property-displayname, input#account-setting-language) {
+					display: unset;
+				}
+			}
+	
+			// Masquage des paramètres de visibilité du profil
+			.personal-settings-section {
 				display: none;
 			}
-
-			// Possibilité de changer le displayname et la langue
-			&:has(input#account-property-displayname, input#account-setting-language) {
-				display: unset;
+	
+			// Masquage des informations de dev
+			.section.development-notice {
+				display: none;
 			}
 		}
-
-		// Masquage des paramètres de visibilité du profil
-		.personal-settings-section {
-			display: none;
+	
+		// Panel "Sécurité"
+		&[data-active-section-id="security"] {
+			// Masquage du changement de mot de passe
+			.settings-section {
+				display: none;
+			}
+	
+			// Masquage du MFA
+			#two-factor-auth {
+				display: none;
+			}
+	
+			// Masquage de l'authentification sans mot de passe
+			#security-webauthn.section {
+				display: none;
+			}
 		}
-
-		// Masquage des informations de dev
-		.section.development-notice {
-			display: none;
-		}
-	}
-
-	// Panel "Sécurité"
-	&[data-active-section-id="security"] {
-		// Masquage du changement de mot de passe
-		.settings-section:has(form#passwordform) {
-			display: none;
-		}
-
-		// Masquage de l'authentification sans mot de passe
-		#security-webauthn.section {
-			display: none;
+	
+		// Panel "Apparence et accessibilité"
+		&[data-active-section-id="theming"] #settings-personal-theming .settings-section {
+			// Masquage des options d'aparence
+			&:nth-child(2),
+			&:nth-child(3),
+			&:nth-child(5) {
+				display: none;
+			}
 		}
 	}
 
 	// Panel "Stockage externe"
-	&[data-active-section-id="externalstorages"] {
+	&:has(#app-content[data-active-section-id="externalstorages"]) {
 		// Masquage de l'option de partage
-		li:has(#mountOptionsSharing) {
-			display: none;
-		}
-	}
-
-	// Panel "Apparence et accessibilité"
-	&[data-active-section-id="theming"] section .settings-section{
-		// Masquage des options d'aparence
-		&:nth-child(2),
-		&:nth-child(3),
-		&:nth-child(5) {
+		form.dialog fieldset span.checkbox-radio-switch:nth-of-type(3) {
 			display: none;
 		}
 	}
@@ -204,8 +211,11 @@ body#body-user iframe#onlyofficeFrame {
 
 // ---------- TEXT ----------
 
-body#body-user .app-sidebar--full {
-	z-index: 2100 !important;
+body#body-user:has(#viewer) {
+	#content-vue,
+	#app-sidebar-vue {
+		z-index: 2100 !important;
+	}
 }
 
 // ---------- FILES_SHARING ----------
@@ -238,7 +248,7 @@ body {
 // ---------- COULEURS ----------
 
 @function contrast-color($color, $dark, $light) {
-  @return if(color.channel($color, 'lightness', hsl) < 55%, $light, $dark);
+	@return if(color.channel($color, 'lightness', hsl) < 55%, $light, $dark);
 }
 
 @mixin colorTheme($couleur) {
