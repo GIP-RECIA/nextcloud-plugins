@@ -153,6 +153,7 @@ etabs:
                   - folder: &folderEtab18pat
                       - *folder18pat
                       - $nom_etab
+                    quotaF: 50
                     permF: []
               - group: *group18edu # donne au groupe 'Echanges etablissements Educ.CONSEIL DEPARTEMENTAL DU CHER'
                 folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
