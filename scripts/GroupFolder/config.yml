@@ -18,35 +18,39 @@ etabs:
     ldapFilterList:
       - ldapFilterGroups: '(|(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:DIRECTION*)(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Managers))'
         regexes:
-          - regex: 'groupes_locaux:Echanges etablissements:Managers'
-            last: ifMatch
+          - regex: 'groupes_locaux:Echanges etablissements:(Patrimoine|Education):Managers'
             group: &group18 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
+            folder: &folder18 'Échanges CD18-établissements'                        # création du folder 'Échanges CD18-établissements'
+            permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
+              - write
+              - share
+              - delete
+            quotaF: 50
+          - regex: 'groupes_locaux:Echanges etablissements:Patrimoine:Managers' 
+            group: &group18pat 'Echanges etablissements Patrimoine.CONSEIL DEPARTEMENTAL DU CHER' 
+            folder: &folder18pat                #  creation du folder 'Échanges CD18-établissements/Patrimoine'
+              - *folder18
+              - 'Patrimoine'
+            permF:                              # droit du groupe &g18pat sur le folder &folder18pat 'Échanges CD18-établissements/Patrimoine'
+              - write
+              - share
+              - delete
+            quotaF: 50
+          - regex: 'groupes_locaux:Echanges etablissements:Education:Managers'
+            group: &group18edu 'Echanges etablissements Education.CONSEIL DEPARTEMENTAL DU CHER' 
             folders:
-              - folder: &folder18 'Échanges CD18-établissements'                        # création du folder 'Échanges CD18-établissements'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
-                  - write
-                  - share
-                  - delete
-                quotaF: 50
-              - folder: &folder18pat                #  creation du folder 'Échanges CD18-établissements/Patrimoine'
-                  - *folder18
-                  - 'Patrimoine'
-                permF:                              # droit du groupe &g18pat sur le folder &folder18pat 'Échanges CD18-établissements/Patrimoine'
-                  - write
-                  - share
-                  - delete
-                quotaF: 50
               - folder: &folder18educ
                   - *folder18
                   - 'Éducation'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements/Education'
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements/Education'
                   - write
                   - share
                   - delete
+                quotaF: 50
               - folder: &f18Bourge
                   - *folder18
                   - 'AFFECTATION AGENTS MUTUALISÉS BOURGES ET ALENTOURS'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
                   - share
                   - delete
@@ -54,7 +58,7 @@ etabs:
               - folder: &f18nord
                   - *folder18
                   - 'AFFECTATION AGENTS MUTUALISÉS NORD'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder
                   - write
                   - share
                   - delete
@@ -62,7 +66,7 @@ etabs:
               - folder: &f18ouest
                   - *folder18
                   - 'AFFECTATION AGENTS MUTUALISÉS OUEST'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
                   - share
                   - delete
@@ -70,7 +74,7 @@ etabs:
               - folder: &f18sud
                   - *folder18
                   - 'AFFECTATION AGENTS MUTUALISÉS SUD'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                permF:                              # droit du groupe 'Echanges etablissements Euc....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
                   - share
                   - delete
@@ -78,38 +82,14 @@ etabs:
               - folder: &f18est
                   - *folder18
                   - 'AFFECTATION AGENTS MUTUALISÉS EST'
-                permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                permF:                              # droit du groupe 'Echanges etablissements Educ...CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
                   - share
                   - delete
                 quotaF: 50
-          - regex: 'Tous_DIRECTION DE L’ÉDUCATION DE LA JEUNESSE ET DES SPORTS'
-            last: ifMatch
-            group: &group18edu 'Direction Education.CONSEIL DEPARTEMENTAL DU CHER'
-            folders:
-              - folder: *folder18
-                permF: []    
-              - folder: *folder18educ #  folder 'Échanges CD18-établissements/Education'
-                permF:                              # droit du groupe 'Direction Education.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements/Education'
-                  - write
-                  - share
-                  - delete
-                quotaF: 50
-          - regex: 'Tous_DIRECTION DU PATRIMOINE IMMOBILIER$'
-            last: ifMatch
-            group: &group18pat 'Direction Patrimoine.CONSEIL DEPARTEMENTAL DU CHER' # creation du groupe 'DIRECTION DU PATRIMOINE IMMOBILIER.CONSEIL DEPARTEMENTAL DU CHER'
-            folders:
-              - folder: *folder18                   # droit du groupe &g18pat en lecture seul sur  le folder 'Échanges CD18-établissements'
-                permF: []
-              - folder: *folder18pat                #  folder 'Échanges CD18-établissements/Patrimoine'
-                permF:                              # droit du groupe &g18pat sur le folder &folder18pat 'Échanges CD18-établissements/Patrimoine'
-                  - write
-                  - share
-                  - delete
-                quotaF: 50
-      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Secteur*)'
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Education:Secteur*)'
         regexes:
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Bourges)$'
+          - regex: '(Secteur Bourges)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folders:
@@ -118,7 +98,7 @@ etabs:
                   - write
               - folder: *folder18
                 permF: []
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Nord)$'
+          - regex: '(Secteur Nord)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folders:
@@ -127,19 +107,19 @@ etabs:
                   - write
               - folder: *folder18
                 permF: []
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Ouest)$'
+          - regex: '(Secteur Ouest)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18ouest
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Sud)$'
+          - regex: '(Secteur Sud)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18sud
             permF:
               - write
-          - regex: '^coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:(Secteur Est)$'
+          - regex: '(Secteur Est)$'
             last: ifMatch
             group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
             folder: *f18est
@@ -150,7 +130,7 @@ etabs:
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
                            )'
         regexes:
-          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:[^:]+:(CHEF D ETABLISSEMENT|GESTIONNAIRE|SECRETAIRE GENERAL)$'
             last: ifMatch
             $nom_etab: '%1$s'
             uai: '%2$s'
@@ -173,34 +153,19 @@ etabs:
                   - folder: &folderEtab18pat
                       - *folder18pat
                       - $nom_etab
-                    permF:
-                      - write
-                      - delete
-              - group: *group18 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
-                folders:
-                  - folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
-                    permF:
-                      - write
-                      - delete
-                  - folder: *folderEtab18pat
-                    permF:
-                      - write
-                      - delete
-              - group: *group18edu
+                    permF: []
+              - group: *group18edu # donne au groupe 'Echanges etablissements Educ.CONSEIL DEPARTEMENTAL DU CHER'
                 folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
                 permF:
                   - write
                   - delete
+                  - share
               - group: *group18pat
                 folder: *folderEtab18pat
                 permF:
                   - write
                   - delete
-          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
-            last: ifMatch
-            $nom_etab: '%1$s'
-            uai: '%2$s'
-            groups: *groupsEtab18 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
+                  - share
   - nom: CD45-LOIRET
     siren: 22450001700013
     ldapFilterList:
