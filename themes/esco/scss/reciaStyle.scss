@@ -136,10 +136,10 @@ body#body-public.not_embedded footer {
 	display: none;
 }
 
-// ---------- PARAMETRES ----------
+// ---------- PARAMETRES PERSONNELS ----------
 
 body#body-settings {
-	#app-content {
+	#app-content[data-active-section-type="personal"] {
 		// Panel "Informations personnelles"
 		&[data-active-section-id="personal-info"] {
 			#personal-settings .personal-settings-setting-box {
@@ -195,7 +195,7 @@ body#body-settings {
 	}
 
 	// Panel "Stockage externe"
-	&:has(#app-content[data-active-section-id="externalstorages"]) {
+	&:has(#app-content[data-active-section-type="personal"][data-active-section-id="externalstorages"]) {
 		// Masquage de l'option de partage
 		form.dialog fieldset span.checkbox-radio-switch:nth-of-type(3) {
 			display: none;
