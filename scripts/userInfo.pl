@@ -198,15 +198,18 @@ sub getNextcloudFiles{
 sub getNexcloudGroups{
 	my $uid = shift;
 	my $sql = connectSql();
-	
-	my $sqlQuery = "select gid from oc_group_user where uid = ?";
+	my $sqlQuery =q/select gu.gid grp, gf.mount_point folder, gfg.permissions perms
+					from oc_group_user gu
+					left join oc_group_folders_groups gfg on (gu.gid = gfg.group_id)
+					left join oc_group_folders gf on  (gfg.folder_id = gf.folder_id)
+					where uid = ?
+					order by grp, mount_point/;
 	my $sqlStatement = $sql->prepare($sqlQuery) or die $sql->errstr;
 	
 	$sqlStatement->execute($uid) or die $sqlStatement->errstr;
 	my @groups;
 	while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
-		my $group = $tuple->{'gid'};
-		push @groups, $group;
+		push @groups, $tuple;
 	}
 	return @groups;
 }
@@ -286,9 +289,18 @@ if ($nom) {
 }
 
 if ($info) {
-	print "Les groupes Nextcloud : \n";
-	foreach my $group (&getNexcloudGroups($uid)) {
-		print "\t $group\n";
+	print "Les groupes Nextcloud avec les GroupFolders ", &partagePermission(-1), ":\n";
+	my $lastGroup;
+	foreach my $groupInfo (&getNexcloudGroups($uid)) {
+		my $group = $groupInfo->{grp};
+		if ($group ne $lastGroup) {
+			print "\t", $group, "\n";
+			$lastGroup = $group;
+		}
+		if ($groupInfo->{folder}) {
+			my $perm = &partagePermission( $groupInfo->{perms});
+			print "\t\t", $perm,"\t",$groupInfo->{folder}, "\n";
+		}
 	}
 }
 
