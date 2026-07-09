@@ -16,7 +16,7 @@ etabs:
   - nom: CD18-CHER
     siren: 22180001400013
     ldapFilterList:
-      - ldapFilterGroups: '(|(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:DIRECTION*)(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Managers))'
+      - ldapFilterGroups: '(|(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:DIRECTION*)(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:*:Managers))'
         regexes:
 #          - regex: 'groupes_locaux:Echanges etablissements:Managers'
 #            group: &group18 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
