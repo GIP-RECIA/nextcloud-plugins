@@ -132,10 +132,10 @@ etabs:
             folder: *f18est
             permF:
               - write
-      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+      - ldapFilterGroups: '(&(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
                                (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
-                           )'
+                           )(!(cn=clg18:Etablissements:FICTIF*)))'
         regexes:
           - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:[^:]+:(CHEF D ETABLISSEMENT|GESTIONNAIRE|SECRETAIRE GENERAL)$'
             last: ifMatch
