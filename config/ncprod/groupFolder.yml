@@ -1,0 +1,262 @@
+# les regex  sont testées dans l'ordre sur chacun des groupes ramené du ldap
+#   (ie La 1er regex testera tous les groupes puis la 2iem sur tous le groupes ...)
+# un même groupe (ldap) peut matcher  plusieurs regex
+#   si il match une regex et sa definition contient "last: ifMatch" il ne sera pas representé aux autres regex 
+# une 'regex' définit un ensemble de 'group' NC, fonction des groupes Grouper qui match.
+# a chaque 'group' on peut associer:
+#   un 'quotaG' qui definit le quota des membres du groupe, sans quota un utilisateur ne sera pas créé (il peut l'être avec un autre groupe).
+#   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
+#   permF definit les droits du groupe sur le groupefolder
+# pour le moment les utilisateurs ne sont pas créés avec loadGroupFolder mais avec loadEtab (du coup quotaG par exemple ne sert a rien)
+
+
+---
+
+etabs:
+  - nom: CD18-CHER
+    siren: 22180001400013
+    ldapFilterList:
+      - ldapFilterGroups: '(|(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:services:DIRECTION*)(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:*:Managers))'
+        regexes:
+#          - regex: 'groupes_locaux:Echanges etablissements:Managers'
+#            group: &group18 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER'
+#            folder: &folder18 'Échanges CD18-établissements'                        # création du folder 'Échanges CD18-établissements'
+#            permF:                              # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements'
+#              - write
+#              - share
+#              - delete
+#            quotaF: 50
+          - regex: 'groupes_locaux:Echanges etablissements:Patrimoine:Managers'
+            group: &group18pat 'Echanges etablissements Patrimoine.CONSEIL DEPARTEMENTAL DU CHER'
+            folders:
+              - folder: &folder18 'Échanges CD18-établissements'
+                permF: []
+                quotaF: 50
+              - folder: &folder18pat                #  creation du folder 'Échanges CD18-établissements/Patrimoine'
+                  - *folder18
+                  - 'Patrimoine'
+                permF:                              # droit du groupe &g18pat sur le folder &folder18pat 'Échanges CD18-établissements/Patrimoine'
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+          - regex: 'groupes_locaux:Echanges etablissements:Education:Managers'
+            group: &group18edu 'Echanges etablissements Education.CONSEIL DEPARTEMENTAL DU CHER' 
+            folders:
+              - folder: *folder18
+                permF: []
+                quotaF: 50
+              - folder: &folder18educ
+                  - *folder18
+                  - 'Éducation'
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 'Échanges CD18-établissements/Education'
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+              - folder: &f18Bourge
+                  - *folder18
+                  - 'AFFECTATION AGENTS MUTUALISÉS BOURGES ET ALENTOURS'
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+              - folder: &f18nord
+                  - *folder18
+                  - 'AFFECTATION AGENTS MUTUALISÉS NORD'
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+              - folder: &f18ouest
+                  - *folder18
+                  - 'AFFECTATION AGENTS MUTUALISÉS OUEST'
+                permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+              - folder: &f18sud
+                  - *folder18
+                  - 'AFFECTATION AGENTS MUTUALISÉS SUD'
+                permF:                              # droit du groupe 'Echanges etablissements Euc....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+              - folder: &f18est
+                  - *folder18
+                  - 'AFFECTATION AGENTS MUTUALISÉS EST'
+                permF:                              # droit du groupe 'Echanges etablissements Educ...CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
+                  - write
+                  - share
+                  - delete
+                quotaF: 50
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU CHER:groupes_locaux:Echanges etablissements:Education:Secteur*)'
+        regexes:
+          - regex: '(Secteur Bourges)$'
+            last: ifMatch
+            group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
+            folders:
+              - folder: *f18Bourge
+                permF:
+                  - write
+              - folder: *folder18
+                permF: []
+          - regex: '(Secteur Nord)$'
+            last: ifMatch
+            group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
+            folders:
+              - folder: *f18nord
+                permF:
+                  - write
+              - folder: *folder18
+                permF: []
+          - regex: '(Secteur Ouest)$'
+            last: ifMatch
+            group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
+            folder: *f18ouest
+            permF:
+              - write
+          - regex: '(Secteur Sud)$'
+            last: ifMatch
+            group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
+            folder: *f18sud
+            permF:
+              - write
+          - regex: '(Secteur Est)$'
+            last: ifMatch
+            group: '%1$s.CONSEIL DEPARTEMENTAL DU CHER'
+            folder: *f18est
+            permF:
+              - write
+      - ldapFilterGroups: '(|  (cn=clg18:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+                               (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                               (cn=clg18:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
+                           )'
+        regexes:
+          - regex: '^clg18:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:[^:]+:(CHEF D ETABLISSEMENT|GESTIONNAIRE|SECRETAIRE GENERAL)$'
+            last: ifMatch
+            $nom_etab: '%1$s'
+            uai: '%2$s'
+            groups: &groupsEtab18
+              - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
+                folders:
+                  - folder: *folder18 # droit du groupe est lecture sur Échanges CD18-établissements
+                    permF: []
+                  - folder: *folder18educ # droit du groupe est lecture sur Échanges CD18-établissements/Education
+                    permF: []
+                  - folder: &folderEtab18educ # création des folders: 'Échanges CD18-établissements/Education/nomEtab_uai'
+                      - *folder18educ
+                      - $nom_etab
+                    quotaF: 50
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD18-établissements/Education/nomEtab_uai'
+                      - write
+                      - delete
+                  - folder: *folder18pat
+                    permF: []
+                    quotaF: 50
+                  - folder: &folderEtab18pat
+                      - *folder18pat
+                      - $nom_etab
+                    quotaF: 50
+                    permF: []
+              - group: *group18edu # donne au groupe 'Echanges etablissements Educ.CONSEIL DEPARTEMENTAL DU CHER'
+                folder: *folderEtab18educ # les droits sur les folders 'changes CD18-établissements/Education/nomEtab_uai'
+                permF:
+                  - write
+                  - delete
+                  - share
+              - group: *group18pat
+                folder: *folderEtab18pat
+                permF:
+                  - write
+                  - delete
+                  - share
+  - nom: CD45-LOIRET
+    siren: 22450001700013
+    ldapFilterList:
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL DU LOIRET:groupes_locaux:Echanges etablissements:Managers)'
+        regex: '^coll:Collectivites:(CONSEIL DEPARTEMENTAL DU LOIRET):groupes_locaux:Echanges etablissements:Managers$'
+        last: ifMatch
+        group: &group45 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET'
+        folder: &folder45 'Échanges CD45-établissements' # création du folder 'Échanges CD45-établissements'
+        permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' sur le folder 'Échanges CD45-établissements'
+          - write
+          - share
+          - delete
+        quotaF: 50
+      - ldapFilterGroups: '(|  (cn=clg45:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+                               (cn=clg45:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                               (cn=clg45:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
+                           )'
+        regexes:
+          - regex: '^clg45:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: &groupsEtab45
+              - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
+                folders:
+                  - folder: *folder45 # droit du groupe est lecture sur Échanges CD45-établissements
+                    permF: []
+                  - folder: &folderEtab45 # création des folders: 'Échanges CD45-établissements/nomEtab_uai'
+                      - *folder45
+                      - '%1$s'
+                    quotaF: 50
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD45-établissements/nomEtab_uai'
+                      - write
+                      - delete
+              - group: *group45 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET'
+                folder: *folderEtab45 # les droits sur les folders 'changes CD45-établissements/nomEtab_uai'
+                permF:
+                  - write
+                  - delete
+          - regex: '^clg45:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: *groupsEtab45 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
+  - nom: CD28-Eure-et-Loir
+    siren: 22280001300013
+    ldapFilterList:
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL D EURE ET LOIR:groupes_locaux:Echanges etablissements:Managers)'
+        regex: '^coll:Collectivites:([^:]+)'
+        last: ifMatch
+        group: &group28 'Echanges etablissements.$1' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL D EURE ET LOIR'
+        folder: &folder28 'Échanges CD28-établissements' # création du folder 'Échanges CD28-établissements'
+        permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' sur le folder 'Échanges CD28-établissements'
+          - write
+          - share
+          - delete
+        quotaF: 50
+      - ldapFilterGroups: '(|  (cn=clg28:Etablissements:*:Administratifs:_DIRECTION:CHEF D ETABLISSEMENT)
+                               (cn=clg28:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:GESTIONNAIRE)
+                               (cn=clg28:Etablissements:*:Administratifs:_PERSONNELS ADMINISTRATIFS:SECRETAIRE GENERAL)
+                           )'
+        regexes:
+          - regex: '^clg28:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_DIRECTION:(CHEF D ETABLISSEMENT)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: &groupsEtab28
+              - group: '%3$s.%1$s' # création des groupes NC: 'CHEF D ETABLISSEMENT.nomEtab_uai'
+                folders:
+                  - folder: *folder28 # droit du groupe est lecture sur Échanges CD45-établissements
+                    permF: []
+                  - folder: &folderEtab28 # création des folders: 'Échanges CD45-établissements/nomEtab_uai'
+                      - *folder45
+                      - '%1$s'
+                    quotaF: 50
+                    permF:  # droits des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai' sur les folders 'Échanges CD45-établissements/nomEtab_uai'
+                      - write
+                      - delete
+              - group: *group28 # donne au groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET'
+                folder: *folderEtab28 # les droits sur les folders 'changes CD45-établissements/nomEtab_uai'
+                permF:
+                  - write
+                  - delete
+          - regex: '^clg28:Etablissements:([^_:]+\_(\d{7}\w)):Administratifs:\_PERSONNELS ADMINISTRATIFS:(GESTIONNAIRE|SECRETAIRE GENERAL)$'
+            last: ifMatch
+            uai: '%2$s'
+            groups: *groupsEtab28 # même traitement pour les groupes NC: 'GESTIONNAIRE.nomEtab_uai' que celui des groupes 'CHEF D ETABLISSEMENT.nomEtab_uai'
+...

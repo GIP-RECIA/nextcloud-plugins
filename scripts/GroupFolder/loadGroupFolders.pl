@@ -50,7 +50,7 @@ use Etab;
 use GroupFolder;
 use Variables;
 
-my $fileYml = "config.yml";
+my $fileYml = "groupFolder.yml";
 my $test = 0;
 my $loglevel;
 my $forceQuota;
@@ -98,15 +98,16 @@ unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$logl
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
 }
 
-
 my $configFile;
-
 if ($fileYml =~ /\//) {
 	$configFile = $fileYml;
-} else {
-	$configFile = $FindBin::Bin."/$fileYml";
+else {
+	$configFile =  ${util::PARAM}{'NC_CONF'}. "/$fileYml";
 }
 
+unless (-f $configFile) {
+		 §FATAL "yml file : $configFile not Found !";
+}
 my $config = LoadFile($configFile);
 
 

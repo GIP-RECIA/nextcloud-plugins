@@ -64,6 +64,18 @@
 
 	Si la commande ne peut pas se lancer un §FATAL est exécuté et le programme finit.
 
+	§SYSTEM peut être utilisé avec des commandes interactives (qui lisent stdin), ATTENTION c'est EXPERIMENTAL et donc aux riques et perils...
+	Pour ce faire il faut  utilise, le parametre SYSIN , pour passer une closure ou la reference a un tableau.
+	Avec un tableau, avant les lecture, on ecrire toutes les lignes du tableau dans le stdin de la commande , puis fermer le flux.
+	Avec une closure on peux faire des "print SYSIN" qui seront envoyer à la commande , mais il faut gérer soit même la fermeture du flux avec "close SYSIN;",
+	dans se cas on peut dialoger avec le programme en utilisant des  "print SYSIN" dans la closure OUT, qui peut aussi faire le close.  Ne pas oublier les "close" sinon ca rique de ne jamais terminer.
+	 
+	Exemple:
+	§SYSTEM "/usr/bin/jq -C .", INIT => \@ligneJson, OUT => sub { print ;} , ERR => sub { print ;};
+	equivalent a
+	§SYSTEM "/usr/bin/jq -C .", INIT => sub { for @ligneJson {print SYSIN $_,"\n";}; close SYSIN ;},  OUT => sub { print ;} , ERR => sub { print ;};
+	Attention : le INIT est utilisé avant toutes lectures, si on veut faire une réponse il faut la faire dans OUT et terminer avec "close SYSIN;" dans le OUT si besoin (pour les commande qui ne termine pas d'elle même). 
+
 =cut
 
 
@@ -74,6 +86,7 @@ use strict;
 use IPC::Open3;
 use IO::Select;
 use Symbol 'gensym';
+use open ':std', IO => ':encoding(UTF-8)';
 #use Hash::Util::FieldHash;
 # 
 my $version="10.2";
@@ -531,6 +544,8 @@ sub traceSystem {
 	my $printOut = printCodeFromParameter($mod, $fileName, $line, 4, 'OUT', $params{'OUT'}); #OUT peut etre vide ou la reference d'un tableau sinon doit etre la reference d'un code qui prend en charge chaque ligne (via $_) envoyée par la commande
 	my $printErr = printCodeFromParameter($mod, $fileName, $line, 1, 'ERR', $params{'ERR'}); #même chose que pour OUT ci dessus;
 
+	my $initCode = initCodeFromParameter($mod, $fileName, $line, 4, $params{'INIT'});
+
 	my $bufSize = $params{'bufferSize'}; #taille du buffer de lecture
 
 	$bufSize = $defautLog->{BUFSIZE} unless $bufSize;
@@ -541,11 +556,13 @@ sub traceSystem {
 
 	my $pid;
 	eval {
-	  $pid = IPC::Open3::open3(undef, $COM, $ERR, $commande) or fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $! );
+		$pid = IPC::Open3::open3($initCode ? 'SYSIN' : undef, $COM, $ERR, $commande) or fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $! );
 	};
 	fatal ("FATAL: ", $fileName, $line, "$commande : die: ", $@ ) if $@;
 
 	info_ ($mod, 'INFO: ', $fileName, $line, $commande) if $defautLog->{LEVEL} >= 3;
+
+	&$initCode if $initCode ;
 
 	$select->add($COM, $ERR);
 
@@ -632,6 +649,29 @@ sub printCodeFromParameter {
 		if ($defautLog->{LEVEL} >=  $level) { trace_($mod, $tab, $line); }
 	}
 }
+
+sub initCodeFromParameter {
+	my $mod = shift;
+	my $fileName = shift;
+	my $line = shift;
+	my $level = shift;
+	my $code = shift;
+	if ($code) {
+		fatal ("FATAL: ",  $fileName, $line, '§'."SYSTEM The INIT parameter must be an ARRAY or CODE réference") unless ref($code) =~ /(ARRAY)|(CODE)/;
+		if ($2) {
+			return $code;
+		}
+		if (@$code) {
+			return sub {
+				map { print SYSIN $_, "\n"; } @$code ;
+				close SYSIN;
+			}
+		}
+	}
+	return 0;
+}
+
+
 
 ## pour convertir en utf8 les sorties de system
 # on decode ce que l'on peut ce qui n'est pas decodé reste dans le buffer

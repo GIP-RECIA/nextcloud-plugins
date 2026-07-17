@@ -16,11 +16,11 @@ use Cwd;
 
 my $logRep = $ENV{'NC_LOG'};
 my $wwwRep = $ENV{'NC_WWW'};
-
-
+my $confRep = $ENV{'NC_CONF'};
 
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
+$confRep = $ENV{'HOME'} . '/NC_conf' unless $logRep;
 
 my $scriptRep = $ENV{'NC_SCRIPTS'};
 unless ($scriptRep) {
@@ -39,6 +39,8 @@ our %PARAM;
 $PARAM{'NC_LOG'} = $logRep;
 $PARAM{'NC_WWW'} = $wwwRep;
 $PARAM{'NC_SCRIPTS'} = $scriptRep;
+$PARAM{'NC_CONF'} = $confRep;
+
 
 	# lecture des paramatres de conf
 

@@ -3,15 +3,17 @@
 # script donnant la difference entre les établissements en production et ceux de la liste versionnée.
 use strict;
 my  $dataRep = $ENV{'NC_DATA'};
+$dataRep = $ENV{'HOME'} . 'data' unless $dataRep;
+
+my $confRep = $ENV{'NC_CONF'};
+$confREp= $ENV{'HOME'} . 'NC_conf' unless $confRep
 
 my $scriptRep = $0;
 $scriptRep =~ s/[^\/]+$//;
 
-$dataRep = $ENV{'HOME'} . 'data' unless $dataRep;
-
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
-my $allEtabVide = $scriptRep . "allEtab.txt";
+my $allEtabVide = $confRep . "allEtab.txt";
 
 print "lecture de $allEtabFile \n";
 open ETAB , "$allEtabFile"  or die "$!" ;

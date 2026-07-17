@@ -3,6 +3,7 @@ NEXTCLOUD_PATH := ${NC_WWW}
 
 NEXTCLOUD_SCRIPTS := ${HOME}/scripts
 
+
 ifeq ($(NEXTCLOUD_PATH), )
 	NEXTCLOUD_PATH = ../web
 endif
@@ -10,12 +11,25 @@ endif
 NEXTCLOUD_OWNER := ${NC_OWNER}
 NEXTCLOUD_GROUP := ${NC_GROUP}
 
+# en test OWNER et USER sont différents (esco, nextcloud-ent) 
+NEXTCLOUD_USER := ${NC_USER}
+
+NEXTCLOUD_CONF := ${NC_CONF}
+
 ifeq ($(NEXTCLOUD_OWNER), )
 	NEXTCLOUD_OWNER := ${USER}
 endif
 
 ifeq ($(NEXTCLOUD_GROUP), )
 	NEXTCLOUD_GROUP := ${USER}
+endif
+
+ifeq ($(NEXTCLOUD_USER), )
+	NEXTCLOUD_USER := ${USER}
+endif
+
+ifeq ($(NEXTCLOUD_CONF), )
+	NEXTCLOUD_CONF := ${HOME}/NC_conf
 endif
 
 DIST = $(NEXTCLOUD_PATH)/dist
@@ -48,12 +62,12 @@ defaut:
 
 SCRIPTS: 
 	cp -rvu scripts/* $(NEXTCLOUD_SCRIPTS)/
-	cp -uv $(ALLETAB) $(NEXTCLOUD_SCRIPTS)/allEtab.txt
-	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 	@echo 'ATTENTION launchNextcloudCron.sh est éventuellement à copier sur le VM web2 et web3' 
 
 CONFIG: config/*.json
 	cp config/*.json $(NEXTCLOUD_PATH)/config/
+	cp -uv config/$(NEXTCLOUD_USER)/* $(NEXTCLOUD_CONF)/
+	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 
 LIB: 
 	cp -riTbv lib $(NEXTCLOUD_PATH)/lib
