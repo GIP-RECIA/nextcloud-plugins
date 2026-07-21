@@ -55,7 +55,7 @@ etabs:
                   - delete
                 quotaF: 50
               - folder: &f18Bourge
-                  - *folder18
+                  - *folder18educ
                   - 'AFFECTATION AGENTS MUTUALISÉS BOURGES ET ALENTOURS'
                 permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
@@ -63,7 +63,7 @@ etabs:
                   - delete
                 quotaF: 50
               - folder: &f18nord
-                  - *folder18
+                  - *folder18educ
                   - 'AFFECTATION AGENTS MUTUALISÉS NORD'
                 permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder
                   - write
@@ -71,7 +71,7 @@ etabs:
                   - delete
                 quotaF: 50
               - folder: &f18ouest
-                  - *folder18
+                  - *folder18educ
                   - 'AFFECTATION AGENTS MUTUALISÉS OUEST'
                 permF:                              # droit du groupe 'Echanges etablissements Educ....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
@@ -79,7 +79,7 @@ etabs:
                   - delete
                 quotaF: 50
               - folder: &f18sud
-                  - *folder18
+                  - *folder18educ
                   - 'AFFECTATION AGENTS MUTUALISÉS SUD'
                 permF:                              # droit du groupe 'Echanges etablissements Euc....CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
@@ -87,7 +87,7 @@ etabs:
                   - delete
                 quotaF: 50
               - folder: &f18est
-                  - *folder18
+                  - *folder18educ
                   - 'AFFECTATION AGENTS MUTUALISÉS EST'
                 permF:                              # droit du groupe 'Echanges etablissements Educ...CONSEIL DEPARTEMENTAL DU CHER' sur le folder 
                   - write
