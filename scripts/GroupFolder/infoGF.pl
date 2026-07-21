@@ -4,7 +4,8 @@
 
 =head1 NAME infoGF.pl
 	Donne des info sur les GroupFolders
-	affiche le nom puis le contenue des GF
+	avec -g affiche les groupes.
+	avec -r ou -a  affiche le nom puis le contenue des GF;
 	en 3 categories:
 		'Path in base and filesystem: ' ce qui est ok
 		'Path not in filesystem: ': ce qui manque sur le disque
@@ -14,11 +15,13 @@
 
 =head1 SYNOPSIS
 
-	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid]
+	infoGF.pl [-r] [-a] [-d tmp.file] [-l loglevel] [gfid|pattern]
 
 	gfid: groupFolder id;
-	-r : résume les listes de résultats (par défaut si pas de gfid);
-	-a : ne résume pas les listes par défaut si gfid not null;
+	pattern: pattern de recherche sur les points de montage des GFs.
+	-g : affiche les groupes liés au GF (incompatible avec -r et -a)
+	-r : calcul la difference entre le base et le S3 , résume les listes de résultats ;
+	-a : calcul la difference entre le base et le S3, ne résume pas les listes;
 	-d : mémorise la sortie dans tmp.file.new et ne renvoie sur stdout que les différences avec tmp.file;
 		 si tmp.file n'existe pas il le crée;
 	-l : fixe le log level,  1:error 2:warn 3:info 4:debug 5:trace ; par defaut est à 2.
@@ -41,13 +44,14 @@ use List::Util qw(reduce);
 use util;
 use Folder;
 
+my $withGroup;
 my $resume;
 my $all;
 my $loglevel;
 my $diffFileOld;
 my $diffFileNew;
 
-unless (@ARGV && GetOptions ( "d=s" => \$diffFileOld ,"r" => \$resume, "a" => \$all, "l=i" => \$loglevel) ) {
+unless (@ARGV && GetOptions ( "d=s" => \$diffFileOld ,"r" => \$resume, "a" => \$all, "g" => \$withGroup, "l=i" => \$loglevel) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
@@ -68,13 +72,23 @@ my $folderById = Folder->readNC;
 
 if  (@ARGV) {
 	my $fid = shift;
-
-	§ERROR "$fid n'est pas un id de groupFolders" unless ($fid =~ /^\d+$/);
-	 my $folder = $$folderById{$fid};
-
-	§ERROR "$fid n'existe pas en base" unless $folder;
-	diffGf($fid, $folder);
-
+	if ($fid =~ /^\d+$/) {
+		my $folder = $$folderById{$fid};
+		§FATAL "$fid n'existe pas en base" unless $folder;
+		if ($resume || $all) {
+			diffGf($fid, $folder);
+		} else {
+			printInfo($folder);
+		}
+	} else {
+		for my $folder (sort {$a->mount cmp $b->mount} Folder->findFolders($fid)) {
+			if ($resume || $all) {
+				diffGf ($folder->idBase, $folder);
+			} else {
+				printInfo($folder);
+			}
+		}
+	}
 } else {
 	#~ while (my ($fid, $folder) = each %{$folderById}) {
 		#~ diffGf ($fid, $folder);
@@ -97,6 +111,19 @@ if  (@ARGV) {
 		}
 	}
 }
+
+sub printInfo {
+	my $folder = shift;
+	print $folder->idBase, "\t: ",  $folder->mount,  "\n";
+	if ($withGroup) {
+		my $groups = $folder->allGroups();
+		
+		for my $group (sort keys %$groups) {
+			print "\t\t", $group , " : " , partagePermission($groups->{$group}), "\n";
+		}
+		print "\n";
+	}
+} 
 
 sub diffGf {
 	my ($fid, $folder) = @_;
@@ -134,4 +161,26 @@ sub resumeList {
 			print "'$_'\n";
 		}
 	}
+}
+
+sub partagePermission {
+	my $perm = shift;
+	my $flags = "($perm";
+	
+	if ($perm < 0) {
+		return  "(permission possible:  Modification Création Supression Repartage)";
+	}
+	if ($perm & 2 ) {
+		$flags .= ' Mo'; # Modification
+	}
+	if ($perm & 4 ) {
+		$flags .= ' Cr'; # création
+	} 
+	if ($perm & 8 ) {
+		$flags .= ' Su'; # Supression
+	}
+	if ($perm & 16 ) {
+		$flags .= ' Re'; # Repartage
+	}
+	return $flags . ')';
 }

@@ -1,4 +1,4 @@
-use MyLogger ; #'DEBUG';
+use MyLogger ;#'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 
 package Folder;
@@ -52,6 +52,15 @@ sub dictOldNew {
 	}
 	return 0;
 }
+
+# donne le hash de tous les  group->permission du GF
+sub allGroups {
+	my $this = shift;
+	#§DEBUG Dumper($this->{GROUPS_OLD});	
+	return {%{$this->{GROUPS_OLD}}, %{$this->{GROUPS_NEW}}};
+}
+
+# permet de lire ou d'ajouter un groups avec ses permission au GF
 sub groups {
 	my $this = shift;
 	return dictOldNew($this->{GROUPS_OLD}, $this->{GROUPS_NEW}, @_)
@@ -74,7 +83,7 @@ sub readNC {
 		$folderInBase{$folder->mount()} = $folder;
 	}
 
-	$sqlRes = util->executeSql(q/select folder_id, group_id, permissions from oc_group_folders_groups where group_id like '%:LDAP'/);
+	$sqlRes = util->executeSql(q/select folder_id, group_id, permissions from oc_group_folders_groups/);
 	while (my @tuple = $sqlRes->fetchrow_array()) {
 		my $folder = $folderById{$tuple[0]};
 		if ($folder) {
