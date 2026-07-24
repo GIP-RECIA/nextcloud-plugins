@@ -98,7 +98,14 @@ unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$logl
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
 }
 
-my $configFile = $FindBin::Bin."/$fileYml";
+
+my $configFile;
+
+if ($fileYml =~ /\//) {
+	$configFile = $fileYml;
+} else {
+	$configFile = $FindBin::Bin."/$fileYml";
+}
 
 my $config = LoadFile($configFile);
 
