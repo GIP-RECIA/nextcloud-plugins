@@ -255,8 +255,7 @@ etabs:
                 folders:
                   - folder: *folder28 # droit du groupe est lecture sur Échanges CD45-établissements
                     permF: []
-                  - folder: *folder28_guide
-                    permF: []
+                    quotaF: 50
                   - folder: &folderEtab28 # création des folders: 'Échanges CD45-établissements/nomEtab_uai'
                       - *folder28
                       - '%1$s'
