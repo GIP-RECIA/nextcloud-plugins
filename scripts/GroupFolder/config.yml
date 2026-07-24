@@ -222,8 +222,8 @@ etabs:
   - nom: CD28-Eure-et-Loir
     siren: 22280001300013
     ldapFilterList:
-      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL D EURE ET LOIR:groupes_locaux:Echanges etablissements:Managers)'
-        regex: '^coll:Collectivites:([^:]+)'
+      - ldapFilterGroups: '(cn=coll:Collectivites:CONSEIL DEPARTEMENTAL D EURE ET LOIR*:groupes_locaux:Echanges etablissements:Managers)'
+        regex: '^coll:Collectivites:([^:]+):groupes_locaux:Echanges etablissements:Managers'
         last: ifMatch
         group: &group28 'Echanges etablissements.CONSEIL DEPARTEMENTAL D EURE ET LOIR' # création du groupe NC: 'Echanges etablissements.CONSEIL DEPARTEMENTAL D EURE ET LOIR'
         folders:
@@ -233,7 +233,9 @@ etabs:
               - share
               - delete
             quotaF: 50
-          - folder: &folder28_guide '00_GUIDE'
+          - folder: &folder28_guide
+              - *folder28 
+              - '00_GUIDE'
             permF: # droit du groupe 'Echanges etablissements.CONSEIL DEPARTEMENTAL DU LOIRET' sur le folder 'Échanges CD28-établissements'
               - write
               - share
