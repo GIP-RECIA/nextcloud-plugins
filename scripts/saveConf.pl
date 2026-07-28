@@ -37,7 +37,7 @@ my $groups;
 
 my $aVersionner;
 
-unless (@ARGV && GetOptions ( "d=s" => \$directory, "c" => \$config, "g" => \$groups, "v", "git" => \$aVersionner) ) {
+unless (@ARGV && GetOptions ( "d=s" => \$directory, "c" => \$config, "g" => \$groups,  "git" => \$aVersionner) ) {
 	my $myself = $FindBin::Bin . "/" . $FindBin::Script ;
 	#$ENV{'MANPAGER'}='cat';
 	pod2usage( -message =>"ERROR:	manque d'arguments", -verbose => 1, -exitval => 1 , -input => $myself, -noperldoc => 1 );
