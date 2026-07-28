@@ -34,6 +34,7 @@ class OC_Theme
 		'nc.touraine-eschool.fr' => 'www.touraine-eschool.fr',
 		'nc.colleges41.fr' => 'ent.colleges41.fr',
 		'nc.mon-e-college.loiret.fr' => 'mon-e-college.loiret.fr',
+		'nc-lycees.entkapreunion.re' => 'lycees.entkapreunion.re',
 		'nc.lycees.test.recia.dev' => 'lycees.test.recia.dev',
 		'nc.clg18.test.recia.dev' => 'clg18.test.recia.dev',
 		'nc.clg28.test.recia.dev' => 'clg28.test.recia.dev',
@@ -41,6 +42,7 @@ class OC_Theme
 		'nc.clg37.test.recia.dev' => 'clg37.test.recia.dev',
 		'nc.clg41.test.recia.dev' => 'clg41.test.recia.dev',
 		'nc.clg45.test.recia.dev' => 'clg45.test.recia.dev',
+		'nc.lycees.test.entkapreunion.dev' => 'lycees.test.entkapreunion.dev',
 	);
 
 	public static $cssClass = array(
@@ -56,6 +58,7 @@ class OC_Theme
 		'nc.touraine-eschool.fr' => 'clg37',
 		'nc.colleges41.fr' => 'clg41',
 		'nc.mon-e-college.loiret.fr' => 'clg45',
+		'nc-lycees.entkapreunion.re' => 'reunion',
 		'nc.lycees.test.recia.dev' => 'esco',
 		'nc.clg18.test.recia.dev' => 'clg18',
 		'nc.clg28.test.recia.dev' => 'clg28',
@@ -63,6 +66,7 @@ class OC_Theme
 		'nc.clg37.test.recia.dev' => 'clg37',
 		'nc.clg41.test.recia.dev' => 'clg41',
 		'nc.clg45.test.recia.dev' => 'clg45',
+		'nc.lycees.test.entkapreunion.dev' => 'reunion',
 	);
 
 	/*public function __construct()

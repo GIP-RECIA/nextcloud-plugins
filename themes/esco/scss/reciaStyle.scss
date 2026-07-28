@@ -300,6 +300,10 @@ body {
 		&.agri {
 			@include colorTheme(#37872A);
 		}
+
+		&.reunion {
+			@include colorTheme(#0066b3);
+		}
 	}
 
 	&.embedded {
