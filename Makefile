@@ -1,7 +1,7 @@
 
 NEXTCLOUD_PATH := ${NC_WWW}
 
-NEXTCLOUD_SCRIPTS := ${HOME}/scripts
+NEXTCLOUD_SCRIPTS := ${HOME}scripts
 
 
 ifeq ($(NEXTCLOUD_PATH), )
@@ -29,7 +29,7 @@ ifeq ($(NEXTCLOUD_USER), )
 endif
 
 ifeq ($(NEXTCLOUD_CONF), )
-	NEXTCLOUD_CONF := ${HOME}/NC_conf
+	NEXTCLOUD_CONF := ${HOME}NC_conf
 endif
 
 DIST = $(NEXTCLOUD_PATH)/dist
@@ -54,7 +54,6 @@ defaut:
 	@echo "### Plugins ###"
 	@echo " LDAPIMPORTER"
 	@echo " DAV"
-	@echo " CSSJSLOADER"
 	@echo " SETTINGS or SETTINGS_APP"
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
@@ -66,7 +65,7 @@ SCRIPTS:
 
 CONFIG: config/*.json
 	cp config/*.json $(NEXTCLOUD_PATH)/config/
-	cp -uv config/$(NEXTCLOUD_USER)/* $(NEXTCLOUD_CONF)/
+	cp -uv config/$(NEXTCLOUD_USER)/* NEXTCLOUD_CONF)
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 
 LIB: 
@@ -94,8 +93,7 @@ LDAPIMPORTER:
 DAV:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
-CSSJSLOADER:
-	cp -rvT cssjsloader $(APPS)/cssjsloader
+
 
 SETTINGS SETTINGS_APP:
 	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings

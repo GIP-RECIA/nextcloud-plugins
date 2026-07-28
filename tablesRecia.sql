@@ -27,7 +27,6 @@ CREATE TABLE oc_recia_user_history (
 	eta varchar(32),
 	isadd tinyint(1),
 	isdel tinyint(1),
-/*	hasRep tinyint(1), */
 	name varchar(100),
 	UNIQUE (siren, isdel, uid)
 );
