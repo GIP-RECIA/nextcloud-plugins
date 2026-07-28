@@ -6,7 +6,7 @@ my  $dataRep = $ENV{'NC_DATA'};
 $dataRep = $ENV{'HOME'} . 'data' unless $dataRep;
 
 my $confRep = $ENV{'NC_CONF'};
-$confREp= $ENV{'HOME'} . 'NC_conf' unless $confRep
+$confRep= $ENV{'HOME'} . 'NC_conf' unless $confRep;
 
 my $scriptRep = $0;
 $scriptRep =~ s/[^\/]+$//;
