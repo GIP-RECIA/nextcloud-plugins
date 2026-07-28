@@ -65,7 +65,7 @@ SCRIPTS:
 
 CONFIG: config/*.json
 	cp config/*.json $(NEXTCLOUD_PATH)/config/
-	cp -uv config/$(NEXTCLOUD_USER)/* NEXTCLOUD_CONF)
+	cp -uv config/$(NEXTCLOUD_USER)/* $(NEXTCLOUD_CONF)
 	$(NEXTCLOUD_SCRIPTS)/diffEtab.pl
 
 LIB: 
