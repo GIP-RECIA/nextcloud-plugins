@@ -13,7 +13,7 @@ $scriptRep =~ s/[^\/]+$//;
 
 my 	$allEtabFile = $dataRep . '/allEtab.txt';
 
-my $allEtabVide = $confRep . "allEtab.txt";
+my $allEtabVide = $confRep . "/allEtab.txt";
 
 print "lecture de $allEtabFile \n";
 open ETAB , "$allEtabFile"  or die "$!" ;
@@ -44,7 +44,7 @@ close ETAB or die $!;
 print "$cpt etabs en prod \n";
 
 print "lecture  $allEtabVide \n";
-open ETAB , "$allEtabVide"  or die "$allEtabFile $!" ;
+open ETAB , "$allEtabVide"  or die "$allEtabVide $!" ;
 my %etabList;
 
 print "Lignes manquantes en prod : \n";
