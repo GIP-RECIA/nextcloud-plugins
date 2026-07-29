@@ -89,6 +89,24 @@ body {
 	}
 }
 
+head[data-user="admin"] {
+	+ body {
+		&#body-user,
+		&#body-settings {
+			header#header {
+				> .header-end {
+					> #user-menu > #header-menu-user-menu {
+						// Affiche la déconnexion
+						li:has(#logout) {
+							display: unset;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // ---------- EXTENDED UPORTAL FOOTER ----------
 
 // Masquage du bandeau ENT par défaut
