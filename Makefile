@@ -88,15 +88,13 @@ SKELETON:
 # Plugins
 
 LDAPIMPORTER:
-	cp -rvT ldapimporter $(APPS)/ldapimporter
+	rsync -av ldapimporter/* $(APPS)/ldapimporter
 
 DAV:
 	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
-
-
 SETTINGS SETTINGS_APP:
-	cp -rv apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
+	rsync -av apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
 
 NOTIFICATIONS:
 	rsync -av \
