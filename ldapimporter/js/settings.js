@@ -156,6 +156,11 @@ $(document).ready(function () {
             "<td><input class=\"cas_import_map_groups_pedagogic\" value='" + field + "'/></td>" +
             "<td><input class=\"cas_import_map_groups_pedagogic_filter\" value='" + filter + "'/></td>" +
             "<td><input class=\"cas_import_map_groups_pedagogic_naming\" value='" + naming + "'/></td>" +
+            "<td>" +
+            "<button class=\"moveUpPedagogicGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
+            "<button class=\"moveDownPedagogicGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
+            "<button class=\"removePedagogicGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
+            "</td>" +
             "</tr>"
         );
     }
@@ -187,6 +192,19 @@ $(document).ready(function () {
         addPedagogicGroupLine()
     });
 
+    $('#pedagogicGroup > tbody')
+        .on('click', '.moveUpPedagogicGroup', function () {
+            const row = $(this).closest('tr')
+            row.prev().before(row);
+        })
+        .on('click', '.moveDownPedagogicGroup', function () {
+            const row = $(this).closest('tr')
+            row.next().after(row)
+        })
+        .on('click', '.removePedagogicGroup', function () {
+            $(this).closest('tr').remove()
+        })
+
     const addFilterGroupLine = function (filter = '', naming = '', quota = '', uaiNumber = '') {
         $('#filterGroup > tbody').append(
             "<tr>" +
@@ -194,6 +212,11 @@ $(document).ready(function () {
             "<td><input class=\"cas_import_map_groups_naming\" value='" + naming + "'/></td>" +
             "<td><input class=\"cas_import_map_groups_uai_number\" value='" + uaiNumber + "'/></td>" +
             "<td><input class=\"cas_import_map_groups_quota\" value='" + quota + "'/></td>" +
+            "<td>" +
+            "<button class=\"moveUpFilterGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
+            "<button class=\"moveDownFilterGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
+            "<button class=\"removeFilterGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
+            "</td>" +
             "</tr>"
         );
     }
@@ -227,12 +250,30 @@ $(document).ready(function () {
         addFilterGroupLine()
     });
 
+    $('#filterGroup > tbody')
+        .on('click', '.moveUpFilterGroup', function () {
+            const row = $(this).closest('tr')
+            row.prev().before(row);
+        })
+        .on('click', '.moveDownFilterGroup', function () {
+            const row = $(this).closest('tr')
+            row.next().after(row)
+        })
+        .on('click', '.removeFilterGroup', function () {
+            $(this).closest('tr').remove()
+        })
+
     const addNameUaiGroupLine = function (nameUai = '', nameGroup = '', uaiGroup = '') {
         $('#nameUaiGroup > tbody').append(
             "<tr>" +
             "<td><input class=\"cas_import_regex_name_uai\" value=\"" + nameUai + "\"/></td>" +
             "<td><input class=\"cas_import_regex_name_group\" value=\"" + nameGroup + "\"/></td>" +
             "<td><input class=\"cas_import_regex_uai_group\" value=\"" + uaiGroup + "\"/></td>" +
+            "<td>" +
+            "<button class=\"moveUpNameUaiGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
+            "<button class=\"moveDownNameUaiGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
+            "<button class=\"removeNameUaiGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
+            "</td>" +
             "</tr>"
         );
     }
@@ -263,6 +304,19 @@ $(document).ready(function () {
     $('#addNameUaiGroup').on('click', function () {
         addNameUaiGroupLine()
     });
+
+    $('#nameUaiGroup > tbody')
+        .on('click', '.moveUpNameUaiGroup', function () {
+            const row = $(this).closest('tr')
+            row.prev().before(row);
+        })
+        .on('click', '.moveDownNameUaiGroup', function () {
+            const row = $(this).closest('tr')
+            row.next().after(row)
+        })
+        .on('click', '.removeNameUaiGroup', function () {
+            $(this).closest('tr').remove()
+        })
 });
 
 function decodeHTMLEntities(text) {

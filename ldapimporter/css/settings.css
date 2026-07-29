@@ -24,21 +24,25 @@
 
 #ldapimporter table#nameUaiGroup > thead > tr,
 #ldapimporter table#nameUaiGroup > tbody > tr {
-    grid-template-columns: 3fr 1fr 1fr;
+    grid-template-columns: 3fr 1fr 1fr 111px;
 }
 
 #ldapimporter table#filterGroup > thead > tr,
 #ldapimporter table#filterGroup > tbody > tr {
-    grid-template-columns: 6fr 2fr 1fr 1fr;
+    grid-template-columns: 6fr 2fr 1fr 1fr 111px;
 }
 
 #ldapimporter table#pedagogicGroup > thead > tr,
 #ldapimporter table#pedagogicGroup > tbody > tr {
-    grid-template-columns: 1fr 1fr 3fr;
+    grid-template-columns: 1fr 1fr 3fr 111px;
 }
 
 #ldapimporter table > thead > tr > th {
     text-wrap: balance;
+}
+
+#ldapimporter table > tbody > tr > td:last-child {
+    display: flex;
 }
 
 #ldapimporter table > tbody > tr > td > input {
