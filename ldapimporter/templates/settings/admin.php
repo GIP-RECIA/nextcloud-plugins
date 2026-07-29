@@ -268,6 +268,7 @@ style(Application::APP_ID, 'settings');
                         </th>
                         <th>Numéro du groupement dans la regex correspondant au nom de l'établissement</th>
                         <th>Numéro du groupement dans la regex correspondant à l'UAI de l'établissement</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -289,9 +290,14 @@ style(Application::APP_ID, 'settings');
                             class="cas_import_regex_uai_group"
                             value="" />
                     </td>
+                    <td>
+                        <button class="moveUpNameUaiGroup" type="button" title="Monter" style="width: 34px;">↑</button>
+                        <button class="moveDownNameUaiGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
+                        <button class="removeNameUaiGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
+                    </td>
                 </tbody>
             </table>
-            <button id="addNameUaiGroup" type="button" style="width: 34px;">+</button>
+            <button id="addNameUaiGroup" type="button" title="Ajouter" style="width: 34px;">+</button>
 
             <div class="footer-actions">
                 <input type="submit" value="Enregistrer" />
@@ -312,6 +318,7 @@ style(Application::APP_ID, 'settings');
                         <th>Nommage</th>
                         <th>Numéro du groupement de la regex pour l'UAI ou le nom</th>
                         <th>Quota (en GB)</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -340,10 +347,15 @@ style(Application::APP_ID, 'settings');
                                 class="cas_import_map_groups_quota"
                                 value="" />
                         </td>
+                        <td>
+                            <button class="moveUpFilterGroup" type="button" title="Monter" style="width: 34px;">↑</button>
+                            <button class="moveDownFilterGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
+                            <button class="removeFilterGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
-            <button id="addFilterGroup" type="button" style="width: 34px;">+</button>
+            <button id="addFilterGroup" type="button" title="Ajouter" style="width: 34px;">+</button>
         </div>
 
         <div class="footer-actions">
@@ -370,6 +382,7 @@ style(Application::APP_ID, 'settings');
                         <th>Nom de l'attribut LDAP des utilisteurs</th>
                         <th>Regex de filtre</th>
                         <th>Nommage</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -393,10 +406,15 @@ style(Application::APP_ID, 'settings');
                                 class="cas_import_map_groups_pedagogic_naming"
                                 value="" />
                         </td>
+                        <td>
+                            <button class="moveUpPedagogicGroup" type="button" title="Monter" style="width: 34px;">↑</button>
+                            <button class="moveDownPedagogicGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
+                            <button class="removePedagogicGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
-            <button id="addPedagogicGroup" type="button" style="width: 34px;">+</button>
+            <button id="addPedagogicGroup" type="button" title="Ajouter" style="width: 34px;">+</button>
         </div>
 
         <div class="footer-actions">
