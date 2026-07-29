@@ -44,7 +44,7 @@ SKELETON:
 # Plugins
 
 LDAPIMPORTER:
-	cp -rvT ldapimporter $(APPS)/ldapimporter
+	rsync -av ldapimporter/* $(APPS)/ldapimporter
 
 COLLABORA:
 	find apps/richdocuments -type f -exec cp \{\} $(NEXTCLOUD_PATH)/\{\} \;
