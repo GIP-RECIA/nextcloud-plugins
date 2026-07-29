@@ -12,8 +12,43 @@
     align-items: center;
 }
 
-#ldapimporter .cw-100 > * {
+#ldapimporter table {
     width: 100%;
+}
+
+#ldapimporter table > thead > tr,
+#ldapimporter table > tbody > tr {
+  display: grid;
+  gap: 4px;
+}
+
+#ldapimporter table#nameUaiGroup > thead > tr,
+#ldapimporter table#nameUaiGroup > tbody > tr {
+    grid-template-columns: 3fr 1fr 1fr;
+}
+
+#ldapimporter table#filterGroup > thead > tr,
+#ldapimporter table#filterGroup > tbody > tr {
+    grid-template-columns: 6fr 2fr 1fr 1fr;
+}
+
+#ldapimporter table#pedagogicGroup > thead > tr,
+#ldapimporter table#pedagogicGroup > tbody > tr {
+    grid-template-columns: 1fr 1fr 3fr;
+}
+
+#ldapimporter table > thead > tr > th {
+    text-wrap: balance;
+}
+
+#ldapimporter table > tbody > tr > td > input {
+    width: 100%;
+    background-color: transparent;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-radius: unset;
+    box-shadow: unset;
 }
 
 #ldapimporter .footer-actions {
