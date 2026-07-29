@@ -142,7 +142,7 @@ class ImportUsersAd extends Base
                 throw new \Exception("User import failed. PHP extension 'ldap' is not loaded.");
             }
         } catch (\Exception $e) {
-            $logger->critical("Fatal Error: " . $e->getMessage());
+            $logger->critical("Fatal Error: " . $e->getMessage(). "\n". $e->getTraceAsString());
             return 1;
         }
 

@@ -83,7 +83,7 @@ class DisableDeletedUser extends Base
             $deleteService->close();
             $output->writeln('Disabling users finished.');
         } catch (\Exception $e) {
-            $logger->critical("Fatal Error: " . $e->getMessage());
+            $logger->critical("Fatal Error: " . $e->getMessage(). "\n". $e->getTraceAsString());
         }
 
         return 0;
