@@ -131,15 +131,15 @@ class SettingsController extends Controller
                 'cas_import_map_enabled_and_bitwise',
                 $cas_import_map_enabled_and_bitwise
             );
-            $this->appConfig->setValueBool(
+            $this->appConfig->setValueString(
                 Application::APP_ID,
                 'cas_import_merge',
-                $cas_import_merge !== null
+                $cas_import_merge !== null ? '1' : '0'
             );
-            $this->appConfig->setValueBool(
+            $this->appConfig->setValueString(
                 Application::APP_ID,
                 'cas_import_merge_enabled',
-                $cas_import_merge_enabled !== null
+                $cas_import_merge_enabled !== null ? '1' : '0'
             );
             $this->appConfig->setValueString(
                 Application::APP_ID,
