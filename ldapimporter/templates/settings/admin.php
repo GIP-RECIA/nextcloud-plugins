@@ -78,7 +78,8 @@ style(Application::APP_ID, 'settings');
                 id="cas_import_ad_sync_filter"
                 name="cas_import_ad_sync_filter"
                 value="<?php print_unescaped($_['cas_import_ad_sync_filter']); ?>"
-                placeholder="(&(objectCategory=user)(objectClass=user)(memberof:1.2.840.113556.1.4.1941:=CN=owncloudusers,CN=Users,DC=mydomain,DC=com))" />
+                placeholder="(&(objectCategory=user)(objectClass=user)(memberof:1.2.840.113556.1.4.1941:=CN=owncloudusers,CN=Users,DC=mydomain,DC=com))"
+                style="width: calc(100% - 24em - 8px);min-width: 31em;" />
         </div>
         <div class="labeled-input" style="display: flex;align-items: center;">
             <label for="cas_import_ad_sync_pagesize_value">
@@ -256,35 +257,41 @@ style(Application::APP_ID, 'settings');
                 value="<?php p($_['cas_import_map_regex_name_uai']); ?>"
                 data-value="<?php p($_['cas_import_map_regex_name_uai']); ?>"
                 style="display: none;width: 100%;" />
-            <div style="display: grid;grid-template-columns: 3fr 1fr 1fr;column-gap: 4px;" class="cw-100">
-                <div>
-                    <label for="cas_import_regex_name_uai">
-                        Regex de nommage d'établissement et du UAI
-                    </label>
-                    <p style="color: gray;">
-                        Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre
-                    </p>
-                </div>
-                <label style="width: 100%" for="cas_import_regex_name_group">
-                    Numéro du groupement dans la regex correspondant au nom de l'établissement
-                </label>
-                <label style="width: 100%" for="cas_import_regex_uai_group">
-                    Numéro du groupement dans la regex correspondant à l'UAI de l'établissement
-                </label>
-                <input
-                    id="cas_import_regex_name_uai_first"
-                    class="cas_import_regex_name_uai"
-                    value="" />
-                <input
-                    id="cas_import_regex_name_group_first"
-                    class="cas_import_regex_name_group"
-                    value="" />
-                <input
-                    id="cas_import_regex_uai_group_first"
-                    class="cas_import_regex_uai_group"
-                    value="" />
-                <button id="addNameUaiGroup" type="button" style="width: 34px;">+</button>
-            </div>
+            <table id="nameUaiGroup">
+                <thead>
+                    <tr>
+                        <th>
+                            Regex de nommage d'établissement et du UAI
+                            <p style="color: gray;margin: 0;">
+                                Les groupements de la regex pour le nom et l'UAI de l'établissement sont défini ci-contre
+                            </p>
+                        </th>
+                        <th>Numéro du groupement dans la regex correspondant au nom de l'établissement</th>
+                        <th>Numéro du groupement dans la regex correspondant à l'UAI de l'établissement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td>
+                        <input
+                            id="cas_import_regex_name_uai_first"
+                            class="cas_import_regex_name_uai"
+                            value="" />
+                    </td>
+                    <td>
+                        <input
+                            id="cas_import_regex_name_group_first"
+                            class="cas_import_regex_name_group"
+                            value="" />
+                    </td>
+                    <td>
+                        <input
+                            id="cas_import_regex_uai_group_first"
+                            class="cas_import_regex_uai_group"
+                            value="" />
+                    </td>
+                </tbody>
+            </table>
+            <button id="addNameUaiGroup" type="button" style="width: 34px;">+</button>
 
             <div class="footer-actions">
                 <input type="submit" value="Enregistrer" />
@@ -298,29 +305,45 @@ style(Application::APP_ID, 'settings');
                 value="<?php p($_['cas_import_map_groups_fonctionel']); ?>"
                 data-value="<?php p($_['cas_import_map_groups_fonctionel']); ?>"
                 style="display: none;width: 100%;" />
-            <div style="display: grid;grid-template-columns: 6fr 2fr 1fr 1fr;column-gap: 4px;" class="cw-100">
-                <label>Regex de filtre</label>
-                <label>Nommage</label>
-                <label>Numéro du groupement de la regex pour l'UAI ou le nom</label>
-                <label>Quota (en GB)</label>
-                <input
-                    id="cas_import_map_groups_filter_first"
-                    class="cas_import_map_groups_filter"
-                    value="" />
-                <input
-                    id="cas_import_map_groups_naming_first"
-                    class="cas_import_map_groups_naming"
-                    value="" />
-                <input
-                    id="cas_import_map_groups_uai_number_first"
-                    class="cas_import_map_groups_uai_number"
-                    value="" />
-                <input
-                    id="cas_import_map_groups_quota_first"
-                    class="cas_import_map_groups_quota"
-                    value="" />
-                <button id="addFilterGroup" type="button" style="width: 34px;">+</button>
-            </div>
+            <table id="filterGroup">
+                <thead>
+                    <tr>
+                        <th>Regex de filtre</th>
+                        <th>Nommage</th>
+                        <th>Numéro du groupement de la regex pour l'UAI ou le nom</th>
+                        <th>Quota (en GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_filter_first"
+                                class="cas_import_map_groups_filter"
+                                value="" />
+                        </td>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_naming_first"
+                                class="cas_import_map_groups_naming"
+                                value="" />
+                        </td>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_uai_number_first"
+                                class="cas_import_map_groups_uai_number"
+                                value="" />
+                        </td>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_quota_first"
+                                class="cas_import_map_groups_quota"
+                                value="" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="addFilterGroup" type="button" style="width: 34px;">+</button>
         </div>
 
         <div class="footer-actions">
@@ -341,24 +364,39 @@ style(Application::APP_ID, 'settings');
                 value="<?php p($_['cas_import_map_groups_pedagogic']); ?>"
                 data-value="<?php p($_['cas_import_map_groups_pedagogic']); ?>"
                 style="display: none;width: 100%;" />
-            <div style="display: grid;grid-template-columns: 1fr 1fr 3fr;column-gap: 4px;" class="cw-100">
-                <label>Nom de l'attribut LDAP des utilisteurs</label>
-                <label>Regex de filtre</label>
-                <label>Nommage</label>
-                <input
-                    id="cas_import_map_groups_pedagogic_first"
-                    class="cas_import_map_groups_pedagogic"
-                    value="" />
-                <input
-                    id="cas_import_map_groups_pedagogic_filter_first"
-                    class="cas_import_map_groups_pedagogic_filter"
-                    value="" />
-                <input
-                    id="cas_import_map_groups_pedagogic_naming_first"
-                    class="cas_import_map_groups_pedagogic_naming"
-                    value="" />
-                <button id="addPedagogicGroup" type="button" style="width: 34px;">+</button>
-            </div>
+            <table id="pedagogicGroup">
+                <thead>
+                    <tr>
+                        <th>Nom de l'attribut LDAP des utilisteurs</th>
+                        <th>Regex de filtre</th>
+                        <th>Nommage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_pedagogic_first"
+                                class="cas_import_map_groups_pedagogic"
+                                value="" />
+                        </td>
+                        <td>
+                            
+                            <input
+                                id="cas_import_map_groups_pedagogic_filter_first"
+                                class="cas_import_map_groups_pedagogic_filter"
+                                value="" />
+                        </td>
+                        <td>
+                            <input
+                                id="cas_import_map_groups_pedagogic_naming_first"
+                                class="cas_import_map_groups_pedagogic_naming"
+                                value="" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="addPedagogicGroup" type="button" style="width: 34px;">+</button>
         </div>
 
         <div class="footer-actions">
