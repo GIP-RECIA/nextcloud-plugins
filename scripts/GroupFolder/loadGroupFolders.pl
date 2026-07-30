@@ -101,7 +101,7 @@ unless (@ARGV && GetOptions ( "f=s" => \$fileYml, "t" => \$test, "l=i" => \$logl
 my $configFile;
 if ($fileYml =~ /\//) {
 	$configFile = $fileYml;
-else {
+} else {
 	$configFile =  ${util::PARAM}{'NC_CONF'}. "/$fileYml";
 }
 
@@ -179,7 +179,7 @@ if (-f $timestampFile ) {
 	}
 	close TS;
 } else {
-	§WARN "timestampFile inexistant !\n";
+	§WARN "timestampFile, $timestampFile,  inexistant !\n";
 }
 my $newTimeStampLdap = util->timestampLdap(time);
 

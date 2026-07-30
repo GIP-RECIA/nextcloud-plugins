@@ -54,7 +54,7 @@ rm ${lock}1 ${lock}2 ${lock}3
 	date
 
 	echo "\nVerification que loadEtab soit  terminé sans erreur:\n ";
-	gunzip -c rlog/Loader/*.log.gz | $rcode/uidKo.pl
+	gunzip -c $rlog/Loader/*.log.gz | $rcode/uidKo.pl
 
 	date
 

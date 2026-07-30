@@ -20,7 +20,7 @@ my $confRep = $ENV{'NC_CONF'};
 
 $wwwRep = $ENV{'HOME'}.'/web' unless $wwwRep ;
 $logRep = $ENV{'HOME'} . '/logs-esco' unless $logRep ;
-$confRep = $ENV{'HOME'} . '/NC_conf' unless $logRep;
+$confRep = $ENV{'HOME'} . '/NC_conf' unless $confRep;
 
 my $scriptRep = $ENV{'NC_SCRIPTS'};
 unless ($scriptRep) {
