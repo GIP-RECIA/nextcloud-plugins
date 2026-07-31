@@ -118,7 +118,9 @@ my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * fro
 if ($all) {
 	my $nb = 0;
 	foreach $sqlQuery (@sqlQueries) {
-		$nb += $sql->do($sqlQuery) or §FATAL "$!: ", $sql->errstr, " $sqlQuery";
+		#piège : on ne peut pas faire la somme sur la même ligne car il faut differencié le '0E0' qui vaut 0 ou true, du '0' qui vaut 0 ou false;
+		my $res =  $sql->do($sqlQuery) or §FATAL  $sql->errstr, " $sqlQuery";
+		$nb += $res;
 	}
 	print "$nb lignes supprimées dans oc_asso_uai_user_group\n";
 }
