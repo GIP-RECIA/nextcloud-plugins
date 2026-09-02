@@ -47,7 +47,7 @@ unless (@ARGV && GetOptions ( "d=s" => \$directory, "c" => \$config, "g" => \$gr
 if ($config) {
 	my $confRep = ${util::PARAM}{'NC_WWW'}. '/config';
 	if ($directory) {
-		§SYSTEM "cp -uv $confRep/*.php $directory" ;
+		§SYSTEM "cp -uv $confRep/config.php $directory" ;
 		$aVersionner++ if $aVersionner;
 	} else {
 		§SYSTEM "cat $confRep/config.php", OUT => sub {print $_;}, MOD => 0;
@@ -86,7 +86,7 @@ if ($groups) {
 if ($aVersionner > 1) {
 	chdir $directory;
 	my @status;
-	§SYSTEM "git status --short -u no" , OUT => \@status ;
+	§SYSTEM "git status --short " , OUT => \@status ;
 	my $message = join "", map ({s/\s+/ /g; $_}  @status);
 	§SYSTEM "git commit -a -m '$message'" if $message;
 }
