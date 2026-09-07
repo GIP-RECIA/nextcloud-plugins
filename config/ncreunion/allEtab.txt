@@ -5,6 +5,7 @@
 
 # Région
 18450311800046 ;  #gip-recia
+23974001200012 ; REGION REUNION
 
 # le lycee de La réunion:
 #9740001H ; #LGT LECONTE DE LISLE - SAINT-DENIS
