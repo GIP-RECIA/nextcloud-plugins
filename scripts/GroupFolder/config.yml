@@ -7,15 +7,14 @@
 #   un groupFolder 'folder' si on a un 'quotaF' le groupfolder sera créé/modifié sinon le groupe sera associé au groupfolder ssi il existe.
 #   permF definit les droits du groupe sur le groupefolder  
 
-
 ---
 suffixGroup: ':LDAP'  # tous les identifiants de groupes NC géré par cette appli finissent par :LDAP
 etabs:
   - nom: GIP-RECIA
     siren: 18450311800046
-    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:ASC:*)(cn=coll:Collectivites:GIP-RECIA:groupes_locaux:PLL-ISSR)(cn=coll:Applications:Nextcloud_GIP-RECIA:*))'
+    ldapFilterGroups: '(|(cn=coll:Collectivites:GIP-RECIA_18450311800046:Services:*)(cn=coll:admin:central)(cn=coll:Collectivites:GIP-RECIA_18450311800046:groupes_locaux:ASC:*)(cn=coll:Collectivites:GIP-RECIA_18450311800046:groupes_locaux:PLL-ISSR)(cn=coll:Applications:Nextcloud_GIP-RECIA:*))'
     regexes:  
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):(?:Tous_)(\2)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:Services:([^:]+):(?:Tous_)(\2)$'
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
@@ -36,7 +35,7 @@ etabs:
               - share
               - delete
             
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(SNC):(PNM)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:Services:(SNC):(PNM)$'
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
@@ -48,7 +47,7 @@ etabs:
               - write
               - share
               - delete
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:GSI:(ISSR)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:Services:GSI:(ISSR)$'
         groups:
           - group: '%2$s.%1$s'
             folder: 'GIP-RECIA/PLL-ISSR'
@@ -57,7 +56,7 @@ etabs:
               - write
               - share
               - delete
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:(E-éducation - Logiciels libres):Logiciels libres$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:Services:(E-éducation - Logiciels libres):Logiciels libres$'
         groups:
           - group: '%2$s.%1$s'
             folder: 'GIP-RECIA/PLL-ISSR'
@@ -66,7 +65,7 @@ etabs:
               - write
               - share
               - delete
-      - regex: '^coll:Collectivites:(GIP-RECIA):Services:([^:]+):([^:]+)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:Services:([^:]+):([^:]+)$'
         last: ifMatch
         groups:
           - group: 'GIP-RECIA'
@@ -93,13 +92,13 @@ etabs:
 #        admin: '^GIP-RECIA((/.+)(/.+)?)?'
 
     # les regles pour l'asc:
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:ASC:(Membres_ASC)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:groupes_locaux:ASC:(Membres_ASC)$'
         group: ASC.GIP-RECIA
         folder: 'ASC'
         permF: []
         quotaF: 1
         
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_[^:]+)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:groupes_locaux:(ASC):(ASC_[^:]+)$'
         groups:
           - group: '%2$s.%1$s'
             folder: 'ASC'
@@ -113,7 +112,7 @@ etabs:
               - delete
             quotaF: 100
              
-      - regex: '^coll:Collectivites:(GIP-RECIA):groupes_locaux:(ASC):(ASC_Bureau)$'
+      - regex: '^coll:Collectivites:(GIP-RECIA)_18450311800046:groupes_locaux:(ASC):(ASC_Bureau)$'
         groups:
           - group: '%3$s.%1$s'
             admin: '^ASC(/.*)?$'
