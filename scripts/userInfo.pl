@@ -41,7 +41,7 @@ my $defautBucket = $PARAM{'bucket'};
 my $prefixBucket = "s3://$defautBucket";
 
 
-my $bucket;
+
 my $uid;
 
 my $bucket = 0;
@@ -125,7 +125,7 @@ sub getUidByName {
 		}
 		return 0;
 	} 
-	my $ary_ref =  $sqlStatement->fetch;
+	$ary_ref =  $sqlStatement->fetch;
 	if ($ary_ref) {
 		return $$ary_ref[0];
 	}
