@@ -63,7 +63,7 @@ if ($defautBucket && $arg1 =~ /^$defautBucket/){
 } elsif ($arg1 =~ /^\d+$/) {
 	# si on a un fichier on chercher a qui il appartient.
 	$uid = getOwnerUid($arg1);
-} elsif ($arg1 =~/^F\d{2}\w{5}$/) {
+} elsif ($arg1 =~/^[FW]\d{2}\w{5}$/) {
     $uid = $arg1;
 } else {
 	$uid = getUidByName($arg1);

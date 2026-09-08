@@ -23,7 +23,7 @@ while (<>) {
 	if (/Start account import from ActiveDirectory/) {
 		$nbUser = 0;
 	}
-	if (/Ajout de l'utilisateur avec id  : (F\w{7})/) {
+	if (/Ajout de l'utilisateur avec id  : ([FW]\w{7})/) {
 		$UID{$1} |= 1;
 		$nbUser++;
 		next;
@@ -38,7 +38,7 @@ while (<>) {
 		next;
 	}
 	
-	if (/ldap:(update|create)-user,(F\w{7})/) {
+	if (/ldap:(update|create)-user,([FW]\w{7})/) {
 		my $uid = $2;
 		while (<>) {
 			if (/Enabled set to "enabled"/) {
@@ -52,7 +52,7 @@ while (<>) {
 	}
 	if (/Start disable deleted user/) {
 		while (<>) {
-			if (/user to disabled : (F\w{7})/) {
+			if (/user to disabled : ([FW]\w{7})/) {
 				my $uid = $1;
 				$UID{$uid} |= 4;
 			}

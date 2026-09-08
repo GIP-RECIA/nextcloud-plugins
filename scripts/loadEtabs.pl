@@ -276,7 +276,7 @@ sub traitementEtab() {
 	} elsif ($etab =~ /^\d{14,15}$/) {
 			$filtre = $filterSiren;
 			$typeKey = "siren";
-	} elsif ($etab =~ /^F\w{7}$/) {
+	} elsif ($etab =~ /^[FW]\w{7}$/) {
 		$filtre = $filterUid;
 		$typeKey = "users";   
 	} elsif ($etab eq 'HORS_ETAB') {

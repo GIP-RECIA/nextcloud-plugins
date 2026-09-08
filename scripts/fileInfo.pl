@@ -76,7 +76,7 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $fileName = $tuple->{'name'};
 	my $size = &toGiga($tuple->{'size'});
 
-	if ($storageId =~ /:(F\w{7})$/) {
+	if ($storageId =~ /:([FW]\w{7})$/) {
 		$storageId = $1;
 	}
 	print "$idFile :\t$storageId\t($size)\t$path\n";

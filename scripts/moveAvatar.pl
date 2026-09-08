@@ -40,7 +40,7 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	my $path = $tuple->{'path'};
 	my $fileId = $tuple->{'fileId'};
 	
-	if ($path =~ /$prefixPath(F\w{7})\//) {
+	if ($path =~ /$prefixPath([FW]\w{7})\//) {
 		
 		my $newBucket=lc("0$1");
 		

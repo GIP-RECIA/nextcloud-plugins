@@ -24,7 +24,7 @@ use Digest::MD5 qw(md5_hex );
 
 my $prefixUid = $ARGV[0];
 
-unless ($prefixUid =~ /^F\w{1,7}/) {
+unless ($prefixUid =~ /^[FW]\w{1,7}/) {
 	print "\nPour migrer des comptes du bucket 0 vers un bucket individuel:\n";
 	print "usage $0 F...\n";
 	print "L'argument doit être un prefix d'uid. On migrera donc tous les comptes avec ce prefix d'uid placés dans le bucket 0 \n\n";
