@@ -34,6 +34,7 @@
 					<NotificationItem
 						v-for="(notification, index) in notifications"
 						:key="notification.notificationId"
+						:class="{ 'notification--new': notification.notificationId > lastOpenMaxId }"
 						:notification="notification"
 						@remove="onRemove(index)" />
 				</transition-group>
@@ -44,7 +45,22 @@
 					:name="emptyContentMessage"
 					:description="emptyContentDescription">
 					<template #icon>
-						<IconBellOutline v-if="!hasThrottledPushNotifications" />
+						<div v-if="showInboxZero && !hasThrottledPushNotifications" class="inbox-zero-celebrate">
+							<span
+								v-for="i in 8"
+								:key="i"
+								class="confetti-dot"
+								:style="`--confetti-i: ${i - 1}`" />
+							<svg class="inbox-zero-check" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+								<circle
+									class="inbox-zero-circle"
+									cx="26"
+									cy="26"
+									r="22" />
+								<polyline class="inbox-zero-checkmark" points="14,26 22,34 38,18" />
+							</svg>
+						</div>
+						<IconBellOutline v-else-if="!hasThrottledPushNotifications" />
 						<span v-else class="icon icon-alert-outline" />
 					</template>
 
@@ -82,6 +98,7 @@
 <script>
 import { getCurrentUser, getRequestToken } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
+import { getCapabilities } from '@nextcloud/capabilities'
 import { showError } from '@nextcloud/dialogs'
 import { emit, subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { loadState } from '@nextcloud/initial-state'
@@ -101,9 +118,13 @@ import {
 	setCurrentTabAsActive,
 } from './services/notificationsService.js'
 import { createWebNotification } from './services/webNotificationsService.js'
+import {
+	setWebPush,
+} from './services/webPushService.js'
 
 const sessionKeepAlive = loadState('core', 'config', { session_keepalive: true }).session_keepalive
 const hasThrottledPushNotifications = false // loadState('notifications', 'throttled_push_notifications')
+const webPushForBrowsersEnabled = getCapabilities()?.notifications?.push?.includes('webpush-browsers')
 
 const fairUsePolicyNotification = {
 	// Required properties
@@ -182,6 +203,11 @@ export default {
 			pushEndpoints: null,
 
 			open: false,
+
+			/** Highest notification ID seen when the popup was last opened; items above this are "new" */
+			lastOpenMaxId: 0,
+			/** True for 5 s after all notifications are cleared — inbox zero celebration */
+			showInboxZero: false,
 		}
 	},
 
@@ -214,6 +240,17 @@ export default {
 		},
 	},
 
+	watch: {
+		'notifications.length': function(newLen, oldLen) {
+			if (newLen === 0 && oldLen > 0) {
+				this.showInboxZero = true
+				setTimeout(() => {
+					this.showInboxZero = false
+				}, 5000)
+			}
+		},
+	},
+
 	mounted() {
 		this.tabId = getRequestToken() || ('' + Math.random())
 		this._oldcount = 0
@@ -232,8 +269,19 @@ export default {
 			this.hasNotifyPush = true
 		}
 
-		// Set up the background checker
-		this._setPollingInterval(this.pollIntervalBase)
+		// set the polling interval after checking web push status
+		// if web push may be configured
+		if (webPushForBrowsersEnabled && this.webNotificationsGranted === true) {
+			// We don't fetch on push if notify_push is enabled, to avoid concurrency fetch.
+			// We could do the other way: fallback to notify_push only if we don't have
+			// web push
+			window.addEventListener('load', () => {
+				this._setWebPush()
+			})
+		} else {
+			// Set up the background checker
+			this._setPollingInterval(this.pollIntervalBase)
+		}
 
 		this._watchTabVisibility()
 		subscribe('networkOffline', this.handleNetworkOffline)
@@ -256,8 +304,41 @@ export default {
 			}
 		},
 
+		async _setWebPush() {
+			return setWebPush(
+				// onActivated=
+				(hasWebPush) => {
+					if (hasWebPush) {
+						console.debug('Has web push, slowing polling to 15 minutes')
+						this.pollIntervalBase = 15 * 60 * 1000
+						this.hasNotifyPush = true
+					}
+					// Set polling interval for the default or new value
+					this._setPollingInterval(this.pollIntervalBase)
+				},
+				// onPush=
+				() => {
+					if (!this.hasNotifyPush) {
+						this._fetchAfterWebPush()
+					} else {
+						console.debug('Has notify_push, no need to fetch from web push.')
+					}
+				},
+			)
+		},
+
 		async onOpen() {
-			this.requestWebNotificationPermissions()
+			// Capture the current max ID before fetching so newly arrived items are marked "new"
+			this.lastOpenMaxId = this.notifications.reduce((max, n) => Math.max(max, n.notificationId), 0)
+
+			if (this.webNotificationsGranted === null) {
+				this.requestWebNotificationPermissions()
+					.then((granted) => {
+						if (granted && webPushForBrowsersEnabled) {
+							this._setWebPush()
+						}
+					})
+			}
 
 			await setCurrentTabAsActive(this.tabId)
 			await this._fetch()
@@ -288,7 +369,9 @@ export default {
 				.delete(generateOcsUrl('apps/notifications/api/v2/notifications'))
 				.then(() => {
 					this.notifications = []
-					this.open = false
+					setTimeout(() => {
+						this.open = false
+					}, 3_000) // confetti-burst animation length + a bit of extra time
 					setCurrentTabAsActive(this.tabId)
 				})
 				.catch(() => {
@@ -347,13 +430,28 @@ export default {
 
 		/**
 		 * Performs the AJAX request to retrieve the notifications
+		 *
+		 * Unlike with notify_push, we don't have to check if we are the last tab before
+		 * fetching events. The service worker sends the event to only one tab, that may
+		 * not be the last one
 		 */
-		async _fetch() {
+		_fetchAfterWebPush() {
+			this.backgroundFetching = true
+			console.debug('Refreshing notifications following web push event')
+			this._fetch(true)
+		},
+
+		/**
+		 * Performs the AJAX request to retrieve the notifications
+		 *
+		 * @param {bool} force Refresh the list of notifications right away
+		 */
+		async _fetch(force = false) {
 			if (this.notifications.length && this.notifications[0].notificationId > this.webNotificationsThresholdId) {
 				this.webNotificationsThresholdId = this.notifications[0].notificationId
 			}
 
-			const response = await getNotificationsData(this.tabId, this.lastETag, !this.backgroundFetching, this.hasNotifyPush)
+			const response = await getNotificationsData(this.tabId, this.lastETag, force || !this.backgroundFetching, this.hasNotifyPush)
 
 			if (response.status === 204) {
 				// 204 No Content - Intercept when no notifiers are there.
@@ -457,7 +555,7 @@ export default {
 				return
 			}
 
-			if (window.location.protocol === 'http:') {
+			if (!window.isSecureContext) {
 				console.debug('Notifications require HTTPS')
 				this.webNotificationsGranted = false
 				return
@@ -472,13 +570,13 @@ export default {
 		 */
 		async requestWebNotificationPermissions() {
 			if (this.webNotificationsGranted !== null) {
-				return
+				return new Promise((resolve) => resolve(this.webNotificationsGranted))
 			}
 
 			console.info('Requesting notifications permissions')
-			window.Notification.requestPermission()
+			return window.Notification.requestPermission()
 				.then((permissions) => {
-					this.webNotificationsGranted = permissions === 'granted'
+					return this.webNotificationsGranted = permissions === 'granted'
 				})
 		},
 
