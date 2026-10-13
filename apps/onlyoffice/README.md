@@ -18,7 +18,7 @@
 
 ```bash
 nextcloud-plugins/apps/onlyoffice$ cd ../../../onlyoffice-nextcloud/
-onlyoffice-nextcloud$ git checkout v10.1.2 -b v10.1.2
+onlyoffice-nextcloud$ git checkout v10.2.1 -b v10.2.1
 onlyoffice-nextcloud$ npm i
 onlyoffice-nextcloud$ cd -
 nextcloud-plugins/apps/onlyoffice$ make meld
@@ -34,8 +34,8 @@ nextcloud-plugins/apps/onlyoffice$ make sync
 
 ```diff
 [...]
--    height: calc(100dvh - 58px);
-+    height: calc(100dvh - 50px);
+-    height: calc(100dvh - var(--header-height, 50px) - 8px);
++    height: calc(100dvh - var(--header-height, 50px));
 [...]
 ```
 
