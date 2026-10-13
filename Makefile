@@ -53,7 +53,6 @@ defaut:
 	@echo " SKELETON"
 	@echo "### Plugins ###"
 	@echo " LDAPIMPORTER"
-	@echo " DAV"
 	@echo " SETTINGS or SETTINGS_APP"
 	@echo " NOTIFICATIONS"
 	@echo " FILES_SHARING"
@@ -89,9 +88,6 @@ SKELETON:
 
 LDAPIMPORTER:
 	rsync -av ldapimporter/* $(APPS)/ldapimporter
-
-DAV:
-	cp apps/dav/lib/CardDAV/CardDavBackend.php $(NEXTCLOUD_PATH)/apps/dav/lib/CardDAV/CardDavBackend.php
 
 SETTINGS SETTINGS_APP:
 	rsync -av apps/settings/* $(NEXTCLOUD_PATH)/apps/settings
