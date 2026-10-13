@@ -1,33 +1,29 @@
+NEXTCLOUD_SCRIPTS := ${NC_SCRIPTS}
+ifeq ($(NEXTCLOUD_SCRIPTS), )
+	NEXTCLOUD_SCRIPTS := ${HOME}scripts
+endif
 
 NEXTCLOUD_PATH := ${NC_WWW}
-
-NEXTCLOUD_SCRIPTS := ${HOME}scripts
-
-
 ifeq ($(NEXTCLOUD_PATH), )
 	NEXTCLOUD_PATH = ../web
 endif
 
 NEXTCLOUD_OWNER := ${NC_OWNER}
-NEXTCLOUD_GROUP := ${NC_GROUP}
-
-# en test OWNER et USER sont différents (esco, nextcloud-ent) 
-NEXTCLOUD_USER := ${NC_USER}
-
-NEXTCLOUD_CONF := ${NC_CONF}
-
 ifeq ($(NEXTCLOUD_OWNER), )
 	NEXTCLOUD_OWNER := ${USER}
 endif
 
+NEXTCLOUD_GROUP := ${NC_GROUP}
 ifeq ($(NEXTCLOUD_GROUP), )
 	NEXTCLOUD_GROUP := ${USER}
 endif
 
+NEXTCLOUD_USER := ${NC_USER}
 ifeq ($(NEXTCLOUD_USER), )
 	NEXTCLOUD_USER := ${USER}
 endif
 
+NEXTCLOUD_CONF := ${NC_CONF}
 ifeq ($(NEXTCLOUD_CONF), )
 	NEXTCLOUD_CONF := ${HOME}NC_conf
 endif
@@ -35,12 +31,9 @@ endif
 DIST = $(NEXTCLOUD_PATH)/dist
 APPS = $(NEXTCLOUD_PATH)/apps
 
-LOADER=cssjsloader
 THEME_ESCO=themes/esco
 SCSS=$(THEME_ESCO)/scss
 CSS=$(THEME_ESCO)/css
-
-ALLETAB=allEtab.txt
 
 defaut:
 	@echo "USER:\t\t${USER}\nNEXTCLOUD_PATH:\t$(NEXTCLOUD_PATH)"
