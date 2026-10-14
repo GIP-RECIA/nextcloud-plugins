@@ -57,7 +57,7 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 
 my %uidErrorByGroup;
 if (@allGroups) {
-	my $reponse='n';
+	my $reponse;
 	foreach my $gid (@allGroups) {
 		print "\n$gid :\n";
 		if ($withUser) {
@@ -71,8 +71,6 @@ if (@allGroups) {
 							util->occ("group:removeuser '$gid' '$uid'" );
 							util->occ("group:adduser '$gid' '$uid'" );
 						}
-					} else {
-						print "$reponse\n";
 					}
 				}
 			}
