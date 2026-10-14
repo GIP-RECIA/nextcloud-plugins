@@ -33,8 +33,10 @@ use utf8;
 binmode STDOUT, ':encoding(UTF-8)';
 binmode STDERR, ':encoding(UTF-8)';
 
-use FindBin;
-use lib $FindBin::Bin;
+#use FindBin;
+#use lib $FindBin::Bin;
+use FindBin qw($RealBin);
+use lib $RealBin;  
 use MyLogger ; # 'DEBUG';
 #use Filter::sh "tee " . __FILE__ . ".pl"; # pour  debuger les macros
 use DBI();
@@ -63,6 +65,7 @@ if (defined $loglevel) {
 	$loglevel = 2;
 }
 MyLogger->level($loglevel);
+
 
 if ($diffFileOld) {
 	open $diffFileNew, ">:encoding(UTF-8)", $diffFileOld.'.new' or §FATAL $diffFileOld.'.new', $!;
@@ -144,8 +147,6 @@ sub diffGf {
 		print "$mount:\nPath not in filesystem :\n";
 		resumeList($notInDisque, $resume);
 	}
-
-
 }
 
 sub resumeList {

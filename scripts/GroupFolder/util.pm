@@ -43,14 +43,20 @@ $PARAM{'NC_CONF'} = $confRep;
 
 
 	# lecture des paramatres de conf
+$PARAM{'dbhost'} = "";
+$PARAM{'dbname'} = "";
 
-	open CONFIG, "$configFile" or warn " $configFile: $!" ; #die $!;
-
+if  (open CONFIG, "$configFile") {
 	while (<CONFIG>)  {
 		if (/'(\w+)'\s*=>\s*'([^']+)'/) {
 			$PARAM{$1} = $2;
 		}
 	}
+} else {
+	warn " $configFile: $!";
+
+}
+
 $PARAM{'NC_DATA'} = $PARAM{'datadirectory'};
 #package util;
 
@@ -161,8 +167,6 @@ sub connectLdap {
 	return $ldap;
 }
 
-
-
 sub executeSql {
 	my $class = shift;
 	my $sqlQuery = shift;
@@ -203,7 +207,7 @@ sub occ {
 	my $com = shift;
 	my $out = shift;
 
-	if (isTestMode) {
+	if (&isTestMode) {
 		§INFO "$occ $com" ;
 	} else {
 		if ($out) {

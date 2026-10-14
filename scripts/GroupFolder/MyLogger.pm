@@ -436,7 +436,6 @@ sub _printInfo {
 	printInfo(@_);
 }
 
-
 sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le fichier de log 
 	my $text = shift;
 	if ($defautLog->{LEVEL} > 1 && $defautLog->{FILE}) {
@@ -446,7 +445,6 @@ sub printInfo { # les infos toujours sur stdin mais aussi possiblement dans le f
 	STDERR->flush;
 	print (@_, "\n");
 }
-
 
 sub info_ {
 	my $mod = shift;
