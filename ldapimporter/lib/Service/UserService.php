@@ -94,6 +94,10 @@ class UserService
 
                 $this->logger->debug("Added '" . $uid . "' to the group '" . $group . "'");
                 #Util::writeLog('cas', 'Added "' . $uid . '" to the group "' . $group . '"', LoggingService::DEBUG);
+
+                #TODO 2 lignes à supprimer quand NC gérera les partages, des nouveaux arrivés dans un groupe, correctement.
+                $groupObject->removeUser($user);
+                $groupObject->addUser($user);
             }
         }
     }
