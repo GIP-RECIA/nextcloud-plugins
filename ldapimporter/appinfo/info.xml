@@ -12,7 +12,7 @@
     <category>integration</category>
     <bugs>https://github.com/GIP-RECIA/nextcloud-plugins</bugs>
     <dependencies>
-        <nextcloud min-version="31" max-version="32" />
+        <nextcloud min-version="34" max-version="34" />
     </dependencies>
     <commands>
         <command>OCA\LdapImporter\Command\CreateUser</command>

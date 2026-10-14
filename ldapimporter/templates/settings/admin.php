@@ -272,29 +272,6 @@ style(Application::APP_ID, 'settings');
                     </tr>
                 </thead>
                 <tbody>
-                    <td>
-                        <input
-                            id="cas_import_regex_name_uai_first"
-                            class="cas_import_regex_name_uai"
-                            value="" />
-                    </td>
-                    <td>
-                        <input
-                            id="cas_import_regex_name_group_first"
-                            class="cas_import_regex_name_group"
-                            value="" />
-                    </td>
-                    <td>
-                        <input
-                            id="cas_import_regex_uai_group_first"
-                            class="cas_import_regex_uai_group"
-                            value="" />
-                    </td>
-                    <td>
-                        <button class="moveUpNameUaiGroup" type="button" title="Monter" style="width: 34px;">↑</button>
-                        <button class="moveDownNameUaiGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
-                        <button class="removeNameUaiGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
-                    </td>
                 </tbody>
             </table>
             <button id="addNameUaiGroup" type="button" title="Ajouter" style="width: 34px;">+</button>
@@ -322,37 +299,6 @@ style(Application::APP_ID, 'settings');
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_filter_first"
-                                class="cas_import_map_groups_filter"
-                                value="" />
-                        </td>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_naming_first"
-                                class="cas_import_map_groups_naming"
-                                value="" />
-                        </td>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_uai_number_first"
-                                class="cas_import_map_groups_uai_number"
-                                value="" />
-                        </td>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_quota_first"
-                                class="cas_import_map_groups_quota"
-                                value="" />
-                        </td>
-                        <td>
-                            <button class="moveUpFilterGroup" type="button" title="Monter" style="width: 34px;">↑</button>
-                            <button class="moveDownFilterGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
-                            <button class="removeFilterGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
             <button id="addFilterGroup" type="button" title="Ajouter" style="width: 34px;">+</button>
@@ -386,32 +332,6 @@ style(Application::APP_ID, 'settings');
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_pedagogic_first"
-                                class="cas_import_map_groups_pedagogic"
-                                value="" />
-                        </td>
-                        <td>
-                            
-                            <input
-                                id="cas_import_map_groups_pedagogic_filter_first"
-                                class="cas_import_map_groups_pedagogic_filter"
-                                value="" />
-                        </td>
-                        <td>
-                            <input
-                                id="cas_import_map_groups_pedagogic_naming_first"
-                                class="cas_import_map_groups_pedagogic_naming"
-                                value="" />
-                        </td>
-                        <td>
-                            <button class="moveUpPedagogicGroup" type="button" title="Monter" style="width: 34px;">↑</button>
-                            <button class="moveDownPedagogicGroup" type="button" title="Descendre" style="width: 34px;">↓</button>
-                            <button class="removePedagogicGroup" type="button" title="Supprimer" style="width: 34px;">×</button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
             <button id="addPedagogicGroup" type="button" title="Ajouter" style="width: 34px;">+</button>

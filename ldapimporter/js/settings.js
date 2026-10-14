@@ -1,284 +1,270 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', () => {
+    pagesizeInteractions();
+    importMapPedagogicGroup();
+    pedagogicGroupInteractions();
+    importMapFilterGroup();
+    filterGroupInteractions();
+    importMapNameUaiGroup();
+    nameUaiGroupInteractions();
 
-    const computeHiddenFields = function () {
-        let pegadogicGroups = {};
-        $('.cas_import_map_groups_pedagogic').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                pegadogicGroups[i] = {
-                    ...pegadogicGroups[i],
-                    'field': value
-                }
-            }
-        })
-        $('.cas_import_map_groups_pedagogic_filter').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                pegadogicGroups[i] = {
-                    ...pegadogicGroups[i],
-                    'filter': value
-                }
-            }
-        })
-        $('.cas_import_map_groups_pedagogic_naming').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                pegadogicGroups[i] = {
-                    ...pegadogicGroups[i],
-                    'naming': value
-                }
-            }
-        })
-
-        let filterGroups = {};
-        $('.cas_import_map_groups_filter').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                filterGroups[i] = {
-                    ...filterGroups[i],
-                    'filter': value
-                }
-            }
-        })
-        $('.cas_import_map_groups_naming').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                filterGroups[i] = {
-                    ...filterGroups[i],
-                    'naming': value
-                }
-            }
-        })
-        $('.cas_import_map_groups_quota').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                filterGroups[i] = {
-                    ...filterGroups[i],
-                    'quota': value
-                }
-            }
-        })
-        $('.cas_import_map_groups_uai_number').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                filterGroups[i] = {
-                    ...filterGroups[i],
-                    'uaiNumber': value
-                }
-            }
-        })
-
-        let nameUaiGroup = {};
-        $('.cas_import_regex_name_uai').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                nameUaiGroup[i] = {
-                    ...nameUaiGroup[i],
-                    'nameUai': value
-                }
-            }
-        })
-        $('.cas_import_regex_name_group').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                nameUaiGroup[i] = {
-                    ...nameUaiGroup[i],
-                    'nameGroup': value
-                }
-            }
-        })
-        $('.cas_import_regex_uai_group').each(function (i) {
-            const value = $(this).val();
-            if (value.length > 0) {
-                nameUaiGroup[i] = {
-                    ...nameUaiGroup[i],
-                    'uaiGroup': value
-                }
-            }
-        })
-
-        $('#cas_import_map_groups_fonctionel').val(JSON.stringify(filterGroups));
-        $('#cas_import_map_groups_pedagogic').val(JSON.stringify(pegadogicGroups));
-        $('#cas_import_map_regex_name_uai').val(JSON.stringify(nameUaiGroup));
-    };
-
-    $("form#ldapimporter").on('submit', function (event) {
+    document.querySelector("form#ldapimporter").addEventListener('submit', (event) => {
         event.preventDefault();
         computeHiddenFields();
-        setTimeout(() => {
-            var postData = $('#ldapimporter').serialize();
-            var method = $('#ldapimporter').attr('method');
-            var url = OC.generateUrl('/apps/ldapimporter/settings/save');
-            console.log(postData)
+        setTimeout(async () => {
+            const form = document.querySelector('#ldapimporter');
+            const postData = new URLSearchParams(new FormData(form));
+            const method = form.getAttribute('method');
+            const url = OC.generateUrl('/apps/ldapimporter/settings/save');
 
-            var infoNotification = OC.Notification.show("Sauvegarde en cours");
+            console.log(postData.toString());
 
-            $.ajax({
-                method: method,
-                url: url,
-                data: postData,
-                success: function (data) {
-                    OC.Notification.hide(infoNotification);
-                    var notification = OC.Notification.show(data.message);
-                    setTimeout(function () {
-                        OC.Notification.hide(notification);
-                    }, 5000);
-                },
-                error: function (data) {
-                    OC.Notification.hide(infoNotification);
-                    console.log(data)
-                    var notification = OC.Notification.show(data.message);
-                    setTimeout(function () {
-                        OC.Notification.hide(notification);
-                    }, 5000);
-                }
-            });
-        }, 500)
+            const infoNotification = OC.Notification.show('Sauvegarde en cours');
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    body: postData,
+                });
+
+                if (!response.ok)
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                const data = await response.json();
+
+                OC.Notification.hide(infoNotification);
+                const notification = OC.Notification.show(data.message);
+                setTimeout(() => {
+                    OC.Notification.hide(notification);
+                }, 5000);
+            } catch (error) {
+                OC.Notification.hide(infoNotification);
+                console.error(error);
+                const notification = OC.Notification.show('Erreur lors de la sauvegarde');
+                setTimeout(() => {
+                    OC.Notification.hide(notification);
+                }, 5000);
+            }
+        }, 500);
+    });
+});
+
+function decodeHTMLEntities(text) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+}
+
+function pagesizeInteractions() {
+    const pagesize = document.querySelector('#cas_import_ad_sync_pagesize');
+    const pagesizeValue = document.querySelector('#cas_import_ad_sync_pagesize_value');
+
+    pagesize.addEventListener('input', () => {
+        pagesizeValue.value = pagesize.value;
     });
 
-    $('input[type=range]').on('input', function () {
-        $(this).trigger('change');
+    pagesizeValue.addEventListener('input', () => {
+        pagesize.value = pagesizeValue.value;
     });
+}
 
-    $('#cas_import_ad_sync_pagesize').on('change', function () {
-        console.log($(this).val());
-        $("#cas_import_ad_sync_pagesize_value").val($(this).val());
-    });
+// PedagogicGroup
 
-    $('#cas_import_ad_sync_pagesize_value').on('keyup', function () {
-        console.log($(this).val());
-        $("#cas_import_ad_sync_pagesize").val($(this).val());
-    });
-
-    const addPedagogicGroupLine = function (field = '', filter = '', naming = '') {
-        $('#pedagogicGroup > tbody').append(
-            "<tr>" +
-            "<td><input class=\"cas_import_map_groups_pedagogic\" value='" + field + "'/></td>" +
-            "<td><input class=\"cas_import_map_groups_pedagogic_filter\" value='" + filter + "'/></td>" +
-            "<td><input class=\"cas_import_map_groups_pedagogic_naming\" value='" + naming + "'/></td>" +
-            "<td>" +
-            "<button class=\"moveUpPedagogicGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
-            "<button class=\"moveDownPedagogicGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
-            "<button class=\"removePedagogicGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
-            "</td>" +
-            "</tr>"
-        );
-    }
-
-    const importMapGroupsPedagogic = $('#cas_import_map_groups_pedagogic').val();
+function importMapPedagogicGroup() {
+    const importMapGroupsPedagogic = document.querySelector('#cas_import_map_groups_pedagogic').value;
     if (importMapGroupsPedagogic.length > 0) {
         let parsedPedagogicGroups = null;
         try {
-            parsedPedagogicGroups = JSON.parse(decodeHTMLEntities(importMapGroupsPedagogic))
+            parsedPedagogicGroups = JSON.parse(decodeHTMLEntities(importMapGroupsPedagogic));
         } catch (e) {
-            parsedPedagogicGroups = []
+            parsedPedagogicGroups = [];
         }
-        Object.entries(parsedPedagogicGroups).forEach(function ([key, pedagogicGroup], i) {
-            if (i === 0) {
-                $('#cas_import_map_groups_pedagogic_first').val(pedagogicGroup.field)
-                $('#cas_import_map_groups_pedagogic_filter_first').val(pedagogicGroup.filter)
-                $('#cas_import_map_groups_pedagogic_naming_first').val(pedagogicGroup.naming)
-            }
-            else {
-                const field = pedagogicGroup.field ? pedagogicGroup.field : '';
-                const filter = pedagogicGroup.filter ? pedagogicGroup.filter : '';
-                const naming = pedagogicGroup.naming ? pedagogicGroup.naming : '';
-                addPedagogicGroupLine(field, filter, naming)
-            }
+        Object.entries(parsedPedagogicGroups).forEach(([_, pedagogicGroup]) => {
+            const field = pedagogicGroup.field ? pedagogicGroup.field : '';
+            const filter = pedagogicGroup.filter ? pedagogicGroup.filter : '';
+            const naming = pedagogicGroup.naming ? pedagogicGroup.naming : '';
+            addPedagogicGroupLine(field, filter, naming);
         });
     }
+}
 
-    $('#addPedagogicGroup').on('click', function () {
-        addPedagogicGroupLine()
+function pedagogicGroupInteractions() {
+    const pedagogicGroupTbody = document.querySelector('#pedagogicGroup > tbody');
+    pedagogicGroupTbody.addEventListener('click', (event) => {
+        const button = event.target;
+        const row = button.closest('tr');
+        switch (button.className) {
+            case 'moveUpPedagogicGroup':
+                row?.previousElementSibling?.before(row);
+                break;
+            case 'moveDownPedagogicGroup':
+                row?.nextElementSibling?.after(row);
+                break;
+            case 'removePedagogicGroup':
+                row?.remove();
+                break;
+        }
     });
 
-    $('#pedagogicGroup > tbody')
-        .on('click', '.moveUpPedagogicGroup', function () {
-            const row = $(this).closest('tr')
-            row.prev().before(row);
-        })
-        .on('click', '.moveDownPedagogicGroup', function () {
-            const row = $(this).closest('tr')
-            row.next().after(row)
-        })
-        .on('click', '.removePedagogicGroup', function () {
-            $(this).closest('tr').remove()
-        })
+    document.querySelector('#addPedagogicGroup').addEventListener('click', () => {
+        addPedagogicGroupLine();
+    });
+}
 
-    const addFilterGroupLine = function (filter = '', naming = '', quota = '', uaiNumber = '') {
-        $('#filterGroup > tbody').append(
-            "<tr>" +
-            "<td><input class=\"cas_import_map_groups_filter\" value='" + filter + "'/></td>" +
-            "<td><input class=\"cas_import_map_groups_naming\" value='" + naming + "'/></td>" +
-            "<td><input class=\"cas_import_map_groups_uai_number\" value='" + uaiNumber + "'/></td>" +
-            "<td><input class=\"cas_import_map_groups_quota\" value='" + quota + "'/></td>" +
-            "<td>" +
-            "<button class=\"moveUpFilterGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
-            "<button class=\"moveDownFilterGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
-            "<button class=\"removeFilterGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
-            "</td>" +
-            "</tr>"
-        );
-    }
+function addPedagogicGroupLine(field = '', filter = '', naming = '') {
+    const line = document.createElement('tr');
+    line.innerHTML = `
+        <td>
+            <input
+                value="${field}"
+                class="cas_import_map_groups_pedagogic"
+            />
+        </td>
+        <td>
+            <input
+                value="${filter}"
+                class="cas_import_map_groups_pedagogic_filter"
+            />
+        </td>
+        <td>
+            <input
+                value="${naming}"
+                class="cas_import_map_groups_pedagogic_naming"
+            />
+        </td>
+        <td>
+            <button
+                type="button"
+                title="Monter"
+                class="moveUpPedagogicGroup"
+                style="width: 34px;"
+            >
+                ↑
+            </button>
+            <button
+                type="button"
+                title="Descendre"
+                class="moveDownPedagogicGroup"
+                style="width: 34px;"
+            >
+                ↓
+            </button>
+            <button
+                type="button"
+                title="Supprimer"
+                class="removePedagogicGroup"
+                style="width: 34px;"
+            >
+                ×
+            </button>
+        </td>
+    `;
+    document.querySelector('#pedagogicGroup > tbody').append(line);
+}
 
-    const importMapFilterGroups = $('#cas_import_map_groups_fonctionel').val();
+// FilterGroup
+
+function importMapFilterGroup() {
+    const importMapFilterGroups = document.querySelector('#cas_import_map_groups_fonctionel').value;
     if (importMapFilterGroups.length > 0) {
         let parsedFilterGroups = null;
         try {
-            parsedFilterGroups = JSON.parse(decodeHTMLEntities(importMapFilterGroups))
+            parsedFilterGroups = JSON.parse(decodeHTMLEntities(importMapFilterGroups));
         } catch (e) {
-            parsedFilterGroups = []
+            parsedFilterGroups = [];
         }
-        Object.entries(parsedFilterGroups).forEach(function ([key, fonctionnelGroup], i) {
-            if (i === 0) {
-                $('#cas_import_map_groups_filter_first').val(fonctionnelGroup.filter);
-                $('#cas_import_map_groups_naming_first').val(fonctionnelGroup.naming)
-                $('#cas_import_map_groups_quota_first').val(fonctionnelGroup.quota)
-                $('#cas_import_map_groups_uai_number_first').val(fonctionnelGroup.uaiNumber)
-            }
-            else {
-                const filter = fonctionnelGroup.filter ? fonctionnelGroup.filter : '';
-                const naming = fonctionnelGroup.naming ? fonctionnelGroup.naming : '';
-                const quota = fonctionnelGroup.quota ? fonctionnelGroup.quota : '';
-                const uaiNumber = fonctionnelGroup.uaiNumber ? fonctionnelGroup.uaiNumber : '';
-                addFilterGroupLine(filter, naming, quota, uaiNumber)
-            }
+        Object.entries(parsedFilterGroups).forEach(([_, fonctionnelGroup]) => {
+            const filter = fonctionnelGroup.filter ? fonctionnelGroup.filter : '';
+            const naming = fonctionnelGroup.naming ? fonctionnelGroup.naming : '';
+            const quota = fonctionnelGroup.quota ? fonctionnelGroup.quota : '';
+            const uaiNumber = fonctionnelGroup.uaiNumber ? fonctionnelGroup.uaiNumber : '';
+            addFilterGroupLine(filter, naming, quota, uaiNumber);
         });
     }
+}
 
-    $('#addFilterGroup').on('click', function () {
-        addFilterGroupLine()
+function filterGroupInteractions() {
+    const filterGroupTbody = document.querySelector('#filterGroup > tbody');
+    filterGroupTbody.addEventListener('click', (event) => {
+        const button = event.target;
+        const row = button.closest('tr');
+        switch (button.className) {
+            case 'moveUpFilterGroup':
+                row?.previousElementSibling?.before(row);
+                break;
+            case 'moveDownFilterGroup':
+                row?.nextElementSibling?.after(row);
+                break;
+            case 'removeFilterGroup':
+                row?.remove();
+                break;
+        }
     });
 
-    $('#filterGroup > tbody')
-        .on('click', '.moveUpFilterGroup', function () {
-            const row = $(this).closest('tr')
-            row.prev().before(row);
-        })
-        .on('click', '.moveDownFilterGroup', function () {
-            const row = $(this).closest('tr')
-            row.next().after(row)
-        })
-        .on('click', '.removeFilterGroup', function () {
-            $(this).closest('tr').remove()
-        })
+    document.querySelector('#addFilterGroup').addEventListener('click', () => {
+        addFilterGroupLine();
+    });
+}
 
-    const addNameUaiGroupLine = function (nameUai = '', nameGroup = '', uaiGroup = '') {
-        $('#nameUaiGroup > tbody').append(
-            "<tr>" +
-            "<td><input class=\"cas_import_regex_name_uai\" value=\"" + nameUai + "\"/></td>" +
-            "<td><input class=\"cas_import_regex_name_group\" value=\"" + nameGroup + "\"/></td>" +
-            "<td><input class=\"cas_import_regex_uai_group\" value=\"" + uaiGroup + "\"/></td>" +
-            "<td>" +
-            "<button class=\"moveUpNameUaiGroup\" type=\"button\" title=\"Monter\" style=\"width: 34px;\">↑</button>" +
-            "<button class=\"moveDownNameUaiGroup\" type=\"button\" title=\"Descendre\" style=\"width: 34px;\">↓</button>" +
-            "<button class=\"removeNameUaiGroup\" type=\"button\" title=\"Supprimer\" style=\"width: 34px;\">×</button>" +
-            "</td>" +
-            "</tr>"
-        );
-    }
+function addFilterGroupLine(filter = '', naming = '', quota = '', uaiNumber = '') {
+    const line = document.createElement('tr');
+    line.innerHTML = `
+        <td>
+            <input
+                value="${filter}"
+                class="cas_import_map_groups_filter"
+            />
+        </td>
+        <td>
+            <input
+                value="${naming}"
+                class="cas_import_map_groups_naming"
+            />
+        </td>
+        <td>
+            <input
+                value="${uaiNumber}"
+                class="cas_import_map_groups_uai_number"
+            />
+        </td>
+        <td>
+            <input
+                value="${quota}"
+                class="cas_import_map_groups_quota"
+            />
+        </td>
+        <td>
+            <button
+                type="button"
+                title="Monter"
+                class="moveUpFilterGroup"
+                style="width: 34px;"
+            >
+                ↑
+            </button>
+            <button
+                type="button"
+                title="Descendre"
+                class="moveDownFilterGroup"
+                style="width: 34px;"
+            >
+                ↓
+            </button>
+            <button
+                type="button"
+                title="Supprimer"
+                class="removeFilterGroup"
+                style="width: 34px;"
+            >
+                ×
+            </button>
+        </td>
+    `;
+    document.querySelector('#filterGroup > tbody').append(line);
+}
 
-    const importNameUaiGroups = $('#cas_import_map_regex_name_uai').val();
+// NameUaiGroup
+
+function importMapNameUaiGroup() {
+    const importNameUaiGroups = document.querySelector('#cas_import_map_regex_name_uai').value;
     if (importNameUaiGroups.length > 0) {
         let parsedNameUaiGroups = null;
         try {
@@ -286,41 +272,188 @@ $(document).ready(function () {
         } catch (e) {
             parsedNameUaiGroups = []
         }
-        Object.entries(parsedNameUaiGroups).forEach(function ([key, group], i) {
-            if (i === 0) {
-                $('#cas_import_regex_name_uai_first').val(group.nameUai);
-                $('#cas_import_regex_name_group_first').val(group.nameGroup)
-                $('#cas_import_regex_uai_group_first').val(group.uaiGroup)
-            }
-            else {
-                const nameUai = group.nameUai ? group.nameUai : '';
-                const nameGroup = group.nameGroup ? group.nameGroup : '';
-                const uaiGroup = group.uaiGroup ? group.uaiGroup : '';
-                addNameUaiGroupLine(nameUai, nameGroup, uaiGroup)
-            }
+        Object.entries(parsedNameUaiGroups).forEach(([_, group]) => {
+            const nameUai = group.nameUai ? group.nameUai : '';
+            const nameGroup = group.nameGroup ? group.nameGroup : '';
+            const uaiGroup = group.uaiGroup ? group.uaiGroup : '';
+            addNameUaiGroupLine(nameUai, nameGroup, uaiGroup);
         });
     }
+}
 
-    $('#addNameUaiGroup').on('click', function () {
-        addNameUaiGroupLine()
+function nameUaiGroupInteractions() {
+    const nameUaiGroupTbody = document.querySelector('#nameUaiGroup > tbody');
+    nameUaiGroupTbody.addEventListener('click', (event) => {
+        const button = event.target;
+        const row = button.closest('tr');
+        switch (button.className) {
+            case 'moveUpNameUaiGroup':
+                row?.previousElementSibling?.before(row);
+                break;
+            case 'moveDownNameUaiGroup':
+                row?.nextElementSibling?.after(row);
+                break;
+            case 'removeNameUaiGroup':
+                row?.remove();
+                break;
+        }
     });
 
-    $('#nameUaiGroup > tbody')
-        .on('click', '.moveUpNameUaiGroup', function () {
-            const row = $(this).closest('tr')
-            row.prev().before(row);
-        })
-        .on('click', '.moveDownNameUaiGroup', function () {
-            const row = $(this).closest('tr')
-            row.next().after(row)
-        })
-        .on('click', '.removeNameUaiGroup', function () {
-            $(this).closest('tr').remove()
-        })
-});
+    document.querySelector('#addNameUaiGroup').addEventListener('click', () => {
+        addNameUaiGroupLine();
+    });
+}
 
-function decodeHTMLEntities(text) {
-    var textArea = document.createElement('textarea');
-    textArea.innerHTML = text;
-    return textArea.value;
+function addNameUaiGroupLine(nameUai = '', nameGroup = '', uaiGroup = '') {
+    const line = document.createElement('tr');
+    line.innerHTML = `
+        <td>
+            <input
+                value="${nameUai}"
+                class="cas_import_regex_name_uai"
+            />
+        </td>
+        <td>
+            <input
+                value="${nameGroup}"
+                class="cas_import_regex_name_group"
+            />
+        </td>
+        <td>
+            <input
+                value="${uaiGroup}"
+                class="cas_import_regex_uai_group"
+            />
+        </td>
+        <td>
+            <button
+                type="button"
+                title="Monter"
+                class="moveUpNameUaiGroup"
+                style="width: 34px;"
+            >
+                ↑
+            </button>
+            <button
+                type="button"
+                title="Descendre"
+                class="moveDownNameUaiGroup"
+                style="width: 34px;"
+            >
+                ↓
+            </button>
+            <button
+                type="button"
+                title="Supprimer"
+                class="removeNameUaiGroup"
+                style="width: 34px;"
+            >
+                ×
+            </button>
+        </td>
+    `;
+    document.querySelector('#nameUaiGroup > tbody').append(line);
+}
+
+function computeHiddenFields() {
+    let pegadogicGroups = {};
+    document.querySelectorAll('.cas_import_map_groups_pedagogic').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            pegadogicGroups[index] = {
+                ...pegadogicGroups[index],
+                'field': value
+            }
+        }
+    })
+
+    document.querySelectorAll('.cas_import_map_groups_pedagogic_filter').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            pegadogicGroups[index] = {
+                ...pegadogicGroups[index],
+                'filter': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_map_groups_pedagogic_naming').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            pegadogicGroups[index] = {
+                ...pegadogicGroups[index],
+                'naming': value
+            }
+        }
+    })
+
+    let filterGroups = {};
+    document.querySelectorAll('.cas_import_map_groups_filter').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            filterGroups[index] = {
+                ...filterGroups[index],
+                'filter': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_map_groups_naming').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            filterGroups[index] = {
+                ...filterGroups[index],
+                'naming': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_map_groups_quota').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            filterGroups[index] = {
+                ...filterGroups[index],
+                'quota': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_map_groups_uai_number').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            filterGroups[index] = {
+                ...filterGroups[index],
+                'uaiNumber': value
+            }
+        }
+    })
+
+    let nameUaiGroup = {};
+    document.querySelectorAll('.cas_import_regex_name_uai').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            nameUaiGroup[index] = {
+                ...nameUaiGroup[index],
+                'nameUai': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_regex_name_group').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            nameUaiGroup[index] = {
+                ...nameUaiGroup[index],
+                'nameGroup': value
+            }
+        }
+    })
+    document.querySelectorAll('.cas_import_regex_uai_group').forEach((element, index) => {
+        const value = element.value;
+        if (value.length > 0) {
+            nameUaiGroup[index] = {
+                ...nameUaiGroup[index],
+                'uaiGroup': value
+            }
+        }
+    })
+
+    document.querySelector('#cas_import_map_groups_fonctionel').value = JSON.stringify(filterGroups);
+    document.querySelector('#cas_import_map_groups_pedagogic').value = JSON.stringify(pegadogicGroups);
+    document.querySelector('#cas_import_map_regex_name_uai').value = JSON.stringify(nameUaiGroup);
 }
