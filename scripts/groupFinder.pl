@@ -81,7 +81,7 @@ if ($withUser || $withPartage) {
 				if ($withPartage) {
 					my $uids = printPartageManquants($members, printPartage($gid));
 					if (@$uids) {
-						if (&promptCommande("On corrige le groupe $gid", \$reponse)) {
+						if (&promptCommande("\nOn corrige le groupe $gid", \$reponse)) {
 							for my $uid (@$uids) {
 								util->occ("group:removeuser '$gid' '$uid'" );
 								util->occ("group:adduser '$gid' '$uid'" );
