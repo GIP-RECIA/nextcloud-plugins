@@ -12,7 +12,7 @@
  */
 
 $cacheBuster = date("Ymd");
-$request = \OC::$server->getRequest();
+$request = \OCP\Server::get(\OCP\IRequest::class);
 $portal_domain = \OC_Theme::getDomain($request);
 
 $getUserAvatar = static function (int $size) use ($_): string {

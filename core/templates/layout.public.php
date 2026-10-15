@@ -5,7 +5,7 @@
  */
 
 $cacheBuster = date("Ymd");
-$request = \OC::$server->getRequest();
+$request = \OCP\Server::get(\OCP\IRequest::class);
 ?>
 <!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" translate="no" >
@@ -42,7 +42,7 @@ p($theme->getTitle());
 	<?php print_unescaped($_['headers']); ?>
 </head>
 <!-- public -->
-<body id="<?php p($_['bodyid']);?>" class="<?php p(\OC_Theme::getCssClass(\OC::$server->getRequest())) ?>"> <!--<?php foreach ($_['enabledThemes'] as $themeId) {
+<body id="<?php p($_['bodyid']);?>" class="<?php p(\OC_Theme::getCssClass($request)) ?>"> <!--<?php foreach ($_['enabledThemes'] as $themeId) {
 	p("data-theme-$themeId ");
 }?> data-themes="<?php p(join(',', $_['enabledThemes'])) ?>"-->
 	<?php include('layout.noscript.warning.php'); ?>
