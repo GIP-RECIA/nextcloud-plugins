@@ -1,8 +1,8 @@
 @use 'sass:color';
 
-$extended-uportal-header-height: var(--recia-header-height, 68px);
-$header-height: calc($extended-uportal-header-height + var(--header-height));
-$extended-uportal-footer-visible-height: 10px;
+$r-header-height: var(--recia-header-height, 68px);
+$header-height: calc($r-header-height + var(--header-height));
+$r-footer-visible-height: 10px;
 
 // ---------- MAIN  ----------
 
@@ -23,7 +23,7 @@ body {
 
 	&#body-user,
 	&#body-settings {
-		--body-height: calc(100% - #{$header-height} - #{$extended-uportal-footer-visible-height});
+		--body-height: calc(100% - #{$header-height} - #{$r-footer-visible-height});
 
 		&:has(iframe#onlyofficeFrame, main#content.app-onlyoffice) {
 			--body-height: calc(100% - #{$header-height});
@@ -31,12 +31,12 @@ body {
 	}
 }
 
-// ---------- EXTENDED UPORTAL HEADER  ----------
+// ---------- R HEADER  ----------
 
-body #escoDiv extended-uportal-header {
+body #escoDiv r-header {
 	// Fixe le bandeau ENT au chagement
 	display: block;
-	height: $extended-uportal-header-height;
+	height: $r-header-height;
 	width: 100%;
 	position: fixed;
 	z-index: 2100;
@@ -49,17 +49,16 @@ body {
 	&#body-settings {
 		// Fixe le bandeau ENT au chargement
 		> #escoDiv {
-			height: $extended-uportal-header-height;
+			height: $r-header-height;
 		}
 
 		header#header {
 			// Déplacement du bandeau nextcloud par rapport au bandeau ENT
-			top: $extended-uportal-header-height;
+			top: $r-header-height;
 
-			// Ajout du scroll sur la liste des applications
+			// Cache le nouveau menu
 			> .header-start > nav {
-				overflow-x: auto;
-				scrollbar-width: none;
+				display: none;
 			}
 
 			> .header-end {
@@ -82,7 +81,7 @@ body {
 
 				// Correction du placement à l'ouverture des menu
 				.header-menu__wrapper {
-					--header-height: #{$header-height};
+					top: #{$header-height};
 				}
 			}
 		}
@@ -107,7 +106,7 @@ head[data-user="admin"] {
 	}
 }
 
-// ---------- EXTENDED UPORTAL FOOTER ----------
+// ---------- R FOOTER ----------
 
 // Masquage du bandeau ENT par défaut
 body > footer.escoDiv {
@@ -129,14 +128,15 @@ body > footer.escoDiv {
 				left: 0;
 				transition: transform .2s;
 
-				&:hover {
+				&:hover,
+				&:focus-within {
 					transform: translateY(0) !important;
 				}
 			}
 
 			&:hover {
 				> footer.escoDiv {
-					transform: translateY(calc(100% - $extended-uportal-footer-visible-height));
+					transform: translateY(calc(100% - $r-footer-visible-height));
 				}
 
 				> #escoDiv:hover ~ footer.escoDiv {
@@ -157,9 +157,9 @@ body#body-public.not_embedded footer {
 // ---------- PARAMETRES PERSONNELS ----------
 
 body#body-settings {
-	#app-content[data-active-section-type="personal"] {
+	#app-content-vue .settings-content {
 		// Panel "Informations personnelles"
-		&[data-active-section-id="personal-info"] {
+		& {
 			#personal-settings .personal-settings-setting-box {
 				// Masquages des paramétrages du profil
 				&:has(input, textarea) {
@@ -184,9 +184,9 @@ body#body-settings {
 		}
 	
 		// Panel "Sécurité"
-		&[data-active-section-id="security"] {
+		& {
 			// Masquage du changement de mot de passe
-			.settings-section {
+			.settings-section:has(form input[type="password"]) {
 				display: none;
 			}
 	
@@ -202,7 +202,7 @@ body#body-settings {
 		}
 	
 		// Panel "Apparence et accessibilité"
-		&[data-active-section-id="theming"] #settings-personal-theming .settings-section {
+		& #settings-personal-theming .settings-section {
 			// Masquage des options d'aparence
 			&:nth-child(2),
 			&:nth-child(3),
@@ -213,7 +213,7 @@ body#body-settings {
 	}
 
 	// Panel "Stockage externe"
-	&:has(#app-content[data-active-section-type="personal"][data-active-section-id="externalstorages"]) {
+	&:has(#app-content-vue .settings-content) {
 		// Masquage de l'option de partage
 		form.dialog fieldset span.checkbox-radio-switch:nth-of-type(3) {
 			display: none;
@@ -224,7 +224,7 @@ body#body-settings {
 // ---------- ONLY OFFICE ----------
 
 body#body-user iframe#onlyofficeFrame {
-	height: calc(100vh - $extended-uportal-header-height)
+	height: calc(100vh - $r-header-height)
 }
 
 // ---------- TEXT ----------
@@ -266,7 +266,7 @@ body {
 // ---------- COULEURS ----------
 
 @function contrast-color($color, $dark, $light) {
-	@return if(color.channel($color, 'lightness', hsl) < 55%, $light, $dark);
+	@return if(sass(color.channel($color, 'lightness', hsl) < 55%): $light; else: $dark);
 }
 
 @mixin colorTheme($couleur) {
