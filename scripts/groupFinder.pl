@@ -7,6 +7,8 @@ use DBI();
 use FindBin; 			# ou est mon executable
 use lib $FindBin::Bin; 	# chercher les lib au meme endroit
 use ncUtil;
+use lib "$FindBin::Bin/GroupFolder";
+use util;
 binmode STDOUT, ':encoding(UTF-8)';
 
 # un script pour afficher/rechercher les utilisateurs d'un groupe.
@@ -67,21 +69,37 @@ while (my $tuple =  $sqlStatement->fetchrow_hashref()) {
 	}
 }
 
+my %uidErrorByGroup;
 if ($withUser || $withPartage) {
 	if (@allGroups) {
+		my $reponse;
 		foreach my $gid (@allGroups) {
-			print "$gid : \n";
+			print "\n$gid : \n";
 			if ($withUser) {
-				&printMembers ($gid);
-			}
-			if ($withPartage) {
+				my $members =  &printMembers ($gid);
+
+				if ($withPartage) {
+					my $uids = printPartageManquants($members, printPartage($gid));
+					if (@$uids) {
+						if (&promptCommande("On corrige le groupe $gid", \$reponse)) {
+							for my $uid (@$uids) {
+								util->occ("group:removeuser '$gid' '$uid'" );
+								util->occ("group:adduser '$gid' '$uid'" );
+							}
+						}
+					}
+				}
+			} else {
 				printPartage($gid);
 			}
 		}
 	}
 }
-print "\n", scalar @allGroups,  " groupes trouvés\n";
-
+if (@allGroups) {
+	print "\n", scalar @allGroups,  " groupes trouvés\n";
+} else {
+	print "\nAucun groupe de trouvé\n";
+}
 
 sub printMembers {
 	my $gid = shift;
@@ -90,9 +108,10 @@ sub printMembers {
 		my $sqlMembre = "select u.uid, u.displayname, g.gid from oc_users u , oc_group_user g where g.gid = ? and g.uid = u.uid order by uid";
 		$sqlMemberStatement = $sql->prepare($sqlMembre) or die $sql->errstr;
 	}
-	
+
 	print "\tLes membres : ";
-	
+
+	my @members;
 	$sqlMemberStatement->execute($gid) or die $sqlMemberStatement->errstr;
 	my $cpt = 0;
 	my $text ='';
@@ -102,6 +121,7 @@ sub printMembers {
 		my $tab;
 		
 		$uid2name{$uid} = $name;
+		push @members, $uid;
 		
 		unless ($cpt++ % 4) {
 			$tab = "\n\t\t";
@@ -113,12 +133,16 @@ sub printMembers {
 		print "$tab$text";
 	}
 	print "\n";
+	return \@members
 }
 
 sub printPartage {
 	my $gid = shift;
 	our $sqlPartageStatment;
 	our $sqlPartagesUserStatement;
+
+	my %partage2uid;
+
 	unless ($sqlPartageStatment) {
 		my $sqlQuery = "select uid_owner, file_source, path, item_type, permissions , id from recia_share  where share_with = ? and share_type = 1 order by path , uid_owner";
 		$sqlPartageStatment = $sql->prepare($sqlQuery) or die $sql->errstr;
@@ -126,10 +150,10 @@ sub printPartage {
 		$sqlPartagesUserStatement =  $sql->prepare($sqlQuery) or die $sql->errstr;
 	}
 	$sqlPartageStatment->execute($gid) or die $sqlStatement->errstr;
-	print "\t les partages :\n" ;
-	
+	print "\tLes partages :\n";
+
 	my $text ='';
-	
+
 	while (my $partageFile =  $sqlPartageStatment->fetchrow_hashref()) {
 		my $fileName = $partageFile->{'path'};
 		my $fileId = $partageFile->{'file_source'};
@@ -139,7 +163,8 @@ sub printPartage {
 		my $nameOwner = $uid2name{$uidOwner};
 		my $partageId = $partageFile->{'id'};
 		my $tab;
-		
+
+		my @UidOk=();
 		print "\t\t$fileId : $type $fileName <-- $uidOwner $nameOwner $perm"."[$partageId] ";
 		
 		$sqlPartagesUserStatement->execute($fileId , $partageId) or die $sqlPartagesUserStatement->errstr; 
@@ -158,10 +183,33 @@ sub printPartage {
 			}
 			$text = "$uid $name $perm"."[$partageId] ";
 			print "$tab$text";
+			push @UidOk, $uid;
 		}
+		$partage2uid{$fileId} = \@UidOk;
 		print "\n";
 	}
+	return \%partage2uid;
 }
+
+sub printPartageManquants {
+	my ($members, $partage2uid) = @_;
+	my $text = "\tLes partages manquants :\n";
+	my %uidError;
+	while ( my ($fileId, $uids ) = each %$partage2uid ){
+		my %uidSet = map {($_, 1)} @$members;
+		for my $uid (@$uids) {
+			$uidSet{$uid} = 0;
+		}
+		my $last;
+		my @manquants = map { if ($_ == 1) {$uidError{$last} = 1; $last} else {$last = $_; ()}} %uidSet;
+		if (@manquants) {
+			print "$text\t\t$fileId : " . join ", ", sort @manquants;
+			$text="\n";
+		}
+	}
+	return [keys %uidError];
+}
+
 sub permissionDecode {
 	my $perm = shift;
 	my $flags = "($perm";
