@@ -75,12 +75,12 @@ p($theme->getTitle());
 
 		<header id="escoDiv">
 		<header id="escoHeader">
-			<extended-uportal-header
-				template-api-path="/commun/portal_template_api.tpl.json"
+			<r-header
+				template-api-url="/commun/portal_template_api.tpl.json"
 				fname="Nextcloud"
 				<?php if ($portal_domain) { print_unescaped('domain="' . $portal_domain . '"'  . "\n" ); } ?>
 			>
-			</extended-uportal-header>
+			</r-header>
 		</header>
 
 		<header id="header" class="escoDivWrapper">
@@ -115,11 +115,11 @@ p($theme->getTitle());
 		<div id="profiler-toolbar"></div>
 
 		<footer role="contentinfo" class="escoDiv">
-			<extended-uportal-footer id="reciaFooter"
-				template-api-path="/commun/portal_template_api.tpl.json"
+			<r-footer id="reciaFooter"
+				template-api-url="/commun/portal_template_api.tpl.json"
 				<?php if ($portal_domain) { print_unescaped('domain="' . $portal_domain . '"'); } ?>
 			>
-			</extended-uportal-footer> 
+			</r-footer> 
 		</footer>
 	</body>
 </html>
