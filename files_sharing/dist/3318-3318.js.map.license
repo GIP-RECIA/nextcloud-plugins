@@ -10,12 +10,12 @@ SPDX-FileCopyrightText: string_decoder developers
 SPDX-FileCopyrightText: readable-stream developers
 SPDX-FileCopyrightText: perfect-debounce developers
 SPDX-FileCopyrightText: p-queue developers
+SPDX-FileCopyrightText: moment developers
 SPDX-FileCopyrightText: inherits developers
 SPDX-FileCopyrightText: hookable developers
 SPDX-FileCopyrightText: escape-html developers
 SPDX-FileCopyrightText: debounce developers
 SPDX-FileCopyrightText: atomiks
-SPDX-FileCopyrightText: Varun A P
 SPDX-FileCopyrightText: Tobias Koppers @sokra
 SPDX-FileCopyrightText: Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)
 SPDX-FileCopyrightText: T. Jameson Little <t.jameson.little@gmail.com>
@@ -32,7 +32,6 @@ SPDX-FileCopyrightText: Jonas Schade <derzade@gmail.com>
 SPDX-FileCopyrightText: Jeff Sagal <sagalbot@gmail.com>
 SPDX-FileCopyrightText: James Halliday
 SPDX-FileCopyrightText: Jacob Clevenger<https://github.com/wheatjs>
-SPDX-FileCopyrightText: Iskren Ivov Chernev <iskren.chernev@gmail.com> (https://github.com/ichernev)
 SPDX-FileCopyrightText: Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)
 SPDX-FileCopyrightText: Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
 SPDX-FileCopyrightText: Guillaume Chau <guillaume.b.chau@gmail.com>
@@ -47,7 +46,6 @@ SPDX-FileCopyrightText: David Clark
 SPDX-FileCopyrightText: Christoph Wurst
 SPDX-FileCopyrightText: Chen Fengyuan
 SPDX-FileCopyrightText: Austin Andrews
-SPDX-FileCopyrightText: Arnout Kazemier
 SPDX-FileCopyrightText: Anthony Fu <https://github.com/antfu>
 SPDX-FileCopyrightText: Anthony Fu <anthonyfu117@hotmail.com>
 SPDX-FileCopyrightText: @nextcloud/dialogs developers
@@ -87,20 +85,32 @@ This file is generated from multiple sources. Included packages:
 - @vue/devtools-api
 	- version: 8.1.5
 	- license: MIT
-- @vueuse/core
-	- version: 14.3.0
+- @vue/reactivity
+	- version: 3.5.43
+	- license: MIT
+- @vue/runtime-core
+	- version: 3.5.43
+	- license: MIT
+- @vue/runtime-dom
+	- version: 3.5.43
+	- license: MIT
+- @vue/shared
+	- version: 3.5.43
 	- license: MIT
 - @vueuse/shared
-	- version: 14.3.0
+	- version: 14.4.0
+	- license: MIT
+- @vueuse/core
+	- version: 14.4.0
 	- license: MIT
 - vue-router
 	- version: 5.2.0
 	- license: MIT
 - vue
-	- version: 3.5.39
+	- version: 3.5.43
 	- license: MIT
 - @nextcloud/dialogs
-	- version: 7.4.1
+	- version: 7.5.0
 	- license: AGPL-3.0-or-later
 - semver
 	- version: 7.8.5
@@ -108,11 +118,8 @@ This file is generated from multiple sources. Included packages:
 - @nextcloud/event-bus
 	- version: 3.3.3
 	- license: GPL-3.0-or-later
-- @nextcloud/sharing
-	- version: 0.3.0
-	- license: GPL-3.0-or-later
 - @nextcloud/files
-	- version: 4.0.0
+	- version: 4.1.0
 	- license: AGPL-3.0-or-later
 - @nextcloud/initial-state
 	- version: 3.0.0
@@ -130,7 +137,7 @@ This file is generated from multiple sources. Included packages:
 	- version: 3.1.0
 	- license: GPL-3.0-or-later
 - @nextcloud/router
-	- version: 3.1.0
+	- version: 3.2.0
 	- license: GPL-3.0-or-later
 - @nextcloud/sharing
 	- version: 0.4.0
@@ -148,25 +155,13 @@ This file is generated from multiple sources. Included packages:
 	- version: 7.8.0
 	- license: MIT
 - @nextcloud/vue
-	- version: 8.40.0
+	- version: 8.41.0
 	- license: AGPL-3.0-or-later
 - @vue/devtools-kit
 	- version: 8.1.5
 	- license: MIT
 - @vue/devtools-shared
 	- version: 8.1.5
-	- license: MIT
-- @vue/reactivity
-	- version: 3.5.39
-	- license: MIT
-- @vue/runtime-core
-	- version: 3.5.39
-	- license: MIT
-- @vue/runtime-dom
-	- version: 3.5.39
-	- license: MIT
-- @vue/shared
-	- version: 3.5.39
 	- license: MIT
 - @vueuse/components
 	- version: 11.3.0
@@ -178,7 +173,7 @@ This file is generated from multiple sources. Included packages:
 	- version: 11.3.0
 	- license: MIT
 - axios
-	- version: 1.16.1
+	- version: 1.20.0
 	- license: MIT
 - base64-js
 	- version: 1.5.1
@@ -199,7 +194,7 @@ This file is generated from multiple sources. Included packages:
 	- version: 3.0.0
 	- license: MIT
 - dompurify
-	- version: 3.4.14
+	- version: 3.4.16
 	- license: (MPL-2.0 OR Apache-2.0)
 - escape-html
 	- version: 1.0.3
@@ -235,16 +230,13 @@ This file is generated from multiple sources. Included packages:
 	- version: 2.3.0
 	- license: BSD-3-Clause
 - moment
-	- version: 2.30.1
+	- version: 2.31.0
 	- license: MIT
 - buffer
 	- version: 6.0.3
 	- license: MIT
 - nostics
 	- version: 1.1.4
-	- license: MIT
-- eventemitter3
-	- version: 5.0.4
 	- license: MIT
 - p-queue
 	- version: 9.3.3
@@ -279,9 +271,6 @@ This file is generated from multiple sources. Included packages:
 - tabbable
 	- version: 6.5.0
 	- license: MIT
-- toastify-js
-	- version: 1.12.0
-	- license: MIT
 - typescript-event-target
 	- version: 1.1.2
 	- license: MIT
@@ -310,7 +299,7 @@ This file is generated from multiple sources. Included packages:
 	- version: 2.7.16
 	- license: MIT
 - webdav
-	- version: 5.10.0
+	- version: 5.11.0
 	- license: MIT
 - base64-js
 	- version: 1.5.1
