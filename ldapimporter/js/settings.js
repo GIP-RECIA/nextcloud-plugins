@@ -7,7 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     importMapNameUaiGroup();
     nameUaiGroupInteractions();
 
-    document.querySelector("form#ldapimporter").addEventListener('submit', (event) => {
+    const saveButtons = document.querySelectorAll('form#ldapimporter input[type="submit"]');
+
+    document.querySelector('form#ldapimporter').addEventListener('submit', (event) => {
         event.preventDefault();
         computeHiddenFields();
         setTimeout(async () => {
@@ -16,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const method = form.getAttribute('method');
             const url = OC.generateUrl('/apps/ldapimporter/settings/save');
 
-            console.log(postData.toString());
-
-            const infoNotification = OC.Notification.show('Sauvegarde en cours');
+            setSaveState(saveButtons, 'save');
 
             try {
                 const response = await fetch(url, {
@@ -30,22 +30,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(`Erreur HTTP : ${response.status}`);
                 const data = await response.json();
 
-                OC.Notification.hide(infoNotification);
-                const notification = OC.Notification.show(data.message);
+                console.info(data.message);
+                setSaveState(saveButtons, 'success');
                 setTimeout(() => {
-                    OC.Notification.hide(notification);
+                    setSaveState(saveButtons, undefined);
                 }, 5000);
             } catch (error) {
-                OC.Notification.hide(infoNotification);
-                console.error(error);
-                const notification = OC.Notification.show('Erreur lors de la sauvegarde');
+                console.error('Impossible d\'enregistrer la configuration', error);
+                setSaveState(saveButtons, 'error');
                 setTimeout(() => {
-                    OC.Notification.hide(notification);
+                    setSaveState(saveButtons, undefined);
                 }, 5000);
             }
         }, 500);
     });
 });
+
+function setSaveState(buttons, state) {
+    let disabled = false;
+    let text = 'Enregistrer';
+
+    switch (state) {
+        case 'save':
+            disabled = true;
+            text = 'Enregistement en cours...';
+            break;
+        case 'success':
+            disabled = true;
+            text = 'Enregistré !';
+            break;
+        case 'error':
+            disabled = true;
+            text = 'Erreur d\'enregistrement !';
+            break;
+
+        default:
+            break;
+    }
+
+    buttons.forEach(button => {
+        button.value = text;
+        button.disabled = disabled;
+    })
+}
 
 function decodeHTMLEntities(text) {
     var textArea = document.createElement('textarea');
