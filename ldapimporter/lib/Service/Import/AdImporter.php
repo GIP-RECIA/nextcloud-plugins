@@ -344,6 +344,10 @@ class AdImporter
                                                 ...$sprintfArray
                                             ));
 
+                                            // echo '$groupFilterMatches : ' . print_r($groupFilterMatches) . "\n";
+                                            // echo '$groupFilter["uaiNumber"] : ' . $groupFilter["uaiNumber"] . "\n";
+                                            // echo '$assoEtablissementUaiOrNameAndId : ' . print_r($assoEtablissementUaiOrNameAndId) . "\n";
+
                                             if (
                                                 !is_null($groupFilterMatches)
                                                 && !is_null($groupFilter["uaiNumber"])
@@ -1030,6 +1034,7 @@ class AdImporter
             $filter
         );
         if (ldap_error($this->ldapConnection) == "No such object") {
+            $this->logger->error("No such object: ". $groupCn .": " . $filter);
             return [];
         } elseif (ldap_error($this->ldapConnection) != "Success") {
             die('Error searching LDAP: ' . ldap_error($this->ldapConnection) . " and " . $groupCn);
