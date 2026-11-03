@@ -182,17 +182,26 @@ sub expirePartage {
 }
 
 # Marquer les comptes sans partage candidat a la suppression
-# isDel=2 => le compte est désactivé
+# isDel=2 => le compte est supprimer du ldap
 # isDel=3 => le compte peut être supprimer
 sub markToDelete {
-	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3
-		where isDel = 2 and datediff(now(), dat) > ?
+	
+	my $shareLessRequete = q/update oc_recia_user_history set isdel = 3
+		where isdel = 2 and datediff(now(), dat) > ?
 		and uid not in (select uid_owner from oc_share where uid_owner is not null and share_type not in (3, 4) and (expiration is null or datediff(now() , expiration)  < ? )) order by dat  limit ?/;
+		
 	§PRINT "update oc_recia_user_history set isDel = 3 ...";
 	my $sqlStatement = $sql->prepare($shareLessRequete) or §FATAL $sql->errstr;
 	my $nbLines = $sqlStatement->execute($nbJourDelay,$nbJourDelay,$nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§PRINT "\t", 0 + $nbLines, " mise à jours";
 	§PRINT "Nombre de partages restants  : ", isDelPartage(3);
+	
+	my $disableRequete = q/update oc_preferences set configvalue = 'false'
+			where appid = 'core'
+			and configkey = 'enabled'
+			and configvalue = 'true'
+			and userid in (select uid from oc_recia_user_history where isdel=3 )/
+	$sql->do($disableRequete) or §FATAL $sql->errstr;
 }
 
 

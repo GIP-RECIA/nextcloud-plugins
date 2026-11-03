@@ -74,25 +74,24 @@ chdir $wwwRep;
 my @allUids;
 my $cpt = 0;
 my $sql = connectSql();
-#on cherche les comptes désactivés
+#on ne desactive plus les comptes qui font des partages
+#on cherche les comptes qui sont supprimés du LDAP:
 my $sqlQuery;
 if ($uai) {
-	$sqlQuery = q/select gid, uid
-					from oc_group_user, oc_preferences
-					where uid=userid
-					and appid = 'core'
-					and configkey = 'enabled'
-					and configvalue = 'false'
-					and gid like '%$uai'/;
+	$sqlQuery = q/select gid, g.uid
+				from oc_group_user g, oc_recia_user_history r
+				where g.uid=r.uid
+				and r.isDel > 1
+				and gid like '%$uai'/;
 } else {
-	$sqlQuery = q/select gid, uid
-					from oc_group_user, oc_preferences
-					where uid=userid
-					and appid = 'core'
-					and configkey = 'enabled'
-					and configvalue = 'false'
-					limit 20000/;
+	$sqlQuery = q/select gid, g.uid
+				from oc_group_user g, oc_recia_user_history r
+				where g.uid=r.uid
+				and r.isDel > 1
+				limit 20000/;
 }
+
+
 my $sqlStatement = $sql->prepare($sqlQuery) or §FATAL $sql->errstr;
 $sqlStatement->execute() or §FATAL $sqlStatement->errstr;
 
@@ -112,7 +111,7 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 print "$cpt group user supprimés\n";
 # on delete les tuples de oc_asso_uai_user_group inutiles
 
-my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * from oc_preferences where  user_group =userid and appid = 'core' and configkey = 'enabled' and configvalue = 'false')",
+my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * from oc_recia_user_history where  user_group =uid  and isDel > 1)",
 			"delete from oc_asso_uai_user_group a where user_group not in (select gid from oc_groups where gid is not null) and user_group not in (select uid from oc_users where uid is not null)");
 
 if ($all) {
@@ -126,28 +125,10 @@ if ($all) {
 }
 
 __END__
-#select * from oc_group_user where uid =  'F22102o7';
-#select * from oc_asso_uai_user_group where user_group = 'F22102o7';
 
-#select * from oc_preferences where userid = 'F22102o7';
 
-#select * from oc_preferences where appid = 'core' and configkey = 'enabled' and configvalue = false
 
-select *
-from oc_preferences p,
-oc_recia_user_history r
-where p.userid = r.uid
-and  p.appid = 'core'
-and p.configkey = 'enabled'
-and p.configvalue = 'false'
-and r.isdel != 2;
 
-select *
-from oc_preferences p,
-oc_recia_user_history r
-where p.userid = r.uid
-and  p.appid = 'core'
-and p.configkey = 'enabled'
-and p.configvalue = 'true'
-and r.eta = 'DELETE'
-and r.isdel > 1;
+
+
+

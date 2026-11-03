@@ -234,12 +234,16 @@ class DeleteService
 
     protected function disableUser($idUser, $etat = false)
     {
+        /* Pour garder l'accès aux partages, on ne disable plus les user supprimés
+        * de toutes manère n'étant plus dans LDAP ils ne peuvent plus se connecter
+        * on se contante de les marquer dans UserHistory
         Server::get(IUserConfig::class)->setValueString(
             $idUser,
             'core',
             'enabled',
             'false'
         );
+        */
         $this->logger->info("ldap:disable-user, " . $idUser);
         $this->markDelUserHistory($idUser, 2, $etat);
     }
