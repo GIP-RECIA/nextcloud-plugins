@@ -145,8 +145,8 @@ sub expirePartage {
 sub markToDelete {
 #	my $shareLessRequete = q/update oc_recia_user_history set isDel = 3 where isDel = 2 and datediff(now(), dat) > 60 and uid not in (select uid_owner from recia_direct_partages where uid_owner is not null) order by dat  limit ?/;
 	my $shareLessRequete =
-		q/update oc_recia_user_history set isDel = 3
-			where isDel = 2
+		q/update oc_recia_user_history set isdel = 3
+			where isdel = 2
 			and datediff(now(), dat) > 60
 			and uid not in (select uid_owner
 							from oc_share
@@ -172,6 +172,13 @@ sub markToDelete {
 	my $nbLines = $sqlStatement->execute($nbRemovedUserMax) or §FATAL $sqlStatement->errstr;
 	§INFO "\t", 0 + $nbLines, " mise à jours";
 	§INFO "Nombre de partages restants  : ", isDelPartage(3);
+
+	my $disableRequete = q/update oc_preferences set configvalue = 'false'
+			where appid = 'core'
+			and configkey = 'enabled'
+			and configvalue = 'true'
+			and userid in (select uid from oc_recia_user_history where isdel=3 )/
+	$sql->do($disableRequete) or §FATAL $sql->errstr;
 }
 
 #donne les partages des comptes en fonction de la valeurs de isDel 

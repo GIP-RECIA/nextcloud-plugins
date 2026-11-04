@@ -1,9 +1,7 @@
 
-# Réflexion sur la suppression des comptes NC-ent dans la base et dans le stockage objet.
+# La suppression des comptes NC-GIP dans la base et dans le stockage objet.
 
-## État des lieux.
-
-### Les tables supplémentaires du recia avec leurs scripts de mise à jour :
+## Les tables supplémentaires du recia :
 
 - oc_etablissements :
 
@@ -31,18 +29,31 @@
 
 - recia_share : une vue qui donne les fichiers partagés.
 
-### Désactivations des comptes :
-'loadEtap.pl' qui execute 'occ ldap:import-users-ad' pour mettre a jour les comptes, ceux qui sont en DELETE ont le champs 'isdel' de la table 'oc_recia_user_history' mise à 1.
+## Les scripts de mise à jour et de désactivations des comptes :
+### loadEtap.pl:
+ execute 'occ ldap:import-users-ad' pour mettre a jour les comptes, ceux qui sont en DELETE ont le champs 'isdel' de la table 'oc_recia_user_history' mise à 1.
 
-Ensuite 'loadEtab.pl' excute 'occ ldap:disable-deleted-user' qui désactive les comptes NC qui ont 'isdel' à 1 (mise à false dans oc_preferences du champs qui va bien), et met 'isdel' à 2.
-régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils sont encore dans le ldap sinon on les supprimes on les marques DELETE_NOT_IN_LDAP et met isDel a 2.
+Ensuite 'loadEtab.pl' excute 'occ ldap:disable-deleted-user' qui dans DeleteService.php met à isdel=2 aux comptes NC qui ont 'isdel' à 1 et qui n'existe plus dans ldap.
 
+régulièrement on verifie le 1000 comptes les plus anciens pour verifier qu'ils sont encore dans le ldap sinon on les supprimes comme si ils avaient eu le DELETE et met isDel a 2,
+du coup ces compte sont indiqués comme VALIDE dans  oc_recia_user_history.
 
+### removeOldUser.pl :
+-	test les comptes obsolete (isDel = 2 et > 60 jour)  beneficiant d'un partage et supprime ce partages.
+-	test les comptes obsolete n'ayant pas fait de partage (ou ayant des partages expiré depuis plus de 60 jours) et le marque isDel = 3; et les désactive (oc_preferences core enabled false).
+-	expire a la date du jour les partages public des comptes obsoletes. 
+-	lance occ ldap:remove-disabled-user
+-	Pour limité le nombre d'update et delete removeOldUser prend le nombre d'action a faire en parametre (<= 1000), les suppressions se feront donc sur plusieurs jours.
+	
+### occ ldap:remove-disabled-user' :
+ efface les comptes ayant 'isdel' à 3 depuis plus de 60 jours et le met à 4. Il supprime définitivement les comptes avec leurs fichier et partages.
+Les comptes ayant isDel à 3 ne devraient plus avoir de partage.
 
-'occ ldap:remove-disable-user' doit effacer les comptes ayant 'isdel à 2 depuis plus de 60 jours et le mettre à 3. N'est pour le moment jamais appelé, pas vraiment testé non plus.
 
 Pour le moment il n'y a pas de gestion des partages donc si on utilise 'occ ldap:remove-disable-user' les fichiers partagés seront perdus.
-adddate(dat, 60) 
+adddate(dat, 60)
+
+
 ## A faire :
 # suppressions des vieux comptes désactivé vide (jamais connecté).
 select s.uid from recia_storage s,  oc_recia_user_history h , oc_users u where h.isdel = 2 and h.eta = 'DELETE' and h.uid = s.uid and (s.volume is null or s.volume = 0) and adddate(h.dat, 60) < curdate() and u.uid = s.uid;
