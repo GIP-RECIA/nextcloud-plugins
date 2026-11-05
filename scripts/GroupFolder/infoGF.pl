@@ -135,7 +135,7 @@ sub resumeList {
 	my $filtre = shift;
 	if ($filtre) {
 		my $last = '$';
-		for (grep /^$last/ ? 0 : ($last = $_), @{$ary}) {
+		for (grep /^\Q$last\E/ ? 0 : ($last = $_), @{$ary}) {
 			print "'$_'\n";
 		}
 	} else {
