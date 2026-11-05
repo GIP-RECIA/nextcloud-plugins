@@ -111,8 +111,10 @@ while (my @tuple =  $sqlStatement->fetchrow_array) {
 print "$cpt group user supprimés\n";
 # on delete les tuples de oc_asso_uai_user_group inutiles
 
-my @sqlQueries = ("delete from oc_asso_uai_user_group where exists (select * from oc_recia_user_history where  user_group =uid  and isDel > 1)",
-			"delete from oc_asso_uai_user_group a where user_group not in (select gid from oc_groups where gid is not null) and user_group not in (select uid from oc_users where uid is not null)");
+my @sqlQueries = (
+			q/delete from oc_asso_uai_user_group where exists (select * from oc_recia_user_history where  user_group =uid  and isDel > 1)/,
+			q/delete from oc_asso_uai_user_group a where user_group not in (select gid from oc_groups where gid is not null) and user_group not in (select uid from oc_users where uid is not null)/
+		);
 
 if ($all) {
 	my $nb = 0;
