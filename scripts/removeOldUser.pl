@@ -200,7 +200,8 @@ sub markToDelete {
 			where appid = 'core'
 			and configkey = 'enabled'
 			and configvalue = 'true'
-			and userid in (select uid from oc_recia_user_history where isdel=3 )/
+			and userid in (select uid from oc_recia_user_history where isdel=3 )
+		/;
 	$sql->do($disableRequete) or §FATAL $sql->errstr;
 }
 
